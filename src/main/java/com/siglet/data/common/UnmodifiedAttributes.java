@@ -1,10 +1,13 @@
 package com.siglet.data.common;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UnmodifiedAttributes {
 
-    Map<String,Object> getAsMap();
+    Map<String, Object> getAsMap();
+
+    boolean hasAttribute(String key);
 
     boolean isAttributeString(String key);
 
@@ -14,13 +17,11 @@ public interface UnmodifiedAttributes {
 
     boolean isAttributeDouble(String key);
 
-    boolean isAttributeStringArray(String key);
+    boolean isAttributeArray(String key);
 
-    boolean isAttributeBooleanArray(String key);
+    boolean isAttributeKeyValueList(String key);
 
-    boolean isAttributeLongArray(String key);
-
-    boolean isAttributeDoubleArray(String key);
+    boolean isAttributeByteArray(String key);
 
     String getAttributeAsString(String key);
 
@@ -30,11 +31,9 @@ public interface UnmodifiedAttributes {
 
     double getAttributeAsDouble(String key);
 
-    String[] getAttributeAsStringArray(String key);
+    Object[] getAttributeAsArray(String key);
 
-    Boolean[] getAttributeAsBooleanArray(String key);
+    List<Map.Entry<String,Object>> getAttributeAsKeyValueList(String key);
 
-    Long[] getAttributeAsLongArray(String key);
 
-    Double[] getAttributeAsDoubleArray(String key);
 }

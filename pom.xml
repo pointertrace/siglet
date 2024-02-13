@@ -37,7 +37,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <site-repo-url>scpexe://people.apache.org/www/camel.apache.org/maven/</site-repo-url>
-        <jdk.version>17</jdk.version>
+        <jdk.version>21</jdk.version>
         <compiler.fork>false</compiler.fork>
 
         <camel.version>4.3.0</camel.version>
@@ -542,6 +542,12 @@
             <version>${camel.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.5.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -551,8 +557,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin-version}</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>21</source>
+                    <target>21</target>
                     <maxmem>512M</maxmem>
                     <fork>${compiler.fork}</fork>
                 </configuration>
