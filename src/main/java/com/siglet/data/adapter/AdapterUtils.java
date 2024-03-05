@@ -2,18 +2,17 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
+import com.siglet.data.trace.SpanKind;
 import io.micrometer.core.instrument.Gauge;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.common.v1.KeyValueList;
+import io.opentelemetry.proto.trace.v1.Span;
 import org.checkerframework.checker.units.qual.A;
 
 import java.nio.ByteBuffer;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
@@ -34,17 +33,6 @@ public class AdapterUtils {
         return buffer.array();
     }
 
-    public static List<KeyValue> mapToKeyValueList(Map<String, Object> attributes) {
-        List<KeyValue> result = new ArrayList<>();
-        for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-            result.add(KeyValue.newBuilder()
-                    .setKey(attribute.getKey())
-                    .setValue(objectToAnyValue(attribute.getValue()))
-                    .build());
-        }
-        return result;
-    }
-
 
     public static Object anyValueToObject(AnyValue anyValue) {
         return switch (anyValue.getValueCase()) {
@@ -63,15 +51,39 @@ public class AdapterUtils {
             case KVLIST_VALUE -> {
                 KeyValueList kvList = anyValue.getKvlistValue();
                 List<Map.Entry<String, Object>> result = new ArrayList<>(kvList.getValuesCount());
-                kvList.getValuesList().forEach((kv) -> {
-                    result.add(new AbstractMap.SimpleImmutableEntry<>(kv.getKey(), anyValueToObject(kv.getValue())));
-                });
+                kvList.getValuesList().forEach((kv) ->
+                        result.add(new AbstractMap.SimpleImmutableEntry<>(kv.getKey(), anyValueToObject(kv.getValue())))
+                );
                 yield result;
             }
             case BYTES_VALUE -> anyValue.getBytesValue().toByteArray();
             case VALUE_NOT_SET -> null;
         };
     }
+
+    public static List<KeyValue> mapToKeyValueList(Map<String, Object> map) {
+
+        List<KeyValue> result = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            result.add(KeyValue.newBuilder()
+                    .setKey(entry.getKey())
+                    .setValue(objectToAnyValue(entry.getValue()))
+                    .build());
+        }
+
+        return result;
+    }
+
+    public static Map<String, Object> keyValueListToMap(List<KeyValue> keyValueList) {
+        Map<String, Object> result = new HashMap<>();
+
+        for (KeyValue kv : keyValueList) {
+            result.put(kv.getKey(), anyValueToObject(kv.getValue()));
+        }
+
+        return result;
+    }
+
 
     public static AnyValue objectToAnyValue(Object value) {
         return switch (value) {
@@ -106,23 +118,29 @@ public class AdapterUtils {
             default ->
                     throw new IllegalStateException(value.getClass().getSimpleName() + "is not a valid attriute type!");
         };
-    }
+    };
 
     ;
-
-    public static <T, E> E read(T first, Supplier<E> firstSupplier, T second, Supplier<E> secondSupplier) {
-        if (first != null) {
-            return firstSupplier.get();
-        } else {
-            return secondSupplier.get();
-        }
+    public static SpanKind getKind(Span.SpanKind kind) {
+        return switch (kind) {
+            case SPAN_KIND_UNSPECIFIED, UNRECOGNIZED -> null;
+            case SPAN_KIND_INTERNAL -> SpanKind.INTERNAL;
+            case SPAN_KIND_SERVER -> SpanKind.SERVER;
+            case SPAN_KIND_CLIENT -> SpanKind.CLIENT;
+            case SPAN_KIND_PRODUCER -> SpanKind.PRODUCER;
+            case SPAN_KIND_CONSUMER -> SpanKind.CONSUMER;
+        };
     }
 
-    public static <T, E> void write(E builder, Runnable builderCreator, Consumer<T> spanBuilderSetter, T value) {
-        if (builder == null) {
-            builderCreator.run();
-        }
-        spanBuilderSetter.accept(value);
+    public static Span.SpanKind getKind(SpanKind kind) {
+        return switch (kind) {
+            case INTERNAL -> Span.SpanKind.SPAN_KIND_INTERNAL;
+            case SERVER -> Span.SpanKind.SPAN_KIND_SERVER;
+            case CLIENT -> Span.SpanKind.SPAN_KIND_CLIENT;
+            case PRODUCER -> Span.SpanKind.SPAN_KIND_PRODUCER;
+            case CONSUMER -> Span.SpanKind.SPAN_KIND_CONSUMER;
+            case OTHER -> null;
+        };
     }
 
 }

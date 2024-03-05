@@ -1,37 +1,49 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
-import io.opencensus.trace.SpanId;
-import io.opencensus.trace.TraceId;
+import com.siglet.data.modifiable.ModifiableLinks;
 import io.opentelemetry.proto.trace.v1.Span;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ProtoLinksAdapter {
+public class ProtoLinksAdapter implements ModifiableLinks {
 
-   private List<Span.Link> linksProto;
+    private List<ProtoLinkAdapter> linksAdapter;
 
-   private List<ProtoLinkAdapter> linksAdapter;
+    private boolean updatable;
 
 
-    public ProtoLinksAdapter(List<Span.Link> linksProto) {
-        this.linksProto = linksProto;
+    public ProtoLinksAdapter(List<Span.Link> linksProto, boolean updatable) {
+        linksAdapter = new ArrayList<>(linksProto.size());
+        linksProto.forEach(lk -> linksAdapter.add(new ProtoLinkAdapter(lk, updatable)));
+        this.updatable = updatable;
     }
 
-    public ProtoLinkAdapter getLink(String traceId, String spanId) {
-        convertIfNeeded();
-        for(ProtoLinkAdapter protoLinkAdapter: linksAdapter) {
-            if (protoLinkAdapter.getTraceId().equals(traceId) && protoLinkAdapter.getSpanId().equals(spanId)) {
+    public boolean has(long traceIdHigh, long traceIdLow, long spanId) {
+        for (ProtoLinkAdapter protoLinkAdapter : linksAdapter) {
+            if (protoLinkAdapter.getTraceIdHigh() == traceIdHigh && protoLinkAdapter.getTraceIdLow() == traceIdLow &&
+                    protoLinkAdapter.getSpanId() == spanId) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public ProtoLinkAdapter get(long traceIdHigh, long traceIdLow, int spanId) {
+        for (ProtoLinkAdapter protoLinkAdapter : linksAdapter) {
+            if (protoLinkAdapter.getTraceIdHigh() == traceIdHigh && protoLinkAdapter.getTraceIdLow() == traceIdLow &&
+                    protoLinkAdapter.getSpanId() == spanId) {
                 return protoLinkAdapter;
             }
         }
         return null;
     }
 
-    public void addLink(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String,Object> attributes) {
+    public void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes) {
+        checkUpdate();
         Span.Link linkProto = Span.Link.newBuilder()
                 .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(traceIdHigh, traceIdLow)))
                 .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(spanId)))
@@ -39,19 +51,25 @@ public class ProtoLinksAdapter {
                 .addAllAttributes(AdapterUtils.mapToKeyValueList(attributes))
                 .build();
 
-        linksProto.add(linkProto);
-        linksAdapter.add(new ProtoLinkAdapter(linkProto));
+        linksAdapter.add(new ProtoLinkAdapter(linkProto, updatable));
 
     }
 
-    private void convertIfNeeded() {
-        if (linksAdapter == null) {
-            linksAdapter = new ArrayList<>(linksProto.size());
-            for(Span.Link linkProto: linksProto) {
-                linksAdapter.add(new ProtoLinkAdapter(linkProto));
-            }
+    public boolean remove(long traceIdHigh, long traceIdLow, int spanId) {
+        checkUpdate();
+        return linksAdapter.removeIf(
+                la -> la.getTraceIdHigh() == traceIdHigh &&
+                        la.getTraceIdLow() == traceIdLow &&
+                        la.getSpanId() == spanId);
+    }
+
+    public int size() {
+        return linksAdapter.size();
+    }
+
+    private void checkUpdate() {
+        if (!updatable) {
+            throw new IllegalStateException("trying to change a non updatable link list!");
         }
     }
-
-
 }

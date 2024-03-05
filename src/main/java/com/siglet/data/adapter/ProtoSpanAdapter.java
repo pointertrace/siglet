@@ -1,0 +1,269 @@
+package com.siglet.data.adapter;
+
+import com.google.protobuf.ByteString;
+import com.siglet.data.modifiable.ModifiableSpan;
+import com.siglet.data.trace.SpanKind;
+import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.resource.v1.Resource;
+import io.opentelemetry.proto.trace.v1.Span;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+public class ProtoSpanAdapter implements ModifiableSpan {
+
+    private Span protoSpan;
+
+    private Resource protoResource;
+
+    private InstrumentationScope protoInstrumentationScope;
+
+    private boolean updatable;
+
+    private boolean updated;
+
+    private Span.Builder protoSpanBuilder;
+
+    private ProtoAttributesAdapter protoAttributesAdapter;
+
+    private ProtoResourceAdapter protoResourceAdapter;
+
+    private ProtoLinksAdapter protoLinksAdapter;
+
+    private ProtoEventsAdapter protoEventsAdapter;
+
+    private ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
+
+
+    public ProtoSpanAdapter(Span protoSpan, Resource protoResource, InstrumentationScope protoInstrumentationScope,
+                            boolean updatable) {
+        this.protoSpan = protoSpan;
+        this.protoResource = protoResource;
+        this.protoInstrumentationScope = protoInstrumentationScope;
+        this.updatable = updatable;
+        this.updated = true;
+    }
+
+    @Override
+    public long getTraceIdHigh() {
+        return ByteBuffer.wrap(
+                        Arrays.copyOfRange(protoSpanBuilder == null ?
+                                protoSpan.getTraceId().toByteArray() :
+                                protoSpanBuilder.getTraceId().toByteArray(), 0, 8))
+                .getLong();
+    }
+
+    @Override
+    public long getTraceIdLow() {
+        return ByteBuffer.wrap(
+                        Arrays.copyOfRange(protoSpanBuilder == null ?
+                                protoSpan.getTraceId().toByteArray() :
+                                protoSpanBuilder.getTraceId().toByteArray(), 8, 16))
+                .getLong();
+    }
+
+    @Override
+    public void setTraceId(long high, long low) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setTraceId(ByteString.copyFrom(
+                ByteBuffer.allocate(Long.BYTES * 2).putLong(high).putLong(low).array()));
+    }
+
+    @Override
+    public long getSpanId() {
+        return ByteBuffer.wrap(
+                        protoSpanBuilder == null ?
+                                protoSpan.getSpanId().toByteArray() :
+                                protoSpanBuilder.getSpanId().toByteArray())
+                .getLong();
+    }
+
+    @Override
+    public void setSpanId(long spanId) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setSpanId(ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(spanId).array()));
+    }
+
+    @Override
+    public long getParentSpanId() {
+        return ByteBuffer.wrap(
+                        protoSpanBuilder == null ?
+                                protoSpan.getParentSpanId().toByteArray() :
+                                protoSpanBuilder.getParentSpanId().toByteArray())
+                .getLong();
+    }
+
+    @Override
+    public void setParentSpanId(long parentSpanId) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setParentSpanId(ByteString.copyFrom(
+                ByteBuffer.allocate(Long.BYTES).putLong(parentSpanId).array()));
+    }
+
+    @Override
+    public String getTraceState() {
+        return protoSpanBuilder == null ? protoSpan.getTraceState() : protoSpanBuilder.getTraceState();
+    }
+
+    @Override
+    public void setTraceState(String traceState) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setTraceState(traceState);
+    }
+
+    @Override
+    public String getName() {
+        return protoSpanBuilder == null ? protoSpan.getName() : protoSpanBuilder.getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setName(name);
+    }
+
+    @Override
+    public long getStartUnixNano() {
+        return protoSpanBuilder == null ? protoSpan.getStartTimeUnixNano() : protoSpanBuilder.getStartTimeUnixNano();
+    }
+
+    @Override
+    public long getEndUnixNano() {
+        return protoSpanBuilder == null ? protoSpan.getEndTimeUnixNano() : protoSpanBuilder.getEndTimeUnixNano();
+    }
+
+    @Override
+    public SpanKind getKind() {
+        return AdapterUtils.getKind(protoSpanBuilder == null ? protoSpan.getKind() : protoSpanBuilder.getKind());
+    }
+
+    @Override
+    public void setKind(SpanKind spanKind) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setKind(AdapterUtils.getKind(spanKind));
+    }
+
+    @Override
+    public ProtoAttributesAdapter getAttributes() {
+        if (protoAttributesAdapter == null) {
+            protoAttributesAdapter = new ProtoAttributesAdapter(protoSpan.getAttributesList(), updatable);
+        }
+        return protoAttributesAdapter;
+    }
+
+    @Override
+    public ProtoResourceAdapter getResource() {
+        if (protoResourceAdapter == null) {
+            protoResourceAdapter = new ProtoResourceAdapter(protoResource, updatable);
+        }
+        return protoResourceAdapter;
+    }
+
+    @Override
+    public ProtoInstrumentationScopeAdapter getInstrumentationScope() {
+        if (protoInstrumentationScopeAdapter == null) {
+            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, updatable);
+        }
+        return protoInstrumentationScopeAdapter;
+    }
+
+    @Override
+    public ProtoLinksAdapter getLinks() {
+        if (protoLinksAdapter == null) {
+            protoLinksAdapter = new ProtoLinksAdapter(protoSpan.getLinksList(), updatable);
+        }
+        return protoLinksAdapter;
+    }
+
+    @Override
+    public ProtoEventsAdapter getEvents() {
+        if (protoEventsAdapter == null) {
+            protoEventsAdapter = new ProtoEventsAdapter(protoSpan.getEventsList(), updatable);
+        }
+        return protoEventsAdapter;
+    }
+
+    public Span getProtoSpan() {
+        return protoSpan;
+    }
+
+
+    @Override
+    public void setStartTimeUnixNano(long startTimeUnixNano) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setStartTimeUnixNano(startTimeUnixNano);
+    }
+
+    @Override
+    public void setEndTimeUnixNano(long endTimeUnixNano) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setEndTimeUnixNano(endTimeUnixNano);
+    }
+
+    @Override
+    public int getFlags() {
+        return protoSpanBuilder == null ? protoSpan.getFlags() : protoSpanBuilder.getFlags();
+    }
+
+    @Override
+    public void setFlags(int flags) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setFlags(flags);
+    }
+
+    @Override
+    public int getDroppedAttributesCount() {
+        return protoSpanBuilder == null ? protoSpan.getDroppedAttributesCount() : protoSpanBuilder.getDroppedAttributesCount();
+    }
+
+    @Override
+    public void setDroppedAttributesCount(int droppedAttributesCount) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setDroppedAttributesCount(droppedAttributesCount);
+    }
+
+    @Override
+    public int getDroppedEventsCount() {
+        return protoSpanBuilder == null ? protoSpan.getDroppedEventsCount() : protoSpanBuilder.getDroppedEventsCount();
+    }
+
+    @Override
+    public void setDroppedEventsCount(int droppedEventsCount) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setDroppedEventsCount(droppedEventsCount);
+    }
+
+    @Override
+    public int getDroppedLinksCount() {
+        return protoSpanBuilder == null ? protoSpan.getDroppedLinksCount() : protoSpanBuilder.getDroppedLinksCount();
+    }
+
+    @Override
+    public void setDroppedLinksCount(int droppedLinksCount) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setDroppedLinksCount(droppedLinksCount);
+    }
+
+//    public ProtoSpanAdapter getOrCreateCopyIfUpdated(){
+//        if (! updatable ||  ! updated && protoResourceAdapter == null && protoInstrumentationScopeAdapter == null &&
+//                protoAttributesAdapter == null && )
+//
+//        protoInstrumentationScope;
+//    }
+
+    public boolean attributesUpdated() {
+        return protoAttributesAdapter != null && protoAttributesAdapter.isChanged();
+    }
+
+    private void checkAndPrepareUpdate() {
+        if (! updatable) {
+            throw new IllegalStateException("trying to change a non updatable span");
+        }
+        if (protoSpanBuilder == null) {
+            protoSpanBuilder = protoSpan.toBuilder();
+        }
+        updated = true;
+    }
+
+
+}

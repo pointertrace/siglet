@@ -1,22 +1,26 @@
 package com.siglet.data.adapter;
 
+import com.siglet.data.modifiable.ModifiableResource;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoResourceAdapter {
+public class ProtoResourceAdapter implements ModifiableResource {
 
     private Resource protoResource;
+
+    private boolean updatable;
 
     private Resource.Builder protoResourceBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoResourceAdapter(Resource protoResource) {
+    public ProtoResourceAdapter(Resource protoResource, boolean updatable) {
         this.protoResource = protoResource;
+        this.updatable = updatable;
     }
 
-    public ProtoAttributesAdapter getProtoAttributesAdapter() {
+    public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoResource.getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter(protoResource.getAttributesList(), updatable);
         }
         return protoAttributesAdapter;
     }
@@ -30,6 +34,7 @@ public class ProtoResourceAdapter {
     }
 
     public void setDroppedAttributesCount(int droppedAttributesCount) {
+        checkAndPrepareUpdate();
         if (protoResourceBuilder == null) {
             protoResourceBuilder = protoResource.toBuilder();
         }
@@ -37,10 +42,13 @@ public class ProtoResourceAdapter {
     }
 
 
-
-
-
-
-
+    private void checkAndPrepareUpdate() {
+        if (! updatable) {
+            throw new IllegalStateException("trying to change a non updatable span");
+        }
+        if (protoResourceBuilder== null) {
+            protoResourceBuilder = protoResource.toBuilder();
+        }
+    }
 
 }

@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AdapterUtilsTest {
 
@@ -61,7 +61,7 @@ class AdapterUtilsTest {
         Object value = AdapterUtils.anyValueToObject(actual);
 
         Assertions.assertNotNull(value);
-        Assertions.assertTrue(value instanceof Object[]);
+        assertTrue(value instanceof Object[]);
         assertArrayEquals(new Object[]{"value", 20L}, ((Object[]) value));
     }
 
@@ -83,21 +83,20 @@ class AdapterUtilsTest {
         Object value = AdapterUtils.anyValueToObject(actual);
 
 
-
         Assertions.assertNotNull(value);
-        Assertions.assertTrue(value instanceof List);
-        assertEquals(2,((List<?>) value).size());
+        assertTrue(value instanceof List);
+        assertEquals(2, ((List<?>) value).size());
         List<Object> asList = (List<Object>) value;
 
         Assertions.assertNotNull(asList.get(0));
-        Assertions.assertTrue(asList.get(0)  instanceof Map.Entry);
-        assertEquals("key-1",((Map.Entry<?,?>) asList.get(0)).getKey());
-        assertEquals("value-1",((Map.Entry<?,?>) asList.get(0)).getValue());
+        assertTrue(asList.get(0) instanceof Map.Entry);
+        assertEquals("key-1", ((Map.Entry<?, ?>) asList.get(0)).getKey());
+        assertEquals("value-1", ((Map.Entry<?, ?>) asList.get(0)).getValue());
 
         Assertions.assertNotNull(asList.get(1));
-        Assertions.assertTrue(asList.get(1)  instanceof Map.Entry);
-        assertEquals("key-2",((Map.Entry<?,?>) asList.get(1)).getKey());
-        assertEquals(20L,((Map.Entry<?,?>) asList.get(1)).getValue());
+        assertTrue(asList.get(1) instanceof Map.Entry);
+        assertEquals("key-2", ((Map.Entry<?, ?>) asList.get(1)).getKey());
+        assertEquals(20L, ((Map.Entry<?, ?>) asList.get(1)).getValue());
     }
 
     @Test
@@ -112,9 +111,9 @@ class AdapterUtilsTest {
         Object value = AdapterUtils.anyValueToObject(actual);
 
         Assertions.assertNotNull(value);
-        Assertions.assertTrue(value.getClass().isArray());
+        assertTrue(value.getClass().isArray());
         Assertions.assertSame(value.getClass().getComponentType(), byte.class);
-        assertEquals( "value",new String((byte[]) value,StandardCharsets.UTF_8));
+        assertEquals("value", new String((byte[]) value, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -123,5 +122,51 @@ class AdapterUtilsTest {
         AnyValue actual = AnyValue.newBuilder().build();
 
         Assertions.assertNull(AdapterUtils.anyValueToObject(actual));
+    }
+
+    @Test
+    public void mapToKeyValueList() {
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("str-key", "str-value");
+        map.put("long-key", 10L);
+
+        List<KeyValue> kv = AdapterUtils.mapToKeyValueList(map);
+
+        assertEquals(2, kv.size());
+        assertTrue(kv.contains(KeyValue.newBuilder()
+                .setKey("str-key")
+                .setValue(AnyValue.newBuilder().setStringValue("str-value").build())
+                .build()));
+        assertTrue(kv.contains(KeyValue.newBuilder()
+                .setKey("long-key")
+                .setValue(AnyValue.newBuilder().setIntValue(10L).build())
+                .build()));
+
+    }
+
+    @Test
+    public void keyValueListToMap() {
+        List<KeyValue> kvl = KeyValueList.newBuilder()
+                .addValues(KeyValue.newBuilder()
+                        .setKey("str-key").
+                        setValue(AnyValue.newBuilder().setStringValue("str-value").build()).build())
+                .addValues(KeyValue.newBuilder()
+                        .setKey("long-key")
+                        .setValue(AnyValue.newBuilder().setIntValue(10L).build()).build())
+                .build()
+                .getValuesList();
+
+
+        Map<String,Object> map = AdapterUtils.keyValueListToMap(kvl);
+
+        assertEquals(2, map.size());
+
+        assertTrue(map.containsKey("str-key"));
+        assertEquals("str-value", map.get("str-key"));
+
+        assertTrue(map.containsKey("long-key"));
+        assertEquals(10L, map.get("long-key"));
+
     }
 }

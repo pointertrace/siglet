@@ -1,0 +1,14 @@
+package com.siglet.data.modifiable;
+
+import com.siglet.data.unmodifiable.UnmodifiableLinks;
+
+import java.util.Map;
+
+public interface ModifiableLinks extends UnmodifiableLinks {
+
+    boolean has(long traceIdHigh, long traceIdLow, long spanId);
+
+    void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes);
+
+    boolean remove(long traceIdHigh, long traceIdLow, int spanId);
+}

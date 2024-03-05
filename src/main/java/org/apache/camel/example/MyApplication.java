@@ -17,7 +17,6 @@
 package org.apache.camel.example;
 
 import com.siglet.camel.component.SigletComponent;
-import com.siglet.data.trace.ModifiableSpan;
 import org.apache.camel.main.Main;
 
 /**

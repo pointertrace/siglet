@@ -1,54 +1,104 @@
 package com.siglet.data.adapter;
 
-import com.google.protobuf.Message;
-import io.opencensus.trace.SpanId;
-import io.opencensus.trace.TraceId;
+import com.google.protobuf.ByteString;
+import com.siglet.data.modifiable.ModifiableLink;
+import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.trace.v1.Span;
 
-public class ProtoLinkAdapter {
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+public class ProtoLinkAdapter implements ModifiableLink {
 
     private Span.Link protoLink;
+
+    private boolean updatable;
 
     private Span.Link.Builder protoLinkBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoLinkAdapter(Span.Link protoLink) {
+    public ProtoLinkAdapter(Span.Link protoLink, boolean updatable) {
         this.protoLink = protoLink;
+        this.updatable = updatable;
     }
 
-    public String getTraceId() {
-        return TraceId.fromBytes(protoLink.getTraceId().toByteArray()).toString();
+    public long getTraceIdHigh() {
+        return ByteBuffer.wrap(
+                        Arrays.copyOfRange((protoLinkBuilder == null ?
+                                protoLink.getTraceId() :
+                                protoLinkBuilder.getTraceId()).toByteArray(), 0, 8))
+                .getLong();
     }
 
-    public String getSpanId() {
-        return SpanId.fromBytes(protoLink.getSpanId().toByteArray()).toString();
+    public long getTraceIdLow() {
+        return ByteBuffer.wrap(
+                        Arrays.copyOfRange((protoLinkBuilder == null ?
+                                protoLink.getTraceId() :
+                                protoLinkBuilder.getTraceId()).toByteArray(), 8, 16))
+                .getLong();
+    }
+
+    public void setTraceId(long high, long low) {
+        checkAndPrepareUpdate();
+        protoLinkBuilder.setTraceId(ByteString.copyFrom(
+                ByteBuffer.allocate(Long.BYTES * 2).putLong(high).putLong(low).array()));
+    }
+
+    public long getSpanId() {
+        return ByteBuffer.wrap((protoLinkBuilder == null ?
+                protoLink.getSpanId() :
+                protoLinkBuilder.getSpanId()).toByteArray()).getLong();
+    }
+
+
+    public void setSpanId(long spanId) {
+        checkAndPrepareUpdate();
+        protoLinkBuilder.setSpanId(ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(spanId).array()));
     }
 
     public String getTraceState() {
-        return AdapterUtils.read(protoLink, protoLink::getTraceState,protoLinkBuilder,protoLinkBuilder::getTraceState);
+        return protoLinkBuilder == null ? protoLink.getTraceState() : protoLinkBuilder.getTraceState();
     }
 
     public void setTraceState(String traceState) {
-        AdapterUtils.write(protoLinkBuilder,this::createProtoLinkBuilder,protoLinkBuilder::setTraceState,traceState);
+        checkAndPrepareUpdate();
+        protoLinkBuilder.setTraceState(traceState);
     }
 
-    public ProtoAttributesAdapter getProtoAttributesAdapter() {
+    public int getFlags() {
+        return protoLinkBuilder == null ? protoLink.getFlags() : protoLinkBuilder.getFlags();
+    }
+
+    public void setFlags(int flags) {
+        checkAndPrepareUpdate();
+        protoLinkBuilder.setFlags(flags);
+    }
+
+    public int getDroppedAttributesCount() {
+        return protoLinkBuilder == null ? protoLink.getDroppedAttributesCount() : protoLinkBuilder.getDroppedAttributesCount();
+    }
+
+    public void setDroppedAttributesCount(int droppedAttributesCount) {
+        checkAndPrepareUpdate();
+        protoLinkBuilder.setDroppedAttributesCount(droppedAttributesCount);
+    }
+
+    public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoLink.getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter(protoLink.getAttributesList(), updatable);
         }
         return protoAttributesAdapter;
     }
 
-    protected void createProtoLinkBuilder() {
-        protoLinkBuilder = Span.Link.newBuilder();
+    private void checkAndPrepareUpdate() {
+        if (!updatable) {
+            throw new IllegalStateException("trying to change a non updatable link!");
+        }
+        if (protoLinkBuilder == null) {
+            protoLinkBuilder = Span.Link.newBuilder();
+        }
     }
-
-
-
-
-
-
 
 
 }

@@ -1,8 +1,9 @@
 package com.siglet.data.adapter;
 
+import com.siglet.data.modifiable.ModifiableInstrumentationScope;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 
-public class ProtoInstrumentationScopeAdapter {
+public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentationScope {
 
     private InstrumentationScope protoInstrumentationScope;
 
@@ -10,25 +11,60 @@ public class ProtoInstrumentationScopeAdapter {
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
+    private boolean updatable;
+
+    public ProtoInstrumentationScopeAdapter(InstrumentationScope protoInstrumentationScope, boolean updatable) {
+        this.protoInstrumentationScope = protoInstrumentationScope;
+        this.updatable = updatable;
+    }
+
 
     public String getName() {
-        return AdapterUtils.read(protoInstrumentationScope, protoInstrumentationScope::getName, protoInstrumentationScope,
-                protoInstrumentationScopeBuilder::getName);
+        return protoInstrumentationScopeBuilder == null ?
+                protoInstrumentationScope.getName() : protoInstrumentationScopeBuilder.getName();
     }
 
     public void setName(String name) {
-        AdapterUtils.write(protoInstrumentationScopeBuilder, this::createBuilder,
-                protoInstrumentationScopeBuilder::setName, name);
+        checkAndPrepareUpdate();
+        protoInstrumentationScopeBuilder.setName(name);
     }
 
-    public ProtoAttributesAdapter getProtoAttributesAdapter() {
+
+    public String getVersion() {
+        return protoInstrumentationScopeBuilder == null ?
+                protoInstrumentationScope.getVersion() : protoInstrumentationScopeBuilder.getVersion();
+    }
+
+    public void setVersion(String version) {
+        checkAndPrepareUpdate();
+        protoInstrumentationScopeBuilder.setVersion(version);
+    }
+
+
+    public int getDroppedAttributesCount() {
+        return protoInstrumentationScopeBuilder == null ?
+                protoInstrumentationScope.getDroppedAttributesCount() :
+                protoInstrumentationScopeBuilder.getDroppedAttributesCount();
+    }
+
+    public void setDroppedAttributesCount(int droppedAttributesCount) {
+        checkAndPrepareUpdate();
+        protoInstrumentationScopeBuilder.setDroppedAttributesCount(droppedAttributesCount);
+    }
+
+    public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoInstrumentationScope.getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter(protoInstrumentationScope.getAttributesList(), updatable);
         }
         return protoAttributesAdapter;
     }
 
-    protected void createBuilder() {
-        protoInstrumentationScopeBuilder = InstrumentationScope.newBuilder();
+    private void checkAndPrepareUpdate() {
+        if (!updatable) {
+            throw new IllegalStateException("trying to change a non updatable event list!");
+        }
+        if (protoInstrumentationScopeBuilder == null) {
+            protoInstrumentationScopeBuilder = InstrumentationScope.newBuilder();
+        }
     }
 }

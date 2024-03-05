@@ -1,4 +1,4 @@
-package com.siglet.data.trace;
+package com.siglet.data.unmodifiable;
 
 public interface UnmodifiableSpanlet {
 

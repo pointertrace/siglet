@@ -16,6 +16,7 @@
  */
 package org.apache.camel.example;
 
+import com.siglet.data.adapter.ProtoSpanAdapter;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -31,8 +32,8 @@ public class MyRouteBuilder extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-//                        SpanAdapter spanAdapter = exchange.getIn().getBody(SpanAdapter.class);
-//                        spanAdapter.setName(spanAdapter.getName() + "-changed");
+                        ProtoSpanAdapter spanAdapter = exchange.getIn().getBody(ProtoSpanAdapter.class);
+                        spanAdapter.setName(spanAdapter.getName() + "-changed");
                     }
                 })
                 .to("otelgrpc:localhost:4317");

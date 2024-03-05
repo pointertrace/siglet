@@ -1,5 +1,6 @@
 package com.siglet.camel.component;
 
+import com.siglet.data.adapter.ProtoSpanAdapter;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
@@ -25,11 +26,11 @@ public class OtelGrpcTraceServiceImpl extends TraceServiceGrpc.TraceServiceImplB
     public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver) {
         for (ResourceSpans spans : request.getResourceSpansList()) {
             Resource resource = spans.getResource();
-            for(ScopeSpans scopeSpans : spans.getScopeSpansList()) {
+            for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
-                for(Span span:scopeSpans.getSpansList()) {
+                for (Span span : scopeSpans.getSpansList()) {
                     Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
-//                    exchange.getIn().setBody(new SpanAdapter(span, resource, instrumentationScope));
+                    exchange.getIn().setBody(new ProtoSpanAdapter(span, resource.toBuilder().build(), instrumentationScope.toBuilder().build(), true));
                     try {
                         sigletConsumer.getProcessor().process(exchange);
                     } catch (Exception e) {
