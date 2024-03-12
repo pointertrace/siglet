@@ -3,6 +3,7 @@ package com.siglet.data.adapter;
 import com.google.protobuf.ByteString;
 import com.siglet.data.modifiable.ModifiableSpan;
 import com.siglet.data.trace.SpanKind;
+import io.opencensus.trace.SpanBuilder;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -41,7 +42,6 @@ public class ProtoSpanAdapter implements ModifiableSpan {
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
         this.updatable = updatable;
-        this.updated = true;
     }
 
     @Override
@@ -244,19 +244,104 @@ public class ProtoSpanAdapter implements ModifiableSpan {
         protoSpanBuilder.setDroppedLinksCount(droppedLinksCount);
     }
 
-//    public ProtoSpanAdapter getOrCreateCopyIfUpdated(){
-//        if (! updatable ||  ! updated && protoResourceAdapter == null && protoInstrumentationScopeAdapter == null &&
-//                protoAttributesAdapter == null && )
-//
-//        protoInstrumentationScope;
-//    }
+    public boolean isUpdated() {
+        return updated;
+    }
 
-    public boolean attributesUpdated() {
-        return protoAttributesAdapter != null && protoAttributesAdapter.isChanged();
+
+    ProtoSpanAdapter getUpdated(boolean updatable) {
+        if (!updatable) {
+            return this;
+        } else if (!updated && !attributesUpdated() && !resourceUpdated() && linksUpdated() && eventsUpdated() &&
+                instrumentationScopeUpdated()) {
+            return this;
+        } else {
+            Span.Builder spanbuilder = null;
+            Resource resource = null;
+            InstrumentationScope insScope = null;
+            if (updated) {
+                spanbuilder = protoSpanBuilder;
+            } else {
+                spanbuilder = protoSpan.toBuilder();
+            }
+            if (attributesUpdated()) {
+                spanbuilder.clearAttributes();
+                spanbuilder.addAllAttributes(protoAttributesAdapter.getUpdated());
+            }
+            if (linksUpdated()) {
+                spanbuilder.clearLinks();
+                spanbuilder.addAllLinks(protoLinksAdapter.getUpdated());
+            }
+            return new ProtoSpanAdapter(spanbuilder.build(), resource, insScope, updatable);
+        }
+    }
+
+    private boolean attributesUpdated() {
+        return protoAttributesAdapter != null && protoAttributesAdapter.isUpdated();
+    }
+
+    private boolean resourceUpdated() {
+        return protoResourceAdapter != null && protoResourceAdapter.isUpdated();
+    }
+
+    private boolean linksUpdated() {
+        return protoLinksAdapter != null && protoLinksAdapter.isUpdated();
+    }
+
+    private boolean eventsUpdated() {
+        return protoEventsAdapter != null && protoEventsAdapter.isUpdated();
+    }
+
+    public boolean instrumentationScopeUpdated() {
+        return protoInstrumentationScopeAdapter != null && protoInstrumentationScopeAdapter.isUpdated();
+    }
+
+    public Span getUpdatedSpan() {
+        if (!updatable) {
+            return protoSpan;
+        } else if (!updated && !attributesUpdated() && !linksUpdated() && !eventsUpdated()) {
+            return protoSpan;
+        } else {
+            Span.Builder bld = protoSpanBuilder != null ? protoSpanBuilder : protoSpan.toBuilder();
+            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+                bld.clearAttributes();
+                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+            }
+            if (protoLinksAdapter != null && protoLinksAdapter.isUpdated()) {
+                bld.clearLinks();
+                bld.addAllLinks(protoLinksAdapter.getUpdated());
+            }
+            if (protoEventsAdapter != null && protoEventsAdapter.isUpdated()) {
+                bld.clearEvents();
+                bld.addAllEvents(protoEventsAdapter.getUpdated());
+            }
+            return bld.build();
+
+        }
+    }
+
+    public Resource getUpdatedResource() {
+        if (!updatable) {
+            return protoResource;
+        } else if (protoResourceAdapter == null ||  !protoResourceAdapter.isUpdated()) {
+            return protoResource;
+        } else {
+            return protoResourceAdapter.getUpdated();
+        }
+    }
+
+    public InstrumentationScope getUpdatedInstrumentationScope() {
+        if (!updatable) {
+            return protoInstrumentationScope;
+        } else if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
+            return protoInstrumentationScope;
+        } else {
+            return protoInstrumentationScopeAdapter.getUpdated();
+        }
     }
 
     private void checkAndPrepareUpdate() {
-        if (! updatable) {
+        if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable span");
         }
         if (protoSpanBuilder == null) {

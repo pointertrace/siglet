@@ -74,7 +74,7 @@ class ProtoAttributesAdapterTest {
         assertTrue(protoAttributesAdapter.isArray("array-key"));
         assertTrue(protoAttributesAdapter.isKeyValueList("key-value-list-key"));
         assertTrue(protoAttributesAdapter.isByteArray("byte-array-key"));
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
 
     }
 
@@ -90,7 +90,7 @@ class ProtoAttributesAdapterTest {
                 new AbstractMap.SimpleImmutableEntry<>("key1", "value1"),
                 new AbstractMap.SimpleImmutableEntry<>("key2", "value2")));
         assertArrayEquals(protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"), new byte[]{0, 1, 2});
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
 
 
         List<KeyValue> actualKvl = protoAttributesAdapter.getAsKeyValueList();
@@ -192,7 +192,7 @@ class ProtoAttributesAdapterTest {
         assertTrue(protoAttributesAdapter.isByteArray("byte-array-key"));
         assertArrayEquals(protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"), new byte[]{3, 4});
 
-        assertTrue(protoAttributesAdapter.isChanged());
+        assertTrue(protoAttributesAdapter.isUpdated());
 
         List<KeyValue> actualKvl = protoAttributesAdapter.getAsKeyValueList();
 
@@ -291,8 +291,99 @@ class ProtoAttributesAdapterTest {
             protoAttributesAdapter.set("byte-array-key", new byte[]{3, 4});
         });
 
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
 
+    }
+
+    @Test
+    public void getUpdated_notUpdatable() {
+
+        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
+
+        assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_nothingUpdated() {
+
+        assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_getAttribute() {
+
+        assertEquals("string-value", protoAttributesAdapter.getAsString("string-key"));
+
+        assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_attributeChange() {
+
+        protoAttributesAdapter.set("string-key", "new-string-value");
+
+
+        List<KeyValue> actual = protoAttributesAdapter.getUpdated();
+
+        assertNotSame(protoAttributes, actual);
+
+        assertEquals(7, actual.size());
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("string-key")
+                .setValue(AnyValue.newBuilder().setStringValue("new-string-value")
+                        .build())
+                .build()));
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("bool-key")
+                .setValue(AnyValue.newBuilder().setBoolValue(true)
+                        .build())
+                .build()));
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("long-key")
+                .setValue(AnyValue.newBuilder().setIntValue(10L)
+                        .build())
+                .build()));
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("double-key")
+                .setValue(AnyValue.newBuilder().setDoubleValue(1.2)
+                        .build())
+                .build()));
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("array-key")
+                .setValue(
+                        AnyValue.newBuilder()
+                                .setArrayValue(
+                                        ArrayValue.newBuilder()
+                                                .addValues(AnyValue.newBuilder().setStringValue("1").build())
+                                                .addValues(AnyValue.newBuilder().setStringValue("2").build())
+                                                .build())
+                                .build())
+                .build()));
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("key-value-list-key")
+                .setValue(AnyValue.newBuilder()
+                        .setKvlistValue(KeyValueList.newBuilder()
+                                .addValues(KeyValue.newBuilder()
+                                        .setKey("key1")
+                                        .setValue(AnyValue.newBuilder().setStringValue("value1").build())
+                                        .build())
+                                .addValues(KeyValue.newBuilder()
+                                        .setKey("key2")
+                                        .setValue(AnyValue.newBuilder().setStringValue("value2").build())
+                                        .build())
+                                .build())
+                        .build())
+                .build()));
+
+        assertTrue(actual.contains(KeyValue.newBuilder()
+                .setKey("byte-array-key")
+                .setValue(AnyValue.newBuilder()
+                        .setBytesValue(ByteString.copyFrom(new byte[]{0, 1, 2}))
+                        .build())
+                .build()));
     }
 
 }

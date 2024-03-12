@@ -7,17 +7,17 @@ public class ProtoEventAdapter implements ModifiableEvent {
 
     private Span.Event protoEvent;
 
-    private boolean changeable;
+    private boolean updatable;
 
-    private boolean changed;
+    private boolean updated;
 
     private Span.Event.Builder protoEventBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoEventAdapter(Span.Event protoEvent, boolean changeable) {
+    public ProtoEventAdapter(Span.Event protoEvent, boolean updatable) {
         this.protoEvent = protoEvent;
-        this.changeable = changeable;
+        this.updatable = updatable;
     }
 
     public long getTimeUnixNano() {
@@ -50,22 +50,36 @@ public class ProtoEventAdapter implements ModifiableEvent {
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoEvent.getAttributesList(), changeable);
+            protoAttributesAdapter = new ProtoAttributesAdapter(protoEvent.getAttributesList(), updatable);
         }
         return protoAttributesAdapter;
     }
 
-    public boolean isChanged() {
-        return changed;
+    public boolean isUpdated() {
+        return updated;
     }
-
+    public Span.Event getUpdated() {
+        if (!updatable) {
+            return protoEvent;
+        } else if (!updated && (protoAttributesAdapter == null || !protoAttributesAdapter.isUpdated())) {
+            return protoEvent;
+        } else {
+            Span.Event.Builder bld = protoEventBuilder != null ?
+                    protoEventBuilder: protoEvent.toBuilder();
+            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+                bld.clearAttributes();
+                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+            }
+            return bld.build();
+        }
+    }
     private void checkAndPrepareUpdate() {
-        if (!changeable) {
+        if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable event!");
         }
         if (protoEventBuilder == null) {
-            protoEventBuilder = Span.Event.newBuilder();
+            protoEventBuilder = protoEvent.toBuilder();
         }
-        changed = true;
+        updated = true;
     }
 }

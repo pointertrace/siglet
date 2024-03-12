@@ -22,6 +22,8 @@ public interface UnmodifiableSpan {
 
     SpanKind getKind();
 
+    UnmodifiableAttributes getAttributes();
+
     UnmodifiableResource getResource();
 
     UnmodifiableInstrumentationScope getInstrumentationScope();

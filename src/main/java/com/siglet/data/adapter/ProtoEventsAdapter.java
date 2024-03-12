@@ -11,11 +11,16 @@ public class ProtoEventsAdapter implements ModifiableEvents {
 
     private List<ProtoEventAdapter> eventsAdapter;
 
+    private List<Span.Event> protoEvents;
+
     private boolean updatable;
 
-    public ProtoEventsAdapter(List<Span.Event> events, boolean updatable) {
+    private boolean updated;
+
+    public ProtoEventsAdapter(List<Span.Event> protoEvents, boolean updatable) {
         this.eventsAdapter = new ArrayList<>();
-        events.forEach(e -> eventsAdapter.add(new ProtoEventAdapter(e, updatable)) );
+        protoEvents.forEach(e -> eventsAdapter.add(new ProtoEventAdapter(e, updatable)) );
+        this.protoEvents = protoEvents;
         this.updatable = updatable;
     }
 
@@ -42,10 +47,38 @@ public class ProtoEventsAdapter implements ModifiableEvents {
                 .build(), updatable));
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public List<Span.Event> getUpdated() {
+        if (!updatable) {
+            return  protoEvents;
+        } else if (!updated && !anyEventUpdated()) {
+            return protoEvents;
+        } else {
+            List<Span.Event> result = new ArrayList<>(protoEvents.size());
+            for(ProtoEventAdapter eventAdapter: eventsAdapter) {
+                result.add(eventAdapter.getUpdated());
+            }
+            return result;
+        }
+    }
+
+
+    private boolean anyEventUpdated() {
+        for(ProtoEventAdapter ea: eventsAdapter) {
+            if (ea.isUpdated()) {
+                return true;
+            }
+        }
+        return false;
+    }
     private void checkUpdate() {
         if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable event list!");
         }
+        updated = true;
     }
 
 }

@@ -102,7 +102,6 @@ class AdapterUtilsTest {
     @Test
     public void anyValueToObject_bytes() {
 
-
         AnyValue actual = AnyValue.newBuilder().
                 setBytesValue(ByteString.copyFrom("value", StandardCharsets.UTF_8))
                 .build();

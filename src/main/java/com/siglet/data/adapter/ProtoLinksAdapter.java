@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.data.modifiable.ModifiableLinks;
+import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.ArrayList;
@@ -12,12 +13,16 @@ public class ProtoLinksAdapter implements ModifiableLinks {
 
     private List<ProtoLinkAdapter> linksAdapter;
 
+    private List<Span.Link> protoLinks;
+
     private boolean updatable;
 
+    private boolean updated;
 
-    public ProtoLinksAdapter(List<Span.Link> linksProto, boolean updatable) {
-        linksAdapter = new ArrayList<>(linksProto.size());
-        linksProto.forEach(lk -> linksAdapter.add(new ProtoLinkAdapter(lk, updatable)));
+    public ProtoLinksAdapter(List<Span.Link> protolinks, boolean updatable) {
+        linksAdapter = new ArrayList<>(protolinks.size());
+        protolinks.forEach(lk -> linksAdapter.add(new ProtoLinkAdapter(lk, updatable)));
+        this.protoLinks = protolinks;
         this.updatable = updatable;
     }
 
@@ -67,9 +72,38 @@ public class ProtoLinksAdapter implements ModifiableLinks {
         return linksAdapter.size();
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public List<Span.Link> getUpdated() {
+        if (!updatable) {
+            return protoLinks;
+        } else if (!updated && !anyLinkUpdated()) {
+            return protoLinks;
+        } else {
+            List<Span.Link> result = new ArrayList<>(protoLinks.size());
+            for(ProtoLinkAdapter linkAdapter: linksAdapter) {
+                result.add(linkAdapter.getUpdated());
+            }
+            return result;
+        }
+    }
+
+    private boolean anyLinkUpdated() {
+        for(ProtoLinkAdapter la: linksAdapter) {
+            if (la.isUpdated()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void checkUpdate() {
         if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable link list!");
         }
+        updated = true;
     }
+
 }

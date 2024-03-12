@@ -14,6 +14,8 @@ public class ProtoLinkAdapter implements ModifiableLink {
 
     private boolean updatable;
 
+    private boolean updated;
+
     private Span.Link.Builder protoLinkBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
@@ -91,14 +93,34 @@ public class ProtoLinkAdapter implements ModifiableLink {
         return protoAttributesAdapter;
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
     private void checkAndPrepareUpdate() {
         if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable link!");
         }
         if (protoLinkBuilder == null) {
-            protoLinkBuilder = Span.Link.newBuilder();
+            protoLinkBuilder = protoLink.toBuilder();
         }
+        updated = true;
     }
 
 
+    public Span.Link getUpdated() {
+        if (!updatable) {
+            return protoLink;
+        } else if (!updated && (protoAttributesAdapter == null || !protoAttributesAdapter.isUpdated())) {
+            return protoLink;
+        } else {
+            Span.Link.Builder bld = protoLinkBuilder != null ?
+                    protoLinkBuilder: protoLink.toBuilder();
+            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+                bld.clearAttributes();
+                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+            }
+            return bld.build();
+        }
+    }
 }

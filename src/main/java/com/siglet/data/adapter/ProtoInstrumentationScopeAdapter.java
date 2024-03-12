@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.siglet.data.modifiable.ModifiableInstrumentationScope;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.resource.v1.Resource;
 
 public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentationScope {
 
@@ -12,6 +13,8 @@ public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentati
     private ProtoAttributesAdapter protoAttributesAdapter;
 
     private boolean updatable;
+
+    private boolean updated;
 
     public ProtoInstrumentationScopeAdapter(InstrumentationScope protoInstrumentationScope, boolean updatable) {
         this.protoInstrumentationScope = protoInstrumentationScope;
@@ -59,12 +62,34 @@ public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentati
         return protoAttributesAdapter;
     }
 
+    public boolean isUpdated() {
+        return updated || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ;
+
+    }
+
+    public InstrumentationScope getUpdated() {
+        if (!updatable) {
+            return protoInstrumentationScope;
+        } else if (!updated && (protoAttributesAdapter == null || !protoAttributesAdapter.isUpdated())) {
+            return protoInstrumentationScope;
+        } else {
+            InstrumentationScope.Builder bld = protoInstrumentationScopeBuilder != null ?
+                    protoInstrumentationScopeBuilder : protoInstrumentationScope.toBuilder();
+            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+                bld.clearAttributes();
+                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+            }
+            return bld.build();
+        }
+    }
+
     private void checkAndPrepareUpdate() {
         if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable event list!");
         }
         if (protoInstrumentationScopeBuilder == null) {
-            protoInstrumentationScopeBuilder = InstrumentationScope.newBuilder();
+            protoInstrumentationScopeBuilder = protoInstrumentationScope.toBuilder();
         }
+        updated = true;
     }
 }

@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.siglet.data.modifiable.ModifiableAttributes;
 import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.*;
 
@@ -9,14 +10,17 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
 
     private Map<String, Object> attributesAsMap;
 
-    private boolean changeable;
+    private List<KeyValue> attributes;
 
-    private boolean changed;
+    private boolean updatable;
 
-    public ProtoAttributesAdapter(List<KeyValue> attributes, boolean changeable) {
+    private boolean updated;
+
+    public ProtoAttributesAdapter(List<KeyValue> attributes, boolean updatable) {
         attributesAsMap = new HashMap<>();
         attributes.forEach((kv) -> attributesAsMap.put(kv.getKey(), AdapterUtils.anyValueToObject(kv.getValue())));
-        this.changeable = changeable;
+        this.attributes = attributes;
+        this.updatable = updatable;
     }
 
     @Override
@@ -141,24 +145,34 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
 
     @Override
     public void remove(String key) {
-        if (!changeable) {
+        if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable attribute list");
         }
         attributesAsMap.remove(key);
+        updated = true;
     }
 
     public void setAttributeObj(String key, Object value) {
-        if (!changeable) {
+        if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable attribute list");
         }
         attributesAsMap.put(key, value);
-        changed = true;
+        updated = true;
     }
 
-    public boolean isChanged() {
-        return changed;
+    public boolean isUpdated() {
+        return updated;
     }
 
+    public List<KeyValue> getUpdated() {
+        if (!updatable) {
+            return attributes;
+        } else if (!updated) {
+            return attributes;
+        } else {
+            return AdapterUtils.mapToKeyValueList(attributesAsMap);
+        }
+    }
     private boolean isAttributeType(String key, Class<?> type) {
         Object value = attributesAsMap.get(key);
         if (value == null) {

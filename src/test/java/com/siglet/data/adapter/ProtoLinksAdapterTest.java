@@ -13,11 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoLinksAdapterTest {
 
+
+    private List<Span.Link> protoLinks;
+
     private ProtoLinksAdapter protoLinksAdapter;
 
     @BeforeEach
     void setUp() {
-        List<Span.Link> protoLinks = List.of(
+        protoLinks = List.of(
                 Span.Link.newBuilder()
                         .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
                         .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
@@ -38,9 +41,9 @@ class ProtoLinksAdapterTest {
     @Test
     public void has() {
 
-        assertTrue(protoLinksAdapter.has(0,1,2));
-        assertTrue(protoLinksAdapter.has(3,4,5));
-        assertFalse(protoLinksAdapter.has(0,0,0));
+        assertTrue(protoLinksAdapter.has(0, 1, 2));
+        assertTrue(protoLinksAdapter.has(3, 4, 5));
+        assertFalse(protoLinksAdapter.has(0, 0, 0));
 
     }
 
@@ -48,24 +51,24 @@ class ProtoLinksAdapterTest {
     public void get() {
         assertEquals(2, protoLinksAdapter.size());
 
-        ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(0,1,2);
+        ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(0, 1, 2);
 
         assertNotNull(protoLinkAdapter);
-        assertEquals(0,protoLinkAdapter.getTraceIdHigh());
+        assertEquals(0, protoLinkAdapter.getTraceIdHigh());
         assertEquals(1, protoLinkAdapter.getTraceIdLow());
         assertEquals(2, protoLinkAdapter.getSpanId());
         assertEquals("first-trace-state", protoLinkAdapter.getTraceState());
 
 
-        protoLinkAdapter = protoLinksAdapter.get(3,4,5);
+        protoLinkAdapter = protoLinksAdapter.get(3, 4, 5);
 
         assertNotNull(protoLinkAdapter);
-        assertEquals(3,protoLinkAdapter.getTraceIdHigh());
+        assertEquals(3, protoLinkAdapter.getTraceIdHigh());
         assertEquals(4, protoLinkAdapter.getTraceIdLow());
         assertEquals(5, protoLinkAdapter.getSpanId());
         assertEquals("second-trace-state", protoLinkAdapter.getTraceState());
 
-        assertNull(protoLinksAdapter.get(0,0,0));
+        assertNull(protoLinksAdapter.get(0, 0, 0));
     }
 
     @Test
@@ -73,16 +76,16 @@ class ProtoLinksAdapterTest {
 
         assertEquals(2, protoLinksAdapter.size());
 
-        assertFalse(protoLinksAdapter.has(6,7,8));
+        assertFalse(protoLinksAdapter.has(6, 7, 8));
 
-        protoLinksAdapter.add(6,7,8,"new-link-trace-state", Map.of("str-key","str-value"));
+        protoLinksAdapter.add(6, 7, 8, "new-link-trace-state", Map.of("str-key", "str-value"));
 
         assertEquals(3, protoLinksAdapter.size());
-        assertTrue(protoLinksAdapter.has(6,7,8));
-        ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(6,7,8);
+        assertTrue(protoLinksAdapter.has(6, 7, 8));
+        ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(6, 7, 8);
 
         assertNotNull(protoLinkAdapter);
-        assertEquals(6,protoLinkAdapter.getTraceIdHigh());
+        assertEquals(6, protoLinkAdapter.getTraceIdHigh());
         assertEquals(7, protoLinkAdapter.getTraceIdLow());
         assertEquals(8, protoLinkAdapter.getSpanId());
         assertEquals("new-link-trace-state", protoLinkAdapter.getTraceState());
@@ -100,13 +103,13 @@ class ProtoLinksAdapterTest {
     public void remove() {
 
         assertEquals(2, protoLinksAdapter.size());
-        assertTrue(protoLinksAdapter.has(0,1,2));
+        assertTrue(protoLinksAdapter.has(0, 1, 2));
 
-        assertTrue(protoLinksAdapter.remove(0,1,2));
+        assertTrue(protoLinksAdapter.remove(0, 1, 2));
         assertEquals(1, protoLinksAdapter.size());
-        assertFalse(protoLinksAdapter.has(0,1,2));
+        assertFalse(protoLinksAdapter.has(0, 1, 2));
 
-        assertFalse(protoLinksAdapter.remove(0,0,0));
+        assertFalse(protoLinksAdapter.remove(0, 0, 0));
         assertEquals(1, protoLinksAdapter.size());
 
     }
@@ -117,13 +120,78 @@ class ProtoLinksAdapterTest {
 
         protoLinksAdapter = new ProtoLinksAdapter(Collections.emptyList(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoLinksAdapter.add(0, 0, 0, "state", Collections.emptyMap());
-        });
+        assertThrowsExactly(IllegalStateException.class, () ->
+                protoLinksAdapter.add(0, 0, 0, "state", Collections.emptyMap()));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoLinksAdapter.remove(0, 0, 0);
-        });
+        assertThrowsExactly(IllegalStateException.class, () ->
+                protoLinksAdapter.remove(0, 0, 0));
+
+    }
+
+    @Test
+    public void getUpdated_notUpdatable() {
+
+        protoLinksAdapter = new ProtoLinksAdapter(protoLinks, false);
+
+        assertSame(protoLinks, protoLinksAdapter.getUpdated());
+
+    }
+
+
+    @Test
+    public void getUpdated_notingUpdated() {
+
+        protoLinksAdapter = new ProtoLinksAdapter(protoLinks, true);
+
+        assertSame(protoLinks, protoLinksAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_listChanged() {
+
+        protoLinksAdapter.remove(0, 1, 2);
+
+
+        List<Span.Link> actual = protoLinksAdapter.getUpdated();
+        assertNotSame(protoLinks, actual);
+
+        assertEquals(1, actual.size());
+        Span.Link protoLink = actual.get(0);
+
+        assertEquals(3, AdapterUtils.traceIdHigh(protoLink.getTraceId().toByteArray()));
+        assertEquals(4, AdapterUtils.traceIdLow(protoLink.getTraceId().toByteArray()));
+        assertEquals(5, AdapterUtils.spanId(protoLink.getSpanId().toByteArray()));
+        assertEquals("second-trace-state", protoLink.getTraceState());
+
+    }
+
+
+    @Test
+    public void getUpdated_listContentChanged() {
+
+        protoLinksAdapter.get(0, 1, 2).setDroppedAttributesCount(3);
+
+        List<Span.Link> actual = protoLinksAdapter.getUpdated();
+        assertNotSame(protoLinks, actual);
+
+        assertEquals(2, actual.size());
+
+        Span.Link protoLink= actual.get(0);
+
+        assertNotNull(protoLink);
+        assertEquals(0, AdapterUtils.traceIdHigh(protoLink.getTraceId().toByteArray()));
+        assertEquals(1, AdapterUtils.traceIdLow(protoLink.getTraceId().toByteArray()));
+        assertEquals(2, AdapterUtils.spanId(protoLink.getSpanId().toByteArray()));
+        assertEquals("first-trace-state", protoLink.getTraceState());
+
+        protoLink= actual.get(1);
+
+        assertNotNull(protoLink);
+        assertEquals(3, AdapterUtils.traceIdHigh(protoLink.getTraceId().toByteArray()));
+        assertEquals(4, AdapterUtils.traceIdLow(protoLink.getTraceId().toByteArray()));
+        assertEquals(5, AdapterUtils.spanId(protoLink.getSpanId().toByteArray()));
+        assertEquals("second-trace-state", protoLink.getTraceState());
 
     }
 

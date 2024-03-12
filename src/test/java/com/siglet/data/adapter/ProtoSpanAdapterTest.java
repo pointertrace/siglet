@@ -16,11 +16,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoSpanAdapterTest {
 
+    private Span protoSpan;
+
+    private Resource protoResource;
+
+    private InstrumentationScope protoInstrumentationScope;
+
     private ProtoSpanAdapter protoSpanAdapter;
 
     @BeforeEach
     void setUp() {
-        Span protoSpan = Span.newBuilder()
+        protoSpan = Span.newBuilder()
                 .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 2)))
                 .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(1)))
                 .setParentSpanId(ByteString.copyFrom(AdapterUtils.spanId(3)))
@@ -75,7 +81,7 @@ class ProtoSpanAdapterTest {
                         .build())
                 .build();
 
-        Resource resource = Resource.newBuilder()
+        protoResource = Resource.newBuilder()
                 .setDroppedAttributesCount(2)
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("rs-str-attribute")
@@ -83,7 +89,7 @@ class ProtoSpanAdapterTest {
                         .build())
                 .build();
 
-        InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder()
+        protoInstrumentationScope = InstrumentationScope.newBuilder()
                 .setName("instrumentation-scope-name")
                 .setVersion("instrumentation-scope-version")
                 .setDroppedAttributesCount(3)
@@ -93,7 +99,7 @@ class ProtoSpanAdapterTest {
                         .build())
                 .build();
 
-        protoSpanAdapter = new ProtoSpanAdapter(protoSpan, resource, instrumentationScope, true);
+        protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, true);
 
     }
 
@@ -134,69 +140,40 @@ class ProtoSpanAdapterTest {
         protoSpanAdapter = new ProtoSpanAdapter(Span.newBuilder().build(), Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setTraceId(10L, 20L);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setTraceId(10L, 20L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setSpanId(10L);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setSpanId(10L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setParentSpanId(30L);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setParentSpanId(30L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setName("new-name");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setName("new-name"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setStartTimeUnixNano(3L);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setStartTimeUnixNano(3L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setEndTimeUnixNano(4L);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setEndTimeUnixNano(4L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setFlags(2);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setFlags(2));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setTraceState("new-trace-state");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setTraceState("new-trace-state"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setDroppedAttributesCount(10);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedAttributesCount(10));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setDroppedEventsCount(20);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedEventsCount(20));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setDroppedLinksCount(30);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedLinksCount(30));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.setKind(SpanKind.SERVER);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setKind(SpanKind.SERVER));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.getResource().setDroppedAttributesCount(1);
-        });
+        assertThrowsExactly(IllegalStateException.class, () ->
+                protoSpanAdapter.getResource().setDroppedAttributesCount(1));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.getAttributes().remove("str-key");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getAttributes().remove("str-key"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.getLinks().remove(0, 0, 0);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getLinks().remove(0, 0, 0));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoSpanAdapter.getInstrumentationScope().setName("new-name");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getInstrumentationScope().setName("new-name"));
+
+        assertFalse(protoSpanAdapter.isUpdated());
     }
 
     @Test
@@ -257,7 +234,7 @@ class ProtoSpanAdapterTest {
         assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
@@ -285,7 +262,7 @@ class ProtoSpanAdapterTest {
         assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
-        assertTrue(protoAttributesAdapter.isChanged());
+        assertTrue(protoAttributesAdapter.isUpdated());
     }
 
     @Test
@@ -380,4 +357,177 @@ class ProtoSpanAdapterTest {
         assertEquals("is-str-attribute-value", attributes.getAsString("is-str-attribute"));
     }
 
+    @Test
+    public void getUpdatedSpan_notUpdatable() {
+
+        protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, false);
+        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+
+    @Test
+    public void getUpdatedSpan_nothingUpdated() {
+
+        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+
+    @Test
+    public void getUpdatedSpan_onlySpanUpdated() {
+
+        protoSpanAdapter.setTraceId(10, 20);
+        protoSpanAdapter.setSpanId(30);
+        protoSpanAdapter.setParentSpanId(40);
+        protoSpanAdapter.setName("new-name");
+        protoSpanAdapter.setStartTimeUnixNano(3);
+        protoSpanAdapter.setEndTimeUnixNano(4);
+        protoSpanAdapter.setFlags(2);
+        protoSpanAdapter.setTraceState("new-trace-state");
+        protoSpanAdapter.setDroppedAttributesCount(10);
+        protoSpanAdapter.setDroppedEventsCount(20);
+        protoSpanAdapter.setDroppedLinksCount(30);
+        protoSpanAdapter.setKind(SpanKind.SERVER);
+
+
+        Span actual = protoSpanAdapter.getUpdatedSpan();
+        assertEquals(10, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
+        assertEquals(20, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
+        assertEquals(30, AdapterUtils.spanId(actual.getSpanId().toByteArray()));
+        assertEquals(40, AdapterUtils.spanId(actual.getParentSpanId().toByteArray()));
+        assertEquals("new-name", actual.getName());
+        assertEquals(3, actual.getStartTimeUnixNano());
+        assertEquals(4, actual.getEndTimeUnixNano());
+        assertEquals(2, actual.getFlags());
+        assertEquals("new-trace-state", actual.getTraceState());
+        assertEquals(10, actual.getDroppedAttributesCount());
+        assertEquals(20, actual.getDroppedEventsCount());
+        assertEquals(30, actual.getDroppedLinksCount());
+        assertEquals(Span.SpanKind.SPAN_KIND_SERVER,actual.getKind());
+
+        assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
+        assertSame(protoSpan.getLinksList(), actual.getLinksList());
+        assertSame(protoSpan.getEventsList(), actual.getEventsList());
+
+        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+    @Test
+    public void getUpdatedSpan_onlyAttributesChange() {
+
+
+        protoSpanAdapter.getAttributes().set("str-attribute", "new-value");
+
+        Span actual = protoSpanAdapter.getUpdatedSpan();
+
+        assertEquals(0, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
+        assertEquals(2, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
+        assertEquals(1, AdapterUtils.spanId(actual.getSpanId().toByteArray()));
+        assertEquals(3, AdapterUtils.spanId(actual.getParentSpanId().toByteArray()));
+        assertEquals("span-name", actual.getName());
+        assertEquals(1, actual.getStartTimeUnixNano());
+        assertEquals(2, actual.getEndTimeUnixNano());
+        assertEquals(1, actual.getFlags());
+        assertEquals("trace-state", actual.getTraceState());
+        assertEquals(1, actual.getDroppedAttributesCount());
+        assertEquals(2, actual.getDroppedEventsCount());
+        assertEquals(3, actual.getDroppedLinksCount());
+        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT,actual.getKind());
+
+        assertNotSame(protoSpan.getAttributesList(), actual.getAttributesList());
+
+        Map<String, Object> attributesMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+
+        assertEquals(2, attributesMap.size());
+
+        assertTrue(attributesMap.containsKey("str-attribute"));
+        assertInstanceOf(String.class, attributesMap.get("str-attribute"));
+        assertEquals("new-value", attributesMap.get("str-attribute"));
+
+        assertTrue(attributesMap.containsKey("long-attribute"));
+        assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
+        assertEquals(10L, attributesMap.get("long-attribute"));
+
+        assertSame(protoSpan.getLinksList(), actual.getLinksList());
+        assertSame(protoSpan.getEventsList(), actual.getEventsList());
+
+        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+
+
+    @Test
+    public void getUpdatedSpan_onlyEventsChange() {
+
+        protoSpanAdapter.getEvents().remove(0);
+
+        Span actual = protoSpanAdapter.getUpdatedSpan();
+
+        assertEquals(0, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
+        assertEquals(2, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
+        assertEquals(1, AdapterUtils.spanId(actual.getSpanId().toByteArray()));
+        assertEquals(3, AdapterUtils.spanId(actual.getParentSpanId().toByteArray()));
+        assertEquals("span-name", actual.getName());
+        assertEquals(1, actual.getStartTimeUnixNano());
+        assertEquals(2, actual.getEndTimeUnixNano());
+        assertEquals(1, actual.getFlags());
+        assertEquals("trace-state", actual.getTraceState());
+        assertEquals(1, actual.getDroppedAttributesCount());
+        assertEquals(2, actual.getDroppedEventsCount());
+        assertEquals(3, actual.getDroppedLinksCount());
+        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT,actual.getKind());
+
+
+        assertEquals(1, actual.getEventsList().size());
+        Span.Event event = actual.getEventsList().get(0);
+        assertEquals("second-event-name", event.getName());
+        assertEquals(2, event.getTimeUnixNano());
+        assertEquals(40, event.getDroppedAttributesCount());
+
+
+        assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
+        assertSame(protoSpan.getLinksList(), actual.getLinksList());
+
+        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+
+    @Test
+    public void getUpdatedResource_onlyResourceChange() {
+
+        protoSpanAdapter.getResource().setDroppedAttributesCount(20);
+
+
+        Resource actual = protoSpanAdapter.getUpdatedResource();
+
+        assertEquals(20, actual.getDroppedAttributesCount());
+
+        assertSame(protoResource.getAttributesList(), actual.getAttributesList());
+
+        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+    }
+
+    @Test
+    public void getUpdatedInstrumentationScope_onlyInstrumentationScopedChange() {
+
+        protoSpanAdapter.getInstrumentationScope().setName("new-name");
+
+        InstrumentationScope actual = protoSpanAdapter.getInstrumentationScope().getUpdated();
+
+        assertEquals("new-name", actual.getName());
+
+        assertSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
+
+        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
+
+    }
 }

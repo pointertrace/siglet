@@ -3,6 +3,7 @@ package com.siglet.data.adapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.resource.v1.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,12 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoInstrumentationScopeAdapterTest {
 
+    InstrumentationScope protoInstrumentationScope;
     ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
 
     @BeforeEach
     void setUp() {
 
-        InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder()
+        protoInstrumentationScope = InstrumentationScope.newBuilder()
                 .setName("name-value")
                 .setVersion("version-value")
                 .setDroppedAttributesCount(2)
@@ -31,7 +33,7 @@ class ProtoInstrumentationScopeAdapterTest {
                         .build())
                 .build();
 
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(instrumentationScope, true);
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, true);
 
     }
 
@@ -77,7 +79,7 @@ class ProtoInstrumentationScopeAdapterTest {
         assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
@@ -105,7 +107,7 @@ class ProtoInstrumentationScopeAdapterTest {
         assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
-        assertTrue(protoAttributesAdapter.isChanged());
+        assertTrue(protoAttributesAdapter.isUpdated());
     }
 
 
@@ -131,5 +133,81 @@ class ProtoInstrumentationScopeAdapterTest {
         });
     }
 
+    @Test
+    public void getUpdate_notUpdatable() {
+
+        InstrumentationScope actualProtoInstAdapt = InstrumentationScope.newBuilder().build();
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(actualProtoInstAdapt, false);
+
+        assertSame(actualProtoInstAdapt, protoInstrumentationScopeAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_nothingUpdated() {
+
+        assertSame(protoInstrumentationScope, protoInstrumentationScopeAdapter.getUpdated());
+        assertSame(protoInstrumentationScope.getAttributesList(),
+                protoInstrumentationScopeAdapter.getUpdated().getAttributesList());
+
+    }
+
+    @Test
+    public void getUpdated_onlyResourceUpdated() {
+
+        protoInstrumentationScopeAdapter.setName("new-name");
+        protoInstrumentationScopeAdapter.setVersion("new-version");
+
+        InstrumentationScope actual = protoInstrumentationScopeAdapter.getUpdated();
+        assertNotSame(protoInstrumentationScope, actual);
+        assertSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
+        assertEquals("new-name", actual.getName());
+        assertEquals("new-version", actual.getVersion());
+
+    }
+
+
+    @Test
+    public void getUpdated_onlyPropertiesUpdated() {
+
+        protoInstrumentationScopeAdapter.getAttributes().set("bool-attribute", true);
+
+        InstrumentationScope actual = protoInstrumentationScopeAdapter.getUpdated();
+        assertNotSame(protoInstrumentationScope, actual);
+        assertNotSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
+        assertEquals("name-value", actual.getName());
+        assertEquals("version-value", actual.getVersion());
+
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+    }
+
+    @Test
+    public void getUpdated_ResourceAndPropertiesUpdated() {
+
+        protoInstrumentationScopeAdapter.setName("new-name");
+        protoInstrumentationScopeAdapter.setVersion("new-version");
+
+        protoInstrumentationScopeAdapter.getAttributes().set("bool-attribute", true);
+
+        InstrumentationScope actual = protoInstrumentationScopeAdapter.getUpdated();
+        assertNotSame(protoInstrumentationScope, actual);
+        assertNotSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
+        assertEquals("new-name", actual.getName());
+        assertEquals("new-version", actual.getVersion());
+
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+    }
 
 }

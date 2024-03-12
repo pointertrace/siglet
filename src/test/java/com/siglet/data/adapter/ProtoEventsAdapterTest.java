@@ -1,7 +1,5 @@
 package com.siglet.data.adapter;
 
-import io.opentelemetry.proto.common.v1.AnyValue;
-import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoEventsAdapterTest {
 
+    private List<Span.Event> protoEvents;
+
     private ProtoEventsAdapter protoEventsAdapter;
 
     @BeforeEach
     void setUp() {
-        List<Span.Event> protoEvents = List.of(
+        protoEvents = List.of(
                 Span.Event.newBuilder()
                         .setName("first-event")
                         .setTimeUnixNano(1)
@@ -52,6 +52,9 @@ class ProtoEventsAdapterTest {
         assertEquals(2, protoEventAdapter.getTimeUnixNano());
         assertEquals(2, protoEventAdapter.getDroppedAttributesCount());
 
+
+        assertFalse(protoEventsAdapter.isUpdated());
+
     }
 
     @Test
@@ -59,17 +62,14 @@ class ProtoEventsAdapterTest {
         protoEventsAdapter = new ProtoEventsAdapter(List.of(Span.Event.newBuilder().build()), false);
 
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventsAdapter.add("new-name", 1, 1, Collections.emptyMap());
-        });
+        assertThrowsExactly(IllegalStateException.class, () ->
+                protoEventsAdapter.add("new-name", 1, 1, Collections.emptyMap()));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventsAdapter.remove(0);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventsAdapter.remove(0));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventsAdapter.get(0).setName("new-name");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventsAdapter.get(0).setName("new-name"));
+
+        assertFalse(protoEventsAdapter.isUpdated());
     }
 
     @Test
@@ -128,6 +128,70 @@ class ProtoEventsAdapterTest {
         assertTrue(attributes.has("str-attribute"));
         assertTrue(attributes.isString("str-attribute"));
         assertEquals("str-attribute-value", attributes.getAsString("str-attribute"));
+
+
+    }
+
+
+    @Test
+    public void getUpdated_notUpdatable() {
+
+        protoEventsAdapter = new ProtoEventsAdapter(protoEvents, false);
+
+        assertSame(protoEvents, protoEventsAdapter.getUpdated());
+
+    }
+
+
+    @Test
+    public void getUpdated_notingUpdated() {
+
+        assertSame(protoEvents, protoEventsAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_listChanged() {
+
+        protoEventsAdapter.remove(0);
+
+
+        List<Span.Event> actual = protoEventsAdapter.getUpdated();
+        assertNotSame(protoEvents, actual);
+
+        assertEquals(1, protoEventsAdapter.size());
+        ProtoEventAdapter protoEventAdapter = protoEventsAdapter.get(0);
+
+        assertNotNull(protoEventAdapter);
+
+        assertEquals("second-event", protoEventAdapter.getName());
+
+    }
+
+
+    @Test
+    public void getUpdated_listContentChanged() {
+
+        protoEventsAdapter.get(0).setName("new-name");
+
+        List<Span.Event> actual = protoEventsAdapter.getUpdated();
+        assertNotSame(protoEvents, actual);
+
+        assertEquals(2, actual.size());
+        Span.Event protoEvent= actual.get(0);
+
+        assertNotNull(protoEvent);
+
+        assertEquals("new-name", protoEvent.getName());
+        assertEquals(1, protoEvent.getTimeUnixNano());
+        assertEquals(1, protoEvent.getDroppedAttributesCount());
+
+
+        protoEvent = actual.get(1);
+
+        assertEquals("second-event", protoEvent.getName());
+        assertEquals(2, protoEvent.getTimeUnixNano());
+        assertEquals(2, protoEvent.getDroppedAttributesCount());
 
 
     }

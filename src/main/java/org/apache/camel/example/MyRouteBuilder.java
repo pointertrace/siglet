@@ -17,9 +17,11 @@
 package org.apache.camel.example;
 
 import com.siglet.data.adapter.ProtoSpanAdapter;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
+import com.siglet.data.modifiable.BaseModifiableSpanletProcessor;
+import com.siglet.data.unmodifiable.BaseUnmodifiableSpanletProcessor;
+import com.siglet.data.unmodifiable.UnmodifiableSpanletProcessor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.language.GroovyExpression;
 
 public class MyRouteBuilder extends RouteBuilder {
 
@@ -28,14 +30,22 @@ public class MyRouteBuilder extends RouteBuilder {
 //    from("timer:foo?period={{myPeriod}}")
         from("otelgrpc:0.0.0.0:8001")
 //            .bean("myBean", "hello")
-                .log("${body}")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        ProtoSpanAdapter spanAdapter = exchange.getIn().getBody(ProtoSpanAdapter.class);
-                        spanAdapter.setName(spanAdapter.getName() + "-changed");
-                    }
-                })
+                .process(new BaseModifiableSpanletProcessor(new AddParameterSpanletProcessor(), null))
+                .choice()
+//                .when().groovy("exchange.in.body.attributes.has('primeiro')")
+                .when().groovy("exchange.in.body.attributes.has('primeiro')")
+//                .when( exchange -> {
+//                    var span = exchange.getIn().getBody(ProtoSpanAdapter.class);
+//                    return span.getAttributes().has("primeiro");
+//                })
+                .process(new BaseUnmodifiableSpanletProcessor(new PrintIdSpanletProcessor("1"), null))
+                .when().groovy("exchange.in.body.attributes.has('segundo')")
+//                .when(exchange -> {
+//                    var span = exchange.getIn().getBody(ProtoSpanAdapter.class);
+//                    return span.getAttributes().has("segundo");
+//                })
+                .process(new BaseUnmodifiableSpanletProcessor(new PrintIdSpanletProcessor("2"), null))
+                .end()
                 .to("otelgrpc:localhost:4317");
     }
 }

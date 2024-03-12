@@ -12,11 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoEventAdapterTest {
 
+    private Span.Event protoEvent;
     ProtoEventAdapter protoEventAdapter;
 
     @BeforeEach
     void setUp() {
-        Span.Event protoEvent = Span.Event.newBuilder()
+        protoEvent = Span.Event.newBuilder()
                 .setName("event-name")
                 .setTimeUnixNano(1)
                 .setDroppedAttributesCount(2)
@@ -40,7 +41,7 @@ class ProtoEventAdapterTest {
         assertEquals("event-name", protoEventAdapter.getName());
         assertEquals(1, protoEventAdapter.getTimeUnixNano());
         assertEquals(2, protoEventAdapter.getDroppedAttributesCount());
-        assertFalse(protoEventAdapter.isChanged());
+        assertFalse(protoEventAdapter.isUpdated());
 
     }
 
@@ -54,7 +55,7 @@ class ProtoEventAdapterTest {
         assertEquals("new-event-name", protoEventAdapter.getName());
         assertEquals(2, protoEventAdapter.getTimeUnixNano());
         assertEquals(3, protoEventAdapter.getDroppedAttributesCount());
-        assertTrue(protoEventAdapter.isChanged());
+        assertTrue(protoEventAdapter.isUpdated());
     }
 
     @Test
@@ -62,35 +63,21 @@ class ProtoEventAdapterTest {
         protoEventAdapter = new ProtoEventAdapter(Span.Event.newBuilder().build(), false);
 
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.setName("new-event-name");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setName("new-event-name"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.setTimeUnixNano(2);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setTimeUnixNano(2));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.setDroppedAttributesCount(3);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.setDroppedAttributesCount(3);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.getAttributes().set("any", "any-value");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().set("any", "any-value"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.getAttributes().remove("any");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().remove("any"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoEventAdapter.getAttributes().remove("any");
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().remove("any"));
 
-        assertTrue(protoEventAdapter.isChanged());
+        assertFalse(protoEventAdapter.isUpdated());
     }
 
     @Test
@@ -114,7 +101,7 @@ class ProtoEventAdapterTest {
         assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
@@ -142,6 +129,84 @@ class ProtoEventAdapterTest {
         assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
-        assertTrue(protoAttributesAdapter.isChanged());
+        assertTrue(protoAttributesAdapter.isUpdated());
     }
+
+
+    @Test
+    public void getUpdate_notUpdatable() {
+
+        Span.Event actualProtoEvent = Span.Event.newBuilder().build();
+        protoEventAdapter = new ProtoEventAdapter(actualProtoEvent, false);
+
+        assertSame(actualProtoEvent, protoEventAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_nothingUpdated() {
+
+        assertSame(protoEvent, protoEventAdapter.getUpdated());
+        assertSame(protoEvent.getAttributesList(), protoEventAdapter.getUpdated().getAttributesList());
+
+    }
+
+    @Test
+    public void getUpdated_onlyEventUpdated() {
+
+        protoEventAdapter.setName("new-name");
+
+        Span.Event actual = protoEventAdapter.getUpdated();
+        assertNotSame(protoEvent, actual);
+        assertSame(protoEvent.getAttributesList(), actual.getAttributesList());
+        assertEquals("new-name", actual.getName());
+
+    }
+
+
+    @Test
+    public void getUpdated_onlyPropertiesUpdated() {
+
+        protoEventAdapter.getAttributes().set("bool-attribute", true);
+
+        Span.Event actual = protoEventAdapter.getUpdated();
+        assertNotSame(protoEvent, actual);
+        assertNotSame(protoEvent.getAttributesList(), actual.getAttributesList());
+
+        assertEquals("event-name", actual.getName());
+        assertEquals(1, actual.getTimeUnixNano());
+        assertEquals(2, actual.getDroppedAttributesCount());
+
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+    }
+
+    @Test
+    public void getUpdated_EventAndPropertiesUpdated() {
+
+        protoEventAdapter.getAttributes().set("bool-attribute", true);
+        protoEventAdapter.setName("new-name");
+
+        Span.Event actual = protoEventAdapter.getUpdated();
+        assertNotSame(protoEvent, actual);
+        assertNotSame(protoEvent.getAttributesList(), actual.getAttributesList());
+
+        assertEquals("new-name", actual.getName());
+        assertEquals(1, actual.getTimeUnixNano());
+        assertEquals(2, actual.getDroppedAttributesCount());
+
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+    }
+
 }

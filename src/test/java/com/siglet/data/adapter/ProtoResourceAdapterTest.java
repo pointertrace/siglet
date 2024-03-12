@@ -6,18 +6,20 @@ import io.opentelemetry.proto.resource.v1.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoResourceAdapterTest {
 
+    private Resource protoResource;
+
     private ProtoResourceAdapter protoResourceAdapter;
 
     @BeforeEach
     void setUp() {
-        Resource resource = Resource.newBuilder()
+        protoResource = Resource.newBuilder()
                 .setDroppedAttributesCount(1)
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("str-attribute")
@@ -25,26 +27,28 @@ class ProtoResourceAdapterTest {
                         .build())
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("long-attribute")
-                        .setValue(AnyValue.newBuilder().setIntValue(10L).build())
+                        .setValue(AnyValue.newBuilder().setIntValue(10).build())
                         .build())
                 .build();
 
-        protoResourceAdapter = new ProtoResourceAdapter(resource, true);
+        protoResourceAdapter = new ProtoResourceAdapter(protoResource, true);
 
     }
 
     @Test
-    public void get(){
+    public void get() {
 
         assertEquals(1, protoResourceAdapter.getDroppedAttributesCount());
 
     }
 
     @Test
-    public void setAndGet(){
+    public void setAndGet() {
         protoResourceAdapter.setDroppedAttributesCount(2);
 
         assertEquals(2, protoResourceAdapter.getDroppedAttributesCount());
+
+        assertTrue(protoResourceAdapter.isUpdated());
 
     }
 
@@ -70,7 +74,7 @@ class ProtoResourceAdapterTest {
         assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
-        assertFalse(protoAttributesAdapter.isChanged());
+        assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
@@ -98,7 +102,7 @@ class ProtoResourceAdapterTest {
         assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
-        assertTrue(protoAttributesAdapter.isChanged());
+        assertTrue(protoResourceAdapter.isUpdated());
     }
 
     @Test
@@ -106,14 +110,81 @@ class ProtoResourceAdapterTest {
 
         protoResourceAdapter = new ProtoResourceAdapter(Resource.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoResourceAdapter.setDroppedAttributesCount(0);
-        });
+        assertThrowsExactly(IllegalStateException.class, () -> protoResourceAdapter.setDroppedAttributesCount(0));
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
-            protoResourceAdapter.getAttributes().remove("str-key");
-        });
+        assertThrowsExactly(IllegalStateException.class, () ->
+                protoResourceAdapter.getAttributes().remove("str-key"));
 
     }
 
+    @Test
+    public void getUpdated_notUpdatable() {
+
+        Resource actualProtoResource = Resource.newBuilder().build();
+        protoResourceAdapter = new ProtoResourceAdapter(actualProtoResource, false);
+
+        assertSame(actualProtoResource, protoResourceAdapter.getUpdated());
+
+    }
+
+    @Test
+    public void getUpdated_nothingUpdated() {
+
+        assertSame(protoResource, protoResourceAdapter.getUpdated());
+        assertSame(protoResource.getAttributesList(), protoResourceAdapter.getUpdated().getAttributesList());
+
+    }
+
+    @Test
+    public void getUpdated_onlyResourceUpdated() {
+
+        protoResourceAdapter.setDroppedAttributesCount(2);
+
+        Resource actual = protoResourceAdapter.getUpdated();
+        assertNotSame(protoResource, actual);
+        assertSame(protoResource.getAttributesList(), actual.getAttributesList());
+        assertEquals(2, actual.getDroppedAttributesCount());
+
+    }
+
+
+    @Test
+    public void getUpdated_onlyPropertiesUpdated() {
+
+        protoResourceAdapter.getAttributes().set("bool-attribute", true);
+
+        Resource actual = protoResourceAdapter.getUpdated();
+        assertNotSame(protoResource, actual);
+        assertNotSame(protoResource.getAttributesList(), actual.getAttributesList());
+        assertEquals(1, actual.getDroppedAttributesCount());
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+
+
+    }
+
+    @Test
+    public void getUpdated_ResourceAndPropertiesUpdated() {
+
+        protoResourceAdapter.setDroppedAttributesCount(2);
+        protoResourceAdapter.getAttributes().set("bool-attribute", true);
+
+        Resource actual = protoResourceAdapter.getUpdated();
+        assertNotSame(protoResource, actual);
+        assertNotSame(protoResource.getAttributesList(), actual.getAttributesList());
+        assertEquals(2, actual.getDroppedAttributesCount());
+
+        assertEquals(3, actual.getAttributesList().size());
+        Map<String, Object> attrAsMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
+        assertEquals(3, attrAsMap.size());
+        assertTrue(attrAsMap.containsKey("str-attribute"));
+        assertTrue(attrAsMap.containsKey("long-attribute"));
+        assertTrue(attrAsMap.containsKey("bool-attribute"));
+
+    }
 }

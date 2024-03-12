@@ -33,6 +33,8 @@ public interface ModifiableSpan extends UnmodifiableSpan {
 
     ModifiableResource getResource();
 
+    ModifiableInstrumentationScope getInstrumentationScope();
+
     void setFlags(int flags);
 
     void setDroppedAttributesCount(int droppedAttributesCount);

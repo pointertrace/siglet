@@ -33,6 +33,17 @@ public class AdapterUtils {
         return buffer.array();
     }
 
+    public static long spanId(byte[] spanId) {
+        return ByteBuffer.wrap(spanId).getLong();
+    }
+
+    public static long traceIdHigh(byte[] traceId) {
+        return ByteBuffer.wrap(Arrays.copyOfRange(traceId,0,8)).getLong();
+    }
+
+    public static long traceIdLow(byte[] traceId) {
+        return ByteBuffer.wrap(Arrays.copyOfRange(traceId,8,16)).getLong();
+    }
 
     public static Object anyValueToObject(AnyValue anyValue) {
         return switch (anyValue.getValueCase()) {

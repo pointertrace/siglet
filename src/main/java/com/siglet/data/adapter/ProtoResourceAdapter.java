@@ -9,6 +9,8 @@ public class ProtoResourceAdapter implements ModifiableResource {
 
     private boolean updatable;
 
+    private boolean updated;
+
     private Resource.Builder protoResourceBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
@@ -26,10 +28,10 @@ public class ProtoResourceAdapter implements ModifiableResource {
     }
 
     public int getDroppedAttributesCount() {
-        if (protoResourceBuilder ==  null) {
+        if (protoResourceBuilder == null) {
             return protoResource.getDroppedAttributesCount();
         } else {
-           return protoResourceBuilder.getDroppedAttributesCount();
+            return protoResourceBuilder.getDroppedAttributesCount();
         }
     }
 
@@ -41,14 +43,33 @@ public class ProtoResourceAdapter implements ModifiableResource {
         protoResourceBuilder.setDroppedAttributesCount(droppedAttributesCount);
     }
 
+    public boolean isUpdated() {
+        return updated || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ;
+    }
+
+    public Resource getUpdated() {
+        if (!updatable) {
+            return protoResource;
+        } else if (!updated && (protoAttributesAdapter == null || !protoAttributesAdapter.isUpdated())) {
+            return protoResource;
+        } else {
+            Resource.Builder bld = protoResourceBuilder != null ? protoResourceBuilder : protoResource.toBuilder();
+            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+                bld.clearAttributes();
+                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+            }
+            return bld.build();
+        }
+    }
 
     private void checkAndPrepareUpdate() {
-        if (! updatable) {
+        if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable span");
         }
-        if (protoResourceBuilder== null) {
+        if (protoResourceBuilder == null) {
             protoResourceBuilder = protoResource.toBuilder();
         }
+        updated = true;
     }
 
 }
