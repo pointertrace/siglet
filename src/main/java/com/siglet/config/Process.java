@@ -4,8 +4,14 @@ import java.util.List;
 
 public class Process extends Node {
 
-    public Process(String name) {
+    private Node to;
+
+    public Process(String name, Node to) {
         super(name);
+        this.to = to;
     }
 
+    public Node getTo() {
+        return to;
+    }
 }

@@ -6,14 +6,14 @@ import java.util.List;
 
 public class GrpcReceiver extends Receiver {
 
-    private final InetSocketAddress address;
+    private final String address;
 
-    public GrpcReceiver(String name, InetSocketAddress address) {
-        super(name);
+    public GrpcReceiver(String name, String address) {
+        super(name, null);
         this.address = address;
     }
 
-    public InetSocketAddress getAddress() {
+    public String getAddress() {
         return address;
     }
 }
