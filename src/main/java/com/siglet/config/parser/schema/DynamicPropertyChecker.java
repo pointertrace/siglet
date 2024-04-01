@@ -10,7 +10,6 @@ public class DynamicPropertyChecker extends BasicPropertyChecker {
 
     private final DynamicCheckerDiscriminator discriminator;
 
-
     public <T, E> DynamicPropertyChecker(String name, boolean required, DynamicCheckerDiscriminator discriminator) {
         super(ValueSetter.EMPTY, name, required);
         this.discriminator = discriminator;

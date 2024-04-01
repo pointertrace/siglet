@@ -55,9 +55,8 @@ public class ObjectConfigNode extends ConfigNode {
 
     @Override
     public void clear() {
-        setValueSetter(null);
-        for (ConfigNode child : children.values()) {
-            child.clear();
-        }
+//        for (ConfigNode child : children.values()) {
+//            child.clear();
+//        }
     }
 }

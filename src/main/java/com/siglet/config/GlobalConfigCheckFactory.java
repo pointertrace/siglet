@@ -35,10 +35,12 @@ public class GlobalConfigCheckFactory {
 
         return strictObject(SpanletBuilder::new,
                 requiredProperty(SpanletBuilder::setName, "spanlet", text()),
-                requiredProperty(SpanletBuilder::setTo, "to", alternative(
-                        text(), array(text()))),
-                requiredProperty(SpanletBuilder::setTo, "from", alternative(
-                        text(), array(text()))),
+                alternativeRequiredProperty("to",
+                        requiredProperty(SpanletBuilder::setTo, "to", array(text())),
+                        requiredProperty(SpanletBuilder::setToSingleValue, "to", text())),
+                alternativeRequiredProperty("from",
+                        requiredProperty(SpanletBuilder::setFrom, "from", array(text())),
+                        requiredProperty(SpanletBuilder::setFromSingleValue, "from", text())),
                 requiredProperty(SpanletBuilder::setType, "type", text()),
                 requiredDynamicProperty("config", new SpanletCheckerDiscriminator(new SpanletTypes()))
         );
@@ -47,7 +49,6 @@ public class GlobalConfigCheckFactory {
     public static NodeChecker tracePipelineChecker() {
         return array(strictObject(TracePipelineBuilder::new,
                 requiredProperty(TracePipelineBuilder::setName, "trace", text()),
-                requiredProperty(TracePipelineBuilder::setStart, "start", text()),
                 requiredProperty(TracePipelineBuilder::setSpanletBuilders, "pipeline",
                         array(spanletChecker()))));
     }
@@ -60,7 +61,5 @@ public class GlobalConfigCheckFactory {
                         grpcExportersChecker()),
                 requiredProperty(GlobalConfigBuilder::setPipelines, "pipelines",
                         tracePipelineChecker()));
-
-
     }
 }

@@ -13,11 +13,11 @@ public class ObjectChecker implements NodeChecker {
 
     private final boolean strict;
 
-    private final List<BasicPropertyChecker> propertiesCheck;
+    private final List<AbstractPropertyChecker> propertiesCheck;
 
     private final ValueCreator valueCreator;
 
-    public <T> ObjectChecker(Supplier<T> valueCreator, boolean strict, BasicPropertyChecker... propertiesChecks) {
+    public <T> ObjectChecker(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
         this.valueCreator = ValueCreator.of(valueCreator);
         this.strict = strict;
         this.propertiesCheck = List.of(propertiesChecks);
@@ -28,7 +28,7 @@ public class ObjectChecker implements NodeChecker {
         if (!(node instanceof ObjectConfigNode objectNode)) {
             throw new SingleSchemaValidationException("is not an Object", node.getLocation());
         }
-        for (PropertyChecker propertyCheck : getPropertyCheckers()) {
+        for (AbstractPropertyChecker propertyCheck : getPropertyCheckers()) {
             propertyCheck.check(node);
         }
         for (DynamicPropertyChecker propertyCheck : getDynamicPropertyCheckers()) {
@@ -36,7 +36,7 @@ public class ObjectChecker implements NodeChecker {
         }
         if (strict) {
             Set<String> propCheckNames = propertiesCheck.stream()
-                    .map(BasicPropertyChecker::getPropertyName)
+                    .map(AbstractPropertyChecker::getPropertyName)
                     .collect(Collectors.toSet());
             Set<String> propNames = new TreeSet<>(objectNode.getPropertyNames());
             propNames.removeAll(propCheckNames);
@@ -62,10 +62,10 @@ public class ObjectChecker implements NodeChecker {
         return "object";
     }
 
-    protected List<PropertyChecker> getPropertyCheckers() {
+    protected List<AbstractPropertyChecker> getPropertyCheckers() {
         return propertiesCheck.stream()
-                .filter(PropertyChecker.class::isInstance)
-                .map(PropertyChecker.class::cast)
+                .filter(p -> ! (p instanceof DynamicPropertyChecker))
+                .map(AbstractPropertyChecker.class::cast)
                 .toList();
     }
 

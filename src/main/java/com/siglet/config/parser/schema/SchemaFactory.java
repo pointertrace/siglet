@@ -33,6 +33,14 @@ public class SchemaFactory {
         return new PropertyChecker(valueSetter, propertyName, required, propertyChecks);
     }
 
+    public static <T, E> AlternativePropertyChecker alternativePropertyChecker( String propertyName, boolean required, AbstractPropertyChecker ... abstractPropertyCheckers) {
+        return new AlternativePropertyChecker( propertyName, required,abstractPropertyCheckers);
+    }
+
+    public static <T, E> AlternativePropertyChecker alternativeRequiredProperty( String propertyName, AbstractPropertyChecker ... abstractPropertyCheckers) {
+        return new AlternativePropertyChecker( propertyName, true,abstractPropertyCheckers);
+    }
+
     public static <T, E> DynamicPropertyChecker dynamicProperty(String propertyName, boolean required, DynamicCheckerDiscriminator discriminator) {
         return new DynamicPropertyChecker( propertyName, required,discriminator);
     }
@@ -45,11 +53,11 @@ public class SchemaFactory {
         return dynamicProperty( propertyName, true, discriminator);
     }
 
-    public static <T> NodeChecker object(Supplier<T> valueCreator, boolean strict, BasicPropertyChecker... propertiesChecks) {
+    public static <T> NodeChecker object(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
         return new ObjectChecker(valueCreator, strict, propertiesChecks);
     }
 
-    public static <T> NodeChecker strictObject(Supplier<T> valueCreator, BasicPropertyChecker... propertiesChecks) {
+    public static <T> NodeChecker strictObject(Supplier<T> valueCreator, AbstractPropertyChecker... propertiesChecks) {
         return object(valueCreator, true, propertiesChecks);
     }
 

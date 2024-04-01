@@ -44,33 +44,24 @@ public class SpanletBuilder {
         return to;
     }
 
-    public void setTo(Object to) {
-        if (to instanceof String str) {
-            this.to = List.of(str);
-        } else if (to instanceof List<?> lst) {
-            this.to = lst.stream().map(Object::toString).toList();
-        } else {
-            throw new IllegalArgumentException("parameter must be a string or a list of strings but it is a " +
-                    to.getClass().getName());
-        }
+    public void setTo(List<String> to) {
+        this.to = to;
+    }
+
+    public void setToSingleValue(String to) {
+        this.to = List.of(to);
     }
 
     public List<String> getFrom() {
         return from;
     }
 
-    public void setFrom(Object from) {
-        if (from instanceof String str) {
-            this.from = List.of(str);
-        } else if (from instanceof List<?> lst) {
-            this.from = lst.stream().map(Object::toString).toList();
-        } else {
-            throw new IllegalArgumentException("parameter must be a string or a list of stirngs");
-        }
-    }
-
     public void setFrom(List<String> from) {
         this.from = from;
+    }
+
+    public void setFromSingleValue(String from) {
+        this.from = List.of(from);
     }
 
     public void setFromOneValue(String from) {

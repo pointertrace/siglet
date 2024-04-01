@@ -34,9 +34,9 @@ public class ArrayConfigNode extends ConfigNode {
 
     @Override
     public void clear() {
-        setValueSetter(null);
-        for(ConfigNode item: items) {
-            item.clear();
-        }
+//        setValueSetter(null);
+//        for(ConfigNode item: items) {
+//            item.clear();
+//        }
     }
 }

@@ -9,22 +9,17 @@ import org.junit.jupiter.api.Test;
 import static com.siglet.config.GlobalConfigCheckFactory.globalConfigChecker;
 import static org.junit.jupiter.api.Assertions.*;
 
-class UniqueNameValidatorTest {
-
+class GlobalConfigBuilderTest {
 
     private ConfigParser configParser;
-
-    private UniqueNameValidator uniqueNameValidator;
-
 
     @BeforeEach
     public void setUp() {
         configParser = new ConfigParser();
-        uniqueNameValidator = new UniqueNameValidator();
     }
 
     @Test
-    public void parse() throws Exception {
+    public void validateUniqueNames() throws Exception {
 
 
         var yaml = """
@@ -40,9 +35,9 @@ class UniqueNameValidatorTest {
                   address: localhost:8081
                 pipelines:
                 - trace: pipeline name
-                  start: start-value
                   pipeline:
                   - spanlet: spanlet-name
+                    from: origin-value
                     to: destination-value
                     type: processor
                     config:
@@ -59,12 +54,12 @@ class UniqueNameValidatorTest {
         assertNotNull(conf);
         var globalConfig = assertInstanceOf(GlobalConfigBuilder.class, conf);
 
-        uniqueNameValidator.validate(globalConfig);
+        globalConfig.validateUniqueNames();
 
     }
 
     @Test
-    public void parse_sameName() throws Exception {
+    public void validateUniqueNames_notUnique() throws Exception {
 
 
         var yaml = """
@@ -80,28 +75,38 @@ class UniqueNameValidatorTest {
                   address: localhost:8081
                 pipelines:
                 - trace: pipeline-name
-                  start: start-value
                   pipeline:
                   - spanlet: spanlet-name
-                    to: destination-value
+                    from:
+                    - first-origin
+                    - second-origin
+                    to:
+                    - first-destination
+                    - second-destination
                     type: processor
                     config:
                       action: action-value
                   - spanlet: spanlet-name
+                    from: origin-value
                     to: destination-value
                     type: processor
                     config:
                       action: action-value
                 - trace: pipeline-name
-                  start: start-value
                   pipeline:
                   - spanlet: spanlet-name
+                    from: origin-value
                     to: destination-value
                     type: processor
                     config:
                       action: action-value
                   - spanlet: spanlet-name
-                    to: destination-value
+                    from:
+                    - first-origin
+                    - second-origin
+                    to:
+                    - first-destination
+                    - second-destination
                     type: processor
                     config:
                       action: action-value
@@ -117,7 +122,7 @@ class UniqueNameValidatorTest {
         assertNotNull(conf);
         var globalConfig = assertInstanceOf(GlobalConfigBuilder.class, conf);
 
-        SigletError ex = assertThrowsExactly(SigletError.class, () -> uniqueNameValidator.validate(globalConfig));
+        SigletError ex = assertThrowsExactly(SigletError.class, globalConfig::validateUniqueNames);
 
         assertEquals("Names must be unique within the configuration file but: 'pipeline-name' appears twice," +
                 " 'spanlet-name' appears 4 times, 'first' appears twice and 'second' appears twice!", ex.getMessage());

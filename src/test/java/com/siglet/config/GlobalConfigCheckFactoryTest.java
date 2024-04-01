@@ -97,8 +97,12 @@ class GlobalConfigCheckFactoryTest {
 
         var config = """
                 spanlet: name-value
-                from: origin-value
-                to: destination-value
+                from:
+                - first-origin
+                - second-origin
+                to:
+                - first-destination
+                - second-destination
                 type: processor
                 config:
                   action: action-value
@@ -115,7 +119,8 @@ class GlobalConfigCheckFactoryTest {
 
         var spanlet = assertInstanceOf(SpanletBuilder.class, value);
         assertEquals("name-value", spanlet.getName());
-        assertEquals("destination-value", spanlet.getTo());
+        assertEquals(List.of("first-destination","second-destination"), spanlet.getTo());
+        assertEquals(List.of("first-origin","second-origin"), spanlet.getFrom());
         assertEquals("processor", spanlet.getType());
 
         var processorConfigBuilder = assertInstanceOf(ProcessorConfigBuilder.class, spanlet.getConfig());
@@ -130,6 +135,7 @@ class GlobalConfigCheckFactoryTest {
 
         var config = """
                 spanlet: name-value
+                from: origin-value
                 to: destination-value
                 type: filter
                 config:
@@ -146,7 +152,7 @@ class GlobalConfigCheckFactoryTest {
         assertNotNull(value);
         var spanlet = assertInstanceOf(SpanletBuilder.class, value);
         assertEquals("name-value", spanlet.getName());
-        assertEquals("destination-value", spanlet.getTo());
+        assertEquals(List.of("destination-value"), spanlet.getTo());
         assertEquals("filter", spanlet.getType());
 
         var filterConfigBuilder = assertInstanceOf(FilterConfigBuilder.class, spanlet.getConfig());
@@ -161,6 +167,7 @@ class GlobalConfigCheckFactoryTest {
 
         var config = """
                 spanlet: name-value
+                from: origin-value
                 to: destination-value
                 type: router
                 config:
@@ -181,8 +188,8 @@ class GlobalConfigCheckFactoryTest {
         assertNotNull(value);
         var spanlet = assertInstanceOf(SpanletBuilder.class, value);
         assertEquals("name-value", spanlet.getName());
-        assertEquals(1, spanlet.getTo().size());
-        assertEquals("destination-value", spanlet.getTo().get(0));
+        assertEquals(List.of("destination-value"), spanlet.getTo());
+        assertEquals(List.of("origin-value"), spanlet.getFrom());
         assertEquals("router", spanlet.getType());
 
         var routerConfigBuilder = assertInstanceOf(RouterConfigBuilder.class, spanlet.getConfig());
@@ -205,9 +212,9 @@ class GlobalConfigCheckFactoryTest {
 
         var config = """
                 - trace: name-value
-                  start: start-value
                   pipeline:
                   - spanlet: spanlet-name
+                    from: origin-value
                     to: destination-value
                     type: processor
                     config:
@@ -226,14 +233,12 @@ class GlobalConfigCheckFactoryTest {
         assertEquals(1, pipelines.size());
         var pipeline = assertInstanceOf(TracePipelineBuilder.class, pipelines.get(0));
         assertEquals("name-value", pipeline.getName());
-        assertEquals("start-value", pipeline.getStart());
-
         var spanlets = pipeline.getSpanletBuilders();
         assertEquals(1, spanlets.size());
 
         var spanlet = spanlets.get(0);
         assertEquals("spanlet-name", spanlet.getName());
-        assertEquals("destination-value", spanlet.getTo());
+        assertEquals(List.of("destination-value"), spanlet.getTo());
         assertEquals("processor", spanlet.getType());
 
         var configBuilder = assertInstanceOf(ProcessorConfigBuilder.class, spanlet.getConfig());
@@ -258,9 +263,9 @@ class GlobalConfigCheckFactoryTest {
                   address: localhost:8081
                 pipelines:
                 - trace: pipeline name
-                  start: start-value
                   pipeline:
                   - spanlet: spanlet-name
+                    from: origin value
                     to: destination-value
                     type: processor
                     config:
@@ -300,13 +305,12 @@ class GlobalConfigCheckFactoryTest {
         assertEquals(1, pipelines.size());
         TracePipelineBuilder pipeline = pipelines.get(0);
         assertEquals("pipeline name", pipeline.getName());
-        assertEquals("start-value", pipeline.getStart());
 
         List<SpanletBuilder> spanlets = pipeline.getSpanletBuilders();
         assertEquals(1, spanlets.size());
         SpanletBuilder spanlet = spanlets.get(0);
         assertEquals("spanlet-name", spanlet.getName());
-        assertEquals("destination-value", spanlet.getTo());
+        assertEquals(List.of("destination-value"), spanlet.getTo());
         assertEquals("processor", spanlet.getType());
 
         ProcessorConfigBuilder configBuilder = assertInstanceOf(ProcessorConfigBuilder.class, spanlet.getConfig());

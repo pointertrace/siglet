@@ -6,8 +6,6 @@ public class TracePipelineBuilder {
 
     private String name;
 
-    private String start;
-
     private List<SpanletBuilder> spanletBuilders;
 
     public String getName() {
@@ -16,14 +14,6 @@ public class TracePipelineBuilder {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getStart() {
-        return start;
-    }
-
-    public void setStart(String start) {
-        this.start = start;
     }
 
     public List<SpanletBuilder> getSpanletBuilders() {

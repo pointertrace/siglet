@@ -1,7 +1,6 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.node.ValueSetter;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class PropertyChecker extends BasicPropertyChecker {
 
     @Override
     public void check(ConfigNode node) throws SchemaValidationException {
-        ConfigNode propertyNode = basicCheck(node);
+        ConfigNode propertyNode = propertyPresenceCheck(node);
         try {
             if (propertyNode != null) {
                 for (NodeChecker propCheck : propertyChecks) {
@@ -32,7 +31,7 @@ public class PropertyChecker extends BasicPropertyChecker {
                 propertyNode.setValueSetter(getValueSetter());
             }
         } catch (SingleSchemaValidationException e) {
-            throw new SingleSchemaValidationException(String.format("property %s %s", getName(), e.getMessage()),
+            throw new SingleSchemaValidationException(String.format("property %s %s", getPropertyName(), e.getMessage()),
                     e.getLocation());
         }
     }
