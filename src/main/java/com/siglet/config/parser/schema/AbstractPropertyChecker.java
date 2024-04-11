@@ -15,13 +15,13 @@ public abstract class AbstractPropertyChecker implements NodeChecker {
         this.required = required;
     }
 
-    public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationException {
+    public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationException("is not a object", node.getLocation());
+            throw new SingleSchemaValidationError("is not a object", node.getLocation());
         }
         ConfigNode propNode = objectNode.get(propertyName);
         if (required && propNode == null) {
-            throw new SingleSchemaValidationException("must have a " + propertyName + " property!", node.getLocation());
+            throw new SingleSchemaValidationError("must have a " + propertyName + " property!", node.getLocation());
         }
         return propNode;
     }

@@ -14,13 +14,13 @@ public abstract class BasicPropertyChecker extends AbstractPropertyChecker {
         this.valueSetter = valueSetter;
     }
 
-    public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationException {
+    public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationException("is not a object", node.getLocation());
+            throw new SingleSchemaValidationError("is not a object", node.getLocation());
         }
         ConfigNode propNode = objectNode.get(getPropertyName());
         if (isRequired() && propNode == null) {
-            throw new SingleSchemaValidationException("must have a " + getPropertyName()+ " property!", node.getLocation());
+            throw new SingleSchemaValidationError("must have a " + getPropertyName()+ " property!", node.getLocation());
         }
         return propNode;
     }

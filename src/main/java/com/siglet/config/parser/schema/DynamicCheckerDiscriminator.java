@@ -4,5 +4,5 @@ import com.siglet.config.parser.node.ConfigNode;
 
 public interface DynamicCheckerDiscriminator {
 
-    NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationException;
+    NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationError;
 }

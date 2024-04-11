@@ -15,9 +15,9 @@ public class ArrayChecker implements NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         if (! (node  instanceof ArrayConfigNode arrayNode )) {
-            throw new SingleSchemaValidationException("is not a array!", node.getLocation());
+            throw new SingleSchemaValidationError("is not a array!", node.getLocation());
         }
         int length =  arrayNode.getLength();
         for (int i = 0; i < length; i++) {

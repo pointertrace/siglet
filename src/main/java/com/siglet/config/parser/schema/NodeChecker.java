@@ -5,7 +5,7 @@ import com.siglet.config.parser.node.ValueTransformer;
 
 public interface NodeChecker {
 
-    void check(ConfigNode node) throws SchemaValidationException;
+    void check(ConfigNode node) throws SchemaValidationError;
 
     String getName();
 

@@ -17,7 +17,7 @@ class ArrayCheckerTest {
     }
 
     @Test
-    public void array() throws SchemaValidationException {
+    public void array() throws SchemaValidationError {
 
         ConfigNode node = parser.parse("""
                 - 1
@@ -33,7 +33,7 @@ class ArrayCheckerTest {
 
 
     // todo ver esse teste!!!!!
-    public void array_invalid() throws SchemaValidationException {
+    public void array_invalid() throws SchemaValidationError {
 
         ConfigNode node = parser.parse("""
                 key: value

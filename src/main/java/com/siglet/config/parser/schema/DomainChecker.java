@@ -16,10 +16,10 @@ public class DomainChecker implements NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         Collection<?> domainValues = domainProvider.get();
         if (!domainValues.contains(node.getValue())) {
-            throw new SingleSchemaValidationException("must be in [" +
+            throw new SingleSchemaValidationError("must be in [" +
                     domainValues.stream().map(Object::toString).collect(Collectors.joining(", ") ) +"]",
                     node.getLocation());
         }

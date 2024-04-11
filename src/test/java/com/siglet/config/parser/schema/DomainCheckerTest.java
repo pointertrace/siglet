@@ -6,7 +6,6 @@ import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +40,7 @@ class DomainCheckerTest {
 
         ConfigNode root = parser.parse(yaml);
 
-        var ex = assertThrowsExactly(SingleSchemaValidationException.class,() -> { checker.check(root); });
+        var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 
         assertEquals("must be in [a, b, c]", ex.getMessage());
         assertEquals(Location.create(1,1), ex.getLocation());

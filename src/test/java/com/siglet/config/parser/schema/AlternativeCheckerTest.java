@@ -21,7 +21,7 @@ class AlternativeCheckerTest {
     }
 
     @Test
-    public void check_firstOption() throws SchemaValidationException {
+    public void check_firstOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -40,7 +40,7 @@ class AlternativeCheckerTest {
 
 
     @Test
-    public void check_secondOption() throws SchemaValidationException {
+    public void check_secondOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -61,7 +61,7 @@ class AlternativeCheckerTest {
     }
 
     @Test
-    public void check_noValidOption() throws SchemaValidationException {
+    public void check_noValidOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -72,7 +72,7 @@ class AlternativeCheckerTest {
                 field: field value
                 """);
 
-      var ex = assertThrows(SchemaValidationException.class, () ->  alternativeChecker.check(node));
+      var ex = assertThrows(SchemaValidationError.class, () ->  alternativeChecker.check(node));
       assertEquals("""
               None of alternatives are valid:
                 - text because: (1:1) is not a text value!

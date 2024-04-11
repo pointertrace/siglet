@@ -11,6 +11,8 @@ public interface ModifiableSpan extends UnmodifiableSpan {
 
     void setTraceId(long high, long low);
 
+    void setTraceId(byte[] traceId);
+
     void setSpanId(long spanId);
 
     void setParentSpanId(long parentSpanId);

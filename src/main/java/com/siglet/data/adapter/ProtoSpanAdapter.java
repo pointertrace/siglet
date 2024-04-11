@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.data.Clonable;
 import com.siglet.data.modifiable.ModifiableSpan;
 import com.siglet.data.trace.SpanKind;
 import io.opencensus.trace.SpanBuilder;
@@ -11,15 +12,15 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class ProtoSpanAdapter implements ModifiableSpan {
+public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
 
-    private Span protoSpan;
+    private final Span protoSpan;
 
-    private Resource protoResource;
+    private final Resource protoResource;
 
-    private InstrumentationScope protoInstrumentationScope;
+    private final InstrumentationScope protoInstrumentationScope;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 
@@ -63,10 +64,22 @@ public class ProtoSpanAdapter implements ModifiableSpan {
     }
 
     @Override
+    public byte[] getTraceId() {
+        return protoSpanBuilder == null ?
+                protoSpan.getSpanId().toByteArray() : protoSpanBuilder.getSpanId().toByteArray();
+    }
+
+    @Override
     public void setTraceId(long high, long low) {
         checkAndPrepareUpdate();
         protoSpanBuilder.setTraceId(ByteString.copyFrom(
                 ByteBuffer.allocate(Long.BYTES * 2).putLong(high).putLong(low).array()));
+    }
+
+    @Override
+    public void setTraceId(byte[] traceId) {
+        checkAndPrepareUpdate();
+        protoSpanBuilder.setTraceId(ByteString.copyFrom(traceId));
     }
 
     @Override
@@ -276,6 +289,12 @@ public class ProtoSpanAdapter implements ModifiableSpan {
         }
     }
 
+    @Override
+    public ProtoSpanAdapter clone() {
+        return new ProtoSpanAdapter(getUpdatedSpan(),
+                getUpdatedResource(), getUpdatedInstrumentationScope(), updatable);
+    }
+
     private boolean attributesUpdated() {
         return protoAttributesAdapter != null && protoAttributesAdapter.isUpdated();
     }
@@ -323,7 +342,7 @@ public class ProtoSpanAdapter implements ModifiableSpan {
     public Resource getUpdatedResource() {
         if (!updatable) {
             return protoResource;
-        } else if (protoResourceAdapter == null ||  !protoResourceAdapter.isUpdated()) {
+        } else if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
             return protoResource;
         } else {
             return protoResourceAdapter.getUpdated();

@@ -8,6 +8,8 @@ public interface UnmodifiableSpan {
 
     long getTraceIdLow();
 
+    byte[] getTraceId();
+
     long getSpanId();
 
     long getParentSpanId();

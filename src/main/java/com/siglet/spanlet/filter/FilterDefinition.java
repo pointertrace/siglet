@@ -1,7 +1,7 @@
 package com.siglet.spanlet.filter;
 
 
-import com.siglet.config.builder.SpanletBuilder;
+import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.spanlet.ConfigDefinition;
 
@@ -12,8 +12,8 @@ public class FilterDefinition implements ConfigDefinition {
 
     @Override
     public NodeChecker getChecker() {
-        return requiredProperty(SpanletBuilder::setConfig, "config",
-                strictObject(FilterConfigBuilder::new,
-                        requiredProperty(FilterConfigBuilder::setExpression, "expression", text())));
+        return requiredProperty(SpanletItem::setConfig, "config",
+                strictObject(FilterConfig::new,
+                        requiredProperty(FilterConfig::setExpression, "expression", text())));
     }
 }

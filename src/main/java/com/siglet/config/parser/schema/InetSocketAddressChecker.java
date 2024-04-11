@@ -10,14 +10,14 @@ public class InetSocketAddressChecker implements NodeChecker {
 
     private ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
 
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         if (node instanceof ValueConfigNode.Text textNode) {
             String validationError = getValidationErrorReason((String) textNode.getValue());
             if (validationError != null) {
-                throw new SingleSchemaValidationException(validationError, node.getLocation());
+                throw new SingleSchemaValidationError(validationError, node.getLocation());
             }
         } else {
-            throw new SingleSchemaValidationException("is not a valid address <host>:<port>!", node.getLocation());
+            throw new SingleSchemaValidationError("is not a valid address <host>:<port>!", node.getLocation());
         }
     }
 

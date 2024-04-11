@@ -15,14 +15,14 @@ public class IntRangeChecker implements NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ValueConfigNode.Int intNode)) {
-            throw new SingleSchemaValidationException("must be an integer!", node.getLocation());
+            throw new SingleSchemaValidationError("must be an integer!", node.getLocation());
         }
 
         if (lowInclusive != null && (int) intNode.getValue() < lowInclusive ||
                 highInclusive != null && (int) intNode.getValue() > highInclusive) {
-            throw new SingleSchemaValidationException(String.format("must be between %d and %d inclusive!",
+            throw new SingleSchemaValidationError(String.format("must be between %d and %d inclusive!",
                     lowInclusive, highInclusive), node.getLocation());
         }
 

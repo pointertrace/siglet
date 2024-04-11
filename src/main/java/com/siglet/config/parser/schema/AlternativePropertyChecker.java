@@ -12,7 +12,7 @@ public class AlternativePropertyChecker extends AbstractPropertyChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         propertyPresenceCheck(node);
         alternativeChecker.check(node);
     }

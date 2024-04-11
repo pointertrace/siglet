@@ -24,9 +24,9 @@ public class ObjectChecker implements NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationException("is not an Object", node.getLocation());
+            throw new SingleSchemaValidationError("is not an Object", node.getLocation());
         }
         for (AbstractPropertyChecker propertyCheck : getPropertyCheckers()) {
             propertyCheck.check(node);
@@ -40,9 +40,9 @@ public class ObjectChecker implements NodeChecker {
                     .collect(Collectors.toSet());
             Set<String> propNames = new TreeSet<>(objectNode.getPropertyNames());
             propNames.removeAll(propCheckNames);
-            List<SingleSchemaValidationException> errors = new ArrayList<>();
+            List<SingleSchemaValidationError> errors = new ArrayList<>();
             for (String propName : propNames) {
-                errors.add(new SingleSchemaValidationException(
+                errors.add(new SingleSchemaValidationError(
                         String.format("property %s not defined!", propName),
                         Location.create(objectNode.get(propName).getLocation().getLine(), 1)));
             }

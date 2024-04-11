@@ -16,7 +16,7 @@ public class TextChecker implements NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         if (node instanceof ValueConfigNode.Text textNode) {
             for (NodeChecker additionalChecker : additionalCheckers) {
                 additionalChecker.check(textNode);
@@ -27,7 +27,7 @@ public class TextChecker implements NodeChecker {
             }
 
         } else {
-            throw new SingleSchemaValidationException("is not a text value!", node.getLocation());
+            throw new SingleSchemaValidationError("is not a text value!", node.getLocation());
         }
     }
 

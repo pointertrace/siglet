@@ -21,7 +21,7 @@ public class PropertyChecker extends BasicPropertyChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
+    public void check(ConfigNode node) throws SchemaValidationError {
         ConfigNode propertyNode = propertyPresenceCheck(node);
         try {
             if (propertyNode != null) {
@@ -30,8 +30,8 @@ public class PropertyChecker extends BasicPropertyChecker {
                 }
                 propertyNode.setValueSetter(getValueSetter());
             }
-        } catch (SingleSchemaValidationException e) {
-            throw new SingleSchemaValidationException(String.format("property %s %s", getPropertyName(), e.getMessage()),
+        } catch (SingleSchemaValidationError e) {
+            throw new SingleSchemaValidationError(String.format("property %s %s", getPropertyName(), e.getMessage()),
                     e.getLocation());
         }
     }

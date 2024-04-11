@@ -20,7 +20,7 @@ class ObjectCheckTest {
     }
 
     @Test
-    public void check() throws SchemaValidationException {
+    public void check() throws SchemaValidationError {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),

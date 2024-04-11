@@ -29,7 +29,14 @@ public class SigletProducer extends DefaultProducer {
     @Override
     public void process(Exchange exchange) throws Exception {
         ProtoSpanAdapter spanAdapter = exchange.getIn().getBody(ProtoSpanAdapter.class);
+
         Span span = spanAdapter.getUpdatedSpan();
+        System.out.println("sending ----------------");
+        System.out.println("endponit = "+ getEndpoint());
+        System.out.println("span =" + spanAdapter);
+        System.out.println("span name =" + spanAdapter.getName());
+        System.out.println("updated span name=" + span.getName());
+        System.out.println("----------------");
         Resource resource = spanAdapter.getUpdatedResource();
         InstrumentationScope instrumentationScope = spanAdapter.getUpdatedInstrumentationScope();
         ExportTraceServiceRequest exportTraceServiceRequest = ExportTraceServiceRequest.newBuilder()

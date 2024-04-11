@@ -4,8 +4,8 @@ import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.config.parser.schema.NodeChecker;
-import com.siglet.config.parser.schema.SchemaValidationException;
-import com.siglet.config.parser.schema.SingleSchemaValidationException;
+import com.siglet.config.parser.schema.SchemaValidationError;
+import com.siglet.config.parser.schema.SingleSchemaValidationError;
 
 public class SpanletCheckerDiscriminator implements DynamicCheckerDiscriminator {
 
@@ -16,13 +16,13 @@ public class SpanletCheckerDiscriminator implements DynamicCheckerDiscriminator 
     }
 
     @Override
-    public NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationException {
+    public NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationError {
         if (!(configNode instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationException("must be an object!", configNode.getLocation());
+            throw new SingleSchemaValidationError("must be an object!", configNode.getLocation());
         }
         ConfigNode type = objectNode.get("type");
         if (type == null) {
-            throw new SingleSchemaValidationException("must have a type property!", objectNode.getLocation());
+            throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
         }
         SpanletType spanletType = spanletTypes.get(type.getValue().toString());
         return spanletType.getConfigDefinition().getChecker();

@@ -15,14 +15,14 @@ public class AlternativeChecker implements NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationException {
-        List<SingleSchemaValidationException> alternativeErrors = new ArrayList<>();
+    public void check(ConfigNode node) throws SchemaValidationError {
+        List<SingleSchemaValidationError> alternativeErrors = new ArrayList<>();
         List<String> failedCheckers = new ArrayList<>();
         for (NodeChecker alternative : alternatives) {
             try {
                 alternative.check(node);
                 return;
-            } catch (SingleSchemaValidationException e) {
+            } catch (SingleSchemaValidationError e) {
                 node.clear();
                 alternativeErrors.add(e);
                 failedCheckers.add(alternative.getName());

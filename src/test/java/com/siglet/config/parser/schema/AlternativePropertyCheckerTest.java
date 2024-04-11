@@ -22,7 +22,7 @@ class AlternativePropertyCheckerTest {
     }
 
     @Test
-    public void check_firstAlternative() throws SchemaValidationException {
+    public void check_firstAlternative() throws SchemaValidationError {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new AlternativePropertyChecker("prop1", true,
@@ -42,7 +42,7 @@ class AlternativePropertyCheckerTest {
     }
 
     @Test
-    public void check_secondAlternative() throws SchemaValidationException {
+    public void check_secondAlternative() throws SchemaValidationError {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new AlternativePropertyChecker("prop1", true,
