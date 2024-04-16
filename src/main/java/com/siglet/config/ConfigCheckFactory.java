@@ -6,6 +6,9 @@ import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.spanlet.SpanletCheckerDiscriminator;
 import com.siglet.spanlet.SpanletTypes;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorCheckerDiscriminator;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorTypes;
 
 import static com.siglet.config.parser.schema.SchemaFactory.*;
 
@@ -46,13 +49,22 @@ public class ConfigCheckFactory {
 
     public static NodeChecker spanletChecker() {
 
-        return strictObject(SpanletItem::new,
-                requiredProperty(SpanletItem::setName, "spanlet", text()),
-                alternativeRequiredProperty("to",
-                        requiredProperty(SpanletItem::setTo, "to", array(text())),
-                        requiredProperty(SpanletItem::setToSingleValue, "to", text())),
-                requiredProperty(SpanletItem::setType, "type", text()),
-                requiredDynamicProperty("config", new SpanletCheckerDiscriminator(new SpanletTypes()))
+        return alternative(
+                strictObject(SpanletItem::new,
+                        requiredProperty(SpanletItem::setName, "spanlet", text()),
+                        alternativeRequiredProperty("to",
+                                requiredProperty(SpanletItem::setTo, "to", array(text())),
+                                requiredProperty(SpanletItem::setToSingleValue, "to", text())),
+                        requiredProperty(SpanletItem::setType, "type", text()),
+                        requiredDynamicProperty("config", new SpanletCheckerDiscriminator(new SpanletTypes()))),
+                strictObject(TraceAggregatorItem::new,
+                        requiredProperty(TraceAggregatorItem::setName, "trace-aggregator", text()),
+                        alternativeRequiredProperty("to",
+                                requiredProperty(TraceAggregatorItem::setTo, "to", array(text())),
+                                requiredProperty(TraceAggregatorItem::setToSingleValue, "to", text())),
+                        property(TraceAggregatorItem::setType, "type",false, text()),
+                        requiredDynamicProperty("config",
+                                new TraceAggregatorCheckerDiscriminator(new TraceAggregatorTypes())))
         );
     }
 

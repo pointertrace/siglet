@@ -4,7 +4,9 @@ import com.siglet.SigletError;
 import com.siglet.config.item.*;
 import com.siglet.config.item.repository.routecreator.RootRouteCreator;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
+import com.siglet.spanlet.GroovyPropertySetter;
 import com.siglet.spanlet.filter.FilterConfig;
+import com.siglet.spanlet.filter.GroovyPredicate;
 import com.siglet.spanlet.processor.GroovyProcessor;
 import com.siglet.spanlet.processor.ProcessorConfig;
 import com.siglet.spanlet.router.RouterConfig;
@@ -19,21 +21,14 @@ public class NodeRepository {
 
     public void addItem(Item item) {
         switch (item) {
-            case ReceiverItem receiverItem -> {
-                repository.put(receiverItem.getName(),
-                        new ReceiverNode(receiverItem.getName(), receiverItem));
-            }
-            case ExporterItem exporterItem -> {
-                repository.put(exporterItem.getName(),
-                        new ExporterNode(exporterItem.getName(), exporterItem));
-            }
-            case TracePipelineItem tracePipelineItem -> {
-                repository.put(tracePipelineItem.getName(),
-                        new PipelineNode(tracePipelineItem.getName(), tracePipelineItem));
-            }
-            case SpanletItem spanletItem -> {
-                repository.put(spanletItem.getName(), new SpanletNode(spanletItem.getName(), spanletItem));
-            }
+            case ReceiverItem receiverItem -> repository.put(receiverItem.getName(),
+                    new ReceiverNode(receiverItem.getName(), receiverItem));
+            case ExporterItem exporterItem -> repository.put(exporterItem.getName(),
+                    new ExporterNode(exporterItem.getName(), exporterItem));
+            case TracePipelineItem tracePipelineItem -> repository.put(tracePipelineItem.getName(),
+                    new PipelineNode(tracePipelineItem.getName(), tracePipelineItem));
+            case SpanletItem spanletItem ->
+                    repository.put(spanletItem.getName(), new SpanletNode(spanletItem.getName(), spanletItem));
             default -> throw new SigletError("Could not add config item type " + item.getClass().getName());
         }
     }
@@ -168,10 +163,10 @@ public class NodeRepository {
                 }
                 if (spanletNode.getTo().size() == 1) {
                     next(spanletNode.getTo().getFirst(), routeCreator.
-                            addProcessor(new GroovyProcessor(processorConfig.getAction())));
+                            addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)));
                 } else {
                     RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction())).startMulticast();
+                            new GroovyProcessor(processorConfig.getAction(),GroovyPropertySetter.span)).startMulticast();
                     for (Node<?> node : spanletNode.getTo()) {
                         next(node, multicast);
                     }
@@ -184,25 +179,29 @@ public class NodeRepository {
                     throw new SigletError("");
                 }
                 if (spanletNode.getTo().size() == 1) {
-                    next(spanletNode.getTo().getFirst(), routeCreator.addFilter(filterConfig.getExpression()));
+                    next(spanletNode.getTo().getFirst(), routeCreator.addFilter(
+                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span)));
                 } else {
-                    RouteCreator multicast = routeCreator.addFilter(filterConfig.getExpression()).startMulticast();
+                    RouteCreator multicast = routeCreator.addFilter(
+                                    new GroovyPredicate(filterConfig.getExpression(),GroovyPropertySetter.span))
+                            .startMulticast();
                     for (Node<?> node : spanletNode.getTo()) {
                         next(node, multicast);
                     }
                     multicast.endMulticast();
                 }
                 break;
-            case "router" :
+            case "router":
                 config = spanletNode.getItem().getConfig();
                 if (!(config instanceof RouterConfig routerConfig)) {
                     throw new SigletError("");
                 }
                 RouteCreator choice = routeCreator.startChoice();
-                for(Route route : routerConfig.getRoutes()) {
-                    next(getToFromName(spanletNode.getTo(),route.getTo()),choice.addChoice((route.getExpression())));
+                for (Route route : routerConfig.getRoutes()) {
+                    next(getToFromName(spanletNode.getTo(), route.getTo()), choice.addChoice(
+                            new GroovyPredicate(route.getExpression(), GroovyPropertySetter.span)));
                 }
-                next(getToFromName(spanletNode.getTo(),routerConfig.getDefaultRoute()), choice.endChoice(""));
+                next(getToFromName(spanletNode.getTo(), routerConfig.getDefaultRoute()), choice.endChoice());
                 break;
             default:
                 throw new IllegalStateException("not yet implemented");

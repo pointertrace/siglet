@@ -78,7 +78,7 @@ public class ForkSpanletProcessorTest {
             camelContext.start();
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> countDownLatch.countDown() ));
+        Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
 
         countDownLatch.await();
 

@@ -8,6 +8,7 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ProtoLinksAdapter implements ModifiableLinks {
 
@@ -45,6 +46,10 @@ public class ProtoLinksAdapter implements ModifiableLinks {
             }
         }
         return null;
+    }
+
+    public Stream<ProtoLinkAdapter> stream() {
+        return linksAdapter.stream();
     }
 
     public void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes) {

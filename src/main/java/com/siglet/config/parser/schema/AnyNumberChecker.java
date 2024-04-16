@@ -5,26 +5,26 @@ import com.siglet.config.parser.node.ValueConfigNode;
 
 import java.util.List;
 
-public class LongChecker implements NodeChecker {
+public class AnyNumberChecker implements NodeChecker {
 
     private final List<NodeChecker> additionalCheckers;
 
-    public LongChecker(NodeChecker... additionalCheckers) {
+    public AnyNumberChecker(NodeChecker... additionalCheckers) {
         this.additionalCheckers = List.of(additionalCheckers);
     }
 
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ValueConfigNode.Long longNode)) {
-            throw new SingleSchemaValidationError("is not a long value!", node.getLocation());
+        if (!(node instanceof ValueConfigNode.NumberConfigNode numberNode)) {
+            throw new SingleSchemaValidationError("is not a number value!", node.getLocation());
         }
         for (NodeChecker additionalChecker : additionalCheckers) {
-            additionalChecker.check(longNode);
+            additionalChecker.check(numberNode);
         }
     }
 
     @Override
     public String getName() {
-        return "long";
+        return "number";
     }
 }

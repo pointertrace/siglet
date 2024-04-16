@@ -47,28 +47,35 @@ public abstract class ValueConfigNode extends ConfigNode {
         }
     }
 
-    public static class Int extends ValueConfigNode {
+    public abstract static class NumberConfigNode extends ValueConfigNode {
+
+        protected NumberConfigNode(Object value, Location location) {
+            super(value, location);
+        }
+    }
+
+    public static class Int extends NumberConfigNode {
 
         public Int(Integer value, Location location) {
             super(value, location);
         }
     }
 
-    public static class Long extends ValueConfigNode {
+    public static class Long extends NumberConfigNode{
 
         public Long(java.lang.Long value, Location location) {
             super(value, location);
         }
     }
 
-    public static class BigInteger extends ValueConfigNode {
+    public static class BigInteger extends NumberConfigNode{
 
         public BigInteger(java.math.BigInteger value, Location location) {
             super(value, location);
         }
     }
 
-    public static class BigDecimal extends ValueConfigNode {
+    public static class BigDecimal extends NumberConfigNode{
 
         public BigDecimal(java.math.BigDecimal value, Location location) {
             super(value, location);

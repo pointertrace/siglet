@@ -66,7 +66,7 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
     @Override
     public byte[] getTraceId() {
         return protoSpanBuilder == null ?
-                protoSpan.getSpanId().toByteArray() : protoSpanBuilder.getSpanId().toByteArray();
+                protoSpan.getTraceId().toByteArray() : protoSpanBuilder.getTraceId().toByteArray();
     }
 
     @Override

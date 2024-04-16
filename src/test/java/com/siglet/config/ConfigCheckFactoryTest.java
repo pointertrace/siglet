@@ -11,6 +11,8 @@ import com.siglet.spanlet.filter.FilterConfig;
 import com.siglet.spanlet.processor.ProcessorConfig;
 import com.siglet.spanlet.router.RouterConfig;
 import com.siglet.spanlet.router.Route;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorConfig;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -269,6 +271,41 @@ class ConfigCheckFactoryTest {
 
     }
 
+    @Test
+    public void parseTraceAggregatorSpanlet() throws Exception {
+
+
+        var config = """
+                trace-aggregator: name-value
+                to: destination-value
+                type: default
+                config:
+                  timeout-millis: 1
+                  inactive-timeout-millis: 2
+                  completion-expression: expression value
+                """;
+
+
+        ConfigNode node = configParser.parse(config);
+
+        spanletChecker().check(node);
+
+        var value = node.getValue();
+
+        assertNotNull(value);
+        var traceAggregatorItem = assertInstanceOf(TraceAggregatorItem.class, value);
+        assertEquals(List.of("destination-value"), traceAggregatorItem.getTo());
+        assertEquals("default", traceAggregatorItem.getType());
+
+        var traceAggregatorConfig = assertInstanceOf(TraceAggregatorConfig.class, traceAggregatorItem.getConfig());
+        assertEquals(1, traceAggregatorConfig.getTimeoutMillis());
+        assertEquals(2, traceAggregatorConfig.getInactiveTimeoutMillis());
+        assertEquals("expression value", traceAggregatorConfig.getCompletionExpression());
+
+
+
+
+    }
 
     @Test
     public void parseTracePipeline() throws Exception {

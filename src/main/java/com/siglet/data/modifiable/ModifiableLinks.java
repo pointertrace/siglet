@@ -3,6 +3,7 @@ package com.siglet.data.modifiable;
 import com.siglet.data.unmodifiable.UnmodifiableLinks;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 public interface ModifiableLinks extends UnmodifiableLinks {
 
@@ -11,4 +12,6 @@ public interface ModifiableLinks extends UnmodifiableLinks {
     void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes);
 
     boolean remove(long traceIdHigh, long traceIdLow, int spanId);
+
+    Stream<? extends ModifiableLink> stream();
 }

@@ -2,6 +2,7 @@ package com.siglet.spanlet.filter;
 
 import com.siglet.SigletError;
 import com.siglet.data.adapter.ProtoSpanAdapter;
+import com.siglet.spanlet.GroovyPropertySetter;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.camel.Exchange;
@@ -10,13 +11,16 @@ import org.apache.camel.Predicate;
 public class GroovyPredicate implements Predicate {
 
     private final Script script;
+    private final GroovyPropertySetter groovyPropertySetter;
 
-    public GroovyPredicate(String script) {
+    public GroovyPredicate(String script, GroovyPropertySetter groovyPropertySetter) {
         this.script = new GroovyShell().parse(script);
+        this.groovyPropertySetter = groovyPropertySetter;
     }
 
     @Override
     public boolean matches(Exchange exchange) {
+        groovyPropertySetter.setBodyInScript(exchange, script);
         script.setProperty("span", exchange.getIn().getBody(ProtoSpanAdapter.class));
         Object result = script.run();
         if (!(result instanceof Boolean bool)) {

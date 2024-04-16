@@ -21,6 +21,14 @@ public class SchemaFactory {
         return new IntChecker(additionalCheckers);
     }
 
+    public static LongChecker numberLong(NodeChecker... additionalCheckers) {
+        return new LongChecker(additionalCheckers);
+    }
+
+    public static NodeChecker anyNumberChecker(NodeChecker ... aditionalCheckers) {
+        return new AnyNumberChecker(aditionalCheckers);
+    }
+
     public static NodeChecker text(NodeChecker... additionalCheckers) {
         return new TextChecker(additionalCheckers);
     }

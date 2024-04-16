@@ -1,5 +1,6 @@
 package com.siglet.config.item.repository.routecreator;
 
+import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 
 public interface RouteCreator {
@@ -10,7 +11,7 @@ public interface RouteCreator {
 
     RouteCreator addProcessor(Processor processor);
 
-    RouteCreator addFilter(String groovyExpression);
+    RouteCreator addFilter(Predicate predicate);
 
     RouteCreator startMulticast();
 
@@ -18,8 +19,8 @@ public interface RouteCreator {
 
     RouteCreator startChoice();
 
-    RouteCreator addChoice(String expression);
+    RouteCreator addChoice(Predicate predicate);
 
-    RouteCreator endChoice(String expression);
+    RouteCreator endChoice();
 
 }

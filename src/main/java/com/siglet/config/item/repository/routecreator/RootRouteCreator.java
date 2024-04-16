@@ -1,5 +1,6 @@
 package com.siglet.config.item.repository.routecreator;
 
+import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
@@ -35,7 +36,7 @@ public class RootRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addFilter(String groovyExpression) {
+    public RouteCreator addFilter(Predicate predicate) {
         throw new IllegalStateException("can only be called in root");
     }
 
@@ -55,12 +56,12 @@ public class RootRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addChoice(String expression) {
+    public RouteCreator addChoice(Predicate predicate) {
         throw new IllegalStateException("can only be called in root");
     }
 
     @Override
-    public RouteCreator endChoice(String expression) {
+    public RouteCreator endChoice() {
         throw new IllegalStateException("can only be called in root");
     }
 }

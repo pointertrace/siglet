@@ -28,6 +28,7 @@ public class SigletProducer extends DefaultProducer {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
         ProtoSpanAdapter spanAdapter = exchange.getIn().getBody(ProtoSpanAdapter.class);
 
         Span span = spanAdapter.getUpdatedSpan();

@@ -1,6 +1,6 @@
 package com.siglet.spanlet.processor;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
+import com.siglet.spanlet.GroovyPropertySetter;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.camel.Exchange;
@@ -10,23 +10,16 @@ public class GroovyProcessor implements Processor {
 
     private final Script script;
 
-    private String name;
+    private final GroovyPropertySetter groovyPropertySetter;
 
-
-    public GroovyProcessor(String script) {
-        this(null, script);
-
-    }
-
-    public GroovyProcessor(String name, String script) {
-        this.name = name;
+    public GroovyProcessor(String script, GroovyPropertySetter groovyPropertySetter) {
         this.script = new GroovyShell().parse(script);
+        this.groovyPropertySetter = groovyPropertySetter;
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
-
-        script.setProperty("span",exchange.getIn().getBody(ProtoSpanAdapter.class));
+        groovyPropertySetter.setBodyInScript(exchange, script);
         script.run();
 
     }

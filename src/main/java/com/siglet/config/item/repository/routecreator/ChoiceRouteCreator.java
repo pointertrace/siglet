@@ -1,10 +1,10 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.spanlet.filter.GroovyPredicate;
+import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ChoiceDefinition;
-import org.apache.camel.model.MulticastDefinition;
 
 public class ChoiceRouteCreator implements RouteCreator {
 
@@ -37,11 +37,8 @@ public class ChoiceRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addFilter(String groovyExpression) {
+    public RouteCreator addFilter(Predicate predicate) {
         throw new IllegalStateException("can only be called in multicast");
-//        i++;
-//        choiceDefinition.filter(new GroovyPredicate(groovyExpression)).to("direct:z" + i).end();
-//        return new SimpleRouteCreator(routeBuilder,routeBuilder.from("direct:z"+i));
     }
 
     @Override
@@ -60,14 +57,14 @@ public class ChoiceRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addChoice(String expression) {
+    public RouteCreator addChoice(Predicate predicate) {
         i++;
-        choiceDefinition.when(new GroovyPredicate(expression)).to("direct:c" + i);
+        choiceDefinition.when(predicate).to("direct:c" + i);
         return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:c"+i));
     }
 
     @Override
-    public RouteCreator endChoice(String expression) {
+    public RouteCreator endChoice() {
         i++;
         choiceDefinition.otherwise().to("direct:c"+i).end();
         return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:c"+i));
