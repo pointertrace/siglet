@@ -12,5 +12,5 @@ public interface UnmodifiableTrace {
 
     boolean isComplete();
 
-    int size();
+    int getSize();
 }

@@ -1,6 +1,7 @@
 package com.siglet.spanlet.router;
 
 
+import com.siglet.config.item.ProcessorItem;
 import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.spanlet.ConfigDefinition;
@@ -12,7 +13,7 @@ public class RouterDefinition implements ConfigDefinition {
 
     @Override
     public NodeChecker getChecker() {
-        return requiredProperty(SpanletItem::setConfig, "config",
+        return requiredProperty(ProcessorItem::setConfig, "config",
                 strictObject(RouterConfig::new,
                         requiredProperty(RouterConfig::setDefaultRoute, "default",text()),
                         requiredProperty(RouterConfig::setRoutes, "routes",

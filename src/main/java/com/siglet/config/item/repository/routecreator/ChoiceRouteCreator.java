@@ -33,7 +33,6 @@ public class ChoiceRouteCreator implements RouteCreator {
     @Override
     public RouteCreator addProcessor(Processor processor) {
         throw new IllegalStateException("can only be called in multicast");
-//        return new ChoiceRouteCreator(routeBuilder, choiceDefinition.process(processor));
     }
 
     @Override
@@ -43,6 +42,11 @@ public class ChoiceRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator startMulticast() {
+        throw new IllegalStateException("can only be called in multicast");
+    }
+
+    @Override
+    public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
         throw new IllegalStateException("can only be called in multicast");
     }
 

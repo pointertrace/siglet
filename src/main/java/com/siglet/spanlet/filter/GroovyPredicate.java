@@ -21,7 +21,6 @@ public class GroovyPredicate implements Predicate {
     @Override
     public boolean matches(Exchange exchange) {
         groovyPropertySetter.setBodyInScript(exchange, script);
-        script.setProperty("span", exchange.getIn().getBody(ProtoSpanAdapter.class));
         Object result = script.run();
         if (!(result instanceof Boolean bool)) {
             throw new SigletError("groovy expression for a filter must return a boolean not a " +

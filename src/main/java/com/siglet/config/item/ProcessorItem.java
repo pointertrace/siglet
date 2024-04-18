@@ -5,7 +5,9 @@ import java.util.List;
 
 public class ProcessorItem extends Item {
 
-   private String pipeline;
+    private Object config;
+
+    private String pipeline;
 
    private List<String> to = new ArrayList<>();
 
@@ -28,5 +30,13 @@ public class ProcessorItem extends Item {
 
     public void setToSingleValue(String to)  {
         this.to = List.of(to);
+    }
+
+    public Object getConfig() {
+        return config;
+    }
+
+    public void setConfig(Object config) {
+        this.config = config;
     }
 }

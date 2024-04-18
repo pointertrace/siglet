@@ -191,6 +191,39 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
+    public void parseProcessorTracelet() throws Exception {
+
+
+        var config = """
+                tracelet: name-value
+                to:
+                - first-destination
+                - second-destination
+                type: processor
+                config:
+                  action: action-value
+                """;
+
+
+        ConfigNode node = configParser.parse(config);
+
+        spanletChecker().check(node);
+
+        var value = node.getValue();
+
+        assertNotNull(value);
+
+        var traceletItem = assertInstanceOf(TraceletItem.class, value);
+        assertEquals("name-value", traceletItem.getName());
+        assertEquals(List.of("first-destination", "second-destination"), traceletItem.getTo());
+        assertEquals("processor", traceletItem.getType());
+
+        var processorConfig = assertInstanceOf(ProcessorConfig.class, traceletItem.getConfig());
+
+        assertEquals("action-value", processorConfig.getAction());
+
+    }
+    @Test
     public void parseFilterSpanlet() throws Exception {
 
 
@@ -216,6 +249,36 @@ class ConfigCheckFactoryTest {
         assertEquals("filter", spanletItem.getType());
 
         var filterConfig = assertInstanceOf(FilterConfig.class, spanletItem.getConfig());
+
+        assertEquals("expression-value", filterConfig.getExpression());
+
+    }
+    @Test
+    public void parseFilterTracelet() throws Exception {
+
+
+        var config = """
+                tracelet: name-value
+                to: destination-value
+                type: filter
+                config:
+                  expression: expression-value
+                """;
+
+
+        ConfigNode node = configParser.parse(config);
+
+        spanletChecker().check(node);
+
+        var value = node.getValue();
+
+        assertNotNull(value);
+        var traceletItem = assertInstanceOf(TraceletItem.class, value);
+        assertEquals("name-value", traceletItem.getName());
+        assertEquals(List.of("destination-value"), traceletItem.getTo());
+        assertEquals("filter", traceletItem.getType());
+
+        var filterConfig = assertInstanceOf(FilterConfig.class, traceletItem.getConfig());
 
         assertEquals("expression-value", filterConfig.getExpression());
 
@@ -271,6 +334,52 @@ class ConfigCheckFactoryTest {
 
     }
 
+    @Test
+    public void parseRouterTracelet() throws Exception {
+
+
+        var config = """
+                tracelet: name-value
+                to: destination-value
+                type: router
+                config:
+                  default: default-destination
+                  routes:
+                    - when: first-clause-expression
+                      to: fist-destination
+                    - when: second-clause-expression
+                      to: second-destination
+                """;
+
+
+        ConfigNode node = configParser.parse(config);
+
+        spanletChecker().check(node);
+
+        var value = node.getValue();
+
+        assertNotNull(value);
+        var traceletItem = assertInstanceOf(TraceletItem.class, value);
+
+
+        assertEquals("name-value", traceletItem.getName());
+        assertEquals(List.of("destination-value"), traceletItem.getTo());
+        assertEquals("router", traceletItem.getType());
+
+        var routerConfig = assertInstanceOf(RouterConfig.class, traceletItem.getConfig());
+        assertEquals("default-destination", routerConfig.getDefaultRoute());
+        assertEquals(2, routerConfig.getRoutes().size());
+
+        Route firstClause = routerConfig.getRoutes().getFirst();
+        assertEquals("first-clause-expression", firstClause.getExpression());
+        assertEquals("fist-destination", firstClause.getTo());
+
+        Route secondClause = routerConfig.getRoutes().get(1);
+        assertEquals("second-clause-expression", secondClause.getExpression());
+        assertEquals("second-destination", secondClause.getTo());
+
+
+    }
     @Test
     public void parseTraceAggregatorSpanlet() throws Exception {
 

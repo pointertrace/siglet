@@ -2,6 +2,10 @@ package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
+import com.siglet.spanlet.GroovyPropertySetter;
+import com.siglet.spanlet.filter.GroovyPredicate;
+import com.siglet.spanlet.traceaggregator.TraceAggregationStrategy;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
@@ -38,12 +42,33 @@ public class SimpleRouteCreator implements RouteCreator {
     @Override
     public RouteCreator addFilter(Predicate predicate) {
         num++;
-        routeDefinition.filter(predicate).to("direct:y" + num).end();
-        return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:y" + num));
+        routeDefinition.filter(predicate).to("direct:filter" + num).end();
+        return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:filter" + num));
     }
 
     public RouteCreator startMulticast() {
         return new MulticastRouteCreator(routeBuilder, routeDefinition.multicast().onPrepare(new CloneProcessor()));
+    }
+
+    @Override
+    public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
+
+        num ++;
+        var aggregate = routeDefinition
+                .aggregate(new TraceAggregationStrategy())
+                .expression(new TraceAggregatorCorrelationExpression());
+
+        if (completionExpression != null) {
+            aggregate = aggregate.completion(new GroovyPredicate(completionExpression, GroovyPropertySetter.trace));
+        }
+        if (inactiveTimeoutMillis != null) {
+            aggregate = aggregate.completionTimeout(inactiveTimeoutMillis);
+        }
+        if (timeoutMillis != null) {
+            aggregate = aggregate.completionTimeout(timeoutMillis);
+        }
+        aggregate.to("direct:aggregate"+ num);
+        return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:aggregate"+ num));
     }
 
     public void endMulticast() {

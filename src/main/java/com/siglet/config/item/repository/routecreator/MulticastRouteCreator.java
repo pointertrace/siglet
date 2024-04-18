@@ -1,6 +1,5 @@
 package com.siglet.config.item.repository.routecreator;
 
-import com.siglet.spanlet.filter.GroovyPredicate;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -44,6 +43,11 @@ public class MulticastRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator startMulticast() {
+        throw new IllegalStateException("can only be called in impleroute");
+    }
+
+    @Override
+    public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
         throw new IllegalStateException("can only be called in simpleroute");
     }
 

@@ -1,8 +1,9 @@
-package com.siglet.spanlet;
+package com.siglet.spanlet.span;
 
 import com.siglet.spanlet.filter.FilterDefinition;
 import com.siglet.spanlet.processor.ProcessorDefinition;
 import com.siglet.spanlet.router.RouterDefinition;
+import com.siglet.spanlet.span.SpanletType;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,6 +1,8 @@
-package com.siglet.spanlet;
+package com.siglet.spanlet.trace;
 
-public class SpanletType {
+import com.siglet.spanlet.ConfigDefinition;
+
+public class TraceletType {
 
     private final ConfigDefinition configDefinition;
 
@@ -8,7 +10,7 @@ public class SpanletType {
 
     private final String name;
 
-    public SpanletType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
+    public TraceletType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
         this.name = name;
         this.clazz = clazz;
         this.configDefinition = configDefinition;

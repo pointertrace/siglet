@@ -11,6 +11,8 @@ import com.siglet.spanlet.processor.GroovyProcessor;
 import com.siglet.spanlet.processor.ProcessorConfig;
 import com.siglet.spanlet.router.RouterConfig;
 import com.siglet.spanlet.router.Route;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorConfig;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.*;
@@ -29,6 +31,10 @@ public class NodeRepository {
                     new PipelineNode(tracePipelineItem.getName(), tracePipelineItem));
             case SpanletItem spanletItem ->
                     repository.put(spanletItem.getName(), new SpanletNode(spanletItem.getName(), spanletItem));
+            case TraceAggregatorItem traceAggregatorItem -> repository.put(traceAggregatorItem.getName(),
+                    new TraceAggregatorNode(traceAggregatorItem.getName(), traceAggregatorItem));
+            case TraceletItem traceletItem -> repository.put(traceletItem.getName(),
+                    new TraceletNode(traceletItem.getName(), traceletItem));
             default -> throw new SigletError("Could not add config item type " + item.getClass().getName());
         }
     }
@@ -51,7 +57,7 @@ public class NodeRepository {
             Node<?> node = repository.get(name);
             if (node == null) {
                 throw new SigletError("Could not find any config item named [" + name + "]");
-            } else if (!node.getClass().isAssignableFrom(nodeType)) {
+            } else if (!nodeType.isAssignableFrom(node.getClass())) {
                 throw new SigletError(String.format("Expecting node %s to be of type %s but its type is %s!", name,
                         nodeType.getName(), node.getClass().getName()));
             }
@@ -76,6 +82,33 @@ public class NodeRepository {
                     spanletNode.setPipeline((PipelineNode) repository.get(spanletNode.getItem().getPipeline()));
 
                 }
+                case TraceletNode traceletNode -> {
+                    List<Node<?>> toNodes = getFromNames(traceletNode.getItem().getTo());
+                    toNodes.forEach(toNode -> {
+                        if (toNode instanceof ExporterNode exporterNode) {
+                            exporterNode.getFrom().add(traceletNode);
+                        }
+                        // e se não for???
+                    });
+                    traceletNode.setTo(toNodes);
+
+                    traceletNode.setPipeline((PipelineNode) repository.get(traceletNode.getItem().getPipeline()));
+
+                }
+                case TraceAggregatorNode traceAggregatorNode -> {
+
+                    List<Node<?>> toNodes = getFromNames(traceAggregatorNode.getItem().getTo());
+                    toNodes.forEach(toNode -> {
+                        if (toNode instanceof ExporterNode exporterNode) {
+                            exporterNode.getFrom().add(traceAggregatorNode);
+                        }
+                        // e se não for???
+                    });
+                    traceAggregatorNode.setTo(toNodes);
+
+                    traceAggregatorNode.setPipeline((PipelineNode) repository.get(traceAggregatorNode.getItem().getPipeline()));
+
+                }
                 case PipelineNode pipelineNode -> {
                     List<ReceiverNode> fromNodes = getFromNames(ReceiverNode.class, pipelineNode.getItem().getFrom());
                     fromNodes.forEach(fromNode -> {
@@ -86,7 +119,7 @@ public class NodeRepository {
                     });
                     pipelineNode.setFrom(fromNodes);
 
-                    List<SpanletNode> startNodes = getFromNames(SpanletNode.class, pipelineNode.getItem().getStart());
+                    List<ProcessorNode> startNodes = getFromNames(ProcessorNode.class, pipelineNode.getItem().getStart());
                     pipelineNode.setStart(startNodes);
 
                 }
@@ -119,6 +152,12 @@ public class NodeRepository {
             case SpanletNode spanletNode -> {
                 spanlet(spanletNode, routeCreator);
             }
+            case TraceletNode traceletNode -> {
+                tracelet(traceletNode, routeCreator);
+            }
+            case TraceAggregatorNode traceAggregatorNode -> {
+                traceAggregatorNode(traceAggregatorNode, routeCreator);
+            }
             case ExporterNode exporterNode -> {
                 grpcExporter(exporterNode, routeCreator);
             }
@@ -130,12 +169,42 @@ public class NodeRepository {
         }
     }
 
+    private void traceAggregatorNode(TraceAggregatorNode traceAggregatorNode, RouteCreator routeCreator) {
+        switch (traceAggregatorNode.getItem().getType()) {
+            case "default":
+                Object config = traceAggregatorNode.getItem().getConfig();
+                if (!(config instanceof TraceAggregatorConfig traceAggregatorConfig)) {
+                    throw new SigletError("");
+                }
+                if (traceAggregatorNode.getTo().size() == 1) {
+
+                    next(traceAggregatorNode.getTo().getFirst(), routeCreator.traceAggregator(
+                            traceAggregatorConfig.getCompletionExpression(),
+                            traceAggregatorConfig.getInactiveTimeoutMillis(),
+                            traceAggregatorConfig.getTimeoutMillis()));
+                } else {
+
+                    RouteCreator multicast = routeCreator.traceAggregator(
+                            traceAggregatorConfig.getCompletionExpression(),
+                            traceAggregatorConfig.getInactiveTimeoutMillis(),
+                            traceAggregatorConfig.getTimeoutMillis()).startMulticast();
+                    for (Node<?> node : traceAggregatorNode.getTo()) {
+                        next(node, multicast);
+                    }
+                    multicast.endMulticast();
+                }
+                break;
+            default:
+                throw new IllegalStateException("not yet implemented");
+        }
+    }
+
     public void pipeline(PipelineNode pipelineNode, RouteCreator routeCreator) {
         if (pipelineNode.getStart().size() == 1) {
             next(pipelineNode.getStart().getFirst(), routeCreator);
         } else {
             RouteCreator multicast = routeCreator.startMulticast();
-            for (SpanletNode node : pipelineNode.getStart()) {
+            for (ProcessorNode<?> node : pipelineNode.getStart()) {
                 next(node, multicast);
             }
             multicast.endMulticast();
@@ -166,7 +235,7 @@ public class NodeRepository {
                             addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)));
                 } else {
                     RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction(),GroovyPropertySetter.span)).startMulticast();
+                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)).startMulticast();
                     for (Node<?> node : spanletNode.getTo()) {
                         next(node, multicast);
                     }
@@ -183,7 +252,7 @@ public class NodeRepository {
                             new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span)));
                 } else {
                     RouteCreator multicast = routeCreator.addFilter(
-                                    new GroovyPredicate(filterConfig.getExpression(),GroovyPropertySetter.span))
+                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span))
                             .startMulticast();
                     for (Node<?> node : spanletNode.getTo()) {
                         next(node, multicast);
@@ -208,6 +277,59 @@ public class NodeRepository {
         }
     }
 
+    public void tracelet(TraceletNode traceletNode, RouteCreator routeCreator) {
+        switch (traceletNode.getItem().getType()) {
+            case "processor":
+                Object config = traceletNode.getItem().getConfig();
+                if (!(config instanceof ProcessorConfig processorConfig)) {
+                    throw new SigletError("");
+                }
+                if (traceletNode.getTo().size() == 1) {
+                    next(traceletNode.getTo().getFirst(), routeCreator.
+                            addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)));
+                } else {
+                    RouteCreator multicast = routeCreator.addProcessor(
+                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)).startMulticast();
+                    for (Node<?> node : traceletNode.getTo()) {
+                        next(node, multicast);
+                    }
+                    multicast.endMulticast();
+                }
+                break;
+            case "filter":
+                config = traceletNode.getItem().getConfig();
+                if (!(config instanceof FilterConfig filterConfig)) {
+                    throw new SigletError("");
+                }
+                if (traceletNode.getTo().size() == 1) {
+                    next(traceletNode.getTo().getFirst(), routeCreator.addFilter(
+                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace)));
+                } else {
+                    RouteCreator multicast = routeCreator.addFilter(
+                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace))
+                            .startMulticast();
+                    for (Node<?> node : traceletNode.getTo()) {
+                        next(node, multicast);
+                    }
+                    multicast.endMulticast();
+                }
+                break;
+            case "router":
+                config = traceletNode.getItem().getConfig();
+                if (!(config instanceof RouterConfig routerConfig)) {
+                    throw new SigletError("");
+                }
+                RouteCreator choice = routeCreator.startChoice();
+                for (Route route : routerConfig.getRoutes()) {
+                    next(getToFromName(traceletNode.getTo(), route.getTo()), choice.addChoice(
+                            new GroovyPredicate(route.getExpression(), GroovyPropertySetter.trace)));
+                }
+                next(getToFromName(traceletNode.getTo(), routerConfig.getDefaultRoute()), choice.endChoice());
+                break;
+            default:
+                throw new IllegalStateException("not yet implemented");
+        }
+    }
     public Node<?> getToFromName(List<Node<?>> to, String name) {
         for (Node<?> node : to) {
             if (node.getName().equals(name)) {

@@ -46,6 +46,11 @@ public class RootRouteCreator implements RouteCreator {
     }
 
     @Override
+    public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
+        throw new IllegalStateException("can only be called in simpleroute");
+    }
+
+    @Override
     public void endMulticast() {
         throw new IllegalStateException("can only be called in root");
     }

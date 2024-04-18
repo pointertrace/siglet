@@ -1,8 +1,6 @@
 package com.siglet.config.item.repository;
 
-import com.siglet.config.item.Item;
 import com.siglet.config.item.TracePipelineItem;
-import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +9,19 @@ public class PipelineNode extends Node<TracePipelineItem> {
 
     private List<ReceiverNode> from = new ArrayList<>();
 
-    private List<SpanletNode> start = new ArrayList<>();
+    private List<ProcessorNode> start = new ArrayList<>();
 
-    private List<SpanletNode> processors = new ArrayList<>();
+    private List<ProcessorNode<?>> processors = new ArrayList<>();
 
     public PipelineNode(String name, TracePipelineItem tracePipelineItem) {
         super(name, tracePipelineItem);
     }
 
-    public List<SpanletNode> getProcessors() {
+    public List<ProcessorNode<?>> getProcessors() {
         return processors;
     }
 
-    public void setProcessors(List<SpanletNode> processors) {
+    public void setProcessors(List<ProcessorNode<?>> processors) {
         this.processors = processors;
     }
 
@@ -35,11 +33,11 @@ public class PipelineNode extends Node<TracePipelineItem> {
         this.from = from;
     }
 
-    public List<SpanletNode> getStart() {
+    public List<ProcessorNode> getStart() {
         return start;
     }
 
-    public void setStart(List<SpanletNode> start) {
+    public void setStart(List<ProcessorNode> start) {
         this.start = start;
     }
 }

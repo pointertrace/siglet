@@ -70,12 +70,15 @@ public class ConfigItem {
     protected NodeRepository createRepository() {
         NodeRepository nodeRepository = new NodeRepository();
 
+
         getReceivers().forEach(nodeRepository::addItem);
         getExporters().forEach(nodeRepository::addItem);
         getPipelines().forEach(nodeRepository::addItem);
         getPipelines().stream()
-                .flatMap(pipelines -> pipelines.getProcessors().stream())
+//                .forEach(pipeline -> System.out.println(pipeline.getClass().getTypeName()))
+                .flatMap(this::getItems)
                 .forEach(nodeRepository::addItem);
+//                .forEach(item -> System.out.println("teste:" + item));
 
         nodeRepository.connect();
 
@@ -85,6 +88,12 @@ public class ConfigItem {
     public RouteBuilder build() {
         NodeRepository nodeRepository = createRepository();
         return nodeRepository.createRouteBuilder();
+    }
+
+    public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipline) {
+        System.out.println(pipline.getClass().getTypeName());
+        return pipline.getProcessors().stream();
+
     }
 
 }

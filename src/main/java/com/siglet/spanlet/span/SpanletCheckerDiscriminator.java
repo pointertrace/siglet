@@ -1,4 +1,4 @@
-package com.siglet.spanlet;
+package com.siglet.spanlet.span;
 
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
@@ -6,6 +6,8 @@ import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaValidationError;
 import com.siglet.config.parser.schema.SingleSchemaValidationError;
+import com.siglet.spanlet.span.SpanletType;
+import com.siglet.spanlet.span.SpanletTypes;
 
 public class SpanletCheckerDiscriminator implements DynamicCheckerDiscriminator {
 

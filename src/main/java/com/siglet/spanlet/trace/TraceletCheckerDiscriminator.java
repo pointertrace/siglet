@@ -1,4 +1,4 @@
-package com.siglet.spanlet.traceaggregator;
+package com.siglet.spanlet.trace;
 
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
@@ -6,13 +6,15 @@ import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaValidationError;
 import com.siglet.config.parser.schema.SingleSchemaValidationError;
+import com.siglet.spanlet.span.SpanletType;
+import com.siglet.spanlet.span.SpanletTypes;
 
-public class TraceAggregatorCheckerDiscriminator implements DynamicCheckerDiscriminator {
+public class TraceletCheckerDiscriminator implements DynamicCheckerDiscriminator {
 
-    private final TraceAggregatorTypes traceAggregatorTypes;
+    private TraceletTypes traceletTypes;
 
-    public TraceAggregatorCheckerDiscriminator(TraceAggregatorTypes traceAggregatorTypes) {
-        this.traceAggregatorTypes = traceAggregatorTypes;
+    public TraceletCheckerDiscriminator(TraceletTypes traceletTypes) {
+        this.traceletTypes = traceletTypes;
     }
 
     @Override
@@ -24,7 +26,7 @@ public class TraceAggregatorCheckerDiscriminator implements DynamicCheckerDiscri
         if (type == null) {
             throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
         }
-        TraceAggregatorType traceAggregatorType = traceAggregatorTypes.get(type.getValue().toString());
-        return traceAggregatorType.getConfigDefinition().getChecker();
+        TraceletType traceletType = traceletTypes.get(type.getValue().toString());
+        return traceletType.getConfigDefinition().getChecker();
     }
 }

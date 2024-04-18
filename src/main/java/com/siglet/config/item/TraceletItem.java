@@ -1,8 +1,6 @@
 package com.siglet.config.item;
 
-import java.util.List;
-
-public class SpanletItem extends ProcessorItem {
+public class TraceletItem extends ProcessorItem {
 
     private String type;
 

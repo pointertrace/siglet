@@ -36,6 +36,12 @@ public class CopySimpleSpanletProcessorTest extends CamelTestSupport {
                                 return type.cast(str);
                             }
                         }, new TraceAggregationStrategy())
+                        .completionPredicate(new Predicate() {
+                            @Override
+                            public boolean matches(Exchange exchange) {
+                                return false;
+                            }
+                        })
                         .completionSize(2)
                         .to("mock:output");
             }
@@ -71,7 +77,7 @@ public class CopySimpleSpanletProcessorTest extends CamelTestSupport {
 
         assertEquals(1, mock.getExchanges().size());
         var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
-        assertEquals(2, traceAdapter.size());
+        assertEquals(2, traceAdapter.getSize());
         assertEquals(0, traceAdapter.getTraceIdHigh());
         assertEquals(2, traceAdapter.getTraceIdLow());
         assertNotNull(traceAdapter.get(1));

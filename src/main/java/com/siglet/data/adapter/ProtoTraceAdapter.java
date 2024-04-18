@@ -1,12 +1,13 @@
 package com.siglet.data.adapter;
 
+import com.siglet.data.Clonable;
 import com.siglet.data.modifiable.ModifiableSpan;
 import com.siglet.data.modifiable.ModifiableTrace;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProtoTraceAdapter implements ModifiableTrace {
+public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
     private final boolean updatable;
 
@@ -14,7 +15,7 @@ public class ProtoTraceAdapter implements ModifiableTrace {
 
     private final Map<Long, ModifiableSpan> spans = new HashMap<>();
 
-    public ProtoTraceAdapter(ProtoSpanAdapter firstSpan, boolean updatable) {
+    public ProtoTraceAdapter(ModifiableSpan firstSpan, boolean updatable) {
         this.firstSpan = firstSpan;
         this.spans.put(firstSpan.getSpanId(), firstSpan);
         this.updatable = updatable;
@@ -58,7 +59,7 @@ public class ProtoTraceAdapter implements ModifiableTrace {
     }
 
     @Override
-    public int size() {
+    public int getSize() {
         return spans.size();
     }
 
@@ -77,5 +78,12 @@ public class ProtoTraceAdapter implements ModifiableTrace {
         if (!updatable) {
             throw new IllegalStateException("trying to change a non updatable trace");
         }
+    }
+
+    @Override
+    public ProtoTraceAdapter clone() {
+        ProtoTraceAdapter result = new ProtoTraceAdapter(firstSpan, updatable);
+        spans.values().forEach(result::add);
+        return result;
     }
 }

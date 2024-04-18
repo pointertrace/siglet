@@ -1,17 +1,17 @@
 package com.siglet.config.item.repository;
 
-import com.siglet.config.item.SpanletItem;
+import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpanletNode extends ProcessorNode<SpanletItem> {
+public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 
     private List<Node<?>> to = new ArrayList<>();
 
     private PipelineNode pipeline;
 
-    public SpanletNode(String name, SpanletItem item) {
+    public TraceAggregatorNode(String name, TraceAggregatorItem item) {
         super(name, item);
     }
 

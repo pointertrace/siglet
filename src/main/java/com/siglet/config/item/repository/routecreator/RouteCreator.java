@@ -15,6 +15,8 @@ public interface RouteCreator {
 
     RouteCreator startMulticast();
 
+    RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis);
+
     void endMulticast();
 
     RouteCreator startChoice();
