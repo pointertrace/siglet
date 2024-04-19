@@ -3,9 +3,13 @@ package com.siglet.data.adapter;
 import com.siglet.data.Clonable;
 import com.siglet.data.modifiable.ModifiableSpan;
 import com.siglet.data.modifiable.ModifiableTrace;
+import com.siglet.data.unmodifiable.UnmodifiableSpan;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
@@ -13,11 +17,14 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
     private final ModifiableSpan firstSpan;
 
-    private final Map<Long, ModifiableSpan> spans = new HashMap<>();
+    private final Map<Long, ModifiableSpan> spansBySpanId = new HashMap<>();
+
+    private final List<ModifiableSpan> spans = new ArrayList<>();
 
     public ProtoTraceAdapter(ModifiableSpan firstSpan, boolean updatable) {
         this.firstSpan = firstSpan;
-        this.spans.put(firstSpan.getSpanId(), firstSpan);
+        this.spansBySpanId.put(firstSpan.getSpanId(), firstSpan);
+        this.spans.add(firstSpan);
         this.updatable = updatable;
     }
 
@@ -39,18 +46,25 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
     @Override
     public void add(ModifiableSpan span) {
         checkUpdate();
-        spans.put(span.getSpanId(), span);
+        spansBySpanId.put(span.getSpanId(), span);
+        spans.add(span);
     }
 
     @Override
     public boolean remove(long spanId) {
         checkUpdate();
-        return spans.remove(spanId) != null;
+        return spansBySpanId.remove(spanId) != null;
     }
 
     @Override
     public ModifiableSpan get(long spanId) {
-        return spans.get(spanId);
+        return spansBySpanId.get(spanId);
+    }
+
+    @Override
+    public UnmodifiableSpan getAt(int index) {
+        System.out.println("------------------------ at:" +index+ ", size=" + spans.size());
+        return spans.get(index);
     }
 
     @Override
@@ -60,18 +74,18 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
     @Override
     public int getSize() {
-        return spans.size();
+        return spansBySpanId.size();
     }
 
 
     private boolean hasRoot() {
-        return spans.values().stream().anyMatch(span -> span.getLinks().size() == 0);
+        return spansBySpanId.values().stream().anyMatch(span -> span.getLinks().size() == 0);
     }
 
     private boolean hasOrphan() {
-        return spans.values().stream()
+        return spansBySpanId.values().stream()
                 .flatMap(span -> span.getLinks().stream())
-                .anyMatch(link -> spans.get(link.getSpanId()) == null);
+                .anyMatch(link -> spansBySpanId.get(link.getSpanId()) == null);
     }
 
     private void checkUpdate() {
@@ -83,7 +97,11 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
     @Override
     public ProtoTraceAdapter clone() {
         ProtoTraceAdapter result = new ProtoTraceAdapter(firstSpan, updatable);
-        spans.values().forEach(result::add);
+        spansBySpanId.values().forEach(result::add);
         return result;
+    }
+
+    public void forEachSpan(Consumer<ModifiableSpan> spanConsumer) {
+        spans.forEach(spanConsumer);
     }
 }

@@ -10,6 +10,8 @@ public interface UnmodifiableTrace {
 
     UnmodifiableSpan get(long spanId);
 
+    UnmodifiableSpan getAt(int index);
+
     boolean isComplete();
 
     int getSize();

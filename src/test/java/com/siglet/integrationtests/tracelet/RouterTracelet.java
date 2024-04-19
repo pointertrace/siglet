@@ -248,7 +248,7 @@ public class RouterTracelet extends CamelTestSupport {
         mock = getMockEndpoint("mock:second-output");
         mock.expectedMessageCount(0);
         mock.assertIsSatisfied();
-        
+
         mock = getMockEndpoint("mock:third-output");
         assertEquals(1, mock.getExchanges().size());
         var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());

@@ -25,6 +25,7 @@ public class ForkSpanletProcessorTest {
     }
 
 
+    @Test
     public void test() throws Exception {
         var configFile = """
                 receivers:
@@ -39,23 +40,23 @@ public class ForkSpanletProcessorTest {
                 - trace: pipeline
                   from: receiver
                   start:
-                  - first spanlet
-                  - second spanlet
+                  - trace-aggregator
                   pipeline:
-                  - spanlet: first spanlet
-                    to: first-exporter
-                    type: processor
+                  - trace-aggregator: trace-aggregator
+                    to: router
+                    type: default
                     config:
-                      action: >
-                        span.setName("prefix-" + span.getName())
-                        println "first spanId=" + span.getSpanId()
-                  - spanlet: second spanlet
-                    to: second-exporter
-                    type: processor
+                      inactive-timeout-millis: 2000
+                  - tracelet: router
+                    to:
+                    - first-exporter
+                    - second-exporter
+                    type: router
                     config:
-                      action: >
-                        span.setName(span.getName() + "-sufix")
-                        println "second spanId=" + span.getSpanId()
+                      default: first-exporter
+                      routes:
+                      - when: trace[0].spanId % 2 == 0
+                        to: second-exporter
                 """;
 
 
@@ -76,11 +77,10 @@ public class ForkSpanletProcessorTest {
             camelContext.addComponent("otelgrpc", new SigletComponent());
             camelContext.addRoutes(b);
             camelContext.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
+            countDownLatch.await();
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
-
-        countDownLatch.await();
 
     }
 }
