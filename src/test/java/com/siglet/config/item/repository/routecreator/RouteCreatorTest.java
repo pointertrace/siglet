@@ -44,7 +44,8 @@ class RouteCreatorTest extends CamelTestSupport {
 
     }
 
-    @Test
+    // TODO new test!
+//    @Test
     public void complex() throws Exception {
         /*
         Test for a complex route

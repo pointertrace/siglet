@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 @FunctionalInterface
 public interface ValueSetter {
 
-    public static final ValueSetter EMPTY = (Object a, Object b) -> {
+    ValueSetter EMPTY = (Object a, Object b) -> {
     };
 
     void set(Object obj, Object value);

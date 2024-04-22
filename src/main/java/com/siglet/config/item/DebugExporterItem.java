@@ -1,7 +1,5 @@
 package com.siglet.config.item;
 
-import java.net.InetSocketAddress;
-
 public class DebugExporterItem extends ExporterItem {
 
 

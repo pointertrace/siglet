@@ -52,7 +52,7 @@ public class RouterSpanlet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.create(yaml);
+        Config config = configFactory.otherCreate(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 

@@ -12,22 +12,32 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class SimpleRouteCreator implements RouteCreator {
 
     private final RouteBuilder routeBuilder;
 
     private final RouteDefinition routeDefinition;
 
-    private static int num = 10000;
+    private final AtomicInteger seed;
 
-    public SimpleRouteCreator(RouteBuilder routeBuilder, RouteDefinition routeDefinition) {
+    private final RouteLink filterRouterLink;
+
+    private final RouteLink aggregatorRouteLink;
+
+    public SimpleRouteCreator(AtomicInteger seed, RouteBuilder routeBuilder, RouteDefinition routeDefinition) {
+        this.seed = seed;
         this.routeBuilder = routeBuilder;
         this.routeDefinition = routeDefinition;
+        this.filterRouterLink = new RouteLink(seed, "filter");
+        this.aggregatorRouteLink = new RouteLink(seed, "aggregator");
     }
+
 
     @Override
     public RouteCreator addReceiver(String uri) {
-        throw new IllegalStateException("can only be called in root");
+        throw new SigletError("cannot be called from a SimpleRouteCreator");
     }
 
     @Override
@@ -36,24 +46,23 @@ public class SimpleRouteCreator implements RouteCreator {
     }
 
     public RouteCreator addProcessor(Processor processor) {
-        return new SimpleRouteCreator(routeBuilder, routeDefinition.process(processor));
+        return new SimpleRouteCreator(seed, routeBuilder, routeDefinition.process(processor));
     }
 
     @Override
     public RouteCreator addFilter(Predicate predicate) {
-        num++;
-        routeDefinition.filter(predicate).to("direct:filter" + num).end();
-        return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:filter" + num));
+        filterRouterLink.increment();
+        routeDefinition.filter(predicate).to(filterRouterLink.getLink()).end();
+        return new SimpleRouteCreator(seed, routeBuilder, routeBuilder.from(filterRouterLink.getLink()));
     }
 
     public RouteCreator startMulticast() {
-        return new MulticastRouteCreator(routeBuilder, routeDefinition.multicast().onPrepare(new CloneProcessor()));
+        return new MulticastRouteCreator(routeDefinition.multicast().onPrepare(new CloneProcessor()));
     }
 
     @Override
     public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
-
-        num ++;
+        aggregatorRouteLink.increment();
         var aggregate = routeDefinition
                 .aggregate(new TraceAggregationStrategy())
                 .expression(new TraceAggregatorCorrelationExpression());
@@ -67,27 +76,27 @@ public class SimpleRouteCreator implements RouteCreator {
         if (timeoutMillis != null) {
             aggregate = aggregate.completionTimeout(timeoutMillis);
         }
-        aggregate.to("direct:aggregate"+ num);
-        return new SimpleRouteCreator(routeBuilder, routeBuilder.from("direct:aggregate"+ num));
+        aggregate.to(aggregatorRouteLink.getLink());
+        return new SimpleRouteCreator(seed, routeBuilder, routeBuilder.from(aggregatorRouteLink.getLink()));
     }
 
     public void endMulticast() {
-        throw new IllegalStateException("can only be called in multicast");
+        throw new SigletError("cannot be called from a SimpleRouteCreator");
     }
 
     @Override
     public RouteCreator startChoice() {
-        return new ChoiceRouteCreator(routeBuilder, routeDefinition.choice());
+        return new ChoiceRouteCreator(seed, routeBuilder, routeDefinition.choice());
     }
 
     @Override
     public RouteCreator addChoice(Predicate predicate) {
-        throw new IllegalStateException("can only be called in multicast");
+        throw new SigletError("cannot be called from a SimpleRouteCreator");
     }
 
     @Override
     public RouteCreator endChoice() {
-        throw new IllegalStateException("can only be called in multicast");
+        throw new SigletError("cannot be called from a SimpleRouteCreator");
     }
 
     public static class CloneProcessor implements Processor {

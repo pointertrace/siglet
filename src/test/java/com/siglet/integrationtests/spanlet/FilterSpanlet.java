@@ -40,7 +40,7 @@ public class FilterSpanlet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.create(yaml);
+        Config config = configFactory.otherCreate(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 
@@ -95,7 +95,7 @@ public class FilterSpanlet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.create(yaml);
+        Config config = configFactory.otherCreate(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 

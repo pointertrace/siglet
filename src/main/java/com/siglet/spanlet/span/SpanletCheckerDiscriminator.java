@@ -11,7 +11,7 @@ import com.siglet.spanlet.span.SpanletTypes;
 
 public class SpanletCheckerDiscriminator implements DynamicCheckerDiscriminator {
 
-    private SpanletTypes spanletTypes;
+    private final SpanletTypes spanletTypes;
 
     public SpanletCheckerDiscriminator(SpanletTypes spanletTypes) {
         this.spanletTypes = spanletTypes;

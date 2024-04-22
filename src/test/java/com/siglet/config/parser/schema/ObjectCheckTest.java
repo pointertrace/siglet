@@ -5,9 +5,6 @@ import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-
 class ObjectCheckTest {
 
     private ObjectChecker objectCheck;

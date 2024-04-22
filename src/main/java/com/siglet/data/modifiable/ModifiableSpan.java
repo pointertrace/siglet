@@ -1,10 +1,7 @@
 package com.siglet.data.modifiable;
 
-import com.google.protobuf.ByteString;
 import com.siglet.data.trace.SpanKind;
 import com.siglet.data.unmodifiable.UnmodifiableSpan;
-
-import java.nio.ByteBuffer;
 
 public interface ModifiableSpan extends UnmodifiableSpan {
 

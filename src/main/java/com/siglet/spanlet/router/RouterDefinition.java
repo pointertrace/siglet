@@ -2,7 +2,6 @@ package com.siglet.spanlet.router;
 
 
 import com.siglet.config.item.ProcessorItem;
-import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.spanlet.ConfigDefinition;
 

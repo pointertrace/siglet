@@ -1,5 +1,7 @@
 package com.siglet.spanlet.router;
 
+import com.siglet.config.item.repository.Node;
+
 import java.util.List;
 
 public class RouterConfig {
@@ -7,6 +9,7 @@ public class RouterConfig {
     private List<Route> routes;
 
     private String defaultRoute;
+
 
     public List<Route> getRoutes() {
         return routes;
@@ -23,4 +26,5 @@ public class RouterConfig {
     public String getDefaultRoute() {
         return defaultRoute;
     }
+
 }

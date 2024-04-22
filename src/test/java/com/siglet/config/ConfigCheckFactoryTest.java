@@ -1,10 +1,6 @@
 package com.siglet.config;
 
 import com.siglet.config.item.*;
-import com.siglet.config.item.ExporterItem;
-import com.siglet.config.item.GrpcReceiverItem;
-import com.siglet.config.item.ReceiverItem;
-import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.spanlet.filter.FilterConfig;
@@ -20,7 +16,6 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 import static com.siglet.config.ConfigCheckFactory.*;
-import static com.siglet.config.parser.schema.SchemaFactory.text;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigCheckFactoryTest {

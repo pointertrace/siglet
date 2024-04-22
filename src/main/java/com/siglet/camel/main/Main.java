@@ -1,6 +1,5 @@
 package com.siglet.camel.main;
 
-import com.siglet.camel.component.OtelGrpcTraceServiceImpl;
 import com.siglet.camel.component.SigletComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.example.MyRouteBuilder;

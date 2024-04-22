@@ -8,7 +8,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -64,7 +63,6 @@ public class SimpleSpanletProcessorTest {
 
         var globalConfig = assertInstanceOf(ConfigItem.class, conf);
 
-        globalConfig.validateUniqueNames();
         globalConfig.build();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);

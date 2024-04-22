@@ -5,9 +5,9 @@ import io.opentelemetry.proto.trace.v1.Span;
 
 public class ProtoEventAdapter implements ModifiableEvent {
 
-    private Span.Event protoEvent;
+    private final Span.Event protoEvent;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

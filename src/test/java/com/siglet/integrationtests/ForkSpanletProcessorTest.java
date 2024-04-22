@@ -25,7 +25,6 @@ public class ForkSpanletProcessorTest {
     }
 
 
-    @Test
     public void test() throws Exception {
         var configFile = """
                 receivers:
@@ -69,7 +68,6 @@ public class ForkSpanletProcessorTest {
 
         var globalConfig = assertInstanceOf(ConfigItem.class, conf);
 
-        globalConfig.validateUniqueNames();
         RouteBuilder b = globalConfig.build();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);

@@ -39,7 +39,24 @@ public class NodeRepository {
         }
     }
 
-    public List<Node<?>> getFromNames(List<String> names) {
+    public List<ReceiverNode> getReceiverNodesFromNames(List<String> names) {
+        List<ReceiverNode> nodes = new ArrayList<>();
+        for (String name : names) {
+            Node<?> node = repository.get(name);
+            if (node == null) {
+                throw new SigletError("Could not find any config item named [" + name + "]");
+            } else {
+                if (!(node instanceof ReceiverNode receiverNode)) {
+                    throw new SigletError("Node [" + name + "] is a " + node.getClass().getName() + "not a ReceiverNode");
+                } else {
+                    nodes.add(receiverNode);
+                }
+            }
+        }
+        return nodes;
+    }
+
+    List<Node<?>> getNodesFromNames(List<String> names) {
         List<Node<?>> nodes = new ArrayList<>();
         for (String name : names) {
             Node<?> node = repository.get(name);
@@ -51,83 +68,54 @@ public class NodeRepository {
         return nodes;
     }
 
-    public <T extends Node<?>> List<T> getFromNames(Class<T> nodeType, List<String> names) {
-        List<T> nodes = new ArrayList<>();
+    List<ProcessorNode<?>> getProcessorNodesFromNames(List<String> names) {
+        List<ProcessorNode<?>> nodes = new ArrayList<>();
         for (String name : names) {
             Node<?> node = repository.get(name);
             if (node == null) {
                 throw new SigletError("Could not find any config item named [" + name + "]");
-            } else if (!nodeType.isAssignableFrom(node.getClass())) {
-                throw new SigletError(String.format("Expecting node %s to be of type %s but its type is %s!", name,
-                        nodeType.getName(), node.getClass().getName()));
+            } else {
+                if (!(node instanceof ProcessorNode<?> processorNode)) {
+                    throw new SigletError("Node [" + name + "] is a " + node.getClass().getName() + "not a ProcessorNode");
+                } else {
+                    nodes.add(processorNode);
+                }
             }
-            nodes.add((T) node);
         }
         return nodes;
     }
 
     public void connect() {
+
         repository.values().forEach(node -> {
             switch (node) {
-                case SpanletNode spanletNode -> {
-                    List<Node<?>> toNodes = getFromNames(spanletNode.getItem().getTo());
+                case ProcessorNode<?> processorNode -> {
+                    List<Node<?>> toNodes = getNodesFromNames(processorNode.getItem().getTo());
                     toNodes.forEach(toNode -> {
                         if (toNode instanceof ExporterNode exporterNode) {
-                            exporterNode.getFrom().add(spanletNode);
+                            exporterNode.getFrom().add(processorNode);
                         }
-                        // e se não for???
                     });
-                    spanletNode.setTo(toNodes);
+                    processorNode.setTo(toNodes);
 
-                    spanletNode.setPipeline((PipelineNode) repository.get(spanletNode.getItem().getPipeline()));
-
-                }
-                case TraceletNode traceletNode -> {
-                    List<Node<?>> toNodes = getFromNames(traceletNode.getItem().getTo());
-                    toNodes.forEach(toNode -> {
-                        if (toNode instanceof ExporterNode exporterNode) {
-                            exporterNode.getFrom().add(traceletNode);
-                        }
-                        // e se não for???
-                    });
-                    traceletNode.setTo(toNodes);
-
-                    traceletNode.setPipeline((PipelineNode) repository.get(traceletNode.getItem().getPipeline()));
-
-                }
-                case TraceAggregatorNode traceAggregatorNode -> {
-
-                    List<Node<?>> toNodes = getFromNames(traceAggregatorNode.getItem().getTo());
-                    toNodes.forEach(toNode -> {
-                        if (toNode instanceof ExporterNode exporterNode) {
-                            exporterNode.getFrom().add(traceAggregatorNode);
-                        }
-                        // e se não for???
-                    });
-                    traceAggregatorNode.setTo(toNodes);
-
-                    traceAggregatorNode.setPipeline((PipelineNode) repository.get(traceAggregatorNode.getItem().getPipeline()));
+                    processorNode.setPipeline((PipelineNode) repository.get(processorNode.getItem().getPipeline()));
 
                 }
                 case PipelineNode pipelineNode -> {
-                    List<ReceiverNode> fromNodes = getFromNames(ReceiverNode.class, pipelineNode.getItem().getFrom());
+                    List<ReceiverNode> fromNodes = getReceiverNodesFromNames(pipelineNode.getItem().getFrom());
                     fromNodes.forEach(fromNode -> {
                         if (fromNode instanceof ReceiverNode receiverNode) {
                             receiverNode.getTo().add(pipelineNode);
                         }
-                        // e se não for
                     });
                     pipelineNode.setFrom(fromNodes);
 
-                    List<ProcessorNode> startNodes = getFromNames(ProcessorNode.class, pipelineNode.getItem().getStart());
+                    List<ProcessorNode<?>> startNodes = getProcessorNodesFromNames(pipelineNode.getItem().getStart());
                     pipelineNode.setStart(startNodes);
-
                 }
                 case ReceiverNode receiverNode -> {
-                    System.out.println("nothing to do!");
                 }
                 case ExporterNode exporterNode -> {
-                    System.out.println("nothing to do!");
                 }
                 default -> throw new IllegalStateException("not yet implemented!");
             }
@@ -135,209 +123,16 @@ public class NodeRepository {
     }
 
     public RouteBuilder createRouteBuilder() {
-
         RootRouteCreator routeCreator = new RootRouteCreator();
 
         repository.values().stream()
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
                 .forEach(receiverNode -> {
-                    grpcReceiver(receiverNode, routeCreator);
+                    receiverNode.createRoute(routeCreator);
                 });
+
         return routeCreator.getRouteBuilder();
-    }
-
-    public void next(Node<?> node, RouteCreator routeCreator) {
-        switch (node) {
-            case SpanletNode spanletNode -> {
-                spanlet(spanletNode, routeCreator);
-            }
-            case TraceletNode traceletNode -> {
-                tracelet(traceletNode, routeCreator);
-            }
-            case TraceAggregatorNode traceAggregatorNode -> {
-                traceAggregatorNode(traceAggregatorNode, routeCreator);
-            }
-            case ExporterNode exporterNode -> {
-                grpcExporter(exporterNode, routeCreator);
-            }
-            case PipelineNode pipelineNode -> {
-                pipeline(pipelineNode, routeCreator);
-
-            }
-            default -> throw new IllegalStateException("not yet implemented!");
-        }
-    }
-
-    private void traceAggregatorNode(TraceAggregatorNode traceAggregatorNode, RouteCreator routeCreator) {
-        switch (traceAggregatorNode.getItem().getType()) {
-            case "default":
-                Object config = traceAggregatorNode.getItem().getConfig();
-                if (!(config instanceof TraceAggregatorConfig traceAggregatorConfig)) {
-                    throw new SigletError("");
-                }
-                if (traceAggregatorNode.getTo().size() == 1) {
-
-                    next(traceAggregatorNode.getTo().getFirst(), routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis(),
-                            traceAggregatorConfig.getTimeoutMillis()));
-                } else {
-
-                    RouteCreator multicast = routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis(),
-                            traceAggregatorConfig.getTimeoutMillis()).startMulticast();
-                    for (Node<?> node : traceAggregatorNode.getTo()) {
-                        next(node, multicast);
-                    }
-                    multicast.endMulticast();
-                }
-                break;
-            default:
-                throw new IllegalStateException("not yet implemented");
-        }
-    }
-
-    public void pipeline(PipelineNode pipelineNode, RouteCreator routeCreator) {
-        if (pipelineNode.getStart().size() == 1) {
-            next(pipelineNode.getStart().getFirst(), routeCreator);
-        } else {
-            RouteCreator multicast = routeCreator.startMulticast();
-            for (ProcessorNode<?> node : pipelineNode.getStart()) {
-                next(node, multicast);
-            }
-            multicast.endMulticast();
-        }
-    }
-
-    public void grpcReceiver(ReceiverNode receiverNode, RouteCreator routeCreator) {
-        if (receiverNode.getTo().size() == 1) {
-            next(receiverNode.getTo().getFirst(), routeCreator.addReceiver(receiverNode.getUri()));
-        } else {
-            throw new IllegalStateException("not yet implemented!");
-        }
-    }
-
-    public void grpcExporter(ExporterNode exporterNode, RouteCreator routeCreator) {
-        routeCreator.addExporter(exporterNode.getUri());
-    }
-
-    public void spanlet(SpanletNode spanletNode, RouteCreator routeCreator) {
-        switch (spanletNode.getItem().getType()) {
-            case "processor":
-                Object config = spanletNode.getItem().getConfig();
-                if (!(config instanceof ProcessorConfig processorConfig)) {
-                    throw new SigletError("");
-                }
-                if (spanletNode.getTo().size() == 1) {
-                    next(spanletNode.getTo().getFirst(), routeCreator.
-                            addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)));
-                } else {
-                    RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)).startMulticast();
-                    for (Node<?> node : spanletNode.getTo()) {
-                        next(node, multicast);
-                    }
-                    multicast.endMulticast();
-                }
-                break;
-            case "filter":
-                config = spanletNode.getItem().getConfig();
-                if (!(config instanceof FilterConfig filterConfig)) {
-                    throw new SigletError("");
-                }
-                if (spanletNode.getTo().size() == 1) {
-                    next(spanletNode.getTo().getFirst(), routeCreator.addFilter(
-                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span)));
-                } else {
-                    RouteCreator multicast = routeCreator.addFilter(
-                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span))
-                            .startMulticast();
-                    for (Node<?> node : spanletNode.getTo()) {
-                        next(node, multicast);
-                    }
-                    multicast.endMulticast();
-                }
-                break;
-            case "router":
-                config = spanletNode.getItem().getConfig();
-                if (!(config instanceof RouterConfig routerConfig)) {
-                    throw new SigletError("");
-                }
-                RouteCreator choice = routeCreator.startChoice();
-                for (Route route : routerConfig.getRoutes()) {
-                    next(getToFromName(spanletNode.getTo(), route.getTo()), choice.addChoice(
-                            new GroovyPredicate(route.getExpression(), GroovyPropertySetter.span)));
-                }
-                next(getToFromName(spanletNode.getTo(), routerConfig.getDefaultRoute()), choice.endChoice());
-                break;
-            default:
-                throw new IllegalStateException("not yet implemented");
-        }
-    }
-
-    public void tracelet(TraceletNode traceletNode, RouteCreator routeCreator) {
-        switch (traceletNode.getItem().getType()) {
-            case "processor":
-                Object config = traceletNode.getItem().getConfig();
-                if (!(config instanceof ProcessorConfig processorConfig)) {
-                    throw new SigletError("");
-                }
-                if (traceletNode.getTo().size() == 1) {
-                    next(traceletNode.getTo().getFirst(), routeCreator.
-                            addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)));
-                } else {
-                    RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)).startMulticast();
-                    for (Node<?> node : traceletNode.getTo()) {
-                        next(node, multicast);
-                    }
-                    multicast.endMulticast();
-                }
-                break;
-            case "filter":
-                config = traceletNode.getItem().getConfig();
-                if (!(config instanceof FilterConfig filterConfig)) {
-                    throw new SigletError("");
-                }
-                if (traceletNode.getTo().size() == 1) {
-                    next(traceletNode.getTo().getFirst(), routeCreator.addFilter(
-                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace)));
-                } else {
-                    RouteCreator multicast = routeCreator.addFilter(
-                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace))
-                            .startMulticast();
-                    for (Node<?> node : traceletNode.getTo()) {
-                        next(node, multicast);
-                    }
-                    multicast.endMulticast();
-                }
-                break;
-            case "router":
-                config = traceletNode.getItem().getConfig();
-                if (!(config instanceof RouterConfig routerConfig)) {
-                    throw new SigletError("");
-                }
-                RouteCreator choice = routeCreator.startChoice();
-                for (Route route : routerConfig.getRoutes()) {
-                    next(getToFromName(traceletNode.getTo(), route.getTo()), choice.addChoice(
-                            new GroovyPredicate(route.getExpression(), GroovyPropertySetter.trace)));
-                }
-                next(getToFromName(traceletNode.getTo(), routerConfig.getDefaultRoute()), choice.endChoice());
-                break;
-            default:
-                throw new IllegalStateException("not yet implemented");
-        }
-    }
-    public Node<?> getToFromName(List<Node<?>> to, String name) {
-        for (Node<?> node : to) {
-            if (node.getName().equals(name)) {
-                return node;
-            }
-        }
-        throw new SigletError("Could not find any config item named [" + name + "]");
-
     }
 
 

@@ -7,9 +7,9 @@ import org.apache.camel.Exchange;
 
 public interface GroovyPropertySetter {
 
-    final GroovyPropertySetter span = new SpanPropertySetter();
+    GroovyPropertySetter span = new SpanPropertySetter();
 
-    final GroovyPropertySetter trace = new TracePropertySetter();
+    GroovyPropertySetter trace = new TracePropertySetter();
 
     void setBodyInScript(Exchange exchange, Script script);
 

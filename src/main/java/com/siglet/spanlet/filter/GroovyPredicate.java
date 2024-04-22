@@ -1,7 +1,6 @@
 package com.siglet.spanlet.filter;
 
 import com.siglet.SigletError;
-import com.siglet.data.adapter.ProtoSpanAdapter;
 import com.siglet.spanlet.GroovyPropertySetter;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;

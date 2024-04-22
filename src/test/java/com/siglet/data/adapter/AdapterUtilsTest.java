@@ -5,7 +5,6 @@ import io.opentelemetry.proto.common.v1.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +60,7 @@ class AdapterUtilsTest {
         Object value = AdapterUtils.anyValueToObject(actual);
 
         Assertions.assertNotNull(value);
-        assertTrue(value instanceof Object[]);
+        assertInstanceOf(Object[].class, value);
         assertArrayEquals(new Object[]{"value", 20L}, ((Object[]) value));
     }
 
@@ -84,17 +83,17 @@ class AdapterUtilsTest {
 
 
         Assertions.assertNotNull(value);
-        assertTrue(value instanceof List);
+        assertInstanceOf(List.class, value);
         assertEquals(2, ((List<?>) value).size());
         List<Object> asList = (List<Object>) value;
 
         Assertions.assertNotNull(asList.get(0));
-        assertTrue(asList.get(0) instanceof Map.Entry);
+        assertInstanceOf(Map.Entry.class, asList.get(0));
         assertEquals("key-1", ((Map.Entry<?, ?>) asList.get(0)).getKey());
         assertEquals("value-1", ((Map.Entry<?, ?>) asList.get(0)).getValue());
 
         Assertions.assertNotNull(asList.get(1));
-        assertTrue(asList.get(1) instanceof Map.Entry);
+        assertInstanceOf(Map.Entry.class, asList.get(1));
         assertEquals("key-2", ((Map.Entry<?, ?>) asList.get(1)).getKey());
         assertEquals(20L, ((Map.Entry<?, ?>) asList.get(1)).getValue());
     }

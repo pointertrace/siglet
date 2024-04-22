@@ -4,8 +4,6 @@ import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.Test;
 
-import java.net.InetSocketAddress;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class LongCheckerTest {

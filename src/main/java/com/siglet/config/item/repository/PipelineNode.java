@@ -1,6 +1,7 @@
 package com.siglet.config.item.repository;
 
 import com.siglet.config.item.TracePipelineItem;
+import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +10,25 @@ public class PipelineNode extends Node<TracePipelineItem> {
 
     private List<ReceiverNode> from = new ArrayList<>();
 
-    private List<ProcessorNode> start = new ArrayList<>();
+    private List<ProcessorNode<?>> start = new ArrayList<>();
 
     private List<ProcessorNode<?>> processors = new ArrayList<>();
 
     public PipelineNode(String name, TracePipelineItem tracePipelineItem) {
         super(name, tracePipelineItem);
+    }
+
+    @Override
+    public void createRoute(RouteCreator routeCreator) {
+        if (getStart().size() == 1) {
+            getStart().getFirst().createRoute(routeCreator);
+        } else {
+            RouteCreator multicast = routeCreator.startMulticast();
+            for (ProcessorNode<?> node : getStart()) {
+                node.createRoute(multicast);
+            }
+            multicast.endMulticast();
+        }
     }
 
     public List<ProcessorNode<?>> getProcessors() {
@@ -33,11 +47,11 @@ public class PipelineNode extends Node<TracePipelineItem> {
         this.from = from;
     }
 
-    public List<ProcessorNode> getStart() {
+    public List<ProcessorNode<?>> getStart() {
         return start;
     }
 
-    public void setStart(List<ProcessorNode> start) {
+    public void setStart(List<ProcessorNode<?>> start) {
         this.start = start;
     }
 }

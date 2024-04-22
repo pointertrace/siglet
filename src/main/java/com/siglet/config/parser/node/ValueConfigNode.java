@@ -1,6 +1,5 @@
 package com.siglet.config.parser.node;
 
-import com.google.protobuf.Value;
 import com.siglet.config.parser.locatednode.Location;
 
 public abstract class ValueConfigNode extends ConfigNode {

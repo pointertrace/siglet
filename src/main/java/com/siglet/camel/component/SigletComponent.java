@@ -4,7 +4,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.spi.PropertyConfigurer;
 import org.apache.camel.support.DefaultComponent;
-import org.checkerframework.checker.units.qual.N;
 
 import java.io.IOException;
 import java.util.Map;

@@ -16,12 +16,9 @@
  */
 package org.apache.camel.example;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
 import com.siglet.data.modifiable.BaseModifiableSpanletProcessor;
 import com.siglet.data.unmodifiable.BaseUnmodifiableSpanletProcessor;
-import com.siglet.data.unmodifiable.UnmodifiableSpanletProcessor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.language.GroovyExpression;
 
 public class MyRouteBuilder extends RouteBuilder {
 

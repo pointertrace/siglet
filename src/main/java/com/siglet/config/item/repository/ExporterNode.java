@@ -1,7 +1,7 @@
 package com.siglet.config.item.repository;
 
 import com.siglet.config.item.ExporterItem;
-import com.siglet.config.item.GrpcExporterItem;
+import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,11 @@ public class ExporterNode extends Node<ExporterItem> {
 
     public ExporterNode(String name, ExporterItem exporterItem) {
         super(name, exporterItem);
+    }
+
+    @Override
+    public void createRoute(RouteCreator routeCreator) {
+        routeCreator.addExporter(getUri());
     }
 
     public List<Node<?>> getFrom() {

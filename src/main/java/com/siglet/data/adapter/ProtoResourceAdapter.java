@@ -5,9 +5,9 @@ import io.opentelemetry.proto.resource.v1.Resource;
 
 public class ProtoResourceAdapter implements ModifiableResource {
 
-    private Resource protoResource;
+    private final Resource protoResource;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

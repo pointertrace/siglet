@@ -1,7 +1,6 @@
 package com.siglet.camel.component;
 
 import io.grpc.Server;
-import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;

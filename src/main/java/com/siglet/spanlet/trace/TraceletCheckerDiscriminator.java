@@ -6,12 +6,10 @@ import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaValidationError;
 import com.siglet.config.parser.schema.SingleSchemaValidationError;
-import com.siglet.spanlet.span.SpanletType;
-import com.siglet.spanlet.span.SpanletTypes;
 
 public class TraceletCheckerDiscriminator implements DynamicCheckerDiscriminator {
 
-    private TraceletTypes traceletTypes;
+    private final TraceletTypes traceletTypes;
 
     public TraceletCheckerDiscriminator(TraceletTypes traceletTypes) {
         this.traceletTypes = traceletTypes;

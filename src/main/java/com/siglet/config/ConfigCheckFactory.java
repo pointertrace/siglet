@@ -1,8 +1,6 @@
 package com.siglet.config;
 
 import com.siglet.config.item.*;
-import com.siglet.config.item.GrpcReceiverItem;
-import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.spanlet.span.SpanletCheckerDiscriminator;
 import com.siglet.spanlet.span.SpanletTypes;

@@ -5,7 +5,7 @@ import com.siglet.data.unmodifiable.UnmodifiableSpanletProcessor;
 
 public class PrintIdSpanletProcessor implements UnmodifiableSpanletProcessor {
 
-    private String prefix;
+    private final String prefix;
 
     public PrintIdSpanletProcessor(String prefix) {
         this.prefix = prefix;

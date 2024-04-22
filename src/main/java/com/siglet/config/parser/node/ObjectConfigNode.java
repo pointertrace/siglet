@@ -1,6 +1,5 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.SigletError;
 import com.siglet.config.parser.locatednode.Location;
 
 import java.util.Collections;

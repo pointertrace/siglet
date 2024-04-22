@@ -1,6 +1,5 @@
 package com.siglet.data.modifiable;
 
-import com.siglet.data.unmodifiable.UnmodifiableEvent;
 import com.siglet.data.unmodifiable.UnmodifiableEvents;
 
 import java.util.Map;

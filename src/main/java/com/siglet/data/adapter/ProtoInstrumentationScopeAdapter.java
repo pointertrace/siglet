@@ -2,17 +2,16 @@ package com.siglet.data.adapter;
 
 import com.siglet.data.modifiable.ModifiableInstrumentationScope;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
-import io.opentelemetry.proto.resource.v1.Resource;
 
 public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentationScope {
 
-    private InstrumentationScope protoInstrumentationScope;
+    private final InstrumentationScope protoInstrumentationScope;
 
     private InstrumentationScope.Builder protoInstrumentationScopeBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

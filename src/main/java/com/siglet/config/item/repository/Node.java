@@ -1,9 +1,7 @@
 package com.siglet.config.item.repository;
 
 import com.siglet.config.item.Item;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 public abstract class Node<T extends Item> {
 
@@ -25,5 +23,7 @@ public abstract class Node<T extends Item> {
     public T getItem() {
         return item;
     }
+
+    public abstract void createRoute(RouteCreator routeCreator);
 
 }

@@ -43,7 +43,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.create(yaml);
+        Config config = configFactory.otherCreate(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 
@@ -112,7 +112,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.create(yaml);
+        Config config = configFactory.otherCreate(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 

@@ -43,7 +43,7 @@ public class ConfigItem {
         this.pipelines = pipelines;
     }
 
-    public void validateUniqueNames() {
+    protected void validateUniqueNames() {
         String notUniqueNames = Stream.of(
                         getReceivers().stream()
                                 .map(ReceiverItem::getName),
@@ -75,10 +75,8 @@ public class ConfigItem {
         getExporters().forEach(nodeRepository::addItem);
         getPipelines().forEach(nodeRepository::addItem);
         getPipelines().stream()
-//                .forEach(pipeline -> System.out.println(pipeline.getClass().getTypeName()))
                 .flatMap(this::getItems)
                 .forEach(nodeRepository::addItem);
-//                .forEach(item -> System.out.println("teste:" + item));
 
         nodeRepository.connect();
 
@@ -90,6 +88,10 @@ public class ConfigItem {
         return nodeRepository.createRouteBuilder();
     }
 
+    public RouteBuilder otherBuild() {
+        NodeRepository nodeRepository = createRepository();
+        return nodeRepository.createRouteBuilder();
+    }
     public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipline) {
         System.out.println(pipline.getClass().getTypeName());
         return pipline.getProcessors().stream();

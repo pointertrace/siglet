@@ -17,7 +17,7 @@ public interface Location {
         return new LocationImpl(line, column);
     }
 
-    public static class LocationImpl implements Location {
+    class LocationImpl implements Location {
 
         private final int line;
 

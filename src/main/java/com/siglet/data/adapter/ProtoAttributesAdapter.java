@@ -2,17 +2,16 @@ package com.siglet.data.adapter;
 
 import com.siglet.data.modifiable.ModifiableAttributes;
 import io.opentelemetry.proto.common.v1.KeyValue;
-import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.*;
 
 public class ProtoAttributesAdapter implements ModifiableAttributes {
 
-    private Map<String, Object> attributesAsMap;
+    private final Map<String, Object> attributesAsMap;
 
-    private List<KeyValue> attributes;
+    private final List<KeyValue> attributes;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

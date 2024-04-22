@@ -1,8 +1,6 @@
 package com.siglet.spanlet.traceaggregator;
 
-import com.siglet.config.item.SpanletItem;
 import com.siglet.config.parser.schema.NodeChecker;
-import com.siglet.config.parser.schema.SchemaFactory;
 import com.siglet.spanlet.ConfigDefinition;
 
 import static com.siglet.config.parser.schema.SchemaFactory.*;

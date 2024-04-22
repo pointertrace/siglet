@@ -1,22 +1,15 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Message;
 import com.siglet.data.trace.SpanKind;
-import io.micrometer.core.instrument.Gauge;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.common.v1.KeyValueList;
 import io.opentelemetry.proto.trace.v1.Span;
-import org.checkerframework.checker.units.qual.A;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class AdapterUtils {
 
@@ -129,9 +122,8 @@ public class AdapterUtils {
             default ->
                     throw new IllegalStateException(value.getClass().getSimpleName() + "is not a valid attriute type!");
         };
-    };
+    }
 
-    ;
     public static SpanKind getKind(Span.SpanKind kind) {
         return switch (kind) {
             case SPAN_KIND_UNSPECIFIED, UNRECOGNIZED -> null;

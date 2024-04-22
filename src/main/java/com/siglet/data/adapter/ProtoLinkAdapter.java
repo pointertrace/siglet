@@ -2,7 +2,6 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.data.modifiable.ModifiableLink;
-import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.nio.ByteBuffer;
@@ -10,9 +9,9 @@ import java.util.Arrays;
 
 public class ProtoLinkAdapter implements ModifiableLink {
 
-    private Span.Link protoLink;
+    private final Span.Link protoLink;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

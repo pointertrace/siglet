@@ -1,7 +1,7 @@
 package com.siglet.config.item.repository;
 
-import com.siglet.config.item.GrpcReceiverItem;
 import com.siglet.config.item.ReceiverItem;
+import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,15 @@ public class ReceiverNode extends Node<ReceiverItem> {
 
     public String getUri() {
         return  getItem().getUri();
+    }
+
+    @Override
+    public void createRoute(RouteCreator routeCreator) {
+        if (getTo().size() == 1) {
+            getTo().getFirst().createRoute(routeCreator.addReceiver(getUri()));
+        } else {
+            throw new IllegalStateException("not yet implemented!");
+        }
 
     }
 }

@@ -1,6 +1,5 @@
 package com.siglet.data.modifiable;
 
-import com.siglet.data.unmodifiable.UnmodifiableSpan;
 import com.siglet.data.unmodifiable.UnmodifiableTrace;
 
 public interface ModifiableTrace extends UnmodifiableTrace {

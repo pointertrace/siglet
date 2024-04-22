@@ -1,34 +1,89 @@
 package com.siglet.config.item.repository;
 
+import com.siglet.SigletError;
 import com.siglet.config.item.SpanletItem;
+import com.siglet.config.item.repository.routecreator.RouteCreator;
+import com.siglet.spanlet.GroovyPropertySetter;
+import com.siglet.spanlet.filter.FilterConfig;
+import com.siglet.spanlet.filter.GroovyPredicate;
+import com.siglet.spanlet.processor.GroovyProcessor;
+import com.siglet.spanlet.processor.ProcessorConfig;
+import com.siglet.spanlet.router.Route;
+import com.siglet.spanlet.router.RouterConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SpanletNode extends ProcessorNode<SpanletItem> {
 
-    private List<Node<?>> to = new ArrayList<>();
-
-    private PipelineNode pipeline;
 
     public SpanletNode(String name, SpanletItem item) {
         super(name, item);
     }
 
-
-    public List<Node<?>> getTo() {
-        return to;
+    @Override
+    public void createRoute(RouteCreator routeCreator) {
+        Object config = getItem().getConfig();
+        switch (getItem().getType()) {
+            case "processor":
+                if (!(config instanceof ProcessorConfig processorConfig)) {
+                    throw new SigletError("Internal error! Spanlet has 'processor' type but item does not have " +
+                            "ProcessorConfig config");
+                }
+                if (getTo().size() == 1) {
+                    getTo().getFirst().createRoute(routeCreator
+                            .addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)));
+                } else {
+                    RouteCreator multicast = routeCreator.addProcessor(
+                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.span)).startMulticast();
+                    for (Node<?> node : getTo()) {
+                        node.createRoute(multicast);
+                    }
+                    multicast.endMulticast();
+                }
+                break;
+            case "filter":
+                if (!(config instanceof FilterConfig filterConfig)) {
+                    throw new SigletError("Internal error! Spanlet has 'filter' type but item does not have " +
+                            "FilterConfig config");
+                }
+                if (getTo().size() == 1) {
+                    getTo().getFirst().createRoute(routeCreator.addFilter(
+                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span)));
+                } else {
+                    RouteCreator multicast = routeCreator.addFilter(
+                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.span))
+                            .startMulticast();
+                    for (Node<?> node : getTo()) {
+                        node.createRoute(multicast);
+                    }
+                    multicast.endMulticast();
+                }
+                break;
+            case "router":
+                    if (!(config instanceof RouterConfig routerConfig)) {
+                        throw new SigletError("Internal error! Spanlet has 'router' type but item does not have " +
+                                "RouterConfig config");
+                    }
+                    RouteCreator choice = routeCreator.startChoice();
+                    for (Route route : routerConfig.getRoutes()) {
+                        getNodeFromName(route.getTo()).createRoute(choice.addChoice(
+                                new GroovyPredicate(route.getExpression(), GroovyPropertySetter.span)));
+                    }
+                    getNodeFromName(routerConfig.getDefaultRoute()).createRoute(choice.endChoice());
+                break;
+            default:
+                throw new IllegalStateException("not yet implemented");
+        }
     }
 
-    public void setTo(List<Node<?>> to) {
-        this.to = to;
-    }
-
-    public PipelineNode getPipeline() {
-        return pipeline;
-    }
-
-    public void setPipeline(PipelineNode pipeline) {
-        this.pipeline = pipeline;
+    public Node<?> getNodeFromName(String name) {
+        for(Node<?> node : getTo()) {
+            if (name.equals(node.getName())) {
+                return node;
+            }
+        }
+        throw new SigletError("Could not find node named " + name + " in to property!");
     }
 }
+

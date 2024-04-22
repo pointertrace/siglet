@@ -9,11 +9,11 @@ import java.util.Map;
 
 public class ProtoEventsAdapter implements ModifiableEvents {
 
-    private List<ProtoEventAdapter> eventsAdapter;
+    private final List<ProtoEventAdapter> eventsAdapter;
 
-    private List<Span.Event> protoEvents;
+    private final List<Span.Event> protoEvents;
 
-    private boolean updatable;
+    private final boolean updatable;
 
     private boolean updated;
 

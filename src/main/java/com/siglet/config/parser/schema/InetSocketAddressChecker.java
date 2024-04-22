@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 
 public class InetSocketAddressChecker implements NodeChecker {
 
-    private ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
+    private final ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
 
     public void check(ConfigNode node) throws SchemaValidationError {
         if (node instanceof ValueConfigNode.Text textNode) {
