@@ -1,14 +1,30 @@
 package com.siglet.config.item;
 
-public class Item {
+import com.siglet.config.parser.locatednode.Located;
+import com.siglet.config.parser.locatednode.Location;
 
-    private String name;
+public class Item implements Located {
 
-    public String getName() {
+    private Location location;
+
+    private ValueItem<String> name;
+
+    public ValueItem<String> getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(ValueItem<String> name) {
         this.name = name;
+    }
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void afterSetValues() {
+
     }
 }

@@ -5,42 +5,46 @@ import java.util.List;
 
 public class PipelineItem<T extends ProcessorItem> extends Item {
 
-    private List<T> processors = new ArrayList<>();
+    private ArrayItem<T> processors;
 
-    private List<String>  from = new ArrayList<>();
+    private List<ValueItem<String>>  from = new ArrayList<>();
 
-    private List<String>  start = new ArrayList<>();
+    private List<ValueItem<String>>  start = new ArrayList<>();
 
 
-    public List<T> getProcessors() {
+    public ArrayItem<T> getProcessors() {
         return processors;
     }
 
-    public void setProcessors(List<T> processors) {
-        processors.forEach(p -> p.setPipeline(getName()));
+    public void setProcessors(ArrayItem<T> processors) {
         this.processors = processors;
     }
 
-    public List<String> getFrom() {
+    public List<ValueItem<String>> getFrom() {
         return from;
     }
 
-    public void setFrom(List<String> from) {
+    public void setFrom(List<ValueItem<String>> from) {
         this.from = from;
     }
 
-    public void setFromSingleValue(String from) {
+    public void setFromSingleValue(ValueItem<String> from) {
         this.from = List.of(from);
     }
-    public List<String> getStart() {
+    public List<ValueItem<String>> getStart() {
         return start;
     }
 
-    public void setStart(List<String> start) {
+    public void setStart(List<ValueItem<String>> start) {
         this.start = start;
     }
 
-    public void setStartSingleValue(String start) {
+    public void setStartSingleValue(ValueItem<String> start) {
         this.start = List.of(start);
+    }
+
+    @Override
+    public void afterSetValues() {
+        processors.getValue().forEach(p -> p.setPipeline(new ValueItem<>(getLocation(),getName().getValue())));
     }
 }

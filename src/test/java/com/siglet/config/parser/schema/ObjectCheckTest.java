@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.Item;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +101,7 @@ class ObjectCheckTest {
 //        assertEquals(Location.create(4, 1), validationExceptions.get(1).getLocation());
     }
 
-    public static class Bean {
+    public static class Bean extends Item {
         private int prop1;
         private String prop2;
 

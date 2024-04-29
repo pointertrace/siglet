@@ -17,7 +17,7 @@ public class CircularReferenceValidator implements RepositoryValidator {
 
         List<String> path = new ArrayList<>();
         for (ReceiverNode receiver : receivers) {
-            path.add(receiver.getName());
+//            path.add(receiver.getName());
             navigate(path, receiver);
         }
 
@@ -30,7 +30,7 @@ public class CircularReferenceValidator implements RepositoryValidator {
                     throw new SigletError("Circular reference: " + String.join("->", path));
                 }
                 List<String> newPath = new ArrayList<>(path);
-                newPath.add(next.getName());
+//                newPath.add(next.getName());
                 navigate(newPath, next);
             }
         }

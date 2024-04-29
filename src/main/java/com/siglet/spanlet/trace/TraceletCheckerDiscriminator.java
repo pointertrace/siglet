@@ -1,5 +1,7 @@
 package com.siglet.spanlet.trace;
 
+import com.siglet.SigletError;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
@@ -23,8 +25,14 @@ public class TraceletCheckerDiscriminator implements DynamicCheckerDiscriminator
         ConfigNode type = objectNode.get("type");
         if (type == null) {
             throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
+
         }
-        TraceletType traceletType = traceletTypes.get(type.getValue().toString());
-        return traceletType.getConfigDefinition().getChecker();
+
+        if (type.getValue() instanceof ValueItem valueItem){
+            TraceletType traceletType = traceletTypes.get(valueItem.getValue().toString());
+            return traceletType.getConfigDefinition().getChecker();
+        } else {
+            throw new SigletError("Tracelet type must be a ValueItem<String>");
+        }
     }
 }

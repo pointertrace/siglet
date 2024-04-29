@@ -20,26 +20,7 @@ public class ConfigFactory {
         Object conf = node.getValue();
 
         if (conf instanceof ConfigItem configItem) {
-           return new Config(configItem.build());
-        } else {
-            throw new SigletError("Internal error: config must be a ConfigItem");
-        }
-
-
-    }
-
-    public Config otherCreate(String yaml) {
-
-        ConfigParser configParser = new ConfigParser();
-
-        ConfigNode node = configParser.parse(yaml);
-
-        globalConfigChecker().check(node);
-
-        Object conf = node.getValue();
-
-        if (conf instanceof ConfigItem configItem) {
-            return new Config(configItem.otherBuild());
+            return new Config(configItem.build());
         } else {
             throw new SigletError("Internal error: config must be a ConfigItem");
         }

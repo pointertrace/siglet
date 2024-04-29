@@ -5,55 +5,56 @@ import com.siglet.config.item.repository.NodeRepository;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
 import org.apache.camel.builder.RouteBuilder;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ConfigItem {
+public class ConfigItem extends Item {
 
-    private List<ReceiverItem> receiverItems;
+    private ArrayItem<ReceiverItem> receiverItems;
 
-    private List<ExporterItem> exporterItems;
+    private ArrayItem<ExporterItem> exporterItems;
 
-    private List<TracePipelineItem> pipelines;
+    private ArrayItem<TracePipelineItem> pipelines;
 
-    public List<ReceiverItem> getReceivers() {
+    public ArrayItem<ReceiverItem> getReceivers() {
         return receiverItems;
     }
 
-    public void setReceivers(List<ReceiverItem> receiverItems) {
+    public void setReceivers(ArrayItem<ReceiverItem> receiverItems) {
         this.receiverItems = receiverItems;
     }
 
-    public List<ExporterItem> getExporters() {
+    public ArrayItem<ExporterItem> getExporters() {
         return exporterItems;
     }
 
-    public void setExporters(List<ExporterItem> exporterItems) {
+    public void setExporters(ArrayItem<ExporterItem> exporterItems) {
         this.exporterItems = exporterItems;
     }
 
-    public List<TracePipelineItem> getPipelines() {
+    public ArrayItem<TracePipelineItem> getPipelines() {
         return pipelines;
     }
 
-    public void setPipelines(List<TracePipelineItem> pipelines) {
+    public void setPipelines(ArrayItem<TracePipelineItem> pipelines) {
         this.pipelines = pipelines;
     }
 
     protected void validateUniqueNames() {
         String notUniqueNames = Stream.of(
-                        getReceivers().stream()
+                        getReceivers().getValue().stream()
                                 .map(ReceiverItem::getName),
-                        getExporters().stream()
+                        getExporters().getValue().stream()
                                 .map(ExporterItem::getName),
-                        getPipelines().stream()
+                        getPipelines().getValue().stream()
                                 .map(TracePipelineItem::getName),
-                        getPipelines().stream()
-                                .flatMap(p -> p.getProcessors().stream())
-                                .map(SpanletItem::getName)
+                        getPipelines().getValue().stream()
+                                .flatMap(p -> p.getProcessors().getValue().stream())
+                                .map(ProcessorItem::getName)
                 )
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
                 .filter(e -> e.getValue() > 1)
@@ -71,10 +72,10 @@ public class ConfigItem {
         NodeRepository nodeRepository = new NodeRepository();
 
 
-        getReceivers().forEach(nodeRepository::addItem);
-        getExporters().forEach(nodeRepository::addItem);
-        getPipelines().forEach(nodeRepository::addItem);
-        getPipelines().stream()
+        getReceivers().getValue().forEach(nodeRepository::addItem);
+        getExporters().getValue().forEach(nodeRepository::addItem);
+        getPipelines().getValue().forEach(nodeRepository::addItem);
+        getPipelines().getValue().stream()
                 .flatMap(this::getItems)
                 .forEach(nodeRepository::addItem);
 
@@ -83,19 +84,26 @@ public class ConfigItem {
         return nodeRepository;
     }
 
+
     public RouteBuilder build() {
         NodeRepository nodeRepository = createRepository();
         return nodeRepository.createRouteBuilder();
     }
 
-    public RouteBuilder otherBuild() {
-        NodeRepository nodeRepository = createRepository();
-        return nodeRepository.createRouteBuilder();
-    }
     public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipline) {
         System.out.println(pipline.getClass().getTypeName());
-        return pipline.getProcessors().stream();
+        return pipline.getProcessors().getValue().stream();
+
 
     }
 
+    @Override
+    public void afterSetValues() {
+        getReceivers().getValue().forEach(Item::afterSetValues);
+        getExporters().getValue().forEach(Item::afterSetValues);
+        getPipelines().getValue().forEach(Item::afterSetValues);
+        getPipelines().getValue().stream()
+                .flatMap(this::getItems)
+                .forEach(Item::afterSetValues);
+    }
 }

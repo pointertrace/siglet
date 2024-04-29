@@ -31,100 +31,100 @@ public class LocatedJsonNodeFactory extends JsonNodeFactory {
 
     @Override
     public BooleanNode booleanNode(boolean v) {
-        return new Located.LocatedBooleanNode(v, Location.create(parser));
+        return new Located.LocatedBooleanNode(v, Location.of(parser));
     }
 
     @Override
     public NullNode nullNode() {
-        return new Located.LocatedNullNode(Location.create(parser));
+        return new Located.LocatedNullNode(Location.of(parser));
     }
 
     @Override
     public NumericNode numberNode(byte value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Byte value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
     @Override
     public NumericNode numberNode(short value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Short value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
 
     @Override
     public NumericNode numberNode(int value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Integer value) {
-        return new Located.LocatedIntNode(value, Location.create(parser));
+        return new Located.LocatedIntNode(value, Location.of(parser));
     }
 
     @Override
     public NumericNode numberNode(long value) {
-        return new Located.LocatedLongNode(value, Location.create(parser));
+        return new Located.LocatedLongNode(value, Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Long value) {
-        return new Located.LocatedLongNode(value, Location.create(parser));
+        return new Located.LocatedLongNode(value, Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(BigInteger value) {
-        return new Located.LocatedBigIntegerNode(value, Location.create(parser));
+        return new Located.LocatedBigIntegerNode(value, Location.of(parser));
     }
 
     @Override
     public NumericNode numberNode(float value) {
-        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.create(parser));
+        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Float value) {
-        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.create(parser));
+        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.of(parser));
     }
 
     @Override
     public NumericNode numberNode(double value) {
-        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.create(parser));
+        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.of(parser));
     }
 
     @Override
     public ValueNode numberNode(Double value) {
-        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.create(parser));
+        return new Located.LocatedBigDecimalNode(BigDecimal.valueOf(value), Location.of(parser));
     }
 
 
     @Override
     public ValueNode numberNode(BigDecimal value) {
-        return new Located.LocatedBigDecimalNode(value, Location.create(parser));
+        return new Located.LocatedBigDecimalNode(value, Location.of(parser));
     }
 
     @Override
     public TextNode textNode(String text) {
-        return new Located.LocatedTextNode(text, Location.create(parser));
+        return new Located.LocatedTextNode(text, Location.of(parser));
     }
 
 
     @Override
     public BinaryNode binaryNode(byte[] value) {
-        return new Located.LocatedBinaryNode(value, Location.create(parser));
+        return new Located.LocatedBinaryNode(value, Location.of(parser));
     }
 
     @Override
     public BinaryNode binaryNode(byte[] value, int offset, int length) {
-        return new Located.LocatedBinaryNode(value, offset, length, Location.create(parser));
+        return new Located.LocatedBinaryNode(value, offset, length, Location.of(parser));
     }
 
 
@@ -140,17 +140,17 @@ public class LocatedJsonNodeFactory extends JsonNodeFactory {
 
     @Override
     public ArrayNode arrayNode() {
-        return new Located.LocatedArrayNode(this, Location.create(parser));
+        return new Located.LocatedArrayNode(this, Location.of(parser));
     }
 
     @Override
     public ArrayNode arrayNode(int capacity) {
-        return new Located.LocatedArrayNode(this, capacity, Location.create(parser));
+        return new Located.LocatedArrayNode(this, capacity, Location.of(parser));
     }
 
     @Override
     public ObjectNode objectNode() {
-        return new Located.LocatedObjectNode(this, Location.create(parser));
+        return new Located.LocatedObjectNode(this, Location.of(parser));
     }
 
 }

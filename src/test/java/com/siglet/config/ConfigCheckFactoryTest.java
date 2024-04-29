@@ -2,11 +2,13 @@ package com.siglet.config;
 
 import com.siglet.config.item.*;
 import com.siglet.config.parser.ConfigParser;
+import com.siglet.config.parser.locatednode.Location;
 import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.spanlet.filter.FilterConfig;
 import com.siglet.spanlet.processor.ProcessorConfig;
-import com.siglet.spanlet.router.RouterConfig;
 import com.siglet.spanlet.router.Route;
+import com.siglet.spanlet.router.RouterConfig;
 import com.siglet.spanlet.traceaggregator.TraceAggregatorConfig;
 import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,14 +30,13 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseGrpcReceivers() throws Exception {
+    public void parseGrpcReceivers() {
 
         String config = """
-                    - grpc: first
-                      address: localhost:8080
-                    - grpc: second
-                      address: localhost:8081
-                """;
+                - grpc: first
+                  address: localhost:8080
+                - grpc: second
+                  address: localhost:8081""";
 
 
         ConfigNode node = configParser.parse(config);
@@ -46,29 +47,36 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(value);
 
-        var grpcReceivers = assertInstanceOf(List.class, value);
+        var grpcReceiversArrays = assertInstanceOf(ArrayItem.class, value);
+        assertEquals(Location.of(1, 1), grpcReceiversArrays.getLocation());
+
+        var grpcReceivers = assertInstanceOf(List.class, grpcReceiversArrays.getValue());
         assertEquals(2, grpcReceivers.size());
-        GrpcReceiverItem firstReceiver = assertInstanceOf(GrpcReceiverItem.class, grpcReceivers.get(0));
-        assertEquals("first", firstReceiver.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), firstReceiver.getAddress());
+
+
+        GrpcReceiverItem firstReceiver = assertInstanceOf(GrpcReceiverItem.class, grpcReceivers.getFirst());
+        assertEquals("first", firstReceiver.getName().getValue());
+        assertEquals(Location.of(1, 9), firstReceiver.getName().getLocation());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), firstReceiver.getAddress().getValue());
+        assertEquals(Location.of(2, 12), firstReceiver.getAddress().getLocation());
 
         GrpcReceiverItem secondReceiver = assertInstanceOf(GrpcReceiverItem.class, grpcReceivers.get(1));
-        assertEquals("second", secondReceiver.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081), secondReceiver.getAddress());
+        assertEquals("second", secondReceiver.getName().getValue());
+        assertEquals(Location.of(3, 9), secondReceiver.getName().getLocation());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081), secondReceiver.getAddress().getValue());
+        assertEquals(Location.of(4, 12), secondReceiver.getAddress().getLocation());
 
 
     }
 
     @Test
-    public void parseDebugReceivers() throws Exception {
+    public void parseDebugReceivers() {
 
         String config = """
-                    - debug: first
-                      address: direct:first
-                    - debug: second
-                      address: direct:second
-                """;
-
+                - debug: first
+                  address: direct:first
+                - debug: second
+                  address: direct:second""";
 
         ConfigNode node = configParser.parse(config);
 
@@ -78,20 +86,30 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(value);
 
-        var debugReceivers = assertInstanceOf(List.class, value);
+        var debugReceiversArray = assertInstanceOf(ArrayItem.class, value);
+        assertEquals(Location.of(1, 1), debugReceiversArray.getLocation());
+
+        var debugReceivers = assertInstanceOf(List.class, debugReceiversArray.getValue());
         assertEquals(2, debugReceivers.size());
         DebugReceiverItem firstReceiver = assertInstanceOf(DebugReceiverItem.class, debugReceivers.getFirst());
-        assertEquals("first", firstReceiver.getName());
-        assertEquals("direct:first", firstReceiver.getAddress());
+        assertEquals(Location.of(1, 3), firstReceiver.getLocation());
+        assertEquals("first", firstReceiver.getName().getValue());
+        assertEquals(Location.of(1, 10), firstReceiver.getName().getLocation());
+        assertEquals("direct:first", firstReceiver.getAddress().getValue());
+        assertEquals(Location.of(2, 12), firstReceiver.getAddress().getLocation());
 
         DebugReceiverItem secondReceiver = assertInstanceOf(DebugReceiverItem.class, debugReceivers.get(1));
-        assertEquals("second", secondReceiver.getName());
-        assertEquals("direct:second", secondReceiver.getAddress());
+        assertEquals(Location.of(3, 3), secondReceiver.getLocation());
+        assertEquals("second", secondReceiver.getName().getValue());
+        assertEquals(Location.of(3, 10), secondReceiver.getName().getLocation());
+        assertEquals("direct:second", secondReceiver.getAddress().getValue());
+        assertEquals(Location.of(4, 12), secondReceiver.getAddress().getLocation());
 
 
     }
+
     @Test
-    public void parseGrpcExporters() throws Exception {
+    public void parseGrpcExporters() {
 
         String config = """
                   - grpc: first
@@ -108,21 +126,34 @@ class ConfigCheckFactoryTest {
         var value = node.getValue();
 
         assertNotNull(value);
-        var grpcExporters = assertInstanceOf(List.class, value);
+        var grpcExportersArray = assertInstanceOf(ArrayItem.class, value);
+        assertEquals(Location.of(1,3), grpcExportersArray.getLocation());
+
+        var grpcExporters = grpcExportersArray.getValue();
         assertEquals(2, grpcExporters.size());
-        GrpcExporterItem firstExporter = assertInstanceOf(GrpcExporterItem.class, grpcExporters.get(0));
-        assertEquals("first", firstExporter.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), firstExporter.getAddress());
+
+        GrpcExporterItem firstExporter = assertInstanceOf(GrpcExporterItem.class, grpcExporters.getFirst());
+        assertEquals("first", firstExporter.getName().getValue());
+        assertEquals(Location.of(1,11), firstExporter.getName().getLocation());
+
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080),
+                firstExporter.getAddress().getValue());
+        assertEquals(Location.of(2,14), firstExporter.getAddress().getLocation());
+
 
         GrpcExporterItem secondExporter = assertInstanceOf(GrpcExporterItem.class, grpcExporters.get(1));
-        assertEquals("second", secondExporter.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081), secondExporter.getAddress());
+        assertEquals("second", secondExporter.getName().getValue());
+        assertEquals(Location.of(3,11), secondExporter.getName().getLocation());
+
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081),
+                secondExporter.getAddress().getValue());
+        assertEquals(Location.of(4,14), secondExporter.getAddress().getLocation());
 
 
     }
 
     @Test
-    public void parseDebugExporters() throws Exception {
+    public void parseDebugExporters() {
 
         String config = """
                   - debug: first
@@ -139,21 +170,32 @@ class ConfigCheckFactoryTest {
         var value = node.getValue();
 
         assertNotNull(value);
-        var debugExporters = assertInstanceOf(List.class, value);
+        var debugExportersArray = assertInstanceOf(ArrayItem.class, value);
+        assertEquals(Location.of(1,3), debugExportersArray.getLocation());
+
+        var debugExporters = debugExportersArray.getValue();
         assertEquals(2, debugExporters.size());
+
         DebugExporterItem firstExporter = assertInstanceOf(DebugExporterItem.class, debugExporters.getFirst());
-        assertEquals("first", firstExporter.getName());
-        assertEquals("mock:first", firstExporter.getAddress());
+        assertEquals("first", firstExporter.getName().getValue());
+        assertEquals(Location.of(1,12), firstExporter.getName().getLocation());
+
+        assertEquals("mock:first", firstExporter.getAddress().getValue());
+        assertEquals(Location.of(2,14), firstExporter.getAddress().getLocation());
+
 
         DebugExporterItem secondExporter = assertInstanceOf(DebugExporterItem.class, debugExporters.get(1));
-        assertEquals("second", secondExporter.getName());
-        assertEquals("mock:second", secondExporter.getAddress());
+        assertEquals("second", secondExporter.getName().getValue());
+        assertEquals(Location.of(3,12), secondExporter.getName().getLocation());
+
+        assertEquals("mock:second", secondExporter.getAddress().getValue());
+        assertEquals(Location.of(4,14), secondExporter.getAddress().getLocation());
 
 
     }
-    @Test
-    public void parseProcessorSpanlet() throws Exception {
 
+    @Test
+    public void parseProcessorSpanlet() {
 
         var config = """
                 spanlet: name-value
@@ -170,23 +212,39 @@ class ConfigCheckFactoryTest {
 
         spanletChecker().check(node);
 
+        ((ObjectConfigNode) node).adjustLocation();
         var value = node.getValue();
 
         assertNotNull(value);
 
         var spanletItem = assertInstanceOf(SpanletItem.class, value);
-        assertEquals("name-value", spanletItem.getName());
-        assertEquals(List.of("first-destination", "second-destination"), spanletItem.getTo());
-        assertEquals("processor", spanletItem.getType());
+//        assertEquals(Location.of(1,1), spanletItem.getLocation());
+
+        assertEquals("name-value", spanletItem.getName().getValue());
+        assertEquals(Location.of(1,10), spanletItem.getName().getLocation());
+
+        assertEquals(2,  spanletItem.getTo().getValue().size());
+
+        assertEquals("first-destination", spanletItem.getTo().getValue().getFirst().getValue());
+        assertEquals(Location.of(3,3), spanletItem.getTo().getValue().getFirst().getLocation());
+
+        assertEquals("second-destination", spanletItem.getTo().getValue().get(1).getValue());
+        assertEquals(Location.of(4,3), spanletItem.getTo().getValue().get(1).getLocation());
+
+
+        assertEquals("processor", spanletItem.getType().getValue());
+        assertEquals(Location.of(5,7), spanletItem.getType().getLocation());
 
         var processorConfig = assertInstanceOf(ProcessorConfig.class, spanletItem.getConfig());
+        assertEquals(Location.of(7,3), spanletItem.getConfig().getLocation());
 
-        assertEquals("action-value", processorConfig.getAction());
+        assertEquals("action-value", processorConfig.getAction().getValue());
+        assertEquals(Location.of(7,11), processorConfig.getAction().getLocation());
 
     }
 
     @Test
-    public void parseProcessorTracelet() throws Exception {
+    public void parseProcessorTracelet() {
 
 
         var config = """
@@ -209,17 +267,19 @@ class ConfigCheckFactoryTest {
         assertNotNull(value);
 
         var traceletItem = assertInstanceOf(TraceletItem.class, value);
-        assertEquals("name-value", traceletItem.getName());
-        assertEquals(List.of("first-destination", "second-destination"), traceletItem.getTo());
-        assertEquals("processor", traceletItem.getType());
+        assertEquals("name-value", traceletItem.getName().getValue());
+        assertEquals(List.of("first-destination", "second-destination"),
+                traceletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("processor", traceletItem.getType().getValue());
 
         var processorConfig = assertInstanceOf(ProcessorConfig.class, traceletItem.getConfig());
 
-        assertEquals("action-value", processorConfig.getAction());
+        assertEquals("action-value", processorConfig.getAction().getValue());
 
     }
+
     @Test
-    public void parseFilterSpanlet() throws Exception {
+    public void parseFilterSpanlet() {
 
 
         var config = """
@@ -239,17 +299,19 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(value);
         var spanletItem = assertInstanceOf(SpanletItem.class, value);
-        assertEquals("name-value", spanletItem.getName());
-        assertEquals(List.of("destination-value"), spanletItem.getTo());
-        assertEquals("filter", spanletItem.getType());
+        assertEquals("name-value", spanletItem.getName().getValue());
+        assertEquals(List.of("destination-value"),
+                spanletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("filter", spanletItem.getType().getValue());
 
         var filterConfig = assertInstanceOf(FilterConfig.class, spanletItem.getConfig());
 
-        assertEquals("expression-value", filterConfig.getExpression());
+        assertEquals("expression-value", filterConfig.getExpression().getValue());
 
     }
+
     @Test
-    public void parseFilterTracelet() throws Exception {
+    public void parseFilterTracelet() {
 
 
         var config = """
@@ -269,18 +331,19 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(value);
         var traceletItem = assertInstanceOf(TraceletItem.class, value);
-        assertEquals("name-value", traceletItem.getName());
-        assertEquals(List.of("destination-value"), traceletItem.getTo());
-        assertEquals("filter", traceletItem.getType());
+        assertEquals("name-value", traceletItem.getName().getValue());
+        assertEquals(List.of("destination-value"),
+                traceletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("filter", traceletItem.getType().getValue());
 
         var filterConfig = assertInstanceOf(FilterConfig.class, traceletItem.getConfig());
 
-        assertEquals("expression-value", filterConfig.getExpression());
+        assertEquals("expression-value", filterConfig.getExpression().getValue());
 
     }
 
     @Test
-    public void parseRouterSpanlet() throws Exception {
+    public void parseRouterSpanlet() {
 
 
         var config = """
@@ -307,30 +370,28 @@ class ConfigCheckFactoryTest {
         var spanletItem = assertInstanceOf(SpanletItem.class, value);
 
 
-
-
-
-        assertEquals("name-value", spanletItem.getName());
-        assertEquals(List.of("destination-value"), spanletItem.getTo());
-        assertEquals("router", spanletItem.getType());
+        assertEquals("name-value", spanletItem.getName().getValue());
+        assertEquals(List.of("destination-value"),
+                spanletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("router", spanletItem.getType().getValue());
 
         var routerConfig = assertInstanceOf(RouterConfig.class, spanletItem.getConfig());
-        assertEquals("default-destination", routerConfig.getDefaultRoute());
-        assertEquals(2, routerConfig.getRoutes().size());
+        assertEquals("default-destination", routerConfig.getDefaultRoute().getValue());
+        assertEquals(2, routerConfig.getRoutes().getValue().size());
 
-        Route firstClause = routerConfig.getRoutes().getFirst();
-        assertEquals("first-clause-expression", firstClause.getExpression());
-        assertEquals("fist-destination", firstClause.getTo());
+        Route firstClause = routerConfig.getRoutes().getValue().getFirst();
+        assertEquals("first-clause-expression", firstClause.getExpression().getValue());
+        assertEquals("fist-destination", firstClause.getTo().getValue());
 
-        Route secondClause = routerConfig.getRoutes().get(1);
-        assertEquals("second-clause-expression", secondClause.getExpression());
-        assertEquals("second-destination", secondClause.getTo());
+        Route secondClause = routerConfig.getRoutes().getValue().get(1);
+        assertEquals("second-clause-expression", secondClause.getExpression().getValue());
+        assertEquals("second-destination", secondClause.getTo().getValue());
 
 
     }
 
     @Test
-    public void parseRouterTracelet() throws Exception {
+    public void parseRouterTracelet() {
 
 
         var config = """
@@ -357,26 +418,27 @@ class ConfigCheckFactoryTest {
         var traceletItem = assertInstanceOf(TraceletItem.class, value);
 
 
-        assertEquals("name-value", traceletItem.getName());
-        assertEquals(List.of("destination-value"), traceletItem.getTo());
-        assertEquals("router", traceletItem.getType());
+        assertEquals("name-value", traceletItem.getName().getValue());
+        assertEquals(List.of("destination-value"), traceletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("router", traceletItem.getType().getValue());
 
         var routerConfig = assertInstanceOf(RouterConfig.class, traceletItem.getConfig());
-        assertEquals("default-destination", routerConfig.getDefaultRoute());
-        assertEquals(2, routerConfig.getRoutes().size());
+        assertEquals("default-destination", routerConfig.getDefaultRoute().getValue());
+        assertEquals(2, routerConfig.getRoutes().getValue().size());
 
-        Route firstClause = routerConfig.getRoutes().getFirst();
-        assertEquals("first-clause-expression", firstClause.getExpression());
-        assertEquals("fist-destination", firstClause.getTo());
+        Route firstClause = routerConfig.getRoutes().getValue().getFirst();
+        assertEquals("first-clause-expression", firstClause.getExpression().getValue());
+        assertEquals("fist-destination", firstClause.getTo().getValue());
 
-        Route secondClause = routerConfig.getRoutes().get(1);
-        assertEquals("second-clause-expression", secondClause.getExpression());
-        assertEquals("second-destination", secondClause.getTo());
+        Route secondClause = routerConfig.getRoutes().getValue().get(1);
+        assertEquals("second-clause-expression", secondClause.getExpression().getValue());
+        assertEquals("second-destination", secondClause.getTo().getValue());
 
 
     }
+
     @Test
-    public void parseTraceAggregatorSpanlet() throws Exception {
+    public void parseTraceAggregatorSpanlet() {
 
 
         var config = """
@@ -398,21 +460,20 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(value);
         var traceAggregatorItem = assertInstanceOf(TraceAggregatorItem.class, value);
-        assertEquals(List.of("destination-value"), traceAggregatorItem.getTo());
-        assertEquals("default", traceAggregatorItem.getType());
+        assertEquals(List.of("destination-value"),
+                traceAggregatorItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("default", traceAggregatorItem.getType().getValue());
 
         var traceAggregatorConfig = assertInstanceOf(TraceAggregatorConfig.class, traceAggregatorItem.getConfig());
-        assertEquals(1, traceAggregatorConfig.getTimeoutMillis());
-        assertEquals(2, traceAggregatorConfig.getInactiveTimeoutMillis());
-        assertEquals("expression value", traceAggregatorConfig.getCompletionExpression());
-
-
+        assertEquals(1, traceAggregatorConfig.getTimeoutMillis().getValue());
+        assertEquals(2, traceAggregatorConfig.getInactiveTimeoutMillis().getValue());
+        assertEquals("expression value", traceAggregatorConfig.getCompletionExpression().getValue());
 
 
     }
 
     @Test
-    public void parseTracePipeline() throws Exception {
+    public void parseTracePipeline() {
 
         var config = """
                 - trace: name-value
@@ -431,36 +492,38 @@ class ConfigCheckFactoryTest {
 
         tracePipelineChecker().check(node);
 
-        Object tracePipeline = node.getValue();
+        Item tracePipeline = node.getValue();
+        tracePipeline.afterSetValues();
 
         assertNotNull(tracePipeline);
-        List<?> pipelines = assertInstanceOf(List.class, tracePipeline);
+        var pipelinesArray = assertInstanceOf(ArrayItem.class, tracePipeline);
+        var pipelines = pipelinesArray.getValue();
         assertEquals(1, pipelines.size());
-        TracePipelineItem pipeline = assertInstanceOf(TracePipelineItem.class,pipelines.getFirst());
+        TracePipelineItem pipeline = assertInstanceOf(TracePipelineItem.class, pipelines.getFirst());
 
-        assertEquals("name-value", pipeline.getName());
-        List<SpanletItem> spanlets = pipeline.getProcessors();
+        assertEquals("name-value", pipeline.getName().getValue());
+        List<SpanletItem> spanlets = pipeline.getProcessors().getValue().stream().toList();
         assertEquals(1, spanlets.size());
-        List<String> start = pipeline.getStart();
+        List<String> start = pipeline.getStart().stream().map(ValueItem::getValue).toList();
         assertEquals(List.of("spanlet-name"), start);
-        List<String> from = pipeline.getFrom();
+        List<String> from = pipeline.getFrom().stream().map(ValueItem::getValue).toList();
         assertEquals(List.of("origin-value"), from);
 
 
-
         SpanletItem spanletItem = spanlets.getFirst();
-        assertEquals("spanlet-name", spanletItem.getName());
-        assertEquals(List.of("destination-value"), spanletItem.getTo());
-        assertEquals("processor", spanletItem.getType());
+        assertEquals("spanlet-name", spanletItem.getName().getValue());
+        assertEquals(List.of("destination-value"),
+                spanletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("processor", spanletItem.getType().getValue());
 
         var processorConfig = assertInstanceOf(ProcessorConfig.class, spanletItem.getConfig());
-        assertEquals("action-value", processorConfig.getAction());
+        assertEquals("action-value", processorConfig.getAction().getValue());
 
     }
 
 
     @Test
-    public void parseGlobalConfig() throws Exception {
+    public void parseGlobalConfig() {
 
         var config = """
                 receivers:
@@ -494,40 +557,48 @@ class ConfigCheckFactoryTest {
 
         assertNotNull(tracePipeline);
         var globalConfig = assertInstanceOf(ConfigItem.class, tracePipeline);
-        List<ReceiverItem> receiverItems = globalConfig.getReceivers();
+        var receiverItemsArray = globalConfig.getReceivers();
+        List<ReceiverItem> receiverItems = receiverItemsArray.getValue();
         assertEquals(2, receiverItems.size());
-        GrpcReceiverItem firstReceiver = assertInstanceOf(GrpcReceiverItem.class, receiverItems.get(0));
-        assertEquals("first", firstReceiver.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), firstReceiver.getAddress());
+        GrpcReceiverItem firstReceiver = assertInstanceOf(GrpcReceiverItem.class, receiverItems.getFirst());
+        assertEquals("first", firstReceiver.getName().getValue());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080),
+                firstReceiver.getAddress().getValue());
 
         GrpcReceiverItem secondReceiver = assertInstanceOf(GrpcReceiverItem.class, receiverItems.get(1));
-        assertEquals("second", secondReceiver.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081), secondReceiver.getAddress());
+        assertEquals("second", secondReceiver.getName().getValue());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081),
+                secondReceiver.getAddress().getValue());
 
-        List<ExporterItem> exporterItems = globalConfig.getExporters();
+        var exporterItemsArray = globalConfig.getExporters();
+        List<ExporterItem> exporterItems = exporterItemsArray.getValue();
         assertEquals(2, exporterItems.size());
-        GrpcExporterItem firstExporter = assertInstanceOf(GrpcExporterItem.class, exporterItems.get(0));
-        assertEquals("first", firstExporter.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), firstExporter.getAddress());
+        GrpcExporterItem firstExporter = assertInstanceOf(GrpcExporterItem.class, exporterItems.getFirst());
+        assertEquals("first", firstExporter.getName().getValue());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080),
+                firstExporter.getAddress().getValue());
 
         GrpcExporterItem secondExporter = assertInstanceOf(GrpcExporterItem.class, exporterItems.get(1));
-        assertEquals("second", secondExporter.getName());
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081), secondExporter.getAddress());
+        assertEquals("second", secondExporter.getName().getValue());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8081),
+                secondExporter.getAddress().getValue());
 
-        List<TracePipelineItem> pipelines = globalConfig.getPipelines();
+        var pipelinesArray = globalConfig.getPipelines();
+        var pipelines = pipelinesArray.getValue();
         assertEquals(1, pipelines.size());
-        TracePipelineItem pipeline = pipelines.get(0);
-        assertEquals("pipeline name", pipeline.getName());
+        TracePipelineItem pipeline = pipelines.getFirst();
+        assertEquals("pipeline name", pipeline.getName().getValue());
 
-        List<SpanletItem> spanletItems = pipeline.getProcessors();
+        List<SpanletItem> spanletItems = pipeline.getProcessors().getValue().stream().toList();
         assertEquals(1, spanletItems.size());
-        SpanletItem spanletItem = spanletItems.get(0);
-        assertEquals("spanlet-name", spanletItem.getName());
-        assertEquals(List.of("destination-value"), spanletItem.getTo());
-        assertEquals("processor", spanletItem.getType());
+        SpanletItem spanletItem = spanletItems.getFirst();
+        assertEquals("spanlet-name", spanletItem.getName().getValue());
+        assertEquals(List.of("destination-value"),
+                spanletItem.getTo().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals("processor", spanletItem.getType().getValue());
 
-//        ProcessorConfigBuilder configBuilder = assertInstanceOf(ProcessorConfigBuilder.class, spanletItem.getConfig());
-//        assertEquals("action-value", configBuilder.getAction());
+        ProcessorConfig configBuilder = assertInstanceOf(ProcessorConfig.class, spanletItem.getConfig());
+        assertEquals("action-value", configBuilder.getAction().getValue());
 
 
     }

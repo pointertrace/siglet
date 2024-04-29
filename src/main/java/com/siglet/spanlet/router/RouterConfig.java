@@ -1,29 +1,32 @@
 package com.siglet.spanlet.router;
 
-import com.siglet.config.item.repository.Node;
+import com.siglet.config.item.ArrayItem;
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
-public class RouterConfig {
+public class RouterConfig extends Item {
 
-    private List<Route> routes;
+    private ArrayItem<Route> routes;
 
-    private String defaultRoute;
+    private ValueItem<String> defaultRoute;
 
 
-    public List<Route> getRoutes() {
+    public ArrayItem<Route> getRoutes() {
         return routes;
     }
 
-    public void setRoutes(List<Route> routes) {
+    public void setRoutes(ArrayItem<Route> routes) {
         this.routes = routes;
     }
 
-    public void setDefaultRoute(String defaultRoute) {
+    public void setDefaultRoute(ValueItem<String> defaultRoute) {
         this.defaultRoute = defaultRoute;
     }
 
-    public String getDefaultRoute() {
+    public ValueItem<String> getDefaultRoute() {
         return defaultRoute;
     }
 

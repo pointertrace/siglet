@@ -1,42 +1,44 @@
 package com.siglet.config.item;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessorItem extends Item {
 
-    private Object config;
+    private Item config;
 
-    private String pipeline;
+    private ValueItem<String> pipeline;
 
-   private List<String> to = new ArrayList<>();
+   private ArrayItem<ValueItem<String>> to;
 
 
-    public String getPipeline() {
+    public ValueItem<String> getPipeline() {
         return pipeline;
     }
 
-    public void setPipeline(String pipeline) {
+    public void setPipeline(ValueItem<String> pipeline) {
         this.pipeline = pipeline;
     }
 
-    public List<String> getTo() {
+    public ArrayItem<ValueItem<String>> getTo() {
         return to;
     }
 
-    public void setTo(List<String> to) {
+    public void setTo(ArrayItem<ValueItem<String>> to) {
         this.to = to;
     }
 
-    public void setToSingleValue(String to)  {
-        this.to = List.of(to);
+    public void setToSingleValue(ValueItem<String> to)  {
+        this.to = new ArrayItem<>(to.getLocation(),List.of(to));
     }
 
-    public Object getConfig() {
+    public Item getConfig() {
         return config;
     }
 
-    public void setConfig(Object config) {
+    public void setConfig(Item config) {
         this.config = config;
     }
 }

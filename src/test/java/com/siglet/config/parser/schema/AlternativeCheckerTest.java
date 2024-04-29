@@ -1,5 +1,7 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.ArrayItem;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +36,8 @@ class AlternativeCheckerTest {
 
         alternativeChecker.check(node);
 
-        String text = assertInstanceOf(String.class, node.getValue());
-        assertEquals("text value", text);
+        ValueItem<String> text = assertInstanceOf(ValueItem.class, node.getValue());
+        assertEquals("text value", text.getValue());
     }
 
 
@@ -54,10 +56,11 @@ class AlternativeCheckerTest {
 
         alternativeChecker.check(node);
 
-        List<?> list = assertInstanceOf(List.class, node.getValue());
+        var array = assertInstanceOf(ArrayItem.class, node.getValue());
+        List<ValueItem<String>> list = array.getValue();
         assertEquals(2, list.size());
-        assertEquals("first value", list.get(0));
-        assertEquals("second value", list.get(1));
+        assertEquals("first value", list.getFirst().getValue());
+        assertEquals("second value", list.get(1).getValue());
     }
 
     @Test

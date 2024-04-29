@@ -1,5 +1,7 @@
 package com.siglet.spanlet.traceaggregator;
 
+import com.siglet.SigletError;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
@@ -24,7 +26,11 @@ public class TraceAggregatorCheckerDiscriminator implements DynamicCheckerDiscri
         if (type == null) {
             throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
         }
-        TraceAggregatorType traceAggregatorType = traceAggregatorTypes.get(type.getValue().toString());
-        return traceAggregatorType.getConfigDefinition().getChecker();
+        if (type.getValue() instanceof ValueItem valueItem){
+            TraceAggregatorType traceAggregatorType= traceAggregatorTypes.get(valueItem.getValue().toString());
+            return traceAggregatorType.getConfigDefinition().getChecker();
+        } else {
+            throw new SigletError("TraceAggregator Tracelet type must be a ValueItem<String>");
+        }
     }
 }

@@ -1,34 +1,38 @@
 package com.siglet.spanlet.traceaggregator;
 
-public class TraceAggregatorConfig {
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 
-    private Long timeoutMillis;
+public class TraceAggregatorConfig extends Item {
 
-    private Long inactiveTimeoutMillis;
+    private ValueItem<Long> timeoutMillis;
 
-    private String completionExpression;
+    private ValueItem<Long> inactiveTimeoutMillis;
 
-    public Long getTimeoutMillis() {
+    private ValueItem<String> completionExpression;
+
+    public ValueItem<Long> getTimeoutMillis() {
         return timeoutMillis;
     }
 
-    public void setTimeoutMillis(Number timeoutMillis) {
-        this.timeoutMillis = timeoutMillis.longValue();
+    public void setTimeoutMillis(ValueItem<Number> timeoutMillis) {
+        this.timeoutMillis = new ValueItem<>(timeoutMillis.getLocation(), timeoutMillis.getValue().longValue());
     }
 
-    public Long getInactiveTimeoutMillis() {
+    public ValueItem<Long> getInactiveTimeoutMillis() {
         return inactiveTimeoutMillis;
     }
 
-    public void setInactiveTimeoutMillis(Number inactiveTimeoutMillis) {
-        this.inactiveTimeoutMillis = inactiveTimeoutMillis.longValue();
+    public void setInactiveTimeoutMillis(ValueItem<Number> inactiveTimeoutMillis) {
+        this.inactiveTimeoutMillis = new ValueItem<>(inactiveTimeoutMillis.getLocation(),
+                inactiveTimeoutMillis.getValue().longValue());
     }
 
-    public String getCompletionExpression() {
+    public ValueItem<String> getCompletionExpression() {
         return completionExpression;
     }
 
-    public void setCompletionExpression(String completionExpression) {
+    public void setCompletionExpression(ValueItem<String> completionExpression) {
         this.completionExpression = completionExpression;
     }
 }

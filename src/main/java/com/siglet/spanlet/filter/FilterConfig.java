@@ -1,14 +1,17 @@
 package com.siglet.spanlet.filter;
 
-public class FilterConfig {
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 
-    private String expression;
+public class FilterConfig extends Item {
 
-    public String getExpression() {
+    private ValueItem<String> expression;
+
+    public ValueItem<String> getExpression() {
         return expression;
     }
 
-    public void setExpression(String expression) {
+    public void setExpression(ValueItem<String> expression) {
         this.expression = expression;
     }
 }

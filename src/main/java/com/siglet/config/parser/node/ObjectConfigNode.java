@@ -1,21 +1,23 @@
 package com.siglet.config.parser.node;
 
+import com.siglet.config.item.Item;
 import com.siglet.config.parser.locatednode.Location;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class ObjectConfigNode extends ConfigNode {
+public final class ObjectConfigNode extends ConfigNode {
 
-    private final Map<String, ConfigNode> children;
+    private final Map<String, ConfigNode> children = new HashMap<>();
+    private final Map<String, Location> childrenKeyLocation = new HashMap<>();
 
     private ValueCreator valueCreator;
 
-    protected ObjectConfigNode(Map<String, ConfigNode> children, Location location) {
+    protected ObjectConfigNode(List<Property> childrenProperties, Location location) {
         super(location);
-        this.children = new HashMap<>(children);
+        childrenProperties.forEach(prop -> {
+            children.put(prop.getKey().getValue(), prop.getValue());
+            childrenKeyLocation.put(prop.getKey().getValue(), prop.getKey().getLocation());
+        });
     }
 
     public int getSize() {
@@ -30,6 +32,10 @@ public class ObjectConfigNode extends ConfigNode {
         return children.get(key);
     }
 
+    public Location getPropertyKeyLocation(String key) {
+        return childrenKeyLocation.get(key);
+    }
+
     public Map<String, ConfigNode> getProperties() {
         return Collections.unmodifiableMap(this.children);
     }
@@ -42,21 +48,66 @@ public class ObjectConfigNode extends ConfigNode {
         this.valueCreator = valueCreator;
     }
 
-    public Object getValue() {
-        Object result = getValueCreator().create();
+    public Item getValue() {
+        Item result = getValueCreator().create();
+//        result.setLocation(getLocation());
 
         for (ConfigNode prop : getProperties().values()) {
-            Object propValue = prop.getValue();
+            Item propValue = prop.getValue();
             prop.getValueSetter().set(result, propValue);
         }
 
         return result;
     }
 
-    @Override
-    public void clear() {
-//        for (ConfigNode child : children.values()) {
-//            child.clear();
-//        }
+    public void adjustLocation() {
+
+        for (String propName : getPropertyNames()) {
+            ConfigNode propNode = get(propName);
+            propNode.getValue().setLocation(getPropertyKeyLocation(propName));
+        }
+
     }
+
+    public static class Key {
+        private final String value;
+
+        private final Location location;
+
+        public Key(String value, Location location) {
+            this.value = value;
+            this.location = location;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+    }
+
+    public static class Property {
+
+        private final Key key;
+
+        private final ConfigNode value;
+
+
+        public Property(Key key, ConfigNode value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public Key getKey() {
+            return key;
+        }
+
+        public ConfigNode getValue() {
+            return value;
+        }
+
+    }
+
 }

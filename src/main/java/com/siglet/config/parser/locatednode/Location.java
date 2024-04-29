@@ -1,6 +1,7 @@
 package com.siglet.config.parser.locatednode;
 
 import com.fasterxml.jackson.core.JsonParser;
+import org.yaml.snakeyaml.error.Mark;
 
 import java.util.Objects;
 
@@ -9,12 +10,16 @@ public interface Location {
 
     int getColumn();
 
-    static Location create(JsonParser parser) {
+    static Location of(JsonParser parser) {
         return new LocationImpl(parser.getTokenLocation().getLineNr(), parser.getTokenLocation().getColumnNr());
     }
 
-    static Location create(int line, int column) {
+    static Location of(int line, int column) {
         return new LocationImpl(line, column);
+    }
+
+    static Location of(Mark mark) {
+        return new LocationImpl(mark.getLine()+1, mark.getColumn()+1);
     }
 
     class LocationImpl implements Location {

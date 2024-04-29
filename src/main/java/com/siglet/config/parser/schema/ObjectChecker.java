@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.Item;
 import com.siglet.config.parser.locatednode.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
@@ -17,7 +18,7 @@ public class ObjectChecker implements NodeChecker {
 
     private final ValueCreator valueCreator;
 
-    public <T> ObjectChecker(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
+    public <T extends Item> ObjectChecker(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
         this.valueCreator = ValueCreator.of(valueCreator);
         this.strict = strict;
         this.propertiesCheck = List.of(propertiesChecks);
@@ -44,7 +45,7 @@ public class ObjectChecker implements NodeChecker {
             for (String propName : propNames) {
                 errors.add(new SingleSchemaValidationError(
                         String.format("property %s not defined!", propName),
-                        Location.create(objectNode.get(propName).getLocation().getLine(), 1)));
+                        Location.of(objectNode.get(propName).getLocation().getLine(), 1)));
             }
             if (errors.size() == 1) {
                 throw errors.getFirst();

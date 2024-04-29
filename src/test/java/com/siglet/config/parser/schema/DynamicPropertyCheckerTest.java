@@ -1,5 +1,8 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
+import com.siglet.config.item.repository.Node;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
@@ -31,7 +34,7 @@ class DynamicPropertyCheckerTest {
 
         objectCheck.check(root);
 
-        Object bean = root.getValue();
+        Item bean = assertInstanceOf(MyBean.class, root.getValue());
 
         assertNotNull(bean);
         var myBean = assertInstanceOf(MyBean.class, bean);
@@ -39,7 +42,7 @@ class DynamicPropertyCheckerTest {
         assertNotNull(myBean.getMyProperty());
         var myIntProperty = assertInstanceOf(MyIntProperty.class, myBean.getMyProperty());
 
-        assertEquals(10, myIntProperty.getValue());
+        assertEquals(10, myIntProperty.getValue().getValue());
     }
 
 
@@ -70,7 +73,7 @@ class DynamicPropertyCheckerTest {
         assertNotNull(myBean.getMyProperty());
         var myIntProperty = assertInstanceOf(MyIntProperty.class, myBean.getMyProperty());
 
-        assertEquals(10, myIntProperty.getValue());
+        assertEquals(10, myIntProperty.getValue().getValue());
     }
 
     @Test
@@ -100,19 +103,26 @@ class DynamicPropertyCheckerTest {
         assertNotNull(myBean.getMyProperty());
         var myIntProperty = assertInstanceOf(MyStringProperty.class, myBean.getMyProperty());
 
-        assertEquals("a text", myIntProperty.getValue());
+        assertEquals("a text", myIntProperty.getValue().getValue());
     }
 
     public static class Discriminator implements DynamicCheckerDiscriminator {
 
         @Override
-        public NodeChecker getChecker(ConfigNode configNode)  {
+        public NodeChecker getChecker(ConfigNode configNode) {
             if (configNode instanceof ObjectConfigNode objectNode) {
-                if ("int".equals(objectNode.getProperties().get("discriminator").getValue())) {
+                Item discriminator = objectNode.getProperties().get("discriminator").getValue();
+                if (! (discriminator instanceof ValueItem<?> valueItem)) {
+                    throw new IllegalStateException("discriminator is not a ValueItem");
+                }
+                if (! ( valueItem.getValue() instanceof String discValue)) {
+                    throw new IllegalStateException("discriminator is not a String ValueItem");
+                }
+                if ( "int".equals(discValue)) {
                     return new PropertyChecker(MyBean::setMyProperty, "config", true,
                             new ObjectChecker(MyIntProperty::new, true,
                                     new PropertyChecker(MyIntProperty::setValue, "value", true, new IntChecker())));
-                } else if ("text".equals(objectNode.getProperties().get("discriminator").getValue())) {
+                } else if ("text".equals(discValue)) {
                     return new PropertyChecker(MyBean::setMyProperty, "config", true,
                             new ObjectChecker(MyStringProperty::new, true,
                                     new PropertyChecker(MyStringProperty::setValue, "value", true, new TextChecker())));
@@ -124,7 +134,7 @@ class DynamicPropertyCheckerTest {
         }
     }
 
-    public static class MyBean {
+    public static class MyBean extends Item {
         private MyProperty myProperty;
 
         public MyProperty getMyProperty() {
@@ -136,30 +146,30 @@ class DynamicPropertyCheckerTest {
         }
     }
 
-    public static class MyProperty {
+    public static class MyProperty extends Item {
 
     }
 
     public static class MyStringProperty extends MyProperty {
-        private String value;
+        private ValueItem<String> value;
 
-        public String getValue() {
+        public ValueItem<String> getValue() {
             return value;
         }
 
-        public void setValue(String value) {
+        public void setValue(ValueItem<String> value) {
             this.value = value;
         }
     }
 
-    public static class MyIntProperty extends MyProperty{
-        private Integer value;
+    public static class MyIntProperty extends MyProperty {
+        private ValueItem<Integer> value;
 
-        public Integer getValue() {
+        public ValueItem<Integer> getValue() {
             return value;
         }
 
-        public void setValue(Integer value) {
+        public void setValue(ValueItem<Integer> value) {
             this.value = value;
         }
     }

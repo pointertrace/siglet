@@ -1,14 +1,17 @@
 package com.siglet.spanlet.processor;
 
-public class ProcessorConfig {
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 
-    private String action;
+public class ProcessorConfig extends Item {
 
-    public String getAction() {
+    private ValueItem<String> action;
+
+    public ValueItem<String> getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(ValueItem<String> action) {
         this.action = action;
     }
 }

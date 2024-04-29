@@ -20,17 +20,19 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
 
     public void createRoute(RouteCreator routeCreator) {
         Object config = getItem().getConfig();
-        switch (getItem().getType()) {
+        switch (getItem().getType().getValue()) {
             case "processor":
                 if (!(config instanceof ProcessorConfig processorConfig)) {
                     throw new SigletError("");
                 }
                 if (getTo().size() == 1) {
                     getTo().getFirst().createRoute(routeCreator.
-                            addProcessor(new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)));
+                            addProcessor(new GroovyProcessor(processorConfig.getAction().getValue(),
+                                    GroovyPropertySetter.trace)));
                 } else {
                     RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction(), GroovyPropertySetter.trace)).startMulticast();
+                            new GroovyProcessor(processorConfig.getAction().getValue(),
+                                    GroovyPropertySetter.trace)).startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
                     }
@@ -43,10 +45,11 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
                 }
                 if (getTo().size() == 1) {
                     getTo().getFirst().createRoute(routeCreator.addFilter(
-                            new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace)));
+                            new GroovyPredicate(filterConfig.getExpression().getValue(), GroovyPropertySetter.trace)));
                 } else {
                     RouteCreator multicast = routeCreator.addFilter(
-                                    new GroovyPredicate(filterConfig.getExpression(), GroovyPropertySetter.trace))
+                                    new GroovyPredicate(filterConfig.getExpression().getValue(),
+                                            GroovyPropertySetter.trace))
                             .startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
@@ -59,11 +62,11 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
                     throw new SigletError("");
                 }
                 RouteCreator choice = routeCreator.startChoice();
-                for (Route route : routerConfig.getRoutes()) {
-                    getNodeFromName(route.getTo()).createRoute(choice.addChoice(
-                            new GroovyPredicate(route.getExpression(), GroovyPropertySetter.trace)));
+                for (Route route : routerConfig.getRoutes().getValue()) {
+                    getNodeFromName(route.getTo().getValue()).createRoute(choice.addChoice(
+                            new GroovyPredicate(route.getExpression().getValue(), GroovyPropertySetter.trace)));
                 }
-                getNodeFromName(routerConfig.getDefaultRoute()).createRoute(choice.endChoice());
+                getNodeFromName(routerConfig.getDefaultRoute().getValue()).createRoute(choice.endChoice());
                 break;
             default:
                 throw new IllegalStateException("not yet implemented");

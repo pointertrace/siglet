@@ -20,8 +20,8 @@ public class IntRangeChecker implements NodeChecker {
             throw new SingleSchemaValidationError("must be an integer!", node.getLocation());
         }
 
-        if (lowInclusive != null && (int) intNode.getValue() < lowInclusive ||
-                highInclusive != null && (int) intNode.getValue() > highInclusive) {
+        if (lowInclusive != null && (int) intNode.getValue().getValue() < lowInclusive ||
+                highInclusive != null && (int) intNode.getValue().getValue() > highInclusive) {
             throw new SingleSchemaValidationError(String.format("must be between %d and %d inclusive!",
                     lowInclusive, highInclusive), node.getLocation());
         }

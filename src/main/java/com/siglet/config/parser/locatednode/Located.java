@@ -15,6 +15,7 @@ public interface Located {
         private final Location location;
 
 
+
         public LocatedArrayNode(JsonNodeFactory nc, Location location) {
             super(nc);
             this.location = location;

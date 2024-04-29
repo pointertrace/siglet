@@ -3,19 +3,19 @@ package com.siglet.config.item;
 public class DebugExporterItem extends ExporterItem {
 
 
-    private String address;
+    private ValueItem<String> address;
 
-    public String getAddress() {
+    public ValueItem<String> getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(ValueItem<String> address) {
         this.address = address;
     }
 
 
     @Override
     public String getUri() {
-        return address;
+        return address.getValue();
     }
 }

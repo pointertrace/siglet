@@ -1,17 +1,19 @@
 package com.siglet.config.parser.node;
 
+import com.siglet.config.item.ArrayItem;
+import com.siglet.config.item.Item;
 import com.siglet.config.parser.locatednode.Location;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArrayConfigNode extends ConfigNode {
+public final class ArrayConfigNode extends ConfigNode {
 
 
     private final List<ConfigNode> items;
 
-    protected ArrayConfigNode(List<ConfigNode> items, Location location) {
-        super(location);
+    protected ArrayConfigNode( List<ConfigNode> items, Location location) {
+        super( location);
         this.items = new ArrayList<>(items);
     }
 
@@ -24,19 +26,12 @@ public class ArrayConfigNode extends ConfigNode {
     }
 
     @Override
-    public Object getValue() {
-        List<Object> result = new ArrayList<>();
+    public Item getValue() {
+        List<Item> itemList = new ArrayList<>();
         for (int i = 0; i < getLength(); i++) {
-            result.add(items.get(i).getValue());
+            itemList.add(items.get(i).getValue());
         }
-        return result;
+        return new ArrayItem(null, itemList);
     }
 
-    @Override
-    public void clear() {
-//        setValueSetter(null);
-//        for(ConfigNode item: items) {
-//            item.clear();
-//        }
-    }
 }

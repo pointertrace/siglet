@@ -44,7 +44,7 @@ public class FilterTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.otherCreate(yaml);
+        Config config = configFactory.create(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 
@@ -108,7 +108,7 @@ public class FilterTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.otherCreate(yaml);
+        Config config = configFactory.create(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 
@@ -174,7 +174,7 @@ public class FilterTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.otherCreate(yaml);
+        Config config = configFactory.create(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 
@@ -250,7 +250,7 @@ public class FilterTracelet extends CamelTestSupport {
 
         ConfigFactory configFactory = new ConfigFactory();
 
-        Config config = configFactory.otherCreate(yaml);
+        Config config = configFactory.create(yaml);
 
         context.addRoutes(config.getRouteBuilder());
 

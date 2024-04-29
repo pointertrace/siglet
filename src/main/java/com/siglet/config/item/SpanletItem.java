@@ -2,13 +2,13 @@ package com.siglet.config.item;
 
 public class SpanletItem extends ProcessorItem {
 
-    private String type;
+    private ValueItem<String> type;
 
-    public String getType() {
+    public ValueItem<String> getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ValueItem<String> type) {
         this.type = type;
     }
 

@@ -12,7 +12,7 @@ public class InetSocketAddressChecker implements NodeChecker {
 
     public void check(ConfigNode node) throws SchemaValidationError {
         if (node instanceof ValueConfigNode.Text textNode) {
-            String validationError = getValidationErrorReason((String) textNode.getValue());
+            String validationError = getValidationErrorReason((String) textNode.getValue().getValue());
             if (validationError != null) {
                 throw new SingleSchemaValidationError(validationError, node.getLocation());
             }

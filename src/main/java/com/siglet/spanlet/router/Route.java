@@ -1,26 +1,27 @@
 package com.siglet.spanlet.router;
 
-import com.siglet.config.item.repository.Node;
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 
-public class Route {
+public class Route extends Item {
 
-    private String expression;
+    private ValueItem<String> expression;
 
-    private String to;
+    private ValueItem<String> to;
 
-    public String getExpression() {
+    public ValueItem<String> getExpression() {
         return expression;
     }
 
-    public void setExpression(String expression) {
+    public void setExpression(ValueItem<String> expression) {
         this.expression = expression;
     }
 
-    public String getTo() {
+    public ValueItem<String> getTo() {
         return to;
     }
 
-    public void setTo(String to) {
+    public void setTo(ValueItem<String> to) {
         this.to = to;
     }
 

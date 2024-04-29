@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,9 @@ class InetSocketAddressCheckerTest {
         Object value = inetAddressConfigNode.getValue();
 
         assertNotNull(value);
-        var inetAddress = assertInstanceOf(InetSocketAddress.class, value);
+        var inetAddress = assertInstanceOf(ValueItem.class, value);
 
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), inetAddress);
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), inetAddress.getValue());
 
 
     }

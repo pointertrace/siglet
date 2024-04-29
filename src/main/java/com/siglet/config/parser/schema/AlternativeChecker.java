@@ -23,7 +23,6 @@ public class AlternativeChecker implements NodeChecker {
                 alternative.check(node);
                 return;
             } catch (SingleSchemaValidationError e) {
-                node.clear();
                 alternativeErrors.add(e);
                 failedCheckers.add(alternative.getName());
             }

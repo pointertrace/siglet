@@ -13,7 +13,7 @@ public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 
     @Override
     public void createRoute(RouteCreator routeCreator) {
-        switch (getItem().getType()) {
+        switch (getItem().getType().getValue()) {
             case "default":
                 Object config = getItem().getConfig();
                 if (!(config instanceof TraceAggregatorConfig traceAggregatorConfig)) {
@@ -23,14 +23,14 @@ public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
                 if (getTo().size() == 1) {
 
                     getTo().getFirst().createRoute(routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis(),
-                            traceAggregatorConfig.getTimeoutMillis()));
+                            traceAggregatorConfig.getCompletionExpression().getValue(),
+                            traceAggregatorConfig.getInactiveTimeoutMillis().getValue(),
+                            traceAggregatorConfig.getTimeoutMillis().getValue()));
                 } else {
                     RouteCreator multicast = routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis(),
-                            traceAggregatorConfig.getTimeoutMillis()).startMulticast();
+                            traceAggregatorConfig.getCompletionExpression().getValue(),
+                            traceAggregatorConfig.getInactiveTimeoutMillis().getValue(),
+                            traceAggregatorConfig.getTimeoutMillis().getValue()).startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
                     }

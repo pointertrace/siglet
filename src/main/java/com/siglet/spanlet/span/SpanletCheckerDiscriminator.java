@@ -1,5 +1,7 @@
 package com.siglet.spanlet.span;
 
+import com.siglet.SigletError;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
@@ -26,7 +28,11 @@ public class SpanletCheckerDiscriminator implements DynamicCheckerDiscriminator 
         if (type == null) {
             throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
         }
-        SpanletType spanletType = spanletTypes.get(type.getValue().toString());
-        return spanletType.getConfigDefinition().getChecker();
+        if (type.getValue() instanceof ValueItem valueItem){
+            SpanletType spanletType = spanletTypes.get(valueItem.getValue().toString());
+            return spanletType.getConfigDefinition().getChecker();
+        } else {
+            throw new SigletError("Spanlet type must be a ValueItem<String>");
+        }
     }
 }

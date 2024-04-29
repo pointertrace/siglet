@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.locatednode.Location;
 import com.siglet.config.parser.node.ConfigNode;
@@ -25,7 +26,9 @@ class DomainCheckerTest {
 
         checker.check(root);
 
-        assertEquals("a", root.getValue());
+        var value = assertInstanceOf(ValueItem.class, root.getValue());
+
+        assertEquals("a", value.getValue());
 
     }
 
@@ -43,7 +46,7 @@ class DomainCheckerTest {
         var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 
         assertEquals("must be in [a, b, c]", ex.getMessage());
-        assertEquals(Location.create(1,1), ex.getLocation());
+        assertEquals(Location.of(1,1), ex.getLocation());
 
 
     }

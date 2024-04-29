@@ -1,13 +1,16 @@
 package com.siglet.config.parser.node;
 
+import com.siglet.config.item.Item;
 import com.siglet.config.parser.locatednode.Located;
 import com.siglet.config.parser.locatednode.Location;
 
-public abstract class ConfigNode implements Located {
+public sealed abstract class ConfigNode implements Located permits ObjectConfigNode, ArrayConfigNode, ValueConfigNode {
 
     private final Location location;
 
     private ValueSetter valueSetter;
+
+
     protected ConfigNode(Location location) {
         this.location = location;
     }
@@ -15,7 +18,6 @@ public abstract class ConfigNode implements Located {
     public Location getLocation() {
         return location;
     }
-
 
     public ValueSetter getValueSetter() {
         return valueSetter;
@@ -25,7 +27,7 @@ public abstract class ConfigNode implements Located {
         this.valueSetter = valueSetter;
     }
 
-    public abstract Object getValue();
 
-    public abstract void clear();
+    public abstract Item getValue();
+
 }

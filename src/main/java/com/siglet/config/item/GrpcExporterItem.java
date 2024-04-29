@@ -5,19 +5,19 @@ import java.net.InetSocketAddress;
 public class GrpcExporterItem extends ExporterItem {
 
 
-    private InetSocketAddress address;
+    private ValueItem<InetSocketAddress> address;
 
-    public InetSocketAddress getAddress() {
+    public ValueItem<InetSocketAddress> getAddress() {
         return address;
     }
 
-    public void setAddress(InetSocketAddress address) {
+    public void setAddress(ValueItem<InetSocketAddress> address) {
         this.address = address;
     }
 
 
     @Override
     public String getUri() {
-        return "otelgrpc:" + address.getHostName() + ":" + address.getPort();
+        return "otelgrpc:" + address.getValue().getHostName() + ":" + address.getValue().getPort();
     }
 }

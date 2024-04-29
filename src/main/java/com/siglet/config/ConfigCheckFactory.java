@@ -30,9 +30,6 @@ public class ConfigCheckFactory {
     public static final String EXPORTERS_PROP = "exporters";
     public static final String PIPELINES_PROP = "pipelines";
 
-//    private static final String 
-
-
     public static NodeChecker receiversChecker() {
 
         return array(

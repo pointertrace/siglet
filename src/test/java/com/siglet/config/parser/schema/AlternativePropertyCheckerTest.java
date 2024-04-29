@@ -1,6 +1,10 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.ArrayItem;
+import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
+import com.siglet.config.parser.locatednode.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +30,8 @@ class AlternativePropertyCheckerTest {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new AlternativePropertyChecker("prop1", true,
-                        new PropertyChecker(Bean::setProp1AsValue,"prop1", true, text()),
-                        new PropertyChecker(Bean::setProp1,"prop1", true,array(text()))));
+                        new PropertyChecker(Bean::setProp1AsValue, "prop1", true, text()),
+                        new PropertyChecker(Bean::setProp1, "prop1", true, array(text()))));
 
         ConfigNode node = parser.parse("""
                 prop1: text-value
@@ -38,7 +42,7 @@ class AlternativePropertyCheckerTest {
         Object value = node.getValue();
         assertNotNull(value);
         var bean = assertInstanceOf(Bean.class, value);
-        assertEquals(List.of("text-value"), bean.getProp1());
+        assertEquals(List.of("text-value"), bean.getProp1().getValue().stream().map(ValueItem::getValue).toList());
     }
 
     @Test
@@ -46,8 +50,8 @@ class AlternativePropertyCheckerTest {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new AlternativePropertyChecker("prop1", true,
-                        new PropertyChecker(Bean::setProp1AsValue,"prop1", true, text()),
-                        new PropertyChecker(Bean::setProp1,"prop1", true,array(text()))));
+                        new PropertyChecker(Bean::setProp1AsValue, "prop1", true, text()),
+                        new PropertyChecker(Bean::setProp1, "prop1", true, array(text()))));
 
         ConfigNode node = parser.parse("""
                 prop1:
@@ -57,24 +61,26 @@ class AlternativePropertyCheckerTest {
 
         objectCheck.check(node);
 
-        Object value = node.getValue();
+        Object value = assertInstanceOf(Bean.class, node.getValue());
         assertNotNull(value);
         var bean = assertInstanceOf(Bean.class, value);
-        assertEquals(List.of("first-value","second-value"), bean.getProp1());
+        assertEquals(List.of("first-value", "second-value"),
+                bean.getProp1().getValue().stream().map(ValueItem::getValue).toList());
     }
-    public static class Bean {
 
-        private List<String> prop1;
+    public static class Bean extends Item {
 
-        public void setProp1(List<String> prop1) {
+        private ArrayItem<ValueItem<String>> prop1;
+
+        public void setProp1(ArrayItem<ValueItem<String>> prop1) {
             this.prop1 = prop1;
         }
 
-        public void setProp1AsValue(String prop1) {
-            this.prop1 = List.of(prop1);
+        public void setProp1AsValue(ValueItem<String> prop1) {
+            this.prop1 = new ArrayItem<>(Location.of(0, 0), List.of(prop1));
         }
 
-        public List<String> getProp1() {
+        public ArrayItem<ValueItem<String>> getProp1() {
             return prop1;
         }
     }

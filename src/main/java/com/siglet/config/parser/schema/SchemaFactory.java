@@ -1,5 +1,7 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.item.Item;
+
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -61,11 +63,11 @@ public class SchemaFactory {
         return dynamicProperty( propertyName, true, discriminator);
     }
 
-    public static <T> NodeChecker object(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
+    public static <T extends Item> NodeChecker object(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
         return new ObjectChecker(valueCreator, strict, propertiesChecks);
     }
 
-    public static <T> NodeChecker strictObject(Supplier<T> valueCreator, AbstractPropertyChecker... propertiesChecks) {
+    public static <T extends Item> NodeChecker strictObject(Supplier<T> valueCreator, AbstractPropertyChecker... propertiesChecks) {
         return object(valueCreator, true, propertiesChecks);
     }
 
