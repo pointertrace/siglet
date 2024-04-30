@@ -1,6 +1,6 @@
 package com.siglet.config.item;
 
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 import java.util.List;
 

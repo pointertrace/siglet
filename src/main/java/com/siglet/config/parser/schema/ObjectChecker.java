@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.Item;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.node.ValueCreator;

@@ -1,8 +1,6 @@
 package com.siglet.config.item;
 
-import com.siglet.config.parser.locatednode.Location;
-
-import java.util.Objects;
+import com.siglet.config.located.Location;
 
 public class ValueItem<T> extends Item {
 

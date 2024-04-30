@@ -1,7 +1,7 @@
 package com.siglet.config.item;
 
-import com.siglet.config.parser.locatednode.Located;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Located;
+import com.siglet.config.located.Location;
 
 public class Item implements Located {
 

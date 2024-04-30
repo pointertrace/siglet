@@ -1,4 +1,4 @@
-package com.siglet.config.parser.locatednode;
+package com.siglet.config.located;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;

@@ -2,7 +2,7 @@ package com.siglet.spanlet.traceaggregator;
 
 import com.siglet.config.item.ProcessorItem;
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 public class TraceAggregatorItem extends ProcessorItem {
 

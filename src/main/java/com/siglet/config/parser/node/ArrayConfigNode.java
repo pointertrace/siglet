@@ -2,7 +2,7 @@ package com.siglet.config.parser.node;
 
 import com.siglet.config.item.ArrayItem;
 import com.siglet.config.item.Item;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 import java.util.ArrayList;
 import java.util.List;

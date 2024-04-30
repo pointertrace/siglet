@@ -1,12 +1,9 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.parser.locatednode.Located;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public interface ValueTransformer {
 

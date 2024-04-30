@@ -2,7 +2,7 @@ package com.siglet.config;
 
 import com.siglet.config.item.*;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.spanlet.filter.FilterConfig;

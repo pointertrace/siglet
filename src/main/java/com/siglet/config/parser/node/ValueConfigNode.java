@@ -1,8 +1,7 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.config.Config;
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
         ValueConfigNode.Text, ValueConfigNode.NumberConfigNode, ValueConfigNode.Null, ValueConfigNode.Boolean, ValueConfigNode.Binary {

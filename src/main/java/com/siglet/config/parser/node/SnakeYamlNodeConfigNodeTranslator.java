@@ -1,6 +1,6 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 import org.yaml.snakeyaml.nodes.*;
 
 import java.math.BigDecimal;
@@ -20,15 +20,15 @@ public class SnakeYamlNodeConfigNodeTranslator {
             case ScalarNode scalarNode when Tag.FLOAT.equals(scalarNode.getTag()) ->  //
                     getDecimalConfigNode(scalarNode);
             case ScalarNode scalarNode when Tag.STR.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Text(scalarNode.getValue(), Location.of(scalarNode.getStartMark()));
+                    new ValueConfigNode.Text(scalarNode.getValue(), Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BINARY.equals(scalarNode.getTag()) ->
                     new ValueConfigNode.Binary(scalarNode.getValue().getBytes(StandardCharsets.UTF_8),
-                            Location.of(scalarNode.getStartMark()));
+                            Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BOOL.equals(scalarNode.getTag()) ->
                     new ValueConfigNode.Boolean(Boolean.valueOf(scalarNode.getValue()),
-                            Location.of(scalarNode.getStartMark()));
+                            Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.NULL.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Null(Location.of(scalarNode.getStartMark()));
+                    new ValueConfigNode.Null(Location.of(scalarNode));
             case MappingNode mappingNode -> {
                 List<ObjectConfigNode.Property> properties = new ArrayList<>();
                 mappingNode.getValue().forEach(nodeTuple -> {
@@ -44,12 +44,12 @@ public class SnakeYamlNodeConfigNodeTranslator {
                     properties.add(prop);
 
                 });
-                yield new ObjectConfigNode(properties, Location.of(mappingNode.getStartMark()));
+                yield new ObjectConfigNode(properties, Location.of(mappingNode));
             }
             case SequenceNode sequenceNode -> {
                 List<ConfigNode> items = new ArrayList<>();
                 sequenceNode.getValue().forEach(item -> items.add(translate(item)));
-                yield new ArrayConfigNode(items, Location.of(sequenceNode.getStartMark()));
+                yield new ArrayConfigNode(items, Location.of(sequenceNode));
             }
             default -> throw new IllegalStateException("Unexpected value: " + node);
         };
@@ -58,14 +58,14 @@ public class SnakeYamlNodeConfigNodeTranslator {
     protected static ObjectConfigNode.Key keyFromNode(Node propertyKeyNode) {
         if (!Tag.STR.equals(propertyKeyNode.getTag()) || !(propertyKeyNode instanceof ScalarNode scalarKeyNode)) {
             throw new SigletParserError("object must have a str as key",
-                    Location.of(propertyKeyNode.getStartMark()));
+                    Location.of(propertyKeyNode));
         }
-        return new ObjectConfigNode.Key(scalarKeyNode.getValue(), Location.of(scalarKeyNode.getStartMark()));
+        return new ObjectConfigNode.Key(scalarKeyNode.getValue(), Location.of(scalarKeyNode));
     }
 
     protected static ValueConfigNode.NumberConfigNode getIntConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.Int(Integer.parseInt(value.getValue()), Location.of(value.getStartMark()));
+            return new ValueConfigNode.Int(Integer.parseInt(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -73,7 +73,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueConfigNode.NumberConfigNode getLongConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.Long(Long.parseLong(value.getValue()), Location.of(value.getStartMark()));
+            return new ValueConfigNode.Long(Long.parseLong(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -81,7 +81,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueConfigNode.NumberConfigNode getBigIntegerConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.BigInteger(new BigInteger(value.getValue()), Location.of(value.getStartMark()));
+            return new ValueConfigNode.BigInteger(new BigInteger(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -96,7 +96,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             result = getBigIntegerConfigNode(value);
         }
         if (result == null) {
-            throw new SigletParserError("'%s' is not a valid integer", Location.of(value.getStartMark()));
+            throw new SigletParserError("'%s' is not a valid integer", Location.of(value));
         } else {
             return result;
         }
@@ -108,7 +108,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             if (f.isInfinite()) {
                 return null;
             } else {
-                return new ValueConfigNode.Float(f, Location.of(value.getStartMark()));
+                return new ValueConfigNode.Float(f, Location.of(value));
             }
         } catch (NumberFormatException e) {
             return null;
@@ -121,7 +121,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             if (d.isInfinite()) {
                 return null;
             }
-            return new ValueConfigNode.Double(d, Location.of(value.getStartMark()));
+            return new ValueConfigNode.Double(d, Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -129,7 +129,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueConfigNode.NumberConfigNode getBigDecimalConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.BigDecimal(new BigDecimal(value.getValue()), Location.of(value.getStartMark()));
+            return new ValueConfigNode.BigDecimal(new BigDecimal(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -144,7 +144,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             result = getBigDecimalConfigNode(value);
         }
         if (result == null) {
-            throw new SigletParserError("'%s' is not a valid decimal", Location.of(value.getStartMark()));
+            throw new SigletParserError("'%s' is not a valid decimal", Location.of(value));
         } else {
             return result;
         }

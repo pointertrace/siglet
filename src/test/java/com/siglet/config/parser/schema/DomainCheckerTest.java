@@ -2,7 +2,7 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.Test;
 

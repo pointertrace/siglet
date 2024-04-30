@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
 
-import com.siglet.config.parser.locatednode.Location;
+import com.siglet.config.located.Location;
 
 public class SingleSchemaValidationError extends SchemaValidationError {
 
