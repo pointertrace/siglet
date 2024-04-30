@@ -21,9 +21,9 @@ public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
 
     public ValueItem<?> getValue() {
         if (valueTransformer != null) {
-            return valueTransformer.transform(null, value);
+            return valueTransformer.transform(getLocation(), value);
         }
-        return new ValueItem<>(null, value);
+        return new ValueItem<>(getLocation(), value);
     }
 
     public ValueSetter getValueSetter() {

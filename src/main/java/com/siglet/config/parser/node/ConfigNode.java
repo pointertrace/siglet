@@ -6,7 +6,7 @@ import com.siglet.config.parser.locatednode.Location;
 
 public sealed abstract class ConfigNode implements Located permits ObjectConfigNode, ArrayConfigNode, ValueConfigNode {
 
-    private final Location location;
+    private Location location;
 
     private ValueSetter valueSetter;
 
@@ -17,6 +17,10 @@ public sealed abstract class ConfigNode implements Located permits ObjectConfigN
 
     public Location getLocation() {
         return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public ValueSetter getValueSetter() {

@@ -50,7 +50,7 @@ public final class ObjectConfigNode extends ConfigNode {
 
     public Item getValue() {
         Item result = getValueCreator().create();
-//        result.setLocation(getLocation());
+        result.setLocation(getLocation());
 
         for (ConfigNode prop : getProperties().values()) {
             Item propValue = prop.getValue();

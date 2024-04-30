@@ -1,22 +1,15 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.config.parser.locatednode.Located;
 import com.siglet.config.parser.locatednode.Location;
-import org.checkerframework.checker.units.qual.N;
-import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.nodes.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SnakeYamlNodeConfigNodeTranslator {
-
-
 
 
     public static ConfigNode translate(Node node) {
@@ -39,11 +32,19 @@ public class SnakeYamlNodeConfigNodeTranslator {
             case MappingNode mappingNode -> {
                 List<ObjectConfigNode.Property> properties = new ArrayList<>();
                 mappingNode.getValue().forEach(nodeTuple -> {
-                    properties.add(new ObjectConfigNode.Property(getKeyFromNode(nodeTuple.getKeyNode()),
-                            translate(nodeTuple.getValueNode())));
+                    ObjectConfigNode.Key key = keyFromNode(nodeTuple.getKeyNode());
+                    ConfigNode value = translate(nodeTuple.getValueNode());
+                    if (value instanceof ObjectConfigNode objectValue) {
+                        objectValue.setLocation(key.getLocation());
+                    }
+                    if (value instanceof ArrayConfigNode arrayConfigNode) {
+                        arrayConfigNode.setLocation(key.getLocation());
+                    }
+                    ObjectConfigNode.Property prop = new ObjectConfigNode.Property(key, value);
+                    properties.add(prop);
 
                 });
-                yield new ObjectConfigNode(properties,Location.of(mappingNode.getStartMark()));
+                yield new ObjectConfigNode(properties, Location.of(mappingNode.getStartMark()));
             }
             case SequenceNode sequenceNode -> {
                 List<ConfigNode> items = new ArrayList<>();
@@ -54,7 +55,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
         };
     }
 
-    protected static ObjectConfigNode.Key getKeyFromNode(Node propertyKeyNode) {
+    protected static ObjectConfigNode.Key keyFromNode(Node propertyKeyNode) {
         if (!Tag.STR.equals(propertyKeyNode.getTag()) || !(propertyKeyNode instanceof ScalarNode scalarKeyNode)) {
             throw new SigletParserError("object must have a str as key",
                     Location.of(propertyKeyNode.getStartMark()));

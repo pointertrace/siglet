@@ -12,8 +12,8 @@ public final class ArrayConfigNode extends ConfigNode {
 
     private final List<ConfigNode> items;
 
-    protected ArrayConfigNode( List<ConfigNode> items, Location location) {
-        super( location);
+    protected ArrayConfigNode(List<ConfigNode> items, Location location) {
+        super(location);
         this.items = new ArrayList<>(items);
     }
 
@@ -31,7 +31,7 @@ public final class ArrayConfigNode extends ConfigNode {
         for (int i = 0; i < getLength(); i++) {
             itemList.add(items.get(i).getValue());
         }
-        return new ArrayItem(null, itemList);
+        return new ArrayItem(getLocation(), itemList);
     }
 
 }

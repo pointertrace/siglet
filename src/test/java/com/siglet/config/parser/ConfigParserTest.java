@@ -208,7 +208,7 @@ class ConfigParserTest {
 
 
         var prop2 = assertInstanceOf(ObjectConfigNode.class,firstObject.get("prop2"));
-        assertEquals(Location.of(4,9), prop2.getLocation());
+        assertEquals(Location.of(3,5), prop2.getLocation());
 
 
         assertEquals(Location.of(4, 9), prop2.getPropertyKeyLocation("prop2.1"));
@@ -241,7 +241,7 @@ class ConfigParserTest {
         assertEquals(Location.of(1,1), rootObject.getPropertyKeyLocation("first-object"));
 
         var array  = assertInstanceOf(ArrayConfigNode.class,rootObject.get("first-object"));
-        assertEquals(Location.of(2, 5), array.getLocation());
+        assertEquals(Location.of(1, 1), array.getLocation());
         assertEquals(3, array.getLength());
 
         var item1 = assertInstanceOf(ValueConfigNode.class,array.getItem(0));
@@ -260,7 +260,7 @@ class ConfigParserTest {
 
         var item3Array  = assertInstanceOf(ArrayConfigNode.class, item3.get("item3"));
 
-        assertEquals(Location.of(5, 7), item3Array.getLocation());
+        assertEquals(Location.of(4, 7), item3Array.getLocation());
         assertEquals(3, item3Array.getLength());
 
         var item31 = assertInstanceOf(ValueConfigNode.class, item3Array.getItem(0));
