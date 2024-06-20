@@ -11,41 +11,54 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoNumberDataPointAdapterTest {
 
     private NumberDataPoint protoNumberDataPoint;
 
+    private List<KeyValue> attributes;
+
+    private List<Exemplar> exemplars;
+
     private ProtoNumberDataPointAdapter protoNumberDataPointAdapter;
 
     @BeforeEach
     void setUp() {
+
+        attributes = List.of(
+                KeyValue.newBuilder()
+                        .setKey("first-attribute")
+                        .setValue(AnyValue.newBuilder().setStringValue("first-attribute-value").build())
+                        .build(),
+                KeyValue.newBuilder()
+                        .setKey("second-attribute")
+                        .setValue(AnyValue.newBuilder().setStringValue("second-attribute-value").build())
+                        .build());
+
+        exemplars = List.of(
+                Exemplar.newBuilder()
+                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(10)))
+                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(20, 30)))
+                        .setAsInt(40)
+                        .setTimeUnixNano(50)
+                        .build(),
+                Exemplar.newBuilder()
+                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(60)))
+                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(70, 80)))
+                        .setAsInt(90)
+                        .setTimeUnixNano(100)
+                        .build());
+
         protoNumberDataPoint = NumberDataPoint.newBuilder()
                 .setFlags(1)
                 .setTimeUnixNano(1)
                 .setStartTimeUnixNano(2)
                 .setAsInt(3)
-                .addAttributes(KeyValue.newBuilder()
-                        .setKey("first-attribute")
-                        .setValue(AnyValue.newBuilder().setStringValue("first-attribute-value").build())
-                        .build())
-                .addAttributes(KeyValue.newBuilder()
-                        .setKey("second-attribute")
-                        .setValue(AnyValue.newBuilder().setStringValue("second-attribute-value").build())
-                        .build())
-                .addExemplars(Exemplar.newBuilder()
-                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(10)))
-                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(20, 30)))
-                        .setAsInt(40)
-                        .setTimeUnixNano(50)
-                        .build())
-                .addExemplars(Exemplar.newBuilder()
-                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(60)))
-                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(70, 80)))
-                        .setAsInt(90)
-                        .setTimeUnixNano(100)
-                        .build())
+                .addAllAttributes(attributes)
+                .addAllExemplars(exemplars)
                 .build();
 
         protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter(protoNumberDataPoint, true);
@@ -156,4 +169,71 @@ class ProtoNumberDataPointAdapterTest {
         assertSame(protoNumberDataPoint, numberDataPoint);
     }
 
+    @Test
+    public void getUpdated_onlyNumberDataPointAdapterUpdated() {
+
+        protoNumberDataPointAdapter.setTimeUnixNano(2500);
+        protoNumberDataPointAdapter.setStartTimeUnixNano(3500);
+        protoNumberDataPointAdapter.setFlags(100);
+        protoNumberDataPointAdapter.setAsDouble(1.1);
+
+        assertEquals(2500, protoNumberDataPointAdapter.getTimeUnixNano());
+        assertEquals(3500, protoNumberDataPointAdapter.getStartTimeUnixNano());
+        assertEquals(100, protoNumberDataPointAdapter.getFlags());
+        assertEquals(1.1, protoNumberDataPointAdapter.getAsDouble());
+
+        List<KeyValue> actualAttributes = protoNumberDataPointAdapter.getAttributes().getUpdated();
+
+        assertEquals(2, actualAttributes.size());
+
+        assertSame(actualAttributes.get(0), attributes.get(0));
+        assertSame(actualAttributes.get(1), attributes.get(1));
+
+        List<Exemplar> actualExemplars = protoNumberDataPointAdapter.getExemplars().getUpdated();
+
+        assertEquals(2, actualExemplars.size());
+
+        assertSame(actualExemplars.get(0), exemplars.get(0));
+        assertSame(actualExemplars.get(1), exemplars.get(1));
+
+
+    }
+
+    @Test
+    public void getUpdated_onlyAttributesUpdated() {
+
+        ProtoAttributesAdapter attributes = protoNumberDataPointAdapter.getAttributes();
+
+        attributes.set("first-attribute", "new-first-key-value");
+        attributes.set("new-key", "new-key-value");
+
+
+        NumberDataPoint actual = protoNumberDataPointAdapter.getUpdatedNumberDataPointAdapter();
+
+        assertEquals(1, actual.getFlags());
+        assertEquals(1, actual.getTimeUnixNano());
+        assertEquals(2, actual.getStartTimeUnixNano());
+        assertEquals(3, actual.getAsInt());
+
+        List<Exemplar> actualExemplars = actual.getExemplarsList();
+
+        assertEquals(2, actualExemplars.size());
+
+        assertSame(actualExemplars.get(0), exemplars.get(0));
+        assertSame(actualExemplars.get(1), exemplars.get(1));
+
+        List<KeyValue> actualAttributes = actual.getAttributesList();
+
+        assertEquals(3, actualAttributes.size());
+
+        assertEquals("first-attribute", actualAttributes.get(0).getKey());
+        assertEquals("new-first-key-value",actualAttributes.get(0).getValue().getStringValue());
+
+        assertEquals("second-attribute", actualAttributes.get(1).getKey());
+        assertEquals("second-attribute-value",actualAttributes.get(1).getValue().getStringValue());
+
+        assertEquals("new-key", actualAttributes.get(2).getKey());
+        assertEquals("new-key-value",actualAttributes.get(2).getValue().getStringValue());
+
+    }
 }
