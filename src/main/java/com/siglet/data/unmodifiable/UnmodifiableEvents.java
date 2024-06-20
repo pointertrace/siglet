@@ -6,6 +6,7 @@ public interface UnmodifiableEvents {
 
     UnmodifiableEvent get(int i);
 
+    // TODO remover
     UnmodifiableEvent remove(int i);
 
 }

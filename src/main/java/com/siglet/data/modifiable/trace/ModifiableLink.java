@@ -1,6 +1,7 @@
-package com.siglet.data.modifiable;
+package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.unmodifiable.UnmodifiableLink;
+import com.siglet.data.modifiable.ModifiableAttributes;
+import com.siglet.data.unmodifiable.trace.UnmodifiableLink;
 
 public interface ModifiableLink extends UnmodifiableLink {
 

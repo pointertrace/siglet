@@ -1,4 +1,6 @@
-package com.siglet.data.unmodifiable;
+package com.siglet.data.unmodifiable.trace;
+
+import com.siglet.data.unmodifiable.UnmodifiableAttributes;
 
 public interface UnmodifiableLink {
 

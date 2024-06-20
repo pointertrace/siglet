@@ -1,7 +1,9 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.data.modifiable.ModifiableLinks;
+import com.siglet.data.adapter.AdapterUtils;
+import com.siglet.data.adapter.trace.ProtoLinkAdapter;
+import com.siglet.data.modifiable.trace.ModifiableLinks;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.ArrayList;

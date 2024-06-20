@@ -14,21 +14,39 @@ import static com.siglet.config.parser.schema.SchemaFactory.*;
 
 public class ConfigCheckFactory {
     public static final String GRPC_PROP = "grpc";
+
     public static final String ADDRESS_PROP = "address";
+
+    public static final String SIGNAL_TYPE_PROP = "signal-type";
+
     public static final String DEBUG_PROP = "debug";
+
     public static final String SPANLET_PROP = "spanlet";
+
     public static final String TO_PROP = "to";
+
     public static final String TYPE_PROP = "type";
+
     public static final String CONFIG_PROP = "config";
+
     public static final String TRACELET_PROP = "tracelet";
+
     public static final String TRACE_AGGREGATOR_PROP = "trace-aggregator";
+
     public static final String TRACE_PROP = "trace";
+
     public static final String FROM_PROP = "from";
+
     public static final String START_PROP = "start";
+
     public static final String PIPELINE_PROP = "pipeline";
+
     public static final String RECEIVERS_PROP = "receivers";
+
     public static final String EXPORTERS_PROP = "exporters";
+
     public static final String PIPELINES_PROP = "pipelines";
+
 
     public static NodeChecker receiversChecker() {
 
@@ -36,7 +54,8 @@ public class ConfigCheckFactory {
                 alternative(
                         strictObject(GrpcReceiverItem::new,
                                 requiredProperty(GrpcReceiverItem::setName, GRPC_PROP, text()),
-                                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress()))
+                                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress()),
+                                requiredProperty(GrpcReceiverItem::setSignalType, SIGNAL_TYPE_PROP, text()))
                         ),
                         strictObject(DebugReceiverItem::new,
                                 requiredProperty(DebugReceiverItem::setName, DEBUG_PROP, text()),

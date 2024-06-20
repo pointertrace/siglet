@@ -1,7 +1,7 @@
 package org.apache.camel.example;
 
-import com.siglet.data.modifiable.ModifiableSpan;
-import com.siglet.data.modifiable.ModifiableSpanletProcessor;
+import com.siglet.data.modifiable.trace.ModifiableSpan;
+import com.siglet.data.modifiable.trace.ModifiableSpanletProcessor;
 
 public class AddParameterSpanletProcessor implements ModifiableSpanletProcessor {
     @Override

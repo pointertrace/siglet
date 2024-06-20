@@ -1,7 +1,7 @@
 package com.siglet.spanlet;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
-import com.siglet.data.adapter.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoTraceAdapter;
 import groovy.lang.Script;
 import org.apache.camel.Exchange;
 

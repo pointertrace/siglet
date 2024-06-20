@@ -1,6 +1,9 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.data.adapter.trace.ProtoLinkAdapter;
+import com.siglet.data.adapter.trace.ProtoLinksAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.trace.SpanKind;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;

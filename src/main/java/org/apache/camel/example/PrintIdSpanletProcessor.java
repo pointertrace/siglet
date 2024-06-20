@@ -1,7 +1,7 @@
 package org.apache.camel.example;
 
-import com.siglet.data.unmodifiable.UnmodifiableSpan;
-import com.siglet.data.unmodifiable.UnmodifiableSpanletProcessor;
+import com.siglet.data.unmodifiable.trace.UnmodifiableSpan;
+import com.siglet.data.unmodifiable.trace.UnmodifiableSpanletProcessor;
 
 public class PrintIdSpanletProcessor implements UnmodifiableSpanletProcessor {
 

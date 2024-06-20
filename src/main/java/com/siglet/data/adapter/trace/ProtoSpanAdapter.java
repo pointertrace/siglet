@@ -1,8 +1,9 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
 import com.siglet.data.Clonable;
-import com.siglet.data.modifiable.ModifiableSpan;
+import com.siglet.data.adapter.*;
+import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.trace.SpanKind;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;

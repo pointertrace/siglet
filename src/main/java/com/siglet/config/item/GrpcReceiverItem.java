@@ -7,6 +7,8 @@ public class GrpcReceiverItem extends ReceiverItem {
 
     private ValueItem<InetSocketAddress> address;
 
+    private ValueItem<String> signalType;
+
     public ValueItem<InetSocketAddress> getAddress() {
         return address;
     }
@@ -15,9 +17,17 @@ public class GrpcReceiverItem extends ReceiverItem {
         this.address = address;
     }
 
+    public ValueItem<String> getSignalType() {
+        return signalType;
+    }
+
+    public void setSignalType(ValueItem<String> signalType) {
+        this.signalType = signalType;
+    }
 
     @Override
     public String getUri() {
-        return "otelgrpc:"  + address.getValue().getHostName() + ":" + address.getValue().getPort();
+        return String.format("otelgrpc:%s:%d?signalType=%s", address.getValue().getHostName(),
+                address.getValue().getPort(), signalType);
     }
 }

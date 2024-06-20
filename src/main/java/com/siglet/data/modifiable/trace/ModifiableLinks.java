@@ -1,6 +1,6 @@
-package com.siglet.data.modifiable;
+package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.unmodifiable.UnmodifiableLinks;
+import com.siglet.data.unmodifiable.trace.UnmodifiableLinks;
 
 import java.util.Map;
 import java.util.stream.Stream;

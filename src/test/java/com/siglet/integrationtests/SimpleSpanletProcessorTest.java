@@ -8,6 +8,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -24,17 +25,20 @@ public class SimpleSpanletProcessorTest {
     }
 
 
+    @Test
     public void test() throws Exception {
         var configFile = """
                 receivers:
-                - grpc: receiver
+                - grpc: receiver_1
                   address: localhost:8080
+                - grpc: receiver_2
+                  address: localhost:8081
                 exporters:
                 - grpc: exporter
                   address: localhost:4317
                 pipelines:
                 - trace: simple pipeline
-                  from: receiver
+                  from: receiver_1
                   start: first spanlet
                   pipeline:
                   - spanlet: first spanlet

@@ -1,6 +1,6 @@
-package com.siglet.data.modifiable;
+package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 

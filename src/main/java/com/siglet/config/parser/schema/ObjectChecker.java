@@ -5,8 +5,12 @@ import com.siglet.config.located.Location;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.config.parser.node.ValueCreator;
+import com.siglet.utils.Joining;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,7 @@ public class ObjectChecker implements NodeChecker {
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationError("is not an Object", node.getLocation());
+            throw new SingleSchemaValidationError("expecting an object", node.getLocation());
         }
         for (AbstractPropertyChecker propertyCheck : getPropertyCheckers()) {
             propertyCheck.check(node);
@@ -44,14 +48,14 @@ public class ObjectChecker implements NodeChecker {
             List<SingleSchemaValidationError> errors = new ArrayList<>();
             for (String propName : propNames) {
                 errors.add(new SingleSchemaValidationError(
-                        String.format("property %s not defined!", propName),
+                        String.format("property %s is not expected", propName),
                         Location.of(objectNode.get(propName).getLocation().getLine(), 1)));
             }
             if (errors.size() == 1) {
                 throw errors.getFirst();
             } else if (errors.size() > 1) {
-                throw new MultipleSchemaValidationError(String.format("properties %s not defined!",
-                        String.join(", ", propNames)), errors);
+                throw new MultipleSchemaValidationError(String.format("properties %s are not expected",
+                        Joining.collection(", "," and ", propNames)), errors);
 
             }
         }

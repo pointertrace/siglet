@@ -1,7 +1,7 @@
 package com.siglet.spanlet.traceaggregator;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
-import com.siglet.data.adapter.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoTraceAdapter;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 

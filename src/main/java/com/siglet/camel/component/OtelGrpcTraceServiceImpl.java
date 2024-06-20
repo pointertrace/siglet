@@ -1,6 +1,6 @@
 package com.siglet.camel.component;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;

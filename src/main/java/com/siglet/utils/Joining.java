@@ -1,11 +1,13 @@
 package com.siglet.utils;
 
+import java.util.Collection;
 import java.util.stream.Collector;
 
 public class Joining {
 
 
     public static Collector<CharSequence, ?, String> twoDelimiters(String delimiter, String finalDelimiter, String prefix, String suffix) {
+
         return Collector.of(
                 StringBuilder::new, // Supplier
                 (sb, str) -> {
@@ -30,6 +32,11 @@ public class Joining {
                     }
                 } // Finisher
         );
+    }
+
+    public static String collection(String delimiter, String finalDelimiter, Collection<String> elements) {
+        return elements.stream()
+                .collect(twoDelimiters(delimiter, finalDelimiter, "", ""));
     }
 
 }

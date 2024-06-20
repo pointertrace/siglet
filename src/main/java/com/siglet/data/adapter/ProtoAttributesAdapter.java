@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import com.siglet.data.modifiable.ModifiableAttributes;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
@@ -145,7 +146,7 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
     @Override
     public void remove(String key) {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable attribute list");
+            throw new SigletError("trying to change a non updatable attribute list");
         }
         attributesAsMap.remove(key);
         updated = true;
@@ -153,7 +154,7 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
 
     public void setAttributeObj(String key, Object value) {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable attribute list");
+            throw new SigletError("trying to change a non updatable attribute list");
         }
         attributesAsMap.put(key, value);
         updated = true;
@@ -175,7 +176,7 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
     private boolean isAttributeType(String key, Class<?> type) {
         Object value = attributesAsMap.get(key);
         if (value == null) {
-            throw new IllegalStateException("attribute [" + key + "] not found!");
+            throw new SigletError("attribute [" + key + "] not found!");
         }
         return type.isAssignableFrom(value.getClass());
     }
@@ -184,10 +185,10 @@ public class ProtoAttributesAdapter implements ModifiableAttributes {
     private <T> T getAttributeAs(String key, Class<T> type) {
         Object value = attributesAsMap.get(key);
         if (value == null) {
-            throw new IllegalStateException("attribute [" + key + "] not found!");
+            throw new SigletError("attribute [" + key + "] not found!");
         }
         if (!type.isAssignableFrom(value.getClass())) {
-            throw new IllegalStateException("attribute [" + key + "] is not " + type.getSimpleName());
+            throw new SigletError("attribute [" + key + "] is not " + type.getSimpleName());
         }
 
         return (T) value;

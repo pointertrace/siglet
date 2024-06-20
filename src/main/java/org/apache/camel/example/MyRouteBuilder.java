@@ -16,8 +16,8 @@
  */
 package org.apache.camel.example;
 
-import com.siglet.data.modifiable.BaseModifiableSpanletProcessor;
-import com.siglet.data.unmodifiable.BaseUnmodifiableSpanletProcessor;
+import com.siglet.data.modifiable.trace.BaseModifiableSpanletProcessor;
+import com.siglet.data.unmodifiable.trace.BaseUnmodifiableSpanletProcessor;
 import org.apache.camel.builder.RouteBuilder;
 
 public class MyRouteBuilder extends RouteBuilder {

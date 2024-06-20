@@ -1,6 +1,9 @@
-package com.siglet.data.unmodifiable;
+package com.siglet.data.unmodifiable.trace;
 
 import com.siglet.data.trace.SpanKind;
+import com.siglet.data.unmodifiable.UnmodifiableAttributes;
+import com.siglet.data.unmodifiable.UnmodifiableInstrumentationScope;
+import com.siglet.data.unmodifiable.UnmodifiableResource;
 
 public interface UnmodifiableSpan {
 

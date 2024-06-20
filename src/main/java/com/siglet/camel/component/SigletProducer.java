@@ -1,7 +1,7 @@
 package com.siglet.camel.component;
 
-import com.siglet.data.adapter.ProtoSpanAdapter;
-import com.siglet.data.adapter.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoTraceAdapter;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;

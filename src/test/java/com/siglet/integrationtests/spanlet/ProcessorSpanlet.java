@@ -2,7 +2,7 @@ package com.siglet.integrationtests.spanlet;
 
 import com.siglet.config.Config;
 import com.siglet.config.ConfigFactory;
-import com.siglet.data.adapter.ProtoSpanAdapter;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;

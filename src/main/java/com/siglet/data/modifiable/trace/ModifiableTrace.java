@@ -1,6 +1,7 @@
-package com.siglet.data.modifiable;
+package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.unmodifiable.UnmodifiableTrace;
+import com.siglet.data.modifiable.trace.ModifiableSpan;
+import com.siglet.data.unmodifiable.trace.UnmodifiableTrace;
 
 public interface ModifiableTrace extends UnmodifiableTrace {
 

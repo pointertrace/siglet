@@ -1,4 +1,4 @@
-package com.siglet.data.unmodifiable;
+package com.siglet.data.unmodifiable.trace;
 
 public interface UnmodifiableTrace {
 

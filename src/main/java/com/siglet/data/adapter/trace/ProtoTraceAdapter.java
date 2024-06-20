@@ -1,9 +1,9 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.trace;
 
 import com.siglet.data.Clonable;
-import com.siglet.data.modifiable.ModifiableSpan;
-import com.siglet.data.modifiable.ModifiableTrace;
-import com.siglet.data.unmodifiable.UnmodifiableSpan;
+import com.siglet.data.modifiable.trace.ModifiableSpan;
+import com.siglet.data.modifiable.trace.ModifiableTrace;
+import com.siglet.data.unmodifiable.trace.UnmodifiableSpan;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,12 @@
-package com.siglet.data.modifiable;
+package com.siglet.data.modifiable.trace;
 
+import com.siglet.data.modifiable.ModifiableAttributes;
+import com.siglet.data.modifiable.ModifiableEvents;
+import com.siglet.data.modifiable.ModifiableInstrumentationScope;
+import com.siglet.data.modifiable.ModifiableResource;
+import com.siglet.data.modifiable.trace.ModifiableLinks;
 import com.siglet.data.trace.SpanKind;
-import com.siglet.data.unmodifiable.UnmodifiableSpan;
+import com.siglet.data.unmodifiable.trace.UnmodifiableSpan;
 
 public interface ModifiableSpan extends UnmodifiableSpan {
 

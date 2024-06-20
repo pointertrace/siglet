@@ -1,10 +1,14 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.Item;
+import com.siglet.config.located.Location;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ObjectCheckTest {
 
@@ -18,7 +22,7 @@ class ObjectCheckTest {
     }
 
     @Test
-    public void check() throws SchemaValidationError {
+    public void check() {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),
@@ -34,72 +38,67 @@ class ObjectCheckTest {
 
 
     @Test
-    public void check_requiredPropertyNotFound() {
+    public void check_notObject() {
 
-//        objectCheck = new ObjectCheck(true,
-//                new PropertyCheck("prop1", true, new IntCheck()),
-//                new PropertyCheck("prop2", true, new TextChecker()),
-//                new PropertyCheck("prop3", true, new TextChecker()));
-//
-//        ConfigNode node = parser.parse("""
-//                prop1: 1
-//                prop2: text value
-//                """);
-//
-//        SingleSchemaValidationException ex = assertThrowsExactly(SingleSchemaValidationException.class,
-//                () -> objectCheck.check(node));
-//
-//        assertEquals("must have a prop3 property!", ex.getMessage());
-//        assertEquals(Location.create(1, 1), ex.getLocation());
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new PropertyChecker("prop1", true, new IntChecker()),
+                new PropertyChecker("prop2", true, new TextChecker()));
+
+        ConfigNode node = parser.parse("""
+                - a
+                - b
+                """);
+
+        var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
+        assertEquals("expecting an object", ex.getMessage());
+        assertEquals(Location.of(1,1), ex.getLocation());
     }
 
     @Test
-    public void check_strictWithOneNotDefinedProperty() {
+    public void check_onePropertyNotDefined() {
 
-//        objectCheck = new ObjectCheck(true,
-//                new PropertyCheck("prop1", true, new IntCheck()),
-//                new PropertyCheck("prop2", true, new TextChecker()));
-//
-//        ConfigNode node = parser.parse("""
-//                prop1: 1
-//                prop2: text value
-//                prop3: other text value
-//                """);
-//
-//        SingleSchemaValidationException ex = assertThrowsExactly(SingleSchemaValidationException.class,
-//                () -> objectCheck.check(node));
-//
-//        assertEquals("property prop3 not defined!", ex.getMessage());
-//        assertEquals(Location.create(3, 1), ex.getLocation());
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new PropertyChecker("prop1", true, new IntChecker()),
+                new PropertyChecker("prop2", true, new TextChecker()));
+
+        ConfigNode node = parser.parse("""
+                prop1: 1
+                prop2: test
+                prop5: 3
+                """);
+
+        var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
+        assertEquals("property prop5 is not expected", ex.getMessage());
+        assertEquals(Location.of(3,1), ex.getLocation());
     }
 
     @Test
-    public void check_strictWithTwoNotDefinedProperty() {
-//
-//        objectCheck = new ObjectCheck(true,
-//                new PropertyCheck("prop1", true, new IntCheck()),
-//                new PropertyCheck("prop2", true, new TextChecker()));
-//
-//        ConfigNode node = parser.parse("""
-//                prop1: 1
-//                prop2: text value
-//                prop3: other text value
-//                prop4: 2
-//                """);
-//
-//        MultipleSchemaValidationError ex = assertThrowsExactly(MultipleSchemaValidationError.class,
-//                () -> objectCheck.check(node));
-//
-//        assertEquals("properties prop3, prop4 not defined!", ex.getMessage());
-//        List<SingleSchemaValidationException> validationExceptions = ex.getValidationExceptions();
-//        assertEquals(2, validationExceptions.size());
-//
-//        assertEquals("property prop3 not defined!", validationExceptions.get(0).getMessage());
-//        assertEquals(Location.create(3, 1), validationExceptions.get(0).getLocation());
-//
-//        assertEquals("property prop4 not defined!", validationExceptions.get(1).getMessage());
-//        assertEquals(Location.create(4, 1), validationExceptions.get(1).getLocation());
+    public void check_twoPropertiesNotDefined() {
+
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new PropertyChecker("prop1", true, new IntChecker()),
+                new PropertyChecker("prop2", true, new TextChecker()));
+
+        ConfigNode node = parser.parse("""
+                prop1: 1
+                prop2: test
+                prop5: 3
+                prop6: 3
+                """);
+
+        var ex = assertThrows(MultipleSchemaValidationError.class, () -> objectCheck.check(node));
+        assertEquals("properties prop5 and prop6 are not expected", ex.getMessage());
+
+        assertEquals(2, ex.getValidationExceptions().size());
+
+        assertEquals("property prop5 is not expected", ex.getValidationExceptions().getFirst().getMessage());
+        assertEquals(Location.of(3,1), ex.getValidationExceptions().getFirst().getLocation());
+
+        assertEquals("property prop6 is not expected", ex.getValidationExceptions().get(1).getMessage());
+        assertEquals(Location.of(4,1), ex.getValidationExceptions().get(1).getLocation());
     }
+
+
 
     public static class Bean extends Item {
         private int prop1;
