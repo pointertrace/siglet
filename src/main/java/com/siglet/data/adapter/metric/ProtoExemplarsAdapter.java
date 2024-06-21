@@ -58,7 +58,7 @@ public class ProtoExemplarsAdapter implements ModifiableExemplars {
     public List<Exemplar> getUpdated() {
         if (!updatable) {
             return exemplars;
-        } else if (!updated) {
+        } else if (! isUpdated()) {
             return exemplars;
         } else {
             List<Exemplar> result = new ArrayList<>(exemplars.size());
