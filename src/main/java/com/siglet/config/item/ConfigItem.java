@@ -18,7 +18,7 @@ public class ConfigItem extends Item {
 
     private ArrayItem<ExporterItem> exporterItems;
 
-    private ArrayItem<TracePipelineItem> pipelines;
+    private ArrayItem<PipelineItem<?>> pipelines;
 
     public ArrayItem<ReceiverItem> getReceivers() {
         return receiverItems;
@@ -36,11 +36,11 @@ public class ConfigItem extends Item {
         this.exporterItems = exporterItems;
     }
 
-    public ArrayItem<TracePipelineItem> getPipelines() {
+    public ArrayItem<PipelineItem<?>> getPipelines() {
         return pipelines;
     }
 
-    public void setPipelines(ArrayItem<TracePipelineItem> pipelines) {
+    public void setPipelines(ArrayItem<PipelineItem<?>> pipelines) {
         this.pipelines = pipelines;
     }
 
@@ -51,7 +51,7 @@ public class ConfigItem extends Item {
                         getExporters().getValue().stream()
                                 .map(ExporterItem::getName),
                         getPipelines().getValue().stream()
-                                .map(TracePipelineItem::getName),
+                                .map(PipelineItem::getName),
                         getPipelines().getValue().stream()
                                 .flatMap(p -> p.getProcessors().getValue().stream())
                                 .map(ProcessorItem::getName)

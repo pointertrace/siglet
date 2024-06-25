@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -127,27 +128,27 @@ class ProtoLinkAdapterTest {
 
         protoLinkAdapter = new ProtoLinkAdapter(Span.Link.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.setTraceId(3,4);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.setSpanId(5);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.setFlags(2);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.setTraceState("new-trace-state");
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.setDroppedAttributesCount(3);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoLinkAdapter.getAttributes().remove("str-key");
         });
     }

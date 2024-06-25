@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.trace.SpanKind;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
@@ -112,7 +113,7 @@ public class AdapterUtils {
                                 .setValue(objectToAnyValue(e.getValue()))
                                 .build());
                     } else {
-                        throw new IllegalStateException("list item must be a Map.Entry!");
+                        throw new SigletError("list item must be a Map.Entry!");
                     }
                 }
                 yield AnyValue.newBuilder().setKvlistValue(kvLstBld.build()).build();
@@ -120,7 +121,7 @@ public class AdapterUtils {
             case byte[] b -> AnyValue.newBuilder().setBytesValue(ByteString.copyFrom(b)).build();
             case null -> AnyValue.newBuilder().build();
             default ->
-                    throw new IllegalStateException(value.getClass().getSimpleName() + "is not a valid attriute type!");
+                    throw new SigletError(value.getClass().getSimpleName() + "is not a valid attriute type!");
         };
     }
 

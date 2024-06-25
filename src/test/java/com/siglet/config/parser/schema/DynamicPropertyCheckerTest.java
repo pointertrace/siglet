@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.SigletError;
 import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.item.repository.Node;
@@ -113,10 +114,10 @@ class DynamicPropertyCheckerTest {
             if (configNode instanceof ObjectConfigNode objectNode) {
                 Item discriminator = objectNode.getProperties().get("discriminator").getValue();
                 if (! (discriminator instanceof ValueItem<?> valueItem)) {
-                    throw new IllegalStateException("discriminator is not a ValueItem");
+                    throw new SigletError("discriminator is not a ValueItem");
                 }
                 if (! ( valueItem.getValue() instanceof String discValue)) {
-                    throw new IllegalStateException("discriminator is not a String ValueItem");
+                    throw new SigletError("discriminator is not a String ValueItem");
                 }
                 if ( "int".equals(discValue)) {
                     return new PropertyChecker(MyBean::setMyProperty, "config", true,

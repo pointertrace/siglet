@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -261,33 +262,33 @@ class ProtoAttributesAdapterTest {
     public void changeNonUpdatable() {
         protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("string-key", "other-value");
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("bool-key", false);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("long-key", 20L);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("double-key", 2.3);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("array-key", new Object[]{"3", "4"});
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("key-value-list-key", List.of(
                     new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
                     new AbstractMap.SimpleImmutableEntry<>("key3", "value3")));
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoAttributesAdapter.set("byte-array-key", new byte[]{3, 4});
         });
 

@@ -1,6 +1,7 @@
 package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.Clonable;
 import com.siglet.data.adapter.*;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
@@ -361,7 +362,7 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
 
     private void checkAndPrepareUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable span");
+            throw new SigletError("trying to change a non updatable span");
         }
         if (protoSpanBuilder == null) {
             protoSpanBuilder = protoSpan.toBuilder();

@@ -1,5 +1,6 @@
 package com.siglet.data.adapter.trace;
 
+import com.siglet.SigletError;
 import com.siglet.data.Clonable;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.modifiable.trace.ModifiableTrace;
@@ -90,7 +91,7 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
     private void checkUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable trace");
+            throw new SigletError("trying to change a non updatable trace");
         }
     }
 

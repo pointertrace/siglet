@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import com.siglet.data.adapter.trace.ProtoLinksAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
@@ -143,38 +144,38 @@ class ProtoSpanAdapterTest {
         protoSpanAdapter = new ProtoSpanAdapter(Span.newBuilder().build(), Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setTraceId(10L, 20L));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setTraceId(10L, 20L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setSpanId(10L));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setSpanId(10L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setParentSpanId(30L));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setParentSpanId(30L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setName("new-name"));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setName("new-name"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setStartTimeUnixNano(3L));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setStartTimeUnixNano(3L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setEndTimeUnixNano(4L));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setEndTimeUnixNano(4L));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setFlags(2));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setFlags(2));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setTraceState("new-trace-state"));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setTraceState("new-trace-state"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedAttributesCount(10));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setDroppedAttributesCount(10));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedEventsCount(20));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setDroppedEventsCount(20));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setDroppedLinksCount(30));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setDroppedLinksCount(30));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.setKind(SpanKind.SERVER));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.setKind(SpanKind.SERVER));
 
-        assertThrowsExactly(IllegalStateException.class, () ->
+        assertThrowsExactly(SigletError.class, () ->
                 protoSpanAdapter.getResource().setDroppedAttributesCount(1));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getAttributes().remove("str-key"));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getAttributes().remove("str-key"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getLinks().remove(0, 0, 0));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getLinks().remove(0, 0, 0));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoSpanAdapter.getInstrumentationScope().setName("new-name"));
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getInstrumentationScope().setName("new-name"));
 
         assertFalse(protoSpanAdapter.isUpdated());
     }

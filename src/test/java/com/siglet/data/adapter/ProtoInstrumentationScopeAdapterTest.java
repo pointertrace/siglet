@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -115,19 +116,19 @@ class ProtoInstrumentationScopeAdapterTest {
         protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(
                 InstrumentationScope.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoInstrumentationScopeAdapter.setName("new-name-value");
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoInstrumentationScopeAdapter.setVersion("new-version-value");
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoInstrumentationScopeAdapter.setDroppedAttributesCount(3);
         });
 
-        assertThrowsExactly(IllegalStateException.class, () -> {
+        assertThrowsExactly(SigletError.class, () -> {
             protoInstrumentationScopeAdapter.getAttributes().remove("key");
         });
     }

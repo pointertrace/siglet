@@ -3,13 +3,13 @@ package com.siglet.config.item.repository;
 import com.siglet.SigletError;
 import com.siglet.config.item.SpanletItem;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
-import com.siglet.spanlet.GroovyPropertySetter;
-import com.siglet.spanlet.filter.FilterConfig;
-import com.siglet.spanlet.filter.GroovyPredicate;
-import com.siglet.spanlet.processor.GroovyProcessor;
-import com.siglet.spanlet.processor.ProcessorConfig;
-import com.siglet.spanlet.router.Route;
-import com.siglet.spanlet.router.RouterConfig;
+import com.siglet.pipeline.GroovyPropertySetter;
+import com.siglet.pipeline.common.filter.FilterConfig;
+import com.siglet.pipeline.common.filter.GroovyPredicate;
+import com.siglet.pipeline.common.processor.GroovyProcessor;
+import com.siglet.pipeline.common.processor.ProcessorConfig;
+import com.siglet.pipeline.common.router.Route;
+import com.siglet.pipeline.common.router.RouterConfig;
 
 public class SpanletNode extends ProcessorNode<SpanletItem> {
 

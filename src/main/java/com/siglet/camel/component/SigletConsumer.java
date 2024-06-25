@@ -11,39 +11,31 @@ import java.util.concurrent.TimeUnit;
 
 public class SigletConsumer extends DefaultConsumer {
 
-    private InetSocketAddress socketAddress;
-
     private Server server;
 
     public SigletConsumer(Endpoint endpoint, Processor processor) {
         super(endpoint, processor);
+        System.out.println("consumer criado uri " + endpoint.getEndpointUri());
+
+        SigletEndpoint sigletEndpoint = (SigletEndpoint) endpoint;
+        if (sigletEndpoint.getEndpointUri().contains("?signalType=trace")) {
+            sigletEndpoint.getGrpcServers().addServer(sigletEndpoint.getSocketAddress(),
+                    new OtelGrpcTraceServiceImpl(this));
+        } else if (sigletEndpoint.getEndpointUri().contains("?signalType=metric")) {
+            sigletEndpoint.getGrpcServers().addServer(sigletEndpoint.getSocketAddress(),
+                    new OtelGrpcMetricsServiceImpl(this));
+        }
     }
 
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        try {
-            var builder = NettyServerBuilder
-                    .forAddress(((SigletEndpoint) getEndpoint()).getSocketAddress())
-                    .addService(new OtelGrpcTraceServiceImpl(this));
-            server = builder.build();
-            server.start();
-        } catch (RuntimeException e) {
-            System.out.println("error:" + e);
-        }
+        System.out.println("depois iniciado");
     }
 
     @Override
     protected void doStop() throws Exception {
         super.doStop();
-        if (server != null) {
-            try {
-                server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } finally {
-                server.shutdownNow();
-            }
-        }
+        System.out.println("depois finalizado");
     }
 }

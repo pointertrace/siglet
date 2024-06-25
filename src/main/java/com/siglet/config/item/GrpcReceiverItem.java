@@ -28,6 +28,6 @@ public class GrpcReceiverItem extends ReceiverItem {
     @Override
     public String getUri() {
         return String.format("otelgrpc:%s:%d?signalType=%s", address.getValue().getHostName(),
-                address.getValue().getPort(), signalType);
+                address.getValue().getPort(), signalType.getValue());
     }
 }

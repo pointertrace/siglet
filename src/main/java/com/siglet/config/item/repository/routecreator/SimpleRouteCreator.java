@@ -2,10 +2,10 @@ package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
-import com.siglet.spanlet.GroovyPropertySetter;
-import com.siglet.spanlet.filter.GroovyPredicate;
-import com.siglet.spanlet.traceaggregator.TraceAggregationStrategy;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
+import com.siglet.pipeline.GroovyPropertySetter;
+import com.siglet.pipeline.common.filter.GroovyPredicate;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregationStrategy;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;

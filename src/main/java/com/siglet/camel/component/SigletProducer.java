@@ -25,6 +25,7 @@ public class SigletProducer extends DefaultProducer {
 
     public SigletProducer(Endpoint endpoint) {
         super(endpoint);
+        System.out.println("producer criado uri " + endpoint.getEndpointUri());
     }
 
     @Override

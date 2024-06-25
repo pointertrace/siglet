@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import com.siglet.data.modifiable.ModifiableInstrumentationScope;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 
@@ -84,7 +85,7 @@ public class ProtoInstrumentationScopeAdapter implements ModifiableInstrumentati
 
     private void checkAndPrepareUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable event list!");
+            throw new SigletError("trying to change a non updatable event list!");
         }
         if (protoInstrumentationScopeBuilder == null) {
             protoInstrumentationScopeBuilder = protoInstrumentationScope.toBuilder();

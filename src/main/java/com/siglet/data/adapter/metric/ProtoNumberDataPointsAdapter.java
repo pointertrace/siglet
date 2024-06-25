@@ -35,7 +35,7 @@ public class ProtoNumberDataPointsAdapter implements ModifiableNumberDataPoints 
     }
 
     @Override
-    public ModifiableNumberDataPoint get(int i) {
+    public ProtoNumberDataPointAdapter get(int i) {
         if (dataPointsAdapters.get(i) == null) {
             dataPointsAdapters.set(i, new ProtoNumberDataPointAdapter(dataPoints.get(i), updatable));
         }

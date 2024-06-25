@@ -2,13 +2,15 @@ package com.siglet.config;
 
 import com.siglet.config.item.*;
 import com.siglet.config.parser.schema.NodeChecker;
-import com.siglet.spanlet.span.SpanletCheckerDiscriminator;
-import com.siglet.spanlet.span.SpanletTypes;
-import com.siglet.spanlet.trace.TraceletCheckerDiscriminator;
-import com.siglet.spanlet.trace.TraceletTypes;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorCheckerDiscriminator;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorTypes;
+import com.siglet.pipeline.metriclet.MetricletCheckerDiscriminator;
+import com.siglet.pipeline.metriclet.MetricletTypes;
+import com.siglet.pipeline.spanlet.span.SpanletCheckerDiscriminator;
+import com.siglet.pipeline.spanlet.span.SpanletTypes;
+import com.siglet.pipeline.spanlet.trace.TraceletCheckerDiscriminator;
+import com.siglet.pipeline.spanlet.trace.TraceletTypes;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorCheckerDiscriminator;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorTypes;
 
 import static com.siglet.config.parser.schema.SchemaFactory.*;
 
@@ -23,6 +25,8 @@ public class ConfigCheckFactory {
 
     public static final String SPANLET_PROP = "spanlet";
 
+    public static final String METRICLET_PROP = "metriclet";
+
     public static final String TO_PROP = "to";
 
     public static final String TYPE_PROP = "type";
@@ -34,6 +38,8 @@ public class ConfigCheckFactory {
     public static final String TRACE_AGGREGATOR_PROP = "trace-aggregator";
 
     public static final String TRACE_PROP = "trace";
+
+    public static final String METRIC_PROP = "metric";
 
     public static final String FROM_PROP = "from";
 
@@ -54,8 +60,8 @@ public class ConfigCheckFactory {
                 alternative(
                         strictObject(GrpcReceiverItem::new,
                                 requiredProperty(GrpcReceiverItem::setName, GRPC_PROP, text()),
-                                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress()),
-                                requiredProperty(GrpcReceiverItem::setSignalType, SIGNAL_TYPE_PROP, text()))
+                                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
+                                property(GrpcReceiverItem::setSignalType, SIGNAL_TYPE_PROP, false, text())
                         ),
                         strictObject(DebugReceiverItem::new,
                                 requiredProperty(DebugReceiverItem::setName, DEBUG_PROP, text()),
@@ -79,6 +85,19 @@ public class ConfigCheckFactory {
                                 requiredProperty(DebugExporterItem::setAddress, ADDRESS_PROP, text()))
                 )
         );
+    }
+
+    public static NodeChecker metricletChecker() {
+
+        return strictObject(MetricletItem::new,
+                requiredProperty(MetricletItem::setName, METRICLET_PROP, text()),
+                alternativeRequiredProperty(TO_PROP,
+                        requiredProperty(MetricletItem::setTo, TO_PROP, array(text())),
+                        requiredProperty(MetricletItem::setToSingleValue, TO_PROP, text())),
+                requiredProperty(MetricletItem::setType, TYPE_PROP, text()),
+                requiredDynamicProperty(CONFIG_PROP,
+                        new MetricletCheckerDiscriminator(new MetricletTypes())));
+
     }
 
     public static NodeChecker spanletChecker() {
@@ -111,6 +130,13 @@ public class ConfigCheckFactory {
         );
     }
 
+    public static NodeChecker pipelineChecker() {
+        return alternative(
+                tracePipelineChecker(),
+                metricPipelineChecker()
+        );
+    }
+
     public static NodeChecker tracePipelineChecker() {
         return array(strictObject(TracePipelineItem::new,
                 requiredProperty(TracePipelineItem::setName, TRACE_PROP, text()),
@@ -124,6 +150,19 @@ public class ConfigCheckFactory {
                         array(spanletChecker()))));
     }
 
+    public static NodeChecker metricPipelineChecker() {
+        return array(strictObject(MetricPipelineItem::new,
+                requiredProperty(MetricPipelineItem::setName, METRIC_PROP, text()),
+                alternativeRequiredProperty(FROM_PROP,
+                        requiredProperty(MetricPipelineItem::setFrom, FROM_PROP, array(text())),
+                        requiredProperty(MetricPipelineItem::setFromSingleValue, FROM_PROP, text())),
+                alternativeRequiredProperty(START_PROP,
+                        requiredProperty(MetricPipelineItem::setStart, START_PROP, array(text())),
+                        requiredProperty(MetricPipelineItem::setStartSingleValue, START_PROP, text())),
+                requiredProperty(MetricPipelineItem::setProcessors, PIPELINE_PROP,
+                        array(metricletChecker()))));
+    }
+
     public static NodeChecker globalConfigChecker() {
         return strictObject(ConfigItem::new,
                 requiredProperty(ConfigItem::setReceivers, RECEIVERS_PROP,
@@ -131,6 +170,6 @@ public class ConfigCheckFactory {
                 requiredProperty(ConfigItem::setExporters, EXPORTERS_PROP,
                         grpcExportersChecker()),
                 requiredProperty(ConfigItem::setPipelines, PIPELINES_PROP,
-                        tracePipelineChecker()));
+                        pipelineChecker()));
     }
 }

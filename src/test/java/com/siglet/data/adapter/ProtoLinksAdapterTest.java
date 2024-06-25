@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import com.siglet.data.adapter.trace.ProtoLinksAdapter;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -122,10 +123,10 @@ class ProtoLinksAdapterTest {
 
         protoLinksAdapter = new ProtoLinksAdapter(Collections.emptyList(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () ->
+        assertThrowsExactly(SigletError.class, () ->
                 protoLinksAdapter.add(0, 0, 0, "state", Collections.emptyMap()));
 
-        assertThrowsExactly(IllegalStateException.class, () ->
+        assertThrowsExactly(SigletError.class, () ->
                 protoLinksAdapter.remove(0, 0, 0));
 
     }

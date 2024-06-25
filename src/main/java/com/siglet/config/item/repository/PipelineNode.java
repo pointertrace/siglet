@@ -1,12 +1,13 @@
 package com.siglet.config.item.repository;
 
+import com.siglet.config.item.PipelineItem;
 import com.siglet.config.item.TracePipelineItem;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PipelineNode extends Node<TracePipelineItem> {
+public class PipelineNode extends Node<PipelineItem<?>> {
 
     private List<ReceiverNode> from = new ArrayList<>();
 
@@ -14,8 +15,8 @@ public class PipelineNode extends Node<TracePipelineItem> {
 
     private List<ProcessorNode<?>> processors = new ArrayList<>();
 
-    public PipelineNode(String name, TracePipelineItem tracePipelineItem) {
-        super(name, tracePipelineItem);
+    public PipelineNode(String name, PipelineItem<?> pipelineItem) {
+        super(name, pipelineItem);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
+import com.siglet.SigletError;
 import com.siglet.data.adapter.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.trace.ModifiableLink;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -99,7 +100,7 @@ public class ProtoLinkAdapter implements ModifiableLink {
 
     private void checkAndPrepareUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable link!");
+            throw new SigletError("trying to change a non updatable link!");
         }
         if (protoLinkBuilder == null) {
             protoLinkBuilder = protoLink.toBuilder();

@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -63,19 +64,19 @@ class ProtoEventAdapterTest {
         protoEventAdapter = new ProtoEventAdapter(Span.Event.newBuilder().build(), false);
 
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setName("new-event-name"));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setName("new-event-name"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setTimeUnixNano(2));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setTimeUnixNano(2));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().set("any", "any-value"));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().set("any", "any-value"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().remove("any"));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().remove("any"));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventAdapter.getAttributes().remove("any"));
+        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().remove("any"));
 
         assertFalse(protoEventAdapter.isUpdated());
     }

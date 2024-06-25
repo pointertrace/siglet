@@ -20,8 +20,6 @@ class ProtoGaugeAdapterTest {
 
     private NumberDataPoint protoExtraNumberDataPoint;
 
-    private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
-
     @BeforeEach
     public void setUp() {
         protoNumberDataPoint = NumberDataPoint.newBuilder()
@@ -40,8 +38,6 @@ class ProtoGaugeAdapterTest {
                 .addDataPoints(protoNumberDataPoint)
                 .build();
 
-
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(List.of(protoNumberDataPoint), true);
 
         protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge, true);
 

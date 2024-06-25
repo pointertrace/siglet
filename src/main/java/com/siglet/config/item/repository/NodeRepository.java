@@ -3,7 +3,7 @@ package com.siglet.config.item.repository;
 import com.siglet.SigletError;
 import com.siglet.config.item.*;
 import com.siglet.config.item.repository.routecreator.RootRouteCreator;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.*;
@@ -21,8 +21,13 @@ public class NodeRepository {
             case TracePipelineItem tracePipelineItem -> repository.put(tracePipelineItem.getName().getValue(),
                     new PipelineNode(tracePipelineItem.getName().getValue(),
                             tracePipelineItem));
+            case MetricPipelineItem metricPipelineItem -> repository.put(metricPipelineItem.getName().getValue(),
+                    new PipelineNode(metricPipelineItem.getName().getValue(),
+                            metricPipelineItem));
             case SpanletItem spanletItem -> repository.put(spanletItem.getName().getValue(), new SpanletNode(
                     spanletItem.getName().getValue(), spanletItem));
+            case MetricletItem metricletItem -> repository.put(metricletItem.getName().getValue(), new MetricletNode(
+                    metricletItem.getName().getValue(), metricletItem));
             case TraceAggregatorItem traceAggregatorItem -> repository.put(traceAggregatorItem.getName().getValue(),
                     new TraceAggregatorNode(traceAggregatorItem.getName().getValue(), traceAggregatorItem));
             case TraceletItem traceletItem -> repository.put(traceletItem.getName().getValue(),
@@ -60,14 +65,14 @@ public class NodeRepository {
         return nodes;
     }
 
-    List<ProcessorNode<?>> getProcessorNodesFromNames(List<String> names) {
-        List<ProcessorNode<?>> nodes = new ArrayList<>();
+    List<ProcessorNode<? extends ProcessorItem>> getProcessorNodesFromNames(List<String> names) {
+        List<ProcessorNode<? extends ProcessorItem>> nodes = new ArrayList<>();
         for (String name : names) {
             Node<?> node = repository.get(name);
             if (node == null) {
                 throw new SigletError("Could not find any config item named [" + name + "]");
             } else {
-                if (!(node instanceof ProcessorNode<?> processorNode)) {
+                if (!(node instanceof ProcessorNode processorNode)) {
                     throw new SigletError("Node [" + name + "] is a " + node.getClass().getName() + "not a ProcessorNode");
                 } else {
                     nodes.add(processorNode);
@@ -97,17 +102,18 @@ public class NodeRepository {
 
                 }
                 case PipelineNode pipelineNode -> {
-                    List<ReceiverNode> fromNodes = getReceiverNodesFromNames(pipelineNode.getItem().getFrom());
+                    List<ReceiverNode> fromNodes = getReceiverNodesFromNames(pipelineNode .getItem().getFrom());
                     fromNodes.forEach(fromNode -> {
                         if (fromNode instanceof ReceiverNode receiverNode) {
-                            receiverNode.getTo().add(pipelineNode);
+                            receiverNode.getTo().add(pipelineNode );
                         }
                     });
-                    pipelineNode.setFrom(fromNodes);
+                    pipelineNode .setFrom(fromNodes);
 
-                    List<ProcessorNode<?>> startNodes = getProcessorNodesFromNames(
-                            pipelineNode.getItem().getStart().stream().map(ValueItem::getValue).toList());
-                    pipelineNode.setStart(startNodes);
+                    // TODO rever generics!!!!!!
+                    List<ProcessorNode<?>> startNodes =
+                            getProcessorNodesFromNames(pipelineNode.getItem().getStart().stream().map(ValueItem::getValue).toList());
+                    pipelineNode .setStart(startNodes);
                 }
                 case ReceiverNode receiverNode -> {
                 }

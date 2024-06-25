@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,12 +63,12 @@ class ProtoEventsAdapterTest {
         protoEventsAdapter = new ProtoEventsAdapter(List.of(Span.Event.newBuilder().build()), false);
 
 
-        assertThrowsExactly(IllegalStateException.class, () ->
+        assertThrowsExactly(SigletError.class, () ->
                 protoEventsAdapter.add("new-name", 1, 1, Collections.emptyMap()));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventsAdapter.remove(0));
+        assertThrowsExactly(SigletError.class, () -> protoEventsAdapter.remove(0));
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoEventsAdapter.get(0).setName("new-name"));
+        assertThrowsExactly(SigletError.class, () -> protoEventsAdapter.get(0).setName("new-name"));
 
         assertFalse(protoEventsAdapter.isUpdated());
     }

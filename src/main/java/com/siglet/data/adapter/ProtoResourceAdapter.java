@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import com.siglet.data.modifiable.ModifiableResource;
 import io.opentelemetry.proto.resource.v1.Resource;
 
@@ -64,7 +65,7 @@ public class ProtoResourceAdapter implements ModifiableResource {
 
     private void checkAndPrepareUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable span");
+            throw new SigletError("trying to change a non updatable span");
         }
         if (protoResourceBuilder == null) {
             protoResourceBuilder = protoResource.toBuilder();

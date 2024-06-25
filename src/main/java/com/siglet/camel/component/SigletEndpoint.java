@@ -15,18 +15,28 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     private final InetSocketAddress socketAddress;
 
-    public SigletEndpoint(String uri, Component component) {
+    private final GrpcServers grpcServers;
 
+    private String signalType;
+
+    public SigletEndpoint(String uri, Component component, GrpcServers grpcServers) {
         super(uri, component);
+        this.grpcServers = grpcServers;
         socketAddress = SigletEndpoint.getSocketAddress(uri);
+        System.out.println("endpoint criado " + uri);
     }
 
     public InetSocketAddress getSocketAddress() {
         return socketAddress;
     }
 
+    public GrpcServers getGrpcServers() {
+        return grpcServers;
+    }
+
     @Override
     public Producer createProducer() {
+        System.out.println("criando producer");
         return new SigletProducer(this);
     }
 
@@ -37,6 +47,7 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     @Override
     public Consumer createConsumer(Processor processor) {
+        System.out.println("criando consumer");
         return new SigletConsumer(this, processor);
     }
 
@@ -57,5 +68,26 @@ public class SigletEndpoint extends DefaultEndpoint {
 
         return new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
 
+    }
+
+    public void setSignalType(String value) {
+        this.signalType = signalType;
+        System.out.println("aqui!!!!");
+    }
+
+    public String getSignalType() {
+        return signalType;
+    }
+
+    @Override
+    public void start() {
+        System.out.println("endpoint started! " + getEndpointUri());
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("endpoint stoped!" + getEndpointUri());
+        super.stop();
     }
 }

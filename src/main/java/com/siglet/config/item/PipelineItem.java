@@ -31,6 +31,7 @@ public class PipelineItem<T extends ProcessorItem> extends Item {
     public void setFromSingleValue(ValueItem<String> from) {
         this.from = List.of(from);
     }
+
     public List<ValueItem<String>> getStart() {
         return start;
     }

@@ -2,8 +2,8 @@ package com.siglet.config.item.repository;
 
 import com.siglet.SigletError;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorConfig;
-import com.siglet.spanlet.traceaggregator.TraceAggregatorItem;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorConfig;
+import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
 
 public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 

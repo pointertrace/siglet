@@ -1,11 +1,22 @@
 package com.siglet.camel.component;
 
+import com.siglet.data.adapter.metric.ProtoGaugeAdapter;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
+import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
+import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.metrics.v1.Gauge;
+import io.opentelemetry.proto.metrics.v1.Metric;
+import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
+import io.opentelemetry.proto.metrics.v1.ScopeMetrics;
+import io.opentelemetry.proto.resource.v1.Resource;
+import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.support.DefaultExchange;
 
-public class OtelGrpcMetricsServiceImpl extends TraceServiceGrpc.TraceServiceImplBase {
+public class OtelGrpcMetricsServiceImpl extends MetricsServiceGrpc.MetricsServiceImplBase {
 
     private final SigletConsumer sigletConsumer;
 
@@ -13,25 +24,28 @@ public class OtelGrpcMetricsServiceImpl extends TraceServiceGrpc.TraceServiceImp
         this.sigletConsumer = sigletConsumer;
     }
 
-//    @Override
+    @Override
     public void export(ExportMetricsServiceRequest request, StreamObserver<ExportMetricsServiceResponse> responseObserver) {
-//        for (ResourceMetrics resourceMetric : request.getResourceMetricsList()) {
-//            Resource resource = resourceMetric.getResource();
-//            for (ScopeMetrics scopeMetrics : resourceMetric.getScopeMetricsList()) {
-//                InstrumentationScope instrumentationScope = scopeMetrics.getScope();
-//                for (Metric metric : scopeMetrics.getMetricsList())) {
-//                    Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
-//                    exchange.getIn().setBody(new ProtoSpanAdapter(span, resource.toBuilder().build(), instrumentationScope.toBuilder().build(), true));
-//                    try {
-//                        sigletConsumer.getProcessor().process(exchange);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            }
-//        }
-//        ExportTraceServiceResponse response = ExportTraceServiceResponse.newBuilder().build();
-//        responseObserver.onNext(response);
-//        responseObserver.onCompleted();
+        for (ResourceMetrics resourceMetric : request.getResourceMetricsList()) {
+            Resource resource = resourceMetric.getResource();
+            for (ScopeMetrics scopeMetrics : resourceMetric.getScopeMetricsList()) {
+                InstrumentationScope instrumentationScope = scopeMetrics.getScope();
+                for (Metric metric : scopeMetrics.getMetricsList()) {
+                    Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
+                    if (metric.hasGauge()) {
+                        System.out.println("metric received:" + metric);
+                        exchange.getIn().setBody(new ProtoGaugeAdapter(metric.getGauge(), true));
+                        try {
+                            sigletConsumer.getProcessor().process(exchange);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+        ExportMetricsServiceResponse response = ExportMetricsServiceResponse.newBuilder().build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

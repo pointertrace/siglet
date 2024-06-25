@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.resource.v1.Resource;
@@ -109,9 +110,9 @@ class ProtoResourceAdapterTest {
 
         protoResourceAdapter = new ProtoResourceAdapter(Resource.newBuilder().build(), false);
 
-        assertThrowsExactly(IllegalStateException.class, () -> protoResourceAdapter.setDroppedAttributesCount(0));
+        assertThrowsExactly(SigletError.class, () -> protoResourceAdapter.setDroppedAttributesCount(0));
 
-        assertThrowsExactly(IllegalStateException.class, () ->
+        assertThrowsExactly(SigletError.class, () ->
                 protoResourceAdapter.getAttributes().remove("str-key"));
 
     }

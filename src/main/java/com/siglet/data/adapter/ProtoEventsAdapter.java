@@ -1,5 +1,6 @@
 package com.siglet.data.adapter;
 
+import com.siglet.SigletError;
 import com.siglet.data.modifiable.ModifiableEvents;
 import io.opentelemetry.proto.trace.v1.Span;
 
@@ -76,7 +77,7 @@ public class ProtoEventsAdapter implements ModifiableEvents {
     }
     private void checkUpdate() {
         if (!updatable) {
-            throw new IllegalStateException("trying to change a non updatable event list!");
+            throw new SigletError("trying to change a non updatable event list!");
         }
         updated = true;
     }

@@ -31,6 +31,8 @@ public class ProtoMetricAdapter implements ModifiableMetric, Clonable {
 
     private ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
 
+    private ProtoGaugeAdapter protoGaugeAdapter;
+
 
     public ProtoMetricAdapter(Metric protoMetric, Resource protoResource,
                               InstrumentationScope protoInstrumentationScope, boolean updatable) {
@@ -54,7 +56,7 @@ public class ProtoMetricAdapter implements ModifiableMetric, Clonable {
 
     @Override
     public String getDescription() {
-        return protoMetricBuilder == null? protoMetric.getDescription() : protoMetricBuilder.getDescription();
+        return protoMetricBuilder == null ? protoMetric.getDescription() : protoMetricBuilder.getDescription();
     }
 
     @Override
@@ -75,8 +77,11 @@ public class ProtoMetricAdapter implements ModifiableMetric, Clonable {
     }
 
     @Override
-    public ProtoDataAdapter getData() {
-        return null;
+    public ProtoGaugeAdapter getData() {
+        if (protoGaugeAdapter == null) {
+            protoGaugeAdapter = new ProtoGaugeAdapter(protoMetric.getGauge(), updatable);
+        }
+        return protoGaugeAdapter;
     }
 
     @Override
