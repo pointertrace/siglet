@@ -7,6 +7,7 @@ import com.siglet.data.adapter.ProtoInstrumentationScopeAdapter;
 import com.siglet.data.adapter.ProtoResourceAdapter;
 import com.siglet.data.adapter.metric.ProtoDataAdapter;
 import com.siglet.data.modifiable.metric.ModifiableMetric;
+import com.siglet.data.unmodifiable.metric.UnmodifiableGauge;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;
@@ -77,11 +78,25 @@ public class ProtoMetricAdapter implements ModifiableMetric, Clonable {
     }
 
     @Override
-    public ProtoGaugeAdapter getData() {
+    public ProtoDataAdapter getData() {
         if (protoGaugeAdapter == null) {
             protoGaugeAdapter = new ProtoGaugeAdapter(protoMetric.getGauge(), updatable);
         }
         return protoGaugeAdapter;
+    }
+
+    @Override
+    public boolean hasGauge() {
+        return protoMetric.hasGauge();
+    }
+
+    @Override
+    public ProtoGaugeAdapter getGauge() {
+        if (! hasGauge()) {
+            throw new SigletError("data is not a gauge ");
+        } else {
+            return (ProtoGaugeAdapter) getData();
+        }
     }
 
     @Override

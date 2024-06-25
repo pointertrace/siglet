@@ -40,7 +40,7 @@ public class ProcessorMetriclet extends CamelTestSupport {
                     to: exporter
                     type: processor
                     config:
-                      action: metric.data.dataPoints.get(0).asLong = metric.data.dataPoints.get(0).asLong * 10
+                      action: metric.gauge.dataPoints[0].asLong = metric.gauge.dataPoints[0].asLong * 10
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -77,7 +77,7 @@ public class ProcessorMetriclet extends CamelTestSupport {
         var metricAdapter = assertInstanceOf(ProtoMetricAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
         var gaugeAdapter = assertInstanceOf(ProtoGaugeAdapter.class,  metricAdapter.getData());
         assertEquals(1, gaugeAdapter.getDataPoints().getSize());
-        assertEquals(10, gaugeAdapter.getDataPoints().get(0).getAsLong());
+        assertEquals(10, gaugeAdapter.getDataPoints().getAt(0).getAsLong());
 
     }
 

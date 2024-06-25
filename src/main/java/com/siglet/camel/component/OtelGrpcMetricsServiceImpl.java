@@ -1,6 +1,7 @@
 package com.siglet.camel.component;
 
 import com.siglet.data.adapter.metric.ProtoGaugeAdapter;
+import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
@@ -34,7 +35,8 @@ public class OtelGrpcMetricsServiceImpl extends MetricsServiceGrpc.MetricsServic
                     Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
                     if (metric.hasGauge()) {
                         System.out.println("metric received:" + metric);
-                        exchange.getIn().setBody(new ProtoGaugeAdapter(metric.getGauge(), true));
+                        // TODO verifica se precisa de resource e scope builder/
+                        exchange.getIn().setBody(new ProtoMetricAdapter(metric, resource, instrumentationScope, true));
                         try {
                             sigletConsumer.getProcessor().process(exchange);
                         } catch (Exception e) {

@@ -4,5 +4,5 @@ public interface UnmodifiableNumberDataPoints {
 
     int getSize();
 
-    UnmodifiableNumberDataPoint get(int i);
+    UnmodifiableNumberDataPoint getAt(int i);
 }

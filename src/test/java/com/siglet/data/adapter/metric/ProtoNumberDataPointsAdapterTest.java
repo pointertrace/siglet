@@ -61,7 +61,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void get_notChanged() {
+    public void get_At_notChanged() {
 
         assertSame(firstNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(0));
         assertSame(secondNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(1));
@@ -78,7 +78,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void add_andGet() {
+    public void add_andGetAt() {
 
         protoNumberDataPointsAdapter.add(protoThirdNumberDataPointAdapter);
 
@@ -91,7 +91,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void get_notUpdatable() {
+    public void get_At_notUpdatable() {
 
         protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
 

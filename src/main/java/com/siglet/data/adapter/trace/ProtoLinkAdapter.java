@@ -108,7 +108,6 @@ public class ProtoLinkAdapter implements ModifiableLink {
         updated = true;
     }
 
-
     public Span.Link getUpdated() {
         if (!updatable) {
             return protoLink;

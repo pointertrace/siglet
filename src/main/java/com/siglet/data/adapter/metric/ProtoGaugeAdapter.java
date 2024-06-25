@@ -3,7 +3,7 @@ package com.siglet.data.adapter.metric;
 import com.siglet.data.modifiable.metric.ModifiableGauge;
 import io.opentelemetry.proto.metrics.v1.Gauge;
 
-public class ProtoGaugeAdapter implements ModifiableGauge {
+public class ProtoGaugeAdapter extends ProtoDataAdapter implements ModifiableGauge {
 
     private final Gauge protoGauge;
 

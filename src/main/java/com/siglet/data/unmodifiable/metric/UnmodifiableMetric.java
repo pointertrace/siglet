@@ -9,4 +9,8 @@ public interface UnmodifiableMetric {
     String getUnit();
 
     UnmodifiableData getData();
+
+    boolean hasGauge();
+
+    UnmodifiableGauge getGauge();
 }

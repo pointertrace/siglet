@@ -64,7 +64,6 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
     @Override
     public UnmodifiableSpan getAt(int index) {
-        System.out.println("------------------------ at:" +index+ ", size=" + spans.size());
         return spans.get(index);
     }
 

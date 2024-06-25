@@ -6,8 +6,6 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoGaugeAdapterTest {
@@ -45,7 +43,7 @@ class ProtoGaugeAdapterTest {
 
     @Test
     public void get() {
-        protoGaugeAdapter.getDataPoints().get(0);
+        protoGaugeAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoGaugeAdapter.isUpdated());
     }
@@ -67,7 +65,7 @@ class ProtoGaugeAdapterTest {
         protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge, false);
 
 
-        protoGaugeAdapter.getDataPoints().get(0);
+        protoGaugeAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(0));
         assertSame(protoGauge, protoGaugeAdapter.getUpdatedGauge());
         assertFalse(protoGaugeAdapter.isUpdated());
