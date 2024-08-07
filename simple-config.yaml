@@ -1,0 +1,17 @@
+receivers:
+  - grpc: receiver
+    address: localhost:8080
+    signal-type: trace
+exporters:
+  - grpc: exporter
+    address: localhost:4317
+pipelines:
+  - trace: pipeline
+    from: receiver
+    start: spanlet
+    pipeline:
+      - spanlet: spanlet
+        to: exporter
+        type: processor
+        config:
+          action: span.name = span.name +"-suffix"

@@ -10,10 +10,6 @@ public interface UnmodifiableLinks {
 
     UnmodifiableLink get(long traceIdHigh, long traceIdLow, int spanId);
 
-    void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes);
-
-    boolean remove(long traceIdHigh, long traceIdLow, int spanId);
-
-    int size();
+    int getSize();
 
 }

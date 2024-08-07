@@ -4,11 +4,11 @@ import com.siglet.data.unmodifiable.UnmodifiableInstrumentationScope;
 
 public interface ModifiableInstrumentationScope extends UnmodifiableInstrumentationScope {
 
-    void setName(String name) ;
+    ModifiableInstrumentationScope setName(String name) ;
 
-    void setVersion(String version) ;
+    ModifiableInstrumentationScope setVersion(String version) ;
 
-    void setDroppedAttributesCount(int droppedAttributesCount);
+    ModifiableInstrumentationScope setDroppedAttributesCount(int droppedAttributesCount);
 
     ModifiableAttributes getAttributes() ;
 

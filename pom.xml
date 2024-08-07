@@ -22,26 +22,26 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.camel.example</groupId>
-    <artifactId>camel-example-main-tiny</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <groupId>org.siglet</groupId>
+    <artifactId>siglet</artifactId>
+    <version>${project.version}</version>
     <packaging>jar</packaging>
-    <name>Camel :: Example :: Main :: Tiny</name>
-    <description>An example for showing standalone Camel with as few JARs on classpath as possible</description>
+    <name>Siglet - "servlets" for opentelemetry signals</name>
+    <description>A container that implments the idea of java servlet but for opentelemetry singals</description>
 
     <properties>
-        <category>Beginner</category>
 
         <!-- unify the encoding for all the modules -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <site-repo-url>scpexe://people.apache.org/www/camel.apache.org/maven/</site-repo-url>
         <jdk.version>21</jdk.version>
 
         <camel.version>4.3.0</camel.version>
         <log4j2-version>2.21.1</log4j2-version>
         <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
+        <project.version>${revision}</project.version>
+                <!--        <start-class>org.baeldung.boot.Application</start-class>-->
     </properties>
 
     <dependencies>
@@ -119,10 +119,32 @@
             <artifactId>micrometer-core</artifactId>
             <version>1.5.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.5</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.siglet.cli.Main</mainClass>
+                            <includeSystemScope>true</includeSystemScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -134,12 +156,29 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                            <goal>removeStubs</goal>
+                            <!--                            <goal>testCompile</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <excludes>
-                        <exclude/>
-                    </excludes>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Test.groovy</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>

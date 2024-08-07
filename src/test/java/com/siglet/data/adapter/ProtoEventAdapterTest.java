@@ -1,6 +1,8 @@
 package com.siglet.data.adapter;
 
 import com.siglet.SigletError;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
+import com.siglet.data.adapter.common.ProtoEventAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -90,18 +92,6 @@ class ProtoEventAdapterTest {
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
 
-        Map<String, Object> attributesMap = protoAttributesAdapter.getAsMap();
-
-        assertEquals(2, attributesMap.size());
-
-        assertTrue(attributesMap.containsKey("str-attribute"));
-        assertInstanceOf(String.class, attributesMap.get("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
-
-        assertTrue(attributesMap.containsKey("long-attribute"));
-        assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
-        assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
-
         assertFalse(protoAttributesAdapter.isUpdated());
     }
 
@@ -118,17 +108,6 @@ class ProtoEventAdapterTest {
         assertTrue(protoAttributesAdapter.has("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
-
-        Map<String, Object> attributesMap = protoAttributesAdapter.getAsMap();
-        assertEquals(2, attributesMap.size());
-
-        assertTrue(attributesMap.containsKey("str-attribute"));
-        assertInstanceOf(String.class, attributesMap.get("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
-
-        assertTrue(attributesMap.containsKey("bool-attribute"));
-        assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
-        assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
         assertTrue(protoAttributesAdapter.isUpdated());
     }

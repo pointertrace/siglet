@@ -2,12 +2,10 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
-import com.siglet.data.adapter.ProtoAttributesAdapter;
-import com.siglet.data.adapter.ProtoInstrumentationScopeAdapter;
-import com.siglet.data.adapter.ProtoResourceAdapter;
-import com.siglet.data.adapter.metric.ProtoDataAdapter;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
+import com.siglet.data.adapter.common.ProtoInstrumentationScopeAdapter;
+import com.siglet.data.adapter.common.ProtoResourceAdapter;
 import com.siglet.data.modifiable.metric.ModifiableMetric;
-import com.siglet.data.unmodifiable.metric.UnmodifiableGauge;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;

@@ -1,6 +1,7 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.metric.ProtoExemplarAdapter;
 import com.siglet.data.adapter.metric.ProtoNumberDataPointAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -113,7 +114,7 @@ class ProtoNumberDataPointAdapterTest {
 
         ProtoAttributesAdapter attributes = protoNumberDataPointAdapter.getAttributes();
 
-        assertEquals(3, attributes.size());
+        assertEquals(3, attributes.getSize());
         assertEquals("new-value", attributes.getAsString("first-attribute"));
         assertEquals("extra-attribute-value", attributes.getAsString("extra-attribute"));
 

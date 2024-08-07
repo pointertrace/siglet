@@ -45,7 +45,7 @@ class ProtoExemplarAdapterTest {
         assertEquals(protoExemplarAdapter.getTraceIdLow(), 2);
         assertArrayEquals(protoExemplarAdapter.getTraceId(), new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2});
 
-        assertEquals(1, protoExemplarAdapter.getAttributes().size());
+        assertEquals(1, protoExemplarAdapter.getAttributes().getSize());
         assertEquals("value", protoExemplarAdapter.getAttributes().getAsString("key"));
     }
 
@@ -71,7 +71,7 @@ class ProtoExemplarAdapterTest {
         var attributes = protoExemplarAdapter.getAttributes();
         attributes.set("new-key", "new-value");
 
-        assertEquals(2, attributes.size());
+        assertEquals(2, attributes.getSize());
         assertEquals("value", attributes.getAsString("key"));
         assertEquals("new-value", attributes.getAsString("new-key"));
 
@@ -138,7 +138,7 @@ class ProtoExemplarAdapterTest {
         assertEquals(protoExemplarAdapter.getTraceIdLow(), 2);
         assertArrayEquals(protoExemplarAdapter.getTraceId(), new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2});
 
-        assertEquals(2, protoExemplarAdapter.getAttributes().size());
+        assertEquals(2, protoExemplarAdapter.getAttributes().getSize());
         assertEquals("value", protoExemplarAdapter.getAttributes().getAsString("key"));
         assertEquals("new-value", protoExemplarAdapter.getAttributes().getAsString("str-attribute"));
 

@@ -1,116 +1,74 @@
 package com.siglet.data.adapter.trace;
 
-import com.google.protobuf.ByteString;
-import com.siglet.SigletError;
+import com.siglet.data.adapter.AdapterList;
 import com.siglet.data.adapter.AdapterUtils;
-import com.siglet.data.adapter.trace.ProtoLinkAdapter;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.trace.ModifiableLinks;
 import io.opentelemetry.proto.trace.v1.Span;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class ProtoLinksAdapter implements ModifiableLinks {
+public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder, ProtoLinkAdapter>
+        implements ModifiableLinks {
 
-    private final List<ProtoLinkAdapter> linksAdapter;
-
-    private final List<Span.Link> protoLinks;
-
-    private final boolean updatable;
-
-    private boolean updated;
 
     public ProtoLinksAdapter(List<Span.Link> protolinks, boolean updatable) {
-        linksAdapter = new ArrayList<>(protolinks.size());
-        protolinks.forEach(lk -> linksAdapter.add(new ProtoLinkAdapter(lk, updatable)));
-        this.protoLinks = protolinks;
-        this.updatable = updatable;
+        super(protolinks, updatable);
+    }
+
+    @Override
+    protected ProtoLinkAdapter createNewAdapter() {
+        return new ProtoLinkAdapter(Span.Link.newBuilder());
+    }
+
+    @Override
+    protected ProtoLinkAdapter createAdapter(int i) {
+        return new ProtoLinkAdapter(getMessage(i), isUpdatable());
     }
 
     public boolean has(long traceIdHigh, long traceIdLow, long spanId) {
-        for (ProtoLinkAdapter protoLinkAdapter : linksAdapter) {
-            if (protoLinkAdapter.getTraceIdHigh() == traceIdHigh && protoLinkAdapter.getTraceIdLow() == traceIdLow &&
-                    protoLinkAdapter.getSpanId() == spanId) {
-                return true;
-            }
-        }
-        return false;
-
+        return findIndex(m -> traceIdHigh == AdapterUtils.traceIdHigh(m.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(m.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(m.getSpanId().toByteArray()),
+                b -> traceIdHigh == AdapterUtils.traceIdHigh(b.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(b.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(b.getSpanId().toByteArray())) != -1;
     }
 
     public ProtoLinkAdapter get(long traceIdHigh, long traceIdLow, int spanId) {
-        for (ProtoLinkAdapter protoLinkAdapter : linksAdapter) {
-            if (protoLinkAdapter.getTraceIdHigh() == traceIdHigh && protoLinkAdapter.getTraceIdLow() == traceIdLow &&
-                    protoLinkAdapter.getSpanId() == spanId) {
-                return protoLinkAdapter;
-            }
+        int idx = findIndex(m -> traceIdHigh == AdapterUtils.traceIdHigh(m.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(m.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(m.getSpanId().toByteArray()),
+                b -> traceIdHigh == AdapterUtils.traceIdHigh(b.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(b.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(b.getSpanId().toByteArray()));
+        if (idx >= 0) {
+            return getAdapter(idx);
+        } else {
+            return null;
         }
-        return null;
     }
 
-    public Stream<ProtoLinkAdapter> stream() {
-        return linksAdapter.stream();
-    }
 
-    public void add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes) {
-        checkUpdate();
-        Span.Link linkProto = Span.Link.newBuilder()
-                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(traceIdHigh, traceIdLow)))
-                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(spanId)))
-                .setTraceState(traceState)
-                .addAllAttributes(AdapterUtils.mapToKeyValueList(attributes))
-                .build();
+    public ProtoLinkAdapter add(long traceIdHigh, long traceIdLow, long spanId, String traceState, Map<String, Object> attributes) {
+        ProtoLinkAdapter newAdapter = super.add();
+        newAdapter.setTraceId(traceIdHigh, traceIdLow);
+        newAdapter.setSpanId(spanId);
+        newAdapter.setTraceState(traceState);
+        ProtoAttributesAdapter attributesAdapter = newAdapter.getAttributes();
+        attributes.forEach(attributesAdapter::putAt);
 
-        linksAdapter.add(new ProtoLinkAdapter(linkProto, updatable));
-
+        return newAdapter;
     }
 
     public boolean remove(long traceIdHigh, long traceIdLow, int spanId) {
-        checkUpdate();
-        return linksAdapter.removeIf(
-                la -> la.getTraceIdHigh() == traceIdHigh &&
-                        la.getTraceIdLow() == traceIdLow &&
-                        la.getSpanId() == spanId);
-    }
-
-    public int size() {
-        return linksAdapter.size();
-    }
-
-    public boolean isUpdated() {
-        return updated;
-    }
-
-    public List<Span.Link> getUpdated() {
-        if (!updatable) {
-            return protoLinks;
-        } else if (!updated && !anyLinkUpdated()) {
-            return protoLinks;
-        } else {
-            List<Span.Link> result = new ArrayList<>(protoLinks.size());
-            for(ProtoLinkAdapter linkAdapter: linksAdapter) {
-                result.add(linkAdapter.getUpdated());
-            }
-            return result;
-        }
-    }
-
-    private boolean anyLinkUpdated() {
-        for(ProtoLinkAdapter la: linksAdapter) {
-            if (la.isUpdated()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void checkUpdate() {
-        if (!updatable) {
-            throw new SigletError("trying to change a non updatable link list!");
-        }
-        updated = true;
+        return remove(m -> traceIdHigh == AdapterUtils.traceIdHigh(m.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(m.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(m.getSpanId().toByteArray()),
+                b -> traceIdHigh == AdapterUtils.traceIdHigh(b.getTraceId().toByteArray()) &&
+                        traceIdLow == AdapterUtils.traceIdLow(b.getTraceId().toByteArray()) &&
+                        spanId == AdapterUtils.spanId(b.getSpanId().toByteArray()));
     }
 
 }

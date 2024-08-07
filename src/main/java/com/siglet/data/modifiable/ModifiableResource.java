@@ -6,5 +6,5 @@ public interface ModifiableResource extends UnmodifiableResource {
 
     ModifiableAttributes getAttributes();
 
-    void setDroppedAttributesCount(int droppedAttributesCount);
+    ModifiableResource setDroppedAttributesCount(int droppedAttributesCount);
 }

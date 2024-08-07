@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -94,7 +95,7 @@ class ProtoAttributesAdapterTest {
         assertFalse(protoAttributesAdapter.isUpdated());
 
 
-        List<KeyValue> actualKvl = protoAttributesAdapter.getAsKeyValueList();
+        List<KeyValue> actualKvl = protoAttributesAdapter.getUpdated();
 
         assertEquals(7, actualKvl.size());
         assertTrue(actualKvl.contains(KeyValue.newBuilder()
@@ -155,16 +156,17 @@ class ProtoAttributesAdapterTest {
     @Test
     public void changeAttributes() {
 
-        protoAttributesAdapter.set("string-key", "other-value");
-        protoAttributesAdapter.set("new-string-key", "new-value");
-        protoAttributesAdapter.set("bool-key", false);
-        protoAttributesAdapter.set("long-key", 20L);
-        protoAttributesAdapter.set("double-key", 2.3);
-        protoAttributesAdapter.set("array-key", new Object[]{"3", "4"});
-        protoAttributesAdapter.set("key-value-list-key", List.of(
-                new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
-                new AbstractMap.SimpleImmutableEntry<>("key3", "value3")));
-        protoAttributesAdapter.set("byte-array-key", new byte[]{3, 4});
+        protoAttributesAdapter
+                .set("string-key", "other-value")
+                .set("new-string-key", "new-value")
+                .remove("bool-key")
+                .set("long-key", 20L)
+                .set("double-key", 2.3)
+                .set("array-key", new Object[]{"3", "4"})
+                .set("key-value-list-key", List.of(
+                        new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
+                        new AbstractMap.SimpleImmutableEntry<>("key3", "value3")))
+                .set("byte-array-key", new byte[]{3, 4});
 
 
         assertTrue(protoAttributesAdapter.isString("string-key"));
@@ -173,8 +175,7 @@ class ProtoAttributesAdapterTest {
         assertTrue(protoAttributesAdapter.isString("new-string-key"));
         assertEquals(protoAttributesAdapter.getAsString("new-string-key"), "new-value");
 
-        assertTrue(protoAttributesAdapter.isBoolean("bool-key"));
-        assertFalse(protoAttributesAdapter.getAsBoolean("bool-key"));
+        assertFalse(protoAttributesAdapter.has("bool-key"));
 
         assertTrue(protoAttributesAdapter.isLong("long-key"));
         assertEquals(protoAttributesAdapter.getAsLong("long-key"), 20L);
@@ -195,9 +196,9 @@ class ProtoAttributesAdapterTest {
 
         assertTrue(protoAttributesAdapter.isUpdated());
 
-        List<KeyValue> actualKvl = protoAttributesAdapter.getAsKeyValueList();
+        List<KeyValue> actualKvl = protoAttributesAdapter.getUpdated();
 
-        assertEquals(8, actualKvl.size());
+        assertEquals(7, actualKvl.size());
         assertTrue(actualKvl.contains(KeyValue.newBuilder()
                 .setKey("string-key")
                 .setValue(AnyValue.newBuilder().setStringValue("other-value")
@@ -208,7 +209,7 @@ class ProtoAttributesAdapterTest {
                 .setValue(AnyValue.newBuilder().setStringValue("new-value")
                         .build())
                 .build()));
-        assertTrue(actualKvl.contains(KeyValue.newBuilder()
+        assertFalse(actualKvl.contains(KeyValue.newBuilder()
                 .setKey("bool-key")
                 .setValue(AnyValue.newBuilder().setBoolValue(false)
                         .build())

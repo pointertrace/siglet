@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import com.siglet.data.adapter.trace.ProtoLinksAdapter;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -52,7 +53,7 @@ class ProtoLinksAdapterTest {
 
     @Test
     public void get() {
-        assertEquals(2, protoLinksAdapter.size());
+        assertEquals(2, protoLinksAdapter.getSize());
 
         ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(0, 1, 2);
 
@@ -77,13 +78,13 @@ class ProtoLinksAdapterTest {
     @Test
     public void add() {
 
-        assertEquals(2, protoLinksAdapter.size());
+        assertEquals(2, protoLinksAdapter.getSize());
 
         assertFalse(protoLinksAdapter.has(6, 7, 8));
 
         protoLinksAdapter.add(6, 7, 8, "new-link-trace-state", Map.of("str-key", "str-value"));
 
-        assertEquals(3, protoLinksAdapter.size());
+        assertEquals(3, protoLinksAdapter.getSize());
         assertTrue(protoLinksAdapter.has(6, 7, 8));
         ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(6, 7, 8);
 
@@ -95,7 +96,7 @@ class ProtoLinksAdapterTest {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoLinkAdapter.getAttributes();
 
-        assertEquals(1, protoAttributesAdapter.size());
+        assertEquals(1, protoAttributesAdapter.getSize());
         assertTrue(protoAttributesAdapter.has("str-key"));
         assertTrue(protoAttributesAdapter.isString("str-key"));
         assertEquals("str-value", protoAttributesAdapter.getAsString("str-key"));
@@ -105,15 +106,15 @@ class ProtoLinksAdapterTest {
     @Test
     public void remove() {
 
-        assertEquals(2, protoLinksAdapter.size());
+        assertEquals(2, protoLinksAdapter.getSize());
         assertTrue(protoLinksAdapter.has(0, 1, 2));
 
         assertTrue(protoLinksAdapter.remove(0, 1, 2));
-        assertEquals(1, protoLinksAdapter.size());
+        assertEquals(1, protoLinksAdapter.getSize());
         assertFalse(protoLinksAdapter.has(0, 1, 2));
 
         assertFalse(protoLinksAdapter.remove(0, 0, 0));
-        assertEquals(1, protoLinksAdapter.size());
+        assertEquals(1, protoLinksAdapter.getSize());
 
     }
 

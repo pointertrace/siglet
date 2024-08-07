@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.common.*;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import com.siglet.data.adapter.trace.ProtoLinksAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
@@ -226,16 +227,6 @@ class ProtoSpanAdapterTest {
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
 
-        Map<String, Object> attributesMap = protoAttributesAdapter.getAsMap();
-
-        assertEquals(2, attributesMap.size());
-
-        assertTrue(attributesMap.containsKey("str-attribute"));
-        assertInstanceOf(String.class, attributesMap.get("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
-
-        assertTrue(attributesMap.containsKey("long-attribute"));
-        assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
         assertFalse(protoAttributesAdapter.isUpdated());
@@ -255,17 +246,6 @@ class ProtoSpanAdapterTest {
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
 
-        Map<String, Object> attributesMap = protoAttributesAdapter.getAsMap();
-        assertEquals(2, attributesMap.size());
-
-        assertTrue(attributesMap.containsKey("str-attribute"));
-        assertInstanceOf(String.class, attributesMap.get("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
-
-        assertTrue(attributesMap.containsKey("bool-attribute"));
-        assertInstanceOf(Boolean.class, attributesMap.get("bool-attribute"));
-        assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
-
         assertTrue(protoAttributesAdapter.isUpdated());
     }
 
@@ -274,7 +254,7 @@ class ProtoSpanAdapterTest {
 
         ProtoLinksAdapter protoLinksAdapter = protoSpanAdapter.getLinks();
 
-        assertEquals(2, protoLinksAdapter.size());
+        assertEquals(2, protoLinksAdapter.getSize());
         assertTrue(protoLinksAdapter.has(0, 5, 4));
 
         ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(0, 5, 4);
@@ -285,7 +265,7 @@ class ProtoSpanAdapterTest {
 
         ProtoAttributesAdapter attributes = protoLinkAdapter.getAttributes();
 
-        assertEquals(1, attributes.size());
+        assertEquals(1, attributes.getSize());
 
         assertTrue(attributes.has("lnk-str-attribute"));
         assertTrue(attributes.isString("lnk-str-attribute"));
@@ -305,7 +285,7 @@ class ProtoSpanAdapterTest {
 
         ProtoEventsAdapter protoEventsAdapter = protoSpanAdapter.getEvents();
 
-        assertEquals(2, protoEventsAdapter.size());
+        assertEquals(2, protoEventsAdapter.getSize());
 
         ProtoEventAdapter protoEventAdapter = protoEventsAdapter.get(0);
         assertNotNull(protoEventAdapter);
@@ -313,7 +293,7 @@ class ProtoSpanAdapterTest {
 
         ProtoAttributesAdapter attributes = protoEventAdapter.getAttributes();
 
-        assertEquals(1, attributes.size());
+        assertEquals(1, attributes.getSize());
 
         assertTrue(attributes.has("evt-str-attribute"));
         assertTrue(attributes.isString("evt-str-attribute"));
@@ -335,7 +315,7 @@ class ProtoSpanAdapterTest {
 
         ProtoAttributesAdapter attributes = protoResourceAdapter.getAttributes();
 
-        assertEquals(1, attributes.size());
+        assertEquals(1, attributes.getSize());
 
         assertTrue(attributes.has("rs-str-attribute"));
         assertTrue(attributes.isString("rs-str-attribute"));
@@ -354,7 +334,7 @@ class ProtoSpanAdapterTest {
 
         ProtoAttributesAdapter attributes = protoInstrumentationScopeAdapter.getAttributes();
 
-        assertEquals(1, attributes.size());
+        assertEquals(1, attributes.getSize());
 
         assertTrue(attributes.has("is-str-attribute"));
         assertTrue(attributes.isString("is-str-attribute"));

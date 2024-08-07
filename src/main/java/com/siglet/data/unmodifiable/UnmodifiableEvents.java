@@ -2,11 +2,8 @@ package com.siglet.data.unmodifiable;
 
 public interface UnmodifiableEvents {
 
-    int size();
+    int getSize();
 
     UnmodifiableEvent get(int i);
-
-    // TODO remover
-    UnmodifiableEvent remove(int i);
 
 }

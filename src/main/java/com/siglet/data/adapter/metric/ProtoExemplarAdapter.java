@@ -3,7 +3,7 @@ package com.siglet.data.adapter.metric;
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
 import com.siglet.data.adapter.AdapterUtils;
-import com.siglet.data.adapter.ProtoAttributesAdapter;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableExemplar;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 
@@ -134,7 +134,7 @@ public class ProtoExemplarAdapter implements ModifiableExemplar {
             Exemplar.Builder bld = protoExamplerBuilder != null ? protoExamplerBuilder : protoExemplar.toBuilder();
             if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
                 bld.clearFilteredAttributes();
-                bld.addAllFilteredAttributes(protoAttributesAdapter.getAsKeyValueList());
+                bld.addAllFilteredAttributes(protoAttributesAdapter.getUpdated());
             }
             return bld.build();
         }

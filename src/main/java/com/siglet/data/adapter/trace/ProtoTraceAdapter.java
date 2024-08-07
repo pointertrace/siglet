@@ -79,13 +79,15 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
 
 
     private boolean hasRoot() {
-        return spansBySpanId.values().stream().anyMatch(span -> span.getLinks().size() == 0);
+        return spansBySpanId.values().stream().anyMatch(span -> span.getLinks().getSize() == 0);
     }
 
     private boolean hasOrphan() {
-        return spansBySpanId.values().stream()
-                .flatMap(span -> span.getLinks().stream())
-                .anyMatch(link -> spansBySpanId.get(link.getSpanId()) == null);
+        // TODO implementar!!!!
+        throw new IllegalStateException("to be implemented");
+//        return spansBySpanId.values().stream()
+//                .flatMap(span -> span.getLinks().stream())
+//                .anyMatch(link -> spansBySpanId.get(link.getSpanId()) == null);
     }
 
     private void checkUpdate() {

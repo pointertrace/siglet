@@ -8,7 +8,7 @@ public interface ModifiableEvents extends UnmodifiableEvents {
 
     ModifiableEvent get(int i);
 
-    ModifiableEvent remove(int i);
+    void remove(int i);
 
-    void add(String name, long timeUnixNano, int droppedAttributesCount, Map<String, Object> attributes);
+    ModifiableEvent add();
 }

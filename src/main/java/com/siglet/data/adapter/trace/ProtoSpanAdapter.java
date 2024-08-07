@@ -4,6 +4,10 @@ import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
 import com.siglet.data.adapter.*;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
+import com.siglet.data.adapter.common.ProtoEventsAdapter;
+import com.siglet.data.adapter.common.ProtoInstrumentationScopeAdapter;
+import com.siglet.data.adapter.common.ProtoResourceAdapter;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.trace.SpanKind;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -325,7 +329,7 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
             Span.Builder bld = protoSpanBuilder != null ? protoSpanBuilder : protoSpan.toBuilder();
             if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
                 bld.clearAttributes();
-                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+                bld.addAllAttributes(protoAttributesAdapter.getUpdated());
             }
             if (protoLinksAdapter != null && protoLinksAdapter.isUpdated()) {
                 bld.clearLinks();

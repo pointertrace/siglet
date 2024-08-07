@@ -1,126 +1,109 @@
 package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.SigletError;
-import com.siglet.data.adapter.ProtoAttributesAdapter;
+import com.siglet.data.adapter.Adapter;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.trace.ModifiableLink;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ProtoLinkAdapter implements ModifiableLink {
-
-    private final Span.Link protoLink;
-
-    private final boolean updatable;
-
-    private boolean updated;
-
-    private Span.Link.Builder protoLinkBuilder;
+public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> implements ModifiableLink {
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
     public ProtoLinkAdapter(Span.Link protoLink, boolean updatable) {
-        this.protoLink = protoLink;
-        this.updatable = updatable;
+        super(protoLink, Span.Link::toBuilder, Span.Link.Builder::build, updatable);
+    }
+
+    public ProtoLinkAdapter(Span.Link.Builder protoLinkBuilder) {
+        super(protoLinkBuilder,Span.Link.Builder::build);
     }
 
     public long getTraceIdHigh() {
         return ByteBuffer.wrap(
-                        Arrays.copyOfRange((protoLinkBuilder == null ?
-                                protoLink.getTraceId() :
-                                protoLinkBuilder.getTraceId()).toByteArray(), 0, 8))
-                .getLong();
+                getValue(Span.Link::getTraceId, Span.Link.Builder::getTraceId).toByteArray(), 0, 8).getLong();
     }
 
     public long getTraceIdLow() {
         return ByteBuffer.wrap(
-                        Arrays.copyOfRange((protoLinkBuilder == null ?
-                                protoLink.getTraceId() :
-                                protoLinkBuilder.getTraceId()).toByteArray(), 8, 16))
+                        Arrays.copyOfRange(getValue(
+                                Span.Link::getTraceId, Span.Link.Builder::getTraceId).toByteArray(), 8, 16))
                 .getLong();
     }
 
-    public void setTraceId(long high, long low) {
-        checkAndPrepareUpdate();
-        protoLinkBuilder.setTraceId(ByteString.copyFrom(
+    public ProtoLinkAdapter setTraceId(long high, long low) {
+        setValue(Span.Link.Builder::setTraceId, ByteString.copyFrom(
                 ByteBuffer.allocate(Long.BYTES * 2).putLong(high).putLong(low).array()));
+        return this;
     }
 
     public long getSpanId() {
-        return ByteBuffer.wrap((protoLinkBuilder == null ?
-                protoLink.getSpanId() :
-                protoLinkBuilder.getSpanId()).toByteArray()).getLong();
+        return ByteBuffer.wrap(
+                getValue(Span.Link::getSpanId, Span.Link.Builder::getSpanId).toByteArray()).getLong();
     }
 
-
-    public void setSpanId(long spanId) {
-        checkAndPrepareUpdate();
-        protoLinkBuilder.setSpanId(ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(spanId).array()));
+    public ProtoLinkAdapter setSpanId(long spanId) {
+        setValue(Span.Link.Builder::setSpanId, ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).
+                putLong(spanId).array()));
+        return this;
     }
 
     public String getTraceState() {
-        return protoLinkBuilder == null ? protoLink.getTraceState() : protoLinkBuilder.getTraceState();
+        return getValue(Span.Link::getTraceState, Span.Link.Builder::getTraceState);
     }
 
-    public void setTraceState(String traceState) {
-        checkAndPrepareUpdate();
-        protoLinkBuilder.setTraceState(traceState);
+    public ModifiableLink setTraceState(String traceState) {
+        setValue(Span.Link.Builder::setTraceState, traceState);
+        return this;
     }
 
     public int getFlags() {
-        return protoLinkBuilder == null ? protoLink.getFlags() : protoLinkBuilder.getFlags();
+        return getValue(Span.Link::getFlags, Span.Link.Builder::getFlags);
     }
 
-    public void setFlags(int flags) {
-        checkAndPrepareUpdate();
-        protoLinkBuilder.setFlags(flags);
+    public ProtoLinkAdapter setFlags(int flags) {
+        setValue(Span.Link.Builder::setFlags, flags);
+        return this;
     }
 
     public int getDroppedAttributesCount() {
-        return protoLinkBuilder == null ? protoLink.getDroppedAttributesCount() : protoLinkBuilder.getDroppedAttributesCount();
+        return getValue(Span.Link::getDroppedAttributesCount, Span.Link.Builder::getDroppedAttributesCount);
     }
 
-    public void setDroppedAttributesCount(int droppedAttributesCount) {
-        checkAndPrepareUpdate();
-        protoLinkBuilder.setDroppedAttributesCount(droppedAttributesCount);
+    public ProtoLinkAdapter setDroppedAttributesCount(int droppedAttributesCount) {
+        setValue(Span.Link.Builder::setDroppedAttributesCount, droppedAttributesCount);
+        return this;
     }
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoLink.getAttributesList(), updatable);
+            Span.Link message = getMessage();
+            if (message != null) {
+                protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            } else {
+                protoAttributesAdapter = new ProtoAttributesAdapter(new ArrayList<>(), isUpdatable());
+            }
         }
         return protoAttributesAdapter;
     }
 
+    @Override
+    protected Span.Link getMessage() {
+        return super.getMessage();
+    }
+
     public boolean isUpdated() {
-        return updated;
+        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
     }
 
-    private void checkAndPrepareUpdate() {
-        if (!updatable) {
-            throw new SigletError("trying to change a non updatable link!");
-        }
-        if (protoLinkBuilder == null) {
-            protoLinkBuilder = protoLink.toBuilder();
-        }
-        updated = true;
-    }
-
-    public Span.Link getUpdated() {
-        if (!updatable) {
-            return protoLink;
-        } else if (!updated && (protoAttributesAdapter == null || !protoAttributesAdapter.isUpdated())) {
-            return protoLink;
-        } else {
-            Span.Link.Builder bld = protoLinkBuilder != null ?
-                    protoLinkBuilder: protoLink.toBuilder();
-            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-                bld.clearAttributes();
-                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
-            }
-            return bld.build();
+    @Override
+    protected void enrich(Span.Link.Builder builder) {
+        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+            builder.clearAttributes();
+            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
         }
     }
 }

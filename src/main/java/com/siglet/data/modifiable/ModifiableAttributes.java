@@ -7,19 +7,19 @@ import java.util.Map;
 
 public interface ModifiableAttributes extends UnmodifiableAttributes {
 
-    void set(String key, String value);
+    ModifiableAttributes set(String key, String value);
 
-    void set(String key, boolean value);
+    ModifiableAttributes set(String key, boolean value);
 
-    void set(String key, long value);
+    ModifiableAttributes set(String key, long value);
 
-    void set(String key, double value);
+    ModifiableAttributes set(String key, double value);
 
-    void set(String key, Object[] value);
+    ModifiableAttributes  set(String key, Object[] value);
 
-    void set(String key, List<? extends Map.Entry<String, Object>> value);
+    ModifiableAttributes set(String key, List<? extends Map.Entry<String, Object>> value);
 
-    void set(String key, byte[] value);
+    ModifiableAttributes set(String key, byte[] value);
 
-    void remove(String key);
+    ModifiableAttributes remove(String key);
 }

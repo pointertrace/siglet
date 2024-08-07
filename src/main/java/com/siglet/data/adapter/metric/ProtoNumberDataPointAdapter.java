@@ -1,12 +1,9 @@
 package com.siglet.data.adapter.metric;
 
 import com.siglet.SigletError;
-import com.siglet.data.adapter.ProtoAttributesAdapter;
-import com.siglet.data.modifiable.ModifiableAttributes;
+import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableNumberDataPoint;
-import io.opentelemetry.proto.metrics.v1.Exemplar;
 import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
-import io.opentelemetry.proto.trace.v1.Span;
 
 public class ProtoNumberDataPointAdapter implements ModifiableNumberDataPoint {
 
@@ -135,7 +132,7 @@ public class ProtoNumberDataPointAdapter implements ModifiableNumberDataPoint {
                     protoNumberDataPointBuilder : protoNumberDataPoint.toBuilder();
             if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
                 bld.clearAttributes();
-                bld.addAllAttributes(protoAttributesAdapter.getAsKeyValueList());
+                bld.addAllAttributes(protoAttributesAdapter.getUpdated());
             }
             if (protoExemplarsAdapter != null &&  protoExemplarsAdapter.isUpdated()) {
                 bld.clearExemplars();

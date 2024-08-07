@@ -6,14 +6,15 @@ import com.siglet.data.unmodifiable.trace.UnmodifiableLink;
 public interface ModifiableLink extends UnmodifiableLink {
 
 
-    void setTraceId(long high, long low);
+    ModifiableLink setTraceId(long high, long low);
 
-    void setSpanId(long spanId);
+    ModifiableLink setSpanId(long spanId);
 
-    void setTraceState(String traceState);
+    ModifiableLink setTraceState(String traceState);
 
-    void setFlags(int flags);
-    void setDroppedAttributesCount(int droppedAttributesCount);
+    ModifiableLink setFlags(int flags);
+
+    ModifiableLink setDroppedAttributesCount(int droppedAttributesCount);
 
     ModifiableAttributes getAttributes();
 

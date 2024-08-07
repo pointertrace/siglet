@@ -4,11 +4,11 @@ import com.siglet.data.unmodifiable.UnmodifiableEvent;
 
 public interface ModifiableEvent extends UnmodifiableEvent {
 
-    void setTimeUnixNano(long timeUnixNano) ;
+    ModifiableEvent setTimeUnixNano(long timeUnixNano) ;
 
-    void setName(String name) ;
+    ModifiableEvent setName(String name) ;
 
-    void setDroppedAttributesCount(int droppedAttributesCount) ;
+    ModifiableEvent setDroppedAttributesCount(int droppedAttributesCount) ;
 
     ModifiableAttributes getAttributes() ;
 
