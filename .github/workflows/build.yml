@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "Running shell script to set the environment variable"
           # Simulando a obtenção de uma variável de ambiente
-          VERSION=$(grep 'project.version' versions.properties | cut -d '=' -f2)
+          VERSION=$(grep 'project.version' version.properties | cut -d '=' -f2)
           echo "VERSION=${VERSION}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
       - name: Build with Maven
