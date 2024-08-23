@@ -3,6 +3,7 @@ package com.siglet.data.adapter;
 import com.google.protobuf.ByteString;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.metric.ProtoExemplarAdapter;
+import com.siglet.data.adapter.metric.ProtoExemplarsAdapter;
 import com.siglet.data.adapter.metric.ProtoNumberDataPointAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -124,13 +125,17 @@ class ProtoNumberDataPointAdapterTest {
     @Test
     public void exemplarsChangeAndGet() {
 
-        protoNumberDataPointAdapter.getExemplars().add(
-                new ProtoExemplarAdapter(Exemplar.newBuilder()
-                        .setTimeUnixNano(1000)
-                        .setAsDouble(2000)
-                        .build(), true));
+        protoNumberDataPointAdapter.getExemplars().add()
+                .setTraceId(100, 200)
+                .setSpanId(100)
+                .setTimeUnixNanos(1000)
+                .setAsDouble(2000);
 
         assertEquals(3, protoNumberDataPointAdapter.getExemplars().getSize());
+
+        ProtoExemplarsAdapter exemplars = protoNumberDataPointAdapter.getExemplars();
+        ProtoExemplarAdapter exemplar = exemplars.get(0);
+
 
         assertEquals(10, protoNumberDataPointAdapter.getExemplars().get(0).getSpanId());
         assertEquals(20, AdapterUtils.traceIdHigh(protoNumberDataPointAdapter.getExemplars().get(0).getTraceId()));
@@ -144,6 +149,9 @@ class ProtoNumberDataPointAdapterTest {
         assertEquals(90, protoNumberDataPointAdapter.getExemplars().get(1).getAsLong());
         assertEquals(100, protoNumberDataPointAdapter.getExemplars().get(1).getTimeUnixNanos());
 
+        assertEquals(100, protoNumberDataPointAdapter.getExemplars().get(2).getSpanId());
+        assertEquals(100, AdapterUtils.traceIdHigh(protoNumberDataPointAdapter.getExemplars().get(2).getTraceId()));
+        assertEquals(200, AdapterUtils.traceIdLow(protoNumberDataPointAdapter.getExemplars().get(2).getTraceId()));
         assertEquals(1000, protoNumberDataPointAdapter.getExemplars().get(2).getTimeUnixNanos());
         assertEquals(2000, protoNumberDataPointAdapter.getExemplars().get(2).getAsDouble());
         assertTrue(protoNumberDataPointAdapter.isUpdated());
@@ -155,7 +163,7 @@ class ProtoNumberDataPointAdapterTest {
 
         protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter(protoNumberDataPoint, false);
 
-        NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdatedNumberDataPointAdapter();
+        NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdated();
 
         assertSame(protoNumberDataPoint, numberDataPoint);
 
@@ -164,7 +172,7 @@ class ProtoNumberDataPointAdapterTest {
     @Test
     public void getUpdated_nothingUpdated() {
 
-        NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdatedNumberDataPointAdapter();
+        NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdated();
 
         assertSame(protoNumberDataPoint, numberDataPoint);
     }
@@ -208,7 +216,7 @@ class ProtoNumberDataPointAdapterTest {
         attributes.set("new-key", "new-key-value");
 
 
-        NumberDataPoint actual = protoNumberDataPointAdapter.getUpdatedNumberDataPointAdapter();
+        NumberDataPoint actual = protoNumberDataPointAdapter.getUpdated();
 
         assertEquals(1, actual.getFlags());
         assertEquals(1, actual.getTimeUnixNano());
@@ -227,13 +235,13 @@ class ProtoNumberDataPointAdapterTest {
         assertEquals(3, actualAttributes.size());
 
         assertEquals("first-attribute", actualAttributes.get(0).getKey());
-        assertEquals("new-first-key-value",actualAttributes.get(0).getValue().getStringValue());
+        assertEquals("new-first-key-value", actualAttributes.get(0).getValue().getStringValue());
 
         assertEquals("second-attribute", actualAttributes.get(1).getKey());
-        assertEquals("second-attribute-value",actualAttributes.get(1).getValue().getStringValue());
+        assertEquals("second-attribute-value", actualAttributes.get(1).getValue().getStringValue());
 
         assertEquals("new-key", actualAttributes.get(2).getKey());
-        assertEquals("new-key-value",actualAttributes.get(2).getValue().getStringValue());
+        assertEquals("new-key-value", actualAttributes.get(2).getValue().getStringValue());
 
     }
 }

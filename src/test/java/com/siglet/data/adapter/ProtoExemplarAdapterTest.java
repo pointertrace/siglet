@@ -98,14 +98,14 @@ class ProtoExemplarAdapterTest {
 
         protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar, false);
 
-        assertSame(protoExemplar, protoExemplarAdapter.getUpdatedExemplar());
+        assertSame(protoExemplar, protoExemplarAdapter.getUpdated());
 
     }
 
     @Test
     public void getUpdatableExemplar_nothingUpdated() {
 
-        assertSame(protoExemplar, protoExemplarAdapter.getUpdatedExemplar());
+        assertSame(protoExemplar, protoExemplarAdapter.getUpdated());
 
     }
 
@@ -117,7 +117,7 @@ class ProtoExemplarAdapterTest {
         protoExemplarAdapter.setTimeUnixNanos(4);
         protoExemplarAdapter.setAsLong(10);
 
-        Exemplar updatedExemplar = protoExemplarAdapter.getUpdatedExemplar();
+        Exemplar updatedExemplar = protoExemplarAdapter.getUpdated();
         assertEquals(updatedExemplar.getTimeUnixNano(), 4);
         assertEquals(updatedExemplar.getAsInt(), 10);
         assertEquals(updatedExemplar.getSpanId(), ByteString.copyFrom(AdapterUtils.spanId(1)));

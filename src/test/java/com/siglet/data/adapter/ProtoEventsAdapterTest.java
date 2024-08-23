@@ -82,7 +82,6 @@ class ProtoEventsAdapterTest {
         assertEquals(2, protoEventsAdapter.getSize());
 
         protoEventsAdapter.remove(0);
-        ProtoEventAdapter eventRemoved = null;
 
         assertEquals(1, protoEventsAdapter.getSize());
 

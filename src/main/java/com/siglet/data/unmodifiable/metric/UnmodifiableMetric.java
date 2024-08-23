@@ -13,4 +13,8 @@ public interface UnmodifiableMetric {
     boolean hasGauge();
 
     UnmodifiableGauge getGauge();
+
+    boolean hasSum();
+
+    UnmodifiableSum getSum();
 }

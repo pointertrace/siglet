@@ -4,17 +4,15 @@ import com.siglet.data.unmodifiable.UnmodifiableAttributes;
 
 public interface UnmodifiableNumberDataPoint {
 
-
     UnmodifiableAttributes getAttributes();
+
+    UnmodifiableExemplars getExemplars();
 
     long getStartTimeUnixNano();
 
     long getTimeUnixNano();
 
-    void setAsLong(long value);
-
-    void setAsDouble(double value);
-
     int getFlags();
+
 
 }

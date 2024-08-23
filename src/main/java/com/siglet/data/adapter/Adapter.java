@@ -89,7 +89,7 @@ public class Adapter<M extends Message, B extends Message.Builder> {
         return updatable;
     }
 
-    private void checkAndPrepareUpdate() {
+    protected void checkAndPrepareUpdate() {
         if (!updatable) {
             throw new SigletError("trying to change a non updatable adapter!");
         }

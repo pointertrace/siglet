@@ -80,13 +80,15 @@ class ProtoNumberDataPointsAdapterTest {
     @Test
     public void add_andGetAt() {
 
-        protoNumberDataPointsAdapter.add(protoThirdNumberDataPointAdapter);
-
+        protoNumberDataPointsAdapter.add()
+                .setAsLong(100)
+                .setStartTimeUnixNano(200)
+                .setTimeUnixNano(300);
         assertEquals(3, protoNumberDataPointsAdapter.getSize());
         assertTrue(protoNumberDataPointsAdapter.isUpdated());
         assertSame(firstNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(0));
         assertSame(secondNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(1));
-        assertSame(thirdNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(2));
+        assertEquals(thirdNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(2));
 
     }
 
@@ -107,7 +109,7 @@ class ProtoNumberDataPointsAdapterTest {
 
         protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
 
-        assertThrowsExactly(SigletError.class, () -> protoNumberDataPointsAdapter.add(protoThirdNumberDataPointAdapter));
+        assertThrowsExactly(SigletError.class, () -> protoNumberDataPointsAdapter.add());
         assertThrowsExactly(SigletError.class, () -> protoNumberDataPointsAdapter.remove(0));
 
     }

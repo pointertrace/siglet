@@ -20,10 +20,6 @@ class ProtoExemplarsAdapterTest {
 
     private Exemplar secondProtoExemplar;
 
-    private Exemplar thirdProtoExemplar;
-
-    private ProtoExemplarAdapter protoExemplarAdapterThirdProtoExemplar;
-
     private ProtoExemplarsAdapter protoExemplarsAdapter;
 
 
@@ -48,15 +44,6 @@ class ProtoExemplarsAdapterTest {
 
         protoExemplars.add(secondProtoExemplar);
 
-        thirdProtoExemplar  = Exemplar.newBuilder()
-                .setAsInt(30)
-                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(7, 8)))
-                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(9)))
-                .build();
-
-        protoExemplarAdapterThirdProtoExemplar = new ProtoExemplarAdapter(thirdProtoExemplar, true);
-
-
         protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, true);
     }
 
@@ -67,16 +54,25 @@ class ProtoExemplarsAdapterTest {
     }
 
     @Test
-    public void get_notChanged() {
+    public void getUpdated_notChanged() {
         assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
         assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));
+    }
+
+    @Test
+    public void get() {
+        assertNotNull(protoExemplarsAdapter.get(0));
+        assertArrayEquals(AdapterUtils.traceId(1, 2),
+                protoExemplarsAdapter.getUpdated().get(0).getTraceId().toByteArray());
+        assertArrayEquals(AdapterUtils.spanId(3),
+                protoExemplarsAdapter.getUpdated().get(0).getSpanId().toByteArray());
     }
 
     @Test
     public void remove() {
         protoExemplarsAdapter.remove(0);
 
-        assertEquals(1,protoExemplarsAdapter.getSize());
+        assertEquals(1, protoExemplarsAdapter.getSize());
         assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
         assertTrue(protoExemplarsAdapter.isUpdated());
 
@@ -84,13 +80,22 @@ class ProtoExemplarsAdapterTest {
 
     @Test
     public void add_andGet() {
-        protoExemplarsAdapter.add(protoExemplarAdapterThirdProtoExemplar);
+
+        protoExemplarsAdapter.add()
+                .setAsLong(30)
+                .setTraceId(7, 8)
+                .setSpanId(9);
 
         assertEquals(3, protoExemplarsAdapter.getSize());
         assertTrue(protoExemplarsAdapter.isUpdated());
-        assertSame(firstProtoExemplar, protoExemplarsAdapter.get(0).getUpdatedExemplar());
-        assertSame(secondProtoExemplar, protoExemplarsAdapter.get(1).getUpdatedExemplar());
-        assertSame(thirdProtoExemplar, protoExemplarsAdapter.get(2).getUpdatedExemplar());
+        assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
+        assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));
+        assertEquals(30, protoExemplarsAdapter.getUpdated().get(2).getAsInt());
+        assertArrayEquals(AdapterUtils.traceId(7, 8),
+                protoExemplarsAdapter.getUpdated().get(2).getTraceId().toByteArray());
+        assertArrayEquals(AdapterUtils.spanId(9),
+                protoExemplarsAdapter.getUpdated().get(2).getSpanId().toByteArray());
+
 
     }
 
@@ -98,8 +103,8 @@ class ProtoExemplarsAdapterTest {
     public void get_notUpdatable() {
         protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
 
-        assertSame(firstProtoExemplar, protoExemplarsAdapter.get(0).getUpdatedExemplar());
-        assertSame(secondProtoExemplar, protoExemplarsAdapter.get(1).getUpdatedExemplar());
+        assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
+        assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));
 
     }
 
@@ -107,7 +112,7 @@ class ProtoExemplarsAdapterTest {
     public void update_notUpdatable() {
         protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
 
-        assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.add(protoExemplarAdapterThirdProtoExemplar));
+        assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.add());
         assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.remove(0));
 
     }

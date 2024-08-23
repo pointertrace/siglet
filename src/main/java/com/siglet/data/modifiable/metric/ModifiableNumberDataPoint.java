@@ -8,16 +8,20 @@ public interface ModifiableNumberDataPoint extends UnmodifiableNumberDataPoint {
 
     ModifiableAttributes getAttributes();
 
-
     ModifiableExemplars getExemplars();
 
-    void setStartTimeUnixNano(long startTimeUnixNano);
+    ModifiableNumberDataPoint setStartTimeUnixNano(long startTimeUnixNano);
 
-    void setTimeUnixNano(long timeUnixNano);
+    ModifiableNumberDataPoint setTimeUnixNano(long timeUnixNano);
+
+    ModifiableNumberDataPoint setAsLong(long value);
+
+    ModifiableNumberDataPoint setAsDouble(double value);
 
     long getAsLong();
 
     double getAsDouble();
 
-    void setFlags(int flags);
+    ModifiableNumberDataPoint setFlags(int flags);
+
 }

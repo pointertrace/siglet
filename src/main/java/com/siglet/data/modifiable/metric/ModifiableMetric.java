@@ -5,11 +5,13 @@ import com.siglet.data.unmodifiable.metric.UnmodifiableMetric;
 
 public interface ModifiableMetric extends UnmodifiableMetric {
 
-    void setName(String name);
+    ModifiableMetric setName(String name);
 
-    void setDescription(String description);
+    ModifiableMetric setDescription(String description);
 
-    void setUnit(String unit);
+    ModifiableMetric setUnit(String unit);
 
     ModifiableData getData();
+
+    ModifiableGauge getGauge();
 }

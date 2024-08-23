@@ -52,7 +52,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
         return updatable;
     }
 
-    protected A add() {
+    public A add() {
         checkAndPrepareUpdate();
         A newAdapter = createNewAdapter();
         adapters.add(newAdapter);

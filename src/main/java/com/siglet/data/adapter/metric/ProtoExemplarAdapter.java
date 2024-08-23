@@ -2,32 +2,33 @@ package com.siglet.data.adapter.metric;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableExemplar;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
+import io.opentelemetry.proto.trace.v1.Span;
 
-public class ProtoExemplarAdapter implements ModifiableExemplar {
+public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements ModifiableExemplar {
 
-    private final Exemplar protoExemplar;
-
-    private final boolean updatable;
-
-    private boolean updated;
-
-    private Exemplar.Builder protoExamplerBuilder;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
     public ProtoExemplarAdapter(Exemplar protoExemplar, boolean updatable) {
-        this.protoExemplar = protoExemplar;
-        this.updatable = updatable;
+        super(protoExemplar, Exemplar::toBuilder, Exemplar.Builder::build, updatable);
     }
+
+    public ProtoExemplarAdapter(Exemplar.Builder protoExamplarBuilder) {
+        super(protoExamplarBuilder, Exemplar.Builder::build);
+
+    }
+
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoExemplar.getFilteredAttributesList(), updatable);
+            protoAttributesAdapter = new ProtoAttributesAdapter(getValue(Exemplar::getFilteredAttributesList,
+                    Exemplar.Builder::getFilteredAttributesList), isUpdatable());
         }
 
         return protoAttributesAdapter;
@@ -35,107 +36,86 @@ public class ProtoExemplarAdapter implements ModifiableExemplar {
 
     @Override
     public long getTimeUnixNanos() {
-        return protoExamplerBuilder == null ?
-                protoExemplar.getTimeUnixNano() : protoExamplerBuilder.getTimeUnixNano();
+        return getValue(Exemplar::getTimeUnixNano, Exemplar.Builder::getTimeUnixNano);
     }
 
     @Override
     public long getAsLong() {
-        return protoExamplerBuilder == null ?
-                protoExemplar.getAsInt(): protoExamplerBuilder.getAsInt();
+        return getValue(Exemplar::getAsInt, Exemplar.Builder::getAsInt);
     }
 
     @Override
     public double getAsDouble() {
-        return protoExamplerBuilder == null ?
-                protoExemplar.getAsDouble(): protoExamplerBuilder.getAsDouble();
+        return getValue(Exemplar::getAsDouble, Exemplar.Builder::getAsDouble);
     }
 
     @Override
     public long getSpanId() {
-        return AdapterUtils.spanId(protoExamplerBuilder == null ?
-                protoExemplar.getSpanId().toByteArray(): protoExamplerBuilder.getSpanId().toByteArray());
+        return AdapterUtils.spanId(getValue(Exemplar::getSpanId, Exemplar.Builder::getSpanId).toByteArray());
     }
 
     @Override
     public long getTraceIdHigh() {
-        return AdapterUtils.traceIdHigh(protoExamplerBuilder == null ?
-                protoExemplar.getTraceId().toByteArray(): protoExamplerBuilder.getTraceId().toByteArray());
+        return AdapterUtils.traceIdHigh(getValue(Exemplar::getTraceId, Exemplar.Builder::getTraceId).toByteArray());
     }
 
     @Override
     public long getTraceIdLow() {
-        return AdapterUtils.traceIdLow(protoExamplerBuilder == null ?
-                protoExemplar.getTraceId().toByteArray(): protoExamplerBuilder.getTraceId().toByteArray());
+        return AdapterUtils.traceIdLow(getValue(Exemplar::getTraceId, Exemplar.Builder::getTraceId).toByteArray());
     }
 
     @Override
     public byte[] getTraceId() {
-        return protoExamplerBuilder == null ?
-                protoExemplar.getTraceId().toByteArray(): protoExamplerBuilder.getTraceId().toByteArray();
+        return getValue(Exemplar::getTraceId, Exemplar.Builder::getTraceId).toByteArray();
     }
 
     @Override
-    public void setTimeUnixNanos(long timeUnixNanos) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setTimeUnixNano(timeUnixNanos);
+    public ProtoExemplarAdapter setTimeUnixNanos(long timeUnixNanos) {
+        setValue(Exemplar.Builder::setTimeUnixNano, timeUnixNanos);
+        return this;
     }
 
     @Override
-    public void setAsLong(long value) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setAsInt(value);
+    public ProtoExemplarAdapter setAsLong(long value) {
+        setValue(Exemplar.Builder::setAsInt, value);
+        return this;
     }
 
     @Override
-    public void setAsDouble(double value) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setAsDouble(value);
+    public ProtoExemplarAdapter setAsDouble(double value) {
+        setValue(Exemplar.Builder::setAsDouble, value);
+        return this;
     }
 
     @Override
-    public void setSpanId(long spanId) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setSpanId(ByteString.copyFrom(AdapterUtils.spanId(spanId)));
+    public ProtoExemplarAdapter setSpanId(long spanId) {
+        setValue(Exemplar.Builder::setSpanId, ByteString.copyFrom(AdapterUtils.spanId(spanId)));
+        return this;
     }
 
     @Override
-    public void setTraceId(long traceIdHigh, long traceIdLow) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setTraceId(ByteString.copyFrom(AdapterUtils.traceId(traceIdHigh, traceIdLow)));
+    public ProtoExemplarAdapter setTraceId(long traceIdHigh, long traceIdLow) {
+        setValue(Exemplar.Builder::setTraceId, ByteString.copyFrom(AdapterUtils.traceId(traceIdHigh, traceIdLow)));
+        return this;
     }
 
     @Override
-    public void setTraceId(byte[] traceId) {
-        checkAndPrepareUpdate();
-        protoExamplerBuilder.setTraceId(ByteString.copyFrom(traceId));
+    public ProtoExemplarAdapter setTraceId(byte[] traceId) {
+        setValue(Exemplar.Builder::setSpanId, ByteString.copyFrom(traceId));
+        return this;
     }
 
-    private void checkAndPrepareUpdate() {
-        if (!updatable) {
-            throw new SigletError("trying to change a non updatable span");
+    @Override
+    public boolean isUpdated() {
+        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
+    }
+
+    @Override
+    protected void enrich(Exemplar.Builder builder) {
+        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
+            builder.clearFilteredAttributes();
+            builder.addAllFilteredAttributes(protoAttributesAdapter.getUpdated());
         }
-        if (protoExamplerBuilder == null) {
-            protoExamplerBuilder = protoExemplar.toBuilder();
-        }
-        updated = true;
     }
 
-    private boolean attributesUpdated() {
-        return protoAttributesAdapter != null && protoAttributesAdapter.isUpdated();
-    }
-
-    public Exemplar getUpdatedExemplar() {
-        if (!updatable) {
-            return protoExemplar;
-        } else if (!updated && !attributesUpdated()) {
-            return protoExemplar;
-        } else {
-            Exemplar.Builder bld = protoExamplerBuilder != null ? protoExamplerBuilder : protoExemplar.toBuilder();
-            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-                bld.clearFilteredAttributes();
-                bld.addAllFilteredAttributes(protoAttributesAdapter.getUpdated());
-            }
-            return bld.build();
-        }
-    }}
+}

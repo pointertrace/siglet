@@ -1,45 +1,39 @@
 package com.siglet.data.adapter.metric;
 
+import com.siglet.data.adapter.Adapter;
 import com.siglet.data.modifiable.metric.ModifiableGauge;
 import io.opentelemetry.proto.metrics.v1.Gauge;
 
-public class ProtoGaugeAdapter extends ProtoDataAdapter implements ModifiableGauge {
-
-    private final Gauge protoGauge;
-
-    private final boolean updatable;
+public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements ModifiableGauge {
 
     private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
 
     public ProtoGaugeAdapter(Gauge protoGauge, boolean updatable) {
-        this.protoGauge = protoGauge;
-        this.updatable = updatable;
+        super(protoGauge,Gauge::toBuilder,Gauge.Builder::build,updatable);
     }
 
+    public ProtoGaugeAdapter(Gauge.Builder gaugeBuilder) {
+        super(gaugeBuilder, Gauge.Builder::build);
+    }
 
     @Override
     public ProtoNumberDataPointsAdapter getDataPoints() {
         if (protoNumberDataPointsAdapter == null) {
-            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoGauge.getDataPointsList(), updatable);
+            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(
+                    getValue(Gauge::getDataPointsList,Gauge.Builder::getDataPointsList),isUpdatable());
         }
         return protoNumberDataPointsAdapter;
     }
 
-    public Gauge getUpdatedGauge() {
-        if (! updatable) {
-            return protoGauge;
-        } else if (! isUpdated()) {
-            return protoGauge;
-        } else {
-            Gauge.Builder bld = protoGauge.toBuilder();
-            bld.addAllDataPoints(protoNumberDataPointsAdapter.getUpdated());
-            return bld.build();
+    public boolean isUpdated() {
+        return super.isUpdated() || (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated());
+    }
+
+    @Override
+    protected void enrich(Gauge.Builder builder) {
+        if (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated()) {
+            builder.clearDataPoints();
+            builder.addAllDataPoints(protoNumberDataPointsAdapter.getUpdated());
         }
     }
-
-    public boolean isUpdated() {
-        return protoNumberDataPointsAdapter.isUpdated();
-    }
-
-
 }

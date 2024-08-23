@@ -26,12 +26,6 @@ class ProtoGaugeAdapterTest {
                 .setAsInt(3)
                 .build();
 
-        protoExtraNumberDataPoint = NumberDataPoint.newBuilder()
-                .setTimeUnixNano(10)
-                .setStartTimeUnixNano(20)
-                .setAsDouble(30.21)
-                .build();
-
         protoGauge = Gauge.newBuilder()
                 .addDataPoints(protoNumberDataPoint)
                 .build();
@@ -49,13 +43,37 @@ class ProtoGaugeAdapterTest {
     }
 
     @Test
-    public void update_andGet() {
+    public void addNumberDataPoint() {
 
-        protoGaugeAdapter.getDataPoints().add(new ProtoNumberDataPointAdapter(protoExtraNumberDataPoint, true));
+        protoGaugeAdapter.getDataPoints().add()
+                .setTimeUnixNano(100)
+                .setStartTimeUnixNano(200)
+                .setAsDouble(300.31);
 
-        assertSame(protoNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(0));
-        assertSame(protoExtraNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(1));
         assertTrue(protoGaugeAdapter.isUpdated());
+        ProtoNumberDataPointsAdapter dataPoints = protoGaugeAdapter.getDataPoints();
+        assertNotNull(dataPoints);
+        assertEquals(2, dataPoints.getSize());
+
+        protoExtraNumberDataPoint = NumberDataPoint.newBuilder()
+                .setTimeUnixNano(100)
+                .setStartTimeUnixNano(200)
+                .setAsDouble(300.31)
+                .build();
+        assertEquals(protoExtraNumberDataPoint, dataPoints.getUpdated().get(1));
+    }
+
+    @Test
+    public void removeDataPoint() {
+
+        protoGaugeAdapter.getDataPoints().remove(0);
+
+        assertTrue(protoGaugeAdapter.isUpdated());
+        ProtoNumberDataPointsAdapter dataPoints = protoGaugeAdapter.getDataPoints();
+        assertNotNull(dataPoints);
+        assertEquals(0, dataPoints.getSize());
+
+        assertTrue(dataPoints.getUpdated().isEmpty());
 
     }
 
@@ -67,7 +85,7 @@ class ProtoGaugeAdapterTest {
 
         protoGaugeAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(0));
-        assertSame(protoGauge, protoGaugeAdapter.getUpdatedGauge());
+        assertSame(protoGauge, protoGaugeAdapter.getUpdated());
         assertFalse(protoGaugeAdapter.isUpdated());
 
     }
@@ -78,9 +96,8 @@ class ProtoGaugeAdapterTest {
         protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge, false);
 
 
-        assertThrowsExactly(SigletError.class,() -> protoGaugeAdapter.getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class,() -> protoGaugeAdapter.getDataPoints().add(
-                new ProtoNumberDataPointAdapter(protoExtraNumberDataPoint, false)));
+        assertThrowsExactly(SigletError.class, () -> protoGaugeAdapter.getDataPoints().remove(0));
+        assertThrowsExactly(SigletError.class, () -> protoGaugeAdapter.getDataPoints().add());
 
     }
 

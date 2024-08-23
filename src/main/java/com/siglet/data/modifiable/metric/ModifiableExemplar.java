@@ -7,15 +7,15 @@ public interface ModifiableExemplar extends UnmodifiableExemplar {
 
     ModifiableAttributes getAttributes();
 
-    void setTimeUnixNanos(long timeUnixNanos);
+    ModifiableExemplar setTimeUnixNanos(long timeUnixNanos);
 
-    void setAsLong(long value);
+    ModifiableExemplar setAsLong(long value);
 
-    void setAsDouble(double value);
+    ModifiableExemplar setAsDouble(double value);
 
-    void setSpanId(long spanId);
+    ModifiableExemplar setSpanId(long spanId);
 
-    void setTraceId(long traceIdHigh, long traceIdLow);
+    ModifiableExemplar setTraceId(long traceIdHigh, long traceIdLow);
 
-    void setTraceId(byte[] traceId);
+    ModifiableExemplar setTraceId(byte[] traceId);
 }
