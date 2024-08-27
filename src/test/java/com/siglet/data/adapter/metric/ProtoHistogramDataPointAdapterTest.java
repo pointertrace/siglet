@@ -103,7 +103,8 @@ class ProtoHistogramDataPointAdapterTest {
     @Test
     public void setAndGet() {
 
-        protoHistogramDataPointAdapter.setFlags(100)
+        protoHistogramDataPointAdapter
+                .setFlags(100)
                 .setTimeUnixNano(200)
                 .setStartTimeUnixNano(300)
                 .setCount(100)
@@ -197,19 +198,32 @@ class ProtoHistogramDataPointAdapterTest {
 
         assertSame(protoHistogramDataPoint, histogramDataPoint);
     }
-/*
+
     @Test
     public void getUpdated_onlyNumberDataPointAdapterUpdated() {
 
-        protoHistogramDataPointAdapter.setTimeUnixNano(2500);
-        protoHistogramDataPointAdapter.setStartTimeUnixNano(3500);
-        protoHistogramDataPointAdapter.setFlags(100);
-        protoHistogramDataPointAdapter.setAsDouble(1.1);
+        protoHistogramDataPointAdapter
+                .setFlags(100)
+                .setTimeUnixNano(200)
+                .setStartTimeUnixNano(300)
+                .setCount(100)
+                .setMin(110.1)
+                .setMax(120.2)
+                .setSum(130.3)
+                .addBucketCount(140)
+                .addExplicitBound(150.15);
 
-        assertEquals(2500, protoHistogramDataPointAdapter.getTimeUnixNano());
-        assertEquals(3500, protoHistogramDataPointAdapter.getStartTimeUnixNano());
         assertEquals(100, protoHistogramDataPointAdapter.getFlags());
-        assertEquals(1.1, protoHistogramDataPointAdapter.getAsDouble());
+        assertEquals(200, protoHistogramDataPointAdapter.getTimeUnixNano());
+        assertEquals(300, protoHistogramDataPointAdapter.getStartTimeUnixNano());
+        assertEquals(100, protoHistogramDataPointAdapter.getCount());
+        assertEquals(110.1, protoHistogramDataPointAdapter.getMin());
+        assertEquals(120.2, protoHistogramDataPointAdapter.getMax());
+        assertEquals(130.3, protoHistogramDataPointAdapter.getSum());
+        assertEquals(2, protoHistogramDataPointAdapter.getBucketCounts().size());
+        assertEquals(List.of(14L, 140L), protoHistogramDataPointAdapter.getBucketCounts());
+        assertEquals(2, protoHistogramDataPointAdapter.getExplicitBounds().size());
+        assertEquals(List.of(15.5, 150.15), protoHistogramDataPointAdapter.getExplicitBounds());
 
         List<KeyValue> actualAttributes = protoHistogramDataPointAdapter.getAttributes().getUpdated();
 
@@ -227,7 +241,6 @@ class ProtoHistogramDataPointAdapterTest {
 
 
     }
-
     @Test
     public void getUpdated_onlyAttributesUpdated() {
 
@@ -237,12 +250,19 @@ class ProtoHistogramDataPointAdapterTest {
         attributes.set("new-key", "new-key-value");
 
 
-        NumberDataPoint actual = protoHistogramDataPointAdapter.getUpdated();
+        HistogramDataPoint actual = protoHistogramDataPointAdapter.getUpdated();
 
-        assertEquals(1, actual.getFlags());
-        assertEquals(1, actual.getTimeUnixNano());
-        assertEquals(2, actual.getStartTimeUnixNano());
-        assertEquals(3, actual.getAsInt());
+        assertEquals(1, protoHistogramDataPointAdapter.getFlags());
+        assertEquals(1, protoHistogramDataPointAdapter.getTimeUnixNano());
+        assertEquals(2, protoHistogramDataPointAdapter.getStartTimeUnixNano());
+        assertEquals(10, protoHistogramDataPointAdapter.getCount());
+        assertEquals(11.1, protoHistogramDataPointAdapter.getMin());
+        assertEquals(12.2, protoHistogramDataPointAdapter.getMax());
+        assertEquals(13.3, protoHistogramDataPointAdapter.getSum());
+        assertEquals(1, protoHistogramDataPointAdapter.getBucketCounts().size());
+        assertEquals(List.of(14L), protoHistogramDataPointAdapter.getBucketCounts());
+        assertEquals(1, protoHistogramDataPointAdapter.getExplicitBounds().size());
+        assertEquals(List.of(15.5), protoHistogramDataPointAdapter.getExplicitBounds());
 
         List<Exemplar> actualExemplars = actual.getExemplarsList();
 
@@ -265,6 +285,4 @@ class ProtoHistogramDataPointAdapterTest {
         assertEquals("new-key-value", actualAttributes.get(2).getValue().getStringValue());
 
     }
-
- */
 }

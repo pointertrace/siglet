@@ -2,7 +2,7 @@ package com.siglet.data.unmodifiable.metric;
 
 public interface UnmodifiableExponentialHistogram {
 
-    UnmodifiableNumberDataPoints getDataPoints();
+    UnmodifiableExponentialHistogramDataPoints getDataPoints();
 
     AggregationTemporality getAggregationTemporality();
 

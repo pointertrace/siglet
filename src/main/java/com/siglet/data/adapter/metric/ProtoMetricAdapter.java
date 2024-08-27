@@ -13,7 +13,7 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoMetricAdapter extends Adapter<Metric,Metric.Builder> implements ModifiableMetric, Clonable {
+public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements ModifiableMetric, Clonable {
 
 
     private Resource protoResource;
@@ -28,17 +28,21 @@ public class ProtoMetricAdapter extends Adapter<Metric,Metric.Builder> implement
 
     private ProtoSumAdapter protoSumAdapter;
 
+    private ProtoHistogramAdapter protoHistogramAdapter;
+
+    private ProtoExponentialHistogramAdapter protoExponentialHistogramAdapter;
+
 
     public ProtoMetricAdapter(Metric protoMetric, Resource protoResourceAdapter,
                               InstrumentationScope protoInstrumentationScopeAdapter, boolean updatable) {
-        super(protoMetric,Metric::toBuilder,Metric.Builder::build,updatable);
+        super(protoMetric, Metric::toBuilder, Metric.Builder::build, updatable);
         this.protoResource = protoResourceAdapter;
         this.protoInstrumentationScope = protoInstrumentationScopeAdapter;
     }
 
     @Override
     public String getName() {
-        return getValue(Metric::getName,Metric.Builder::getName);
+        return getValue(Metric::getName, Metric.Builder::getName);
     }
 
     @Override
@@ -50,18 +54,18 @@ public class ProtoMetricAdapter extends Adapter<Metric,Metric.Builder> implement
 
     @Override
     public String getDescription() {
-        return getValue(Metric::getDescription,Metric.Builder::getDescription);
+        return getValue(Metric::getDescription, Metric.Builder::getDescription);
     }
 
     @Override
     public ProtoMetricAdapter setDescription(String description) {
-        setValue(Metric.Builder::setDescription,description);
+        setValue(Metric.Builder::setDescription, description);
         return this;
     }
 
     @Override
     public String getUnit() {
-        return getValue(Metric::getUnit,Metric.Builder::getUnit);
+        return getValue(Metric::getUnit, Metric.Builder::getUnit);
     }
 
     @Override
@@ -78,43 +82,78 @@ public class ProtoMetricAdapter extends Adapter<Metric,Metric.Builder> implement
             }
             return protoGaugeAdapter;
         } else if (hasSum()) {
-            if (protoSumAdapter == null){
-                protoSumAdapter = new ProtoSumAdapter(getMessage().getSum(),isUpdatable());
+            if (protoSumAdapter == null) {
+                protoSumAdapter = new ProtoSumAdapter(getMessage().getSum(), isUpdatable());
             }
             return protoSumAdapter;
+        } else if (hasHistogram()) {
+            if (protoHistogramAdapter == null) {
+                protoHistogramAdapter = new ProtoHistogramAdapter(getMessage().getHistogram(), isUpdatable());
+            }
+            return protoHistogramAdapter;
+        } else if (hasExponentialHistogram()) {
+            if (protoExponentialHistogramAdapter == null) {
+                protoExponentialHistogramAdapter =
+                new ProtoExponentialHistogramAdapter(getMessage().getExponentialHistogram(), isUpdatable());
+            }
+            return protoExponentialHistogramAdapter;
         }
         throw new IllegalStateException("not implemented!");
     }
 
     @Override
     public boolean hasGauge() {
-        return getValue(Metric::hasGauge,Metric.Builder::hasGauge);
+        return getValue(Metric::hasGauge, Metric.Builder::hasGauge);
     }
 
     @Override
     public ProtoGaugeAdapter getGauge() {
-        if (! hasGauge()) {
+        if (!hasGauge()) {
             throw new SigletError("data is not a gauge ");
         } else {
             return (ProtoGaugeAdapter) getData();
         }
     }
 
-    public boolean hasSum(){
-        return getValue(Metric::hasSum,Metric.Builder::hasSum);
+    public boolean hasSum() {
+        return getValue(Metric::hasSum, Metric.Builder::hasSum);
     }
 
-    public ProtoSumAdapter getSum(){
-        if (! hasGauge()) {
+    public ProtoSumAdapter getSum() {
+        if (!hasGauge()) {
             throw new SigletError("data is not a sum ");
         } else {
-            return (ProtoSumAdapter)  getData();
+            return (ProtoSumAdapter) getData();
+        }
+    }
+
+    public boolean hasHistogram() {
+        return getValue(Metric::hasHistogram, Metric.Builder::hasHistogram);
+    }
+
+    public ProtoHistogramAdapter getHistogram() {
+        if (!hasHistogram()) {
+            throw new SigletError("data is not a histogram ");
+        } else {
+            return (ProtoHistogramAdapter) getData();
+        }
+    }
+
+    public boolean hasExponentialHistogram() {
+        return getValue(Metric::hasExponentialHistogram, Metric.Builder::hasExponentialHistogram);
+    }
+
+    public ProtoExponentialHistogramAdapter getExponentialHistogram() {
+        if (!hasExponentialHistogram()) {
+            throw new SigletError("data is not a exponential histogram ");
+        } else {
+            return (ProtoExponentialHistogramAdapter) getData();
         }
     }
 
     public ProtoResourceAdapter getProtoResourceAdapter() {
-        if (protoResourceAdapter != null){
-            protoResourceAdapter = new ProtoResourceAdapter(protoResource,isUpdatable());
+        if (protoResourceAdapter != null) {
+            protoResourceAdapter = new ProtoResourceAdapter(protoResource, isUpdatable());
         }
         return protoResourceAdapter;
     }
@@ -122,7 +161,7 @@ public class ProtoMetricAdapter extends Adapter<Metric,Metric.Builder> implement
     public ProtoInstrumentationScopeAdapter getProtoInstrumentationScopeAdapter() {
         if (protoInstrumentationScopeAdapter != null) {
             protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope,
-            isUpdatable());
+                    isUpdatable());
         }
         return protoInstrumentationScopeAdapter;
     }

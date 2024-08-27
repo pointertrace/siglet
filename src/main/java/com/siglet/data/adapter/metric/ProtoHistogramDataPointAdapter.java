@@ -3,10 +3,9 @@ package com.siglet.data.adapter.metric;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableHistogramDataPoint;
-import com.siglet.data.modifiable.metric.ModifiableNumberDataPoint;
 import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
-import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, HistogramDataPoint.Builder>
@@ -61,7 +60,8 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     @Override
     public List<Long> getBucketCounts() {
-        return getValue(HistogramDataPoint::getBucketCountsList, HistogramDataPoint.Builder::getBucketCountsList);
+        return new ArrayList(getValue(HistogramDataPoint::getBucketCountsList,
+                HistogramDataPoint.Builder::getBucketCountsList));
     }
 
     @Override
@@ -164,7 +164,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     @Override
     public ModifiableHistogramDataPoint setMax(Double max) {
-        setValue(HistogramDataPoint.Builder::setMax,max);
+        setValue(HistogramDataPoint.Builder::setMax, max);
         return this;
     }
 

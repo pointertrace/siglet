@@ -16,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProtoLinkAdapterTest {
 
-    Span.Link protoLink;
+    private Span.Link protoLink;
+
     private ProtoLinkAdapter protoLinkAdapter;
 
     @BeforeEach
@@ -51,6 +52,7 @@ class ProtoLinkAdapterTest {
         assertEquals(1, protoLinkAdapter.getFlags());
         assertEquals("trace-state", protoLinkAdapter.getTraceState());
         assertEquals(2, protoLinkAdapter.getDroppedAttributesCount());
+        assertFalse(protoLinkAdapter.isUpdated());
 
     }
 

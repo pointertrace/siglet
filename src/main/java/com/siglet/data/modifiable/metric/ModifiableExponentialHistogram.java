@@ -3,9 +3,9 @@ package com.siglet.data.modifiable.metric;
 import com.siglet.data.unmodifiable.metric.AggregationTemporality;
 import com.siglet.data.unmodifiable.metric.UnmodifiableExponentialHistogram;
 
-public interface ModifiableExponentialHistogram extends UnmodifiableExponentialHistogram {
+public interface ModifiableExponentialHistogram extends ModifiableData, UnmodifiableExponentialHistogram {
 
-    ModifiableNumberDataPoints getDataPoints();
+    ModifiableExponentialHistogramDataPoints getDataPoints();
 
     ModifiableExponentialHistogram setAggregationTemporality(AggregationTemporality aggregationTemporality);
 

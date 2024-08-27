@@ -2,8 +2,6 @@ package com.siglet.data.unmodifiable.metric;
 
 import com.siglet.data.modifiable.ModifiableAttributes;
 import com.siglet.data.modifiable.metric.ModifiableExemplars;
-import com.siglet.data.modifiable.metric.ModifiableHistogramDataPoint;
-import com.siglet.data.unmodifiable.UnmodifiableAttributes;
 
 import java.util.List;
 
