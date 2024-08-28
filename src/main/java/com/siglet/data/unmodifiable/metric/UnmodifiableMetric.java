@@ -17,4 +17,16 @@ public interface UnmodifiableMetric {
     boolean hasSum();
 
     UnmodifiableSum getSum();
+
+    boolean hasHistogram();
+
+    UnmodifiableHistogram getHistogram();
+
+    boolean hasExponentialHistogram();
+
+    UnmodifiableExponentialHistogram getExponentialHistogram();
+
+    boolean hasSummary();
+
+    UnmodifiableSummary getSummary();
 }

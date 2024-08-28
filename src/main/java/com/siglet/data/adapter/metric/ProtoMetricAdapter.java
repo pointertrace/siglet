@@ -1,10 +1,8 @@
 package com.siglet.data.adapter.metric;
 
-import com.google.protobuf.Message;
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
 import com.siglet.data.adapter.Adapter;
-import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.common.ProtoInstrumentationScopeAdapter;
 import com.siglet.data.adapter.common.ProtoResourceAdapter;
 import com.siglet.data.modifiable.metric.ModifiableData;
@@ -32,12 +30,14 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
     private ProtoExponentialHistogramAdapter protoExponentialHistogramAdapter;
 
+    private ProtoSummaryAdapter protoSummaryAdapter;
 
-    public ProtoMetricAdapter(Metric protoMetric, Resource protoResourceAdapter,
-                              InstrumentationScope protoInstrumentationScopeAdapter, boolean updatable) {
+
+    public ProtoMetricAdapter(Metric protoMetric, Resource protoResource,
+                              InstrumentationScope protoInstrumentationScope, boolean updatable) {
         super(protoMetric, Metric::toBuilder, Metric.Builder::build, updatable);
-        this.protoResource = protoResourceAdapter;
-        this.protoInstrumentationScope = protoInstrumentationScopeAdapter;
+        this.protoResource = protoResource;
+        this.protoInstrumentationScope = protoInstrumentationScope;
     }
 
     @Override
@@ -94,11 +94,16 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         } else if (hasExponentialHistogram()) {
             if (protoExponentialHistogramAdapter == null) {
                 protoExponentialHistogramAdapter =
-                new ProtoExponentialHistogramAdapter(getMessage().getExponentialHistogram(), isUpdatable());
+                        new ProtoExponentialHistogramAdapter(getMessage().getExponentialHistogram(), isUpdatable());
+            }
+            return protoExponentialHistogramAdapter;
+        } else if (hasSummary()) {
+            if (protoSummaryAdapter == null) {
+                protoSummaryAdapter = new ProtoSummaryAdapter(getMessage().getSummary(), isUpdatable());
             }
             return protoExponentialHistogramAdapter;
         }
-        throw new IllegalStateException("not implemented!");
+        throw new SigletError("invalid metric type!");
     }
 
     @Override
@@ -148,6 +153,18 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
             throw new SigletError("data is not a exponential histogram ");
         } else {
             return (ProtoExponentialHistogramAdapter) getData();
+        }
+    }
+
+    public boolean hasSummary() {
+        return getValue(Metric::hasSummary, Metric.Builder::hasSummary);
+    }
+
+    public ProtoSummaryAdapter getSummary() {
+        if (!hasSummary()) {
+            throw new SigletError("data is not a summary ");
+        } else {
+            return (ProtoSummaryAdapter) getData();
         }
     }
 

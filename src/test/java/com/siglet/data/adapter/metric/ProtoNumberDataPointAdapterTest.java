@@ -1,10 +1,8 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.metric;
 
 import com.google.protobuf.ByteString;
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
-import com.siglet.data.adapter.metric.ProtoExemplarAdapter;
-import com.siglet.data.adapter.metric.ProtoExemplarsAdapter;
-import com.siglet.data.adapter.metric.ProtoNumberDataPointAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.Exemplar;

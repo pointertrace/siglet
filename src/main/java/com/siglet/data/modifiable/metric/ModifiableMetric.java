@@ -14,4 +14,12 @@ public interface ModifiableMetric extends UnmodifiableMetric {
     ModifiableData getData();
 
     ModifiableGauge getGauge();
+
+    ModifiableSum getSum();
+
+    ModifiableHistogram getHistogram();
+
+    ModifiableExponentialHistogram getExponentialHistogram();
+
+    ModifiableSummary getSummary();
 }

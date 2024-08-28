@@ -1,10 +1,9 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
-import com.siglet.data.adapter.trace.ProtoLinkAdapter;
-import com.siglet.data.adapter.trace.ProtoLinksAdapter;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

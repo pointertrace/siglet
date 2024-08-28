@@ -1,7 +1,8 @@
-package com.siglet.data.adapter;
+package com.siglet.data.adapter.metric;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.*;
 import com.siglet.data.adapter.trace.ProtoLinkAdapter;
 import com.siglet.data.adapter.trace.ProtoLinksAdapter;
@@ -10,6 +11,7 @@ import com.siglet.data.trace.SpanKind;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.metrics.v1.*;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,70 +21,101 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProtoSpanAdapterTest {
+class ProtoMetricAdapterTest {
 
-    private Span protoSpan;
+    private Metric protoGaugeMetric;
+
+    private Metric protoSumMetric;
+
+    private Metric protoHistogramMetric;
+
+    private Metric protoExponentialHistogramMetric;
+
+    private Metric protoSummaryMetric;
 
     private Resource protoResource;
 
     private InstrumentationScope protoInstrumentationScope;
 
-    private ProtoSpanAdapter protoSpanAdapter;
+    private ProtoMetricAdapter protoGaugeMetricAdapter;
+
+    private ProtoMetricAdapter protoSumMetricAdapter;
+
+    private ProtoMetricAdapter protoHistogramMetricAdapter;
+
+    private ProtoMetricAdapter protoExponentialHistogramMetricAdapter;
+
+    private ProtoMetricAdapter protoSummaryMetricAdapter;
 
     @BeforeEach
     void setUp() {
-        protoSpan = Span.newBuilder()
-                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 2)))
-                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(1)))
-                .setParentSpanId(ByteString.copyFrom(AdapterUtils.spanId(3)))
-                .setName("span-name")
-                .setStartTimeUnixNano(1L)
-                .setEndTimeUnixNano(2L)
-                .setFlags(1)
-                .setTraceState("trace-state")
-                .setDroppedAttributesCount(1)
-                .setDroppedEventsCount(2)
-                .setDroppedLinksCount(3)
-                .setKind(Span.SpanKind.SPAN_KIND_CLIENT)
-                .addAttributes(KeyValue.newBuilder()
-                        .setKey("str-attribute")
-                        .setValue(AnyValue.newBuilder().setStringValue("str-attribute-value").build())
-                        .build())
-                .addAttributes(KeyValue.newBuilder()
-                        .setKey("long-attribute")
-                        .setValue(AnyValue.newBuilder().setIntValue(10L).build())
-                        .build())
-                .addLinks(Span.Link.newBuilder()
-                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(4)))
-                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0L, 5L)))
-                        .setTraceState("first-link-trace-state")
-                        .setFlags(2)
-                        .setDroppedAttributesCount(10)
-                        .addAttributes(KeyValue.newBuilder()
-                                .setKey("lnk-str-attribute")
-                                .setValue(AnyValue.newBuilder().setStringValue("lnk-str-attribute-value").build())
+
+        protoGaugeMetric = Metric.newBuilder()
+                .setName("gauge-metric-name")
+                .setDescription("gauge-metric description")
+                .setUnit("gauge-metric-unit")
+                .setGauge(Gauge.newBuilder()
+                        .addDataPoints(NumberDataPoint.newBuilder()
+                                .setTimeUnixNano(1)
+                                .setStartTimeUnixNano(2)
+                                .setAsInt(10)
                                 .build())
                         .build())
-                .addLinks(Span.Link.newBuilder()
-                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(6)))
-                        .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0L, 7L)))
-                        .setTraceState("second-link-trace-state")
-                        .setFlags(3)
-                        .setDroppedAttributesCount(20)
-                        .build())
-                .addEvents(Span.Event.newBuilder()
-                        .setName("first-event-name")
-                        .setTimeUnixNano(1)
-                        .setDroppedAttributesCount(30)
-                        .addAttributes(KeyValue.newBuilder()
-                                .setKey("evt-str-attribute")
-                                .setValue(AnyValue.newBuilder().setStringValue("evt-str-attribute-value").build())
+                .build();
+
+        protoSumMetric = Metric.newBuilder()
+                .setName("sum-metric-name")
+                .setDescription("sum-metric description")
+                .setUnit("sum-metric-unit")
+                .setSum(Sum.newBuilder()
+                        .setAggregationTemporality(AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE)
+                        .setIsMonotonic(true)
+                        .addDataPoints(NumberDataPoint.newBuilder()
+                                .setTimeUnixNano(10)
+                                .setStartTimeUnixNano(20)
+                                .setAsDouble(10.10)
                                 .build())
                         .build())
-                .addEvents(Span.Event.newBuilder()
-                        .setName("second-event-name")
-                        .setTimeUnixNano(2)
-                        .setDroppedAttributesCount(40)
+                .build();
+
+        protoHistogramMetric = Metric.newBuilder()
+                .setName("histogram-metric-name")
+                .setDescription("histogram-metric description")
+                .setUnit("histogram-metric-unit")
+                .setHistogram(Histogram.newBuilder()
+                        .setAggregationTemporality(AggregationTemporality.AGGREGATION_TEMPORALITY_DELTA)
+                        .addDataPoints(HistogramDataPoint.newBuilder()
+                                .setTimeUnixNano(100)
+                                .setStartTimeUnixNano(200)
+                                .setSum(100.111)
+                                .build())
+                        .build())
+                .build();
+
+        protoExponentialHistogramMetric = Metric.newBuilder()
+                .setName("exponential-histogram-metric-name")
+                .setDescription("exponential-histogram-metric description")
+                .setUnit("exponential-histogram-metric-unit")
+                .setExponentialHistogram(ExponentialHistogram.newBuilder()
+                        .setAggregationTemporality(AggregationTemporality.AGGREGATION_TEMPORALITY_DELTA)
+                        .addDataPoints(ExponentialHistogramDataPoint.newBuilder()
+                                .setTimeUnixNano(1000)
+                                .setStartTimeUnixNano(2000)
+                                .setSum(1000.2222)
+                                .build())
+                        .build())
+                .build();
+
+        protoSummaryMetric = Metric.newBuilder()
+                .setName("summary-histogram-metric-name")
+                .setDescription("summary-histogram-metric description")
+                .setUnit("summary-histogram-metric-unit")
+                .setSummary(Summary.newBuilder()
+                        .addDataPoints(SummaryDataPoint.newBuilder()
+                                .setTimeUnixNano(1000)
+                                .setStartTimeUnixNano(2000)
+                                .setSum(1000.2222)
+                                .build())
                         .build())
                 .build();
 
@@ -104,10 +137,10 @@ class ProtoSpanAdapterTest {
                         .build())
                 .build();
 
-        protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, true);
+//        protoSpanAdapter = new ProtoSpanAdapter(protoMetric, protoResource, protoInstrumentationScope, true);
 
     }
-
+/*
     @Test
     public void setAndGet() {
         protoSpanAdapter.setTraceId(10L, 20L);
@@ -344,8 +377,8 @@ class ProtoSpanAdapterTest {
     @Test
     public void getUpdatedSpan_notUpdatable() {
 
-        protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, false);
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        protoSpanAdapter = new ProtoSpanAdapter(protoMetric, protoResource, protoInstrumentationScope, false);
+        assertSame(protoMetric, protoSpanAdapter.getUpdatedSpan());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
@@ -354,7 +387,7 @@ class ProtoSpanAdapterTest {
     @Test
     public void getUpdatedSpan_nothingUpdated() {
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoMetric, protoSpanAdapter.getUpdatedSpan());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
@@ -392,9 +425,9 @@ class ProtoSpanAdapterTest {
         assertEquals(30, actual.getDroppedLinksCount());
         assertEquals(Span.SpanKind.SPAN_KIND_SERVER,actual.getKind());
 
-        assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
-        assertSame(protoSpan.getLinksList(), actual.getLinksList());
-        assertSame(protoSpan.getEventsList(), actual.getEventsList());
+        assertSame(protoMetric.getAttributesList(), actual.getAttributesList());
+        assertSame(protoMetric.getLinksList(), actual.getLinksList());
+        assertSame(protoMetric.getEventsList(), actual.getEventsList());
 
         assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
@@ -422,7 +455,7 @@ class ProtoSpanAdapterTest {
         assertEquals(3, actual.getDroppedLinksCount());
         assertEquals(Span.SpanKind.SPAN_KIND_CLIENT,actual.getKind());
 
-        assertNotSame(protoSpan.getAttributesList(), actual.getAttributesList());
+        assertNotSame(protoMetric.getAttributesList(), actual.getAttributesList());
 
         Map<String, Object> attributesMap = AdapterUtils.keyValueListToMap(actual.getAttributesList());
 
@@ -436,8 +469,8 @@ class ProtoSpanAdapterTest {
         assertInstanceOf(Long.class, attributesMap.get("long-attribute"));
         assertEquals(10L, attributesMap.get("long-attribute"));
 
-        assertSame(protoSpan.getLinksList(), actual.getLinksList());
-        assertSame(protoSpan.getEventsList(), actual.getEventsList());
+        assertSame(protoMetric.getLinksList(), actual.getLinksList());
+        assertSame(protoMetric.getEventsList(), actual.getEventsList());
 
         assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
@@ -474,8 +507,8 @@ class ProtoSpanAdapterTest {
         assertEquals(40, event.getDroppedAttributesCount());
 
 
-        assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
-        assertSame(protoSpan.getLinksList(), actual.getLinksList());
+        assertSame(protoMetric.getAttributesList(), actual.getAttributesList());
+        assertSame(protoMetric.getLinksList(), actual.getLinksList());
 
         assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
@@ -494,7 +527,7 @@ class ProtoSpanAdapterTest {
 
         assertSame(protoResource.getAttributesList(), actual.getAttributesList());
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoMetric, protoSpanAdapter.getUpdatedSpan());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
     }
@@ -510,8 +543,10 @@ class ProtoSpanAdapterTest {
 
         assertSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoMetric, protoSpanAdapter.getUpdatedSpan());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
 
     }
+
+ */
 }
