@@ -101,7 +101,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
             if (protoSummaryAdapter == null) {
                 protoSummaryAdapter = new ProtoSummaryAdapter(getMessage().getSummary(), isUpdatable());
             }
-            return protoExponentialHistogramAdapter;
+            return protoSummaryAdapter;
         }
         throw new SigletError("invalid metric type!");
     }
@@ -125,7 +125,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public ProtoSumAdapter getSum() {
-        if (!hasGauge()) {
+        if (!hasSum()) {
             throw new SigletError("data is not a sum ");
         } else {
             return (ProtoSumAdapter) getData();
