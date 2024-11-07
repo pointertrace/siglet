@@ -1,6 +1,5 @@
 package com.siglet.data.adapter.common;
 
-import com.google.protobuf.Message;
 import com.siglet.data.adapter.AdapterList;
 import com.siglet.data.modifiable.ModifiableEvents;
 import io.opentelemetry.proto.trace.v1.Span;

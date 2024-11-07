@@ -12,8 +12,8 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
         super(protoGauge,Gauge::toBuilder,Gauge.Builder::build,updatable);
     }
 
-    public ProtoGaugeAdapter(Gauge.Builder gaugeBuilder) {
-        super(gaugeBuilder, Gauge.Builder::build);
+    public ProtoGaugeAdapter() {
+        super(Gauge.newBuilder(), Gauge.Builder::build);
     }
 
     @Override

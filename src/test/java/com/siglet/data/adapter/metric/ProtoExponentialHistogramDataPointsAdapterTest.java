@@ -2,7 +2,6 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.SigletError;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
-import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

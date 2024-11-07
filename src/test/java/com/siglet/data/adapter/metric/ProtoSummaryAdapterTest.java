@@ -1,8 +1,6 @@
 package com.siglet.data.adapter.metric;
 
 import com.siglet.SigletError;
-import io.opentelemetry.proto.metrics.v1.Gauge;
-import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import io.opentelemetry.proto.metrics.v1.Summary;
 import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 import org.junit.jupiter.api.BeforeEach;

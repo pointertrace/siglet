@@ -4,30 +4,29 @@ import com.siglet.data.modifiable.ModifiableAttributes;
 import com.siglet.data.modifiable.ModifiableEvents;
 import com.siglet.data.modifiable.ModifiableInstrumentationScope;
 import com.siglet.data.modifiable.ModifiableResource;
-import com.siglet.data.modifiable.trace.ModifiableLinks;
 import com.siglet.data.trace.SpanKind;
 import com.siglet.data.unmodifiable.trace.UnmodifiableSpan;
 
 public interface ModifiableSpan extends UnmodifiableSpan {
 
 
-    void setTraceId(long high, long low);
+    ModifiableSpan setTraceId(long high, long low);
 
-    void setTraceId(byte[] traceId);
+    ModifiableSpan setTraceId(byte[] traceId);
 
-    void setSpanId(long spanId);
+    ModifiableSpan setSpanId(long spanId);
 
-    void setParentSpanId(long parentSpanId);
+    ModifiableSpan setParentSpanId(long parentSpanId);
 
-    void setTraceState(String traceState);
+    ModifiableSpan setTraceState(String traceState);
 
-    void setName(String name);
+    ModifiableSpan setName(String name);
 
-    void setStartTimeUnixNano(long startUnixNano);
+    ModifiableSpan setStartTimeUnixNano(long startUnixNano);
 
-    void setEndTimeUnixNano(long endUnixNano);
+    ModifiableSpan setEndTimeUnixNano(long endUnixNano);
 
-    void setKind(SpanKind spanKind);
+    ModifiableSpan setKind(SpanKind spanKind);
 
     ModifiableAttributes getAttributes();
 
@@ -39,11 +38,11 @@ public interface ModifiableSpan extends UnmodifiableSpan {
 
     ModifiableInstrumentationScope getInstrumentationScope();
 
-    void setFlags(int flags);
+    ModifiableSpan setFlags(int flags);
 
-    void setDroppedAttributesCount(int droppedAttributesCount);
+    ModifiableSpan setDroppedAttributesCount(int droppedAttributesCount);
 
-    void setDroppedEventsCount(int droppedEventsCount);
+    ModifiableSpan setDroppedEventsCount(int droppedEventsCount);
 
-    void setDroppedLinksCount(int droppedLinksCount);
+    ModifiableSpan setDroppedLinksCount(int droppedLinksCount);
 }

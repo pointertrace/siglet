@@ -3,7 +3,6 @@ package com.siglet.config.item.repository.routecreator;
 import com.siglet.SigletError;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.MulticastDefinition;
 
 public class MulticastRouteCreator implements RouteCreator {
@@ -15,7 +14,7 @@ public class MulticastRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addReceiver(String uri) {
+    public RouteCreator addReceiver(String uri, String routeName) {
         throw new SigletError("cannot be called from a MulticastRouteCreator");
     }
 

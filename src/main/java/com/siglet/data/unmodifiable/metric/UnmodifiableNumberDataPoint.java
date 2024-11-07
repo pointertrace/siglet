@@ -14,5 +14,13 @@ public interface UnmodifiableNumberDataPoint {
 
     int getFlags();
 
+    boolean hasDoubleValue();
 
+    boolean hasLongValue();
+
+    long getAsLong();
+
+    double getAsDouble();
+
+    Object getValue();
 }

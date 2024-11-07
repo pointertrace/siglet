@@ -4,7 +4,6 @@ import com.siglet.SigletError;
 import com.siglet.data.Clonable;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.modifiable.trace.ModifiableTrace;
-import com.siglet.data.unmodifiable.trace.UnmodifiableSpan;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,17 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
+public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clonable {
 
     private final boolean updatable;
 
-    private final ModifiableSpan firstSpan;
+    private final ProtoSpanAdapter firstSpan;
 
-    private final Map<Long, ModifiableSpan> spansBySpanId = new HashMap<>();
+    private final Map<Long, ProtoSpanAdapter> spansBySpanId = new HashMap<>();
 
-    private final List<ModifiableSpan> spans = new ArrayList<>();
+    private final List<ProtoSpanAdapter> spans = new ArrayList<>();
 
-    public ProtoTraceAdapter(ModifiableSpan firstSpan, boolean updatable) {
+    public ProtoTraceAdapter(ProtoSpanAdapter firstSpan, boolean updatable) {
         this.firstSpan = firstSpan;
         this.spansBySpanId.put(firstSpan.getSpanId(), firstSpan);
         this.spans.add(firstSpan);
@@ -45,10 +44,11 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
     }
 
     @Override
-    public void add(ModifiableSpan span) {
+    public ProtoTraceAdapter add(ProtoSpanAdapter span) {
         checkUpdate();
         spansBySpanId.put(span.getSpanId(), span);
         spans.add(span);
+        return this;
     }
 
     @Override
@@ -58,12 +58,12 @@ public class ProtoTraceAdapter implements ModifiableTrace, Clonable {
     }
 
     @Override
-    public ModifiableSpan get(long spanId) {
+    public ProtoSpanAdapter get(long spanId) {
         return spansBySpanId.get(spanId);
     }
 
     @Override
-    public UnmodifiableSpan getAt(int index) {
+    public ProtoSpanAdapter getAt(int index) {
         return spans.get(index);
     }
 

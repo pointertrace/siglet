@@ -1,12 +1,19 @@
 package com.siglet.camel.component;
 
+import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.adapter.trace.ProtoTraceAdapter;
 import io.grpc.netty.NettyChannelBuilder;
+import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
+import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
+import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.metrics.v1.Metric;
+import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
+import io.opentelemetry.proto.metrics.v1.ScopeMetrics;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
@@ -21,6 +28,7 @@ public class SigletProducer extends DefaultProducer {
 
 
     TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub;
+    MetricsServiceGrpc.MetricsServiceBlockingStub metricServicesStub;
 
 
     public SigletProducer(Endpoint endpoint) {
@@ -35,7 +43,7 @@ public class SigletProducer extends DefaultProducer {
 
         if (body instanceof ProtoSpanAdapter spanAdapter) {
 
-            Span span = spanAdapter.getUpdatedSpan();
+            Span span = spanAdapter.getUpdated();
             System.out.println("sending ----------------");
             System.out.println("endponit = " + getEndpoint());
             System.out.println("span =" + spanAdapter);
@@ -57,11 +65,11 @@ public class SigletProducer extends DefaultProducer {
             ExportTraceServiceResponse resp = traceServiceStub.export(exportTraceServiceRequest);
         } else if (body instanceof ProtoTraceAdapter traceAdapter) {
 
-            System.out.println("span[0].id =" +traceAdapter.getAt(0).getSpanId());
+            System.out.println("span[0].id =" + traceAdapter.getAt(0).getSpanId());
             traceAdapter.forEachSpan(modifiableSpan -> {
 
                 ProtoSpanAdapter spanAdapter = (ProtoSpanAdapter) modifiableSpan;
-                Span span = spanAdapter.getUpdatedSpan();
+                Span span = spanAdapter.getUpdated();
                 System.out.println("sending ----------------");
                 System.out.println("endponit = " + getEndpoint());
                 System.out.println("span =" + spanAdapter);
@@ -81,6 +89,24 @@ public class SigletProducer extends DefaultProducer {
 
                 ExportTraceServiceResponse resp = traceServiceStub.export(exportTraceServiceRequest);
             });
+        } else if (body instanceof ProtoMetricAdapter metricAdapter) {
+
+            System.out.println("metric.name=" + metricAdapter.getName());
+            Metric metric = metricAdapter.getUpdated();
+            Resource resource = metricAdapter.getUpdatedResource();
+            InstrumentationScope instrumentationScope = metricAdapter.getUpdatedInstrumentationScope();
+
+            ExportMetricsServiceRequest exportMetricsServiceRequest = ExportMetricsServiceRequest.newBuilder()
+                    .addResourceMetrics(ResourceMetrics.newBuilder()
+                            .setResource(resource)
+                            .addScopeMetrics(ScopeMetrics.newBuilder()
+                                    .setScope(instrumentationScope)
+                                    .addMetrics(metric)
+                                    .build())
+                            .build())
+                    .build();
+
+            ExportMetricsServiceResponse resp = metricServicesStub.export(exportMetricsServiceRequest);
         }
     }
 
@@ -98,6 +124,7 @@ public class SigletProducer extends DefaultProducer {
                     .usePlaintext();
 
             traceServiceStub = TraceServiceGrpc.newBlockingStub(builder.build());
+            metricServicesStub = MetricsServiceGrpc.newBlockingStub(builder.build());
         } catch (RuntimeException e) {
             System.out.println("error:" + e);
         }

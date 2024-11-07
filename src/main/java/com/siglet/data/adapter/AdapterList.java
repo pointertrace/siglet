@@ -3,8 +3,9 @@ package com.siglet.data.adapter;
 import com.google.protobuf.Message;
 import com.siglet.SigletError;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public abstract class AdapterList<M extends Message, B extends Message.Builder, A extends Adapter<M, B>> {

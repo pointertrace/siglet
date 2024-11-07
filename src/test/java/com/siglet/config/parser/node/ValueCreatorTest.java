@@ -1,10 +1,10 @@
 package com.siglet.config.parser.node;
 
 import com.siglet.config.item.Item;
-import com.siglet.config.item.ValueItem;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ValueCreatorTest {
     

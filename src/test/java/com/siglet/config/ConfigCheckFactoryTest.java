@@ -1,8 +1,8 @@
 package com.siglet.config;
 
 import com.siglet.config.item.*;
-import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.located.Location;
+import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 import com.siglet.pipeline.common.filter.FilterConfig;
@@ -564,7 +564,7 @@ class ConfigCheckFactoryTest {
     public void parseTracePipeline() {
 
         var config = """
-                - trace: name-value
+                  trace: name-value
                   from: origin-value
                   start: spanlet-name
                   pipeline:
@@ -584,12 +584,7 @@ class ConfigCheckFactoryTest {
         tracePipeline.afterSetValues();
 
         assertNotNull(tracePipeline);
-        var pipelinesArray = assertInstanceOf(ArrayItem.class, tracePipeline);
-        assertEquals(Location.of(1,1), pipelinesArray.getLocation());
-
-        var pipelines = pipelinesArray.getValue();
-        assertEquals(1, pipelines.size());
-        TracePipelineItem pipeline = assertInstanceOf(TracePipelineItem.class, pipelines.getFirst());
+        TracePipelineItem pipeline = assertInstanceOf(TracePipelineItem.class, tracePipeline);
         assertEquals(Location.of(1,3), pipeline.getLocation());
 
         assertEquals("name-value", pipeline.getName().getValue());

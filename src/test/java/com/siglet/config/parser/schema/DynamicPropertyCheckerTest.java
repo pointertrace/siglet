@@ -3,7 +3,6 @@ package com.siglet.config.parser.schema;
 import com.siglet.SigletError;
 import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.item.repository.Node;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;

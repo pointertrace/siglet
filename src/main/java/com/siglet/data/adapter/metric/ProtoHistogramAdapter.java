@@ -2,10 +2,8 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.modifiable.metric.ModifiableHistogram;
-import com.siglet.data.modifiable.metric.ModifiableSum;
 import com.siglet.data.unmodifiable.metric.AggregationTemporality;
 import io.opentelemetry.proto.metrics.v1.Histogram;
-import io.opentelemetry.proto.metrics.v1.Sum;
 
 public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder> implements ModifiableHistogram {
 

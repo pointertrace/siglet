@@ -30,6 +30,6 @@ public class IntRangeChecker implements NodeChecker {
 
     @Override
     public String getName() {
-        return "int range";
+        return "int range [ " + lowInclusive + " to " + highInclusive + "] inclusive";
     }
 }

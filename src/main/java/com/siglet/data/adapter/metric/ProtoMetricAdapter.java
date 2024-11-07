@@ -40,6 +40,16 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         this.protoInstrumentationScope = protoInstrumentationScope;
     }
 
+    public ProtoMetricAdapter() {
+        super(Metric.newBuilder(),Metric.Builder::build);
+    }
+
+    public ProtoMetricAdapter(Resource protoResource, InstrumentationScope protoInstrumentationScope) {
+        super(Metric.newBuilder(),Metric.Builder::build);
+        this.protoResource = protoResource;
+        this.protoInstrumentationScope = protoInstrumentationScope;
+    }
+
     @Override
     public String getName() {
         return getValue(Metric::getName, Metric.Builder::getName);
@@ -50,7 +60,6 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         setValue(Metric.Builder::setName, name);
         return this;
     }
-
 
     @Override
     public String getDescription() {
@@ -74,6 +83,15 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         return this;
     }
 
+    public ProtoGaugeAdapter gauge() {
+        protoGaugeAdapter = new ProtoGaugeAdapter();
+        return protoGaugeAdapter;
+    }
+
+    public ProtoSumAdapter sum() {
+        protoSumAdapter = new ProtoSumAdapter();
+        return protoSumAdapter;
+    }
     @Override
     public ModifiableData getData() {
         if (hasGauge()) {
@@ -108,7 +126,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
     @Override
     public boolean hasGauge() {
-        return getValue(Metric::hasGauge, Metric.Builder::hasGauge);
+        return protoGaugeAdapter != null || getValue(Metric::hasGauge, Metric.Builder::hasGauge);
     }
 
     @Override
@@ -121,7 +139,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public boolean hasSum() {
-        return getValue(Metric::hasSum, Metric.Builder::hasSum);
+        return protoSumAdapter != null || getValue(Metric::hasSum, Metric.Builder::hasSum);
     }
 
     public ProtoSumAdapter getSum() {
@@ -181,6 +199,33 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
                     isUpdatable());
         }
         return protoInstrumentationScopeAdapter;
+    }
+    public Resource getUpdatedResource() {
+        if (!isUpdatable()) {
+            return protoResource;
+        } else if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
+            return protoResource;
+        } else {
+            return protoResourceAdapter.getUpdated();
+        }
+    }
+
+    public InstrumentationScope getUpdatedInstrumentationScope() {
+        if (!isUpdatable()) {
+            return protoInstrumentationScope;
+        } else if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
+            return protoInstrumentationScope;
+        } else {
+            return protoInstrumentationScopeAdapter.getUpdated();
+        }
+    }
+
+
+    @Override
+    protected void enrich(Metric.Builder builder) {
+        if (protoGaugeAdapter != null && protoGaugeAdapter.isUpdated()) {
+            builder.setGauge(protoGaugeAdapter.getUpdated());
+        }
     }
 
     @Override

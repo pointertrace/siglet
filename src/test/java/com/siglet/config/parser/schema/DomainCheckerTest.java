@@ -1,8 +1,8 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.located.Location;
+import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +45,7 @@ class DomainCheckerTest {
 
         var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 
-        assertEquals("must be in [a, b, c]", ex.getMessage());
+        assertEquals("must be one of [a, b, c]", ex.getMessage());
         assertEquals(Location.of(1,1), ex.getLocation());
 
 

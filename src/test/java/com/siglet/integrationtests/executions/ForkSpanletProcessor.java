@@ -7,7 +7,6 @@ import com.siglet.config.parser.node.ConfigNode;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.CountDownLatch;
 

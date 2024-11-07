@@ -1,7 +1,6 @@
 package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.AdapterList;
-import com.siglet.data.modifiable.metric.ModifiableExemplar;
 import com.siglet.data.modifiable.metric.ModifiableExemplars;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 

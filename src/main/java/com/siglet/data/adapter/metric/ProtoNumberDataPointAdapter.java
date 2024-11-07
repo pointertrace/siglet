@@ -3,7 +3,11 @@ package com.siglet.data.adapter.metric;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableNumberDataPoint;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, NumberDataPoint.Builder>
         implements ModifiableNumberDataPoint {
@@ -17,14 +21,22 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     }
 
 
-    public ProtoNumberDataPointAdapter(NumberDataPoint.Builder protoNumberDataPointBuilder) {
-        super(protoNumberDataPointBuilder, NumberDataPoint.Builder::build);
+    public ProtoNumberDataPointAdapter() {
+        super(NumberDataPoint.newBuilder(), NumberDataPoint.Builder::build);
     }
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            List<KeyValue> attributes;
+            if (getMessage() == null) {
+                attributes = new ArrayList<>();
+            } else if (getMessage().getAttributesList() == null) {
+                attributes = new ArrayList<>();
+            } else {
+                attributes = getMessage().getAttributesList();
+            }
+            protoAttributesAdapter = new ProtoAttributesAdapter(attributes, isUpdatable());
         }
         return protoAttributesAdapter;
     }
@@ -57,6 +69,16 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     }
 
     @Override
+    public boolean hasDoubleValue() {
+        return getValue(NumberDataPoint::hasAsDouble, NumberDataPoint.Builder::hasAsDouble);
+    }
+
+    @Override
+    public boolean hasLongValue() {
+        return getValue(NumberDataPoint::hasAsInt, NumberDataPoint.Builder::hasAsInt);
+    }
+
+    @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
             protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList(), isUpdatable());
@@ -85,6 +107,17 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     @Override
     public double getAsDouble() {
         return getValue(NumberDataPoint::getAsDouble, NumberDataPoint.Builder::getAsDouble);
+    }
+
+    @Override
+    public Object getValue() {
+        if (hasDoubleValue()) {
+            return getAsDouble();
+        } else if (hasLongValue()) {
+            return getAsLong();
+        } else {
+            return null;
+        }
     }
 
     @Override

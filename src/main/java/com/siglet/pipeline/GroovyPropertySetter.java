@@ -16,11 +16,21 @@ public interface GroovyPropertySetter {
 
     void setBodyInScript(Exchange exchange, Script script);
 
+    default void setSenderInScript(Exchange exchange, Script script) {
+        script.setProperty("sender", GroovySignalSender.create(exchange));
+    }
+
+    default void setSignalCreatorInScript(Exchange exchange, Script script) {
+        script.setProperty("signalCreator",GroovySignalCreator.create(exchange));
+    }
+
     class SpanPropertySetter implements GroovyPropertySetter {
 
         @Override
         public void setBodyInScript(Exchange exchange, Script script) {
             script.setProperty("span", exchange.getIn().getBody(ProtoSpanAdapter.class));
+            setSenderInScript(exchange, script);
+            setSignalCreatorInScript(exchange, script);
         }
     }
 
@@ -29,8 +39,9 @@ public interface GroovyPropertySetter {
         @Override
         public void setBodyInScript(Exchange exchange, Script script) {
             script.setProperty("trace", exchange.getIn().getBody(ProtoTraceAdapter.class));
+            setSenderInScript(exchange, script);
+            setSignalCreatorInScript(exchange, script);
         }
-
     }
 
     class MetricPropertySetter implements GroovyPropertySetter {
@@ -38,6 +49,8 @@ public interface GroovyPropertySetter {
         @Override
         public void setBodyInScript(Exchange exchange, Script script) {
             script.setProperty("metric", exchange.getIn().getBody(ProtoMetricAdapter.class));
+            setSenderInScript(exchange, script);
+            setSignalCreatorInScript(exchange, script);
         }
     }
 

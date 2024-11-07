@@ -131,14 +131,16 @@ public class ConfigCheckFactory {
     }
 
     public static NodeChecker pipelineChecker() {
-        return alternative(
-                tracePipelineChecker(),
-                metricPipelineChecker()
+        return array(
+                alternative(
+                        tracePipelineChecker(),
+                        metricPipelineChecker()
+                )
         );
     }
 
     public static NodeChecker tracePipelineChecker() {
-        return array(strictObject(TracePipelineItem::new,
+        return strictObject(TracePipelineItem::new,
                 requiredProperty(TracePipelineItem::setName, TRACE_PROP, text()),
                 alternativeRequiredProperty(FROM_PROP,
                         requiredProperty(TracePipelineItem::setFrom, FROM_PROP, array(text())),
@@ -147,11 +149,11 @@ public class ConfigCheckFactory {
                         requiredProperty(TracePipelineItem::setStart, START_PROP, array(text())),
                         requiredProperty(TracePipelineItem::setStartSingleValue, START_PROP, text())),
                 requiredProperty(TracePipelineItem::setProcessors, PIPELINE_PROP,
-                        array(spanletChecker()))));
+                        array(spanletChecker())));
     }
 
     public static NodeChecker metricPipelineChecker() {
-        return array(strictObject(MetricPipelineItem::new,
+        return strictObject(MetricPipelineItem::new,
                 requiredProperty(MetricPipelineItem::setName, METRIC_PROP, text()),
                 alternativeRequiredProperty(FROM_PROP,
                         requiredProperty(MetricPipelineItem::setFrom, FROM_PROP, array(text())),
@@ -160,7 +162,7 @@ public class ConfigCheckFactory {
                         requiredProperty(MetricPipelineItem::setStart, START_PROP, array(text())),
                         requiredProperty(MetricPipelineItem::setStartSingleValue, START_PROP, text())),
                 requiredProperty(MetricPipelineItem::setProcessors, PIPELINE_PROP,
-                        array(metricletChecker()))));
+                        array(metricletChecker())));
     }
 
     public static NodeChecker globalConfigChecker() {

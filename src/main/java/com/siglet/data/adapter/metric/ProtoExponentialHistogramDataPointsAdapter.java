@@ -1,11 +1,8 @@
 package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.AdapterList;
-import com.siglet.data.modifiable.metric.ModifiableExponentialHistogramDataPoint;
 import com.siglet.data.modifiable.metric.ModifiableExponentialHistogramDataPoints;
-import com.siglet.data.modifiable.metric.ModifiableHistogramDataPoints;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
-import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
 
 import java.util.List;
 

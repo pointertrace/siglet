@@ -1,9 +1,9 @@
 package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.SigletError;
 import com.siglet.data.Clonable;
-import com.siglet.data.adapter.*;
+import com.siglet.data.adapter.Adapter;
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.common.ProtoEventsAdapter;
 import com.siglet.data.adapter.common.ProtoInstrumentationScopeAdapter;
@@ -17,19 +17,13 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
+public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements ModifiableSpan, Clonable {
 
-    private final Span protoSpan;
+    private Resource protoResource;
 
-    private final Resource protoResource;
+    private InstrumentationScope protoInstrumentationScope;
 
-    private final InstrumentationScope protoInstrumentationScope;
-
-    private final boolean updatable;
-
-    private boolean updated;
-
-    private Span.Builder protoSpanBuilder;
+    private ProtoStatusAdapter protoStatusAdapter;
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
@@ -41,138 +35,157 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
 
     private ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
 
-
     public ProtoSpanAdapter(Span protoSpan, Resource protoResource, InstrumentationScope protoInstrumentationScope,
                             boolean updatable) {
-        this.protoSpan = protoSpan;
+        super(protoSpan, Span::toBuilder, Span.Builder::build, updatable);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
-        this.updatable = updatable;
+    }
+
+    public ProtoSpanAdapter() {
+        super(Span.newBuilder(), Span.Builder::build);
     }
 
     @Override
     public long getTraceIdHigh() {
-        return ByteBuffer.wrap(
-                        Arrays.copyOfRange(protoSpanBuilder == null ?
-                                protoSpan.getTraceId().toByteArray() :
-                                protoSpanBuilder.getTraceId().toByteArray(), 0, 8))
-                .getLong();
+        ByteString traceId = getValue(Span::getTraceId, Span.Builder::getTraceId);
+        if (traceId != null) {
+            return ByteBuffer.wrap(
+                            Arrays.copyOfRange(traceId.toByteArray(), 0, 8))
+                    .getLong();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public long getTraceIdLow() {
-        return ByteBuffer.wrap(
-                        Arrays.copyOfRange(protoSpanBuilder == null ?
-                                protoSpan.getTraceId().toByteArray() :
-                                protoSpanBuilder.getTraceId().toByteArray(), 8, 16))
-                .getLong();
+        ByteString traceId = getValue(Span::getTraceId, Span.Builder::getTraceId);
+        if (traceId != null) {
+            return ByteBuffer.wrap(
+                    Arrays.copyOfRange(traceId.toByteArray(), 8, 16)
+            ).getLong();
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public byte[] getTraceId() {
-        return protoSpanBuilder == null ?
-                protoSpan.getTraceId().toByteArray() : protoSpanBuilder.getTraceId().toByteArray();
+        ByteString traceId = getValue(Span::getTraceId, Span.Builder::getTraceId);
+        return traceId == null ? null : traceId.toByteArray();
     }
 
     @Override
-    public void setTraceId(long high, long low) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setTraceId(ByteString.copyFrom(
+    public ProtoSpanAdapter setTraceId(long high, long low) {
+        setValue(Span.Builder::setTraceId, ByteString.copyFrom(
                 ByteBuffer.allocate(Long.BYTES * 2).putLong(high).putLong(low).array()));
+        return this;
     }
 
     @Override
-    public void setTraceId(byte[] traceId) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setTraceId(ByteString.copyFrom(traceId));
+    public ProtoSpanAdapter setTraceId(byte[] traceId) {
+        setValue(Span.Builder::setTraceId, ByteString.copyFrom(traceId));
+        return this;
     }
 
     @Override
     public long getSpanId() {
-        return ByteBuffer.wrap(
-                        protoSpanBuilder == null ?
-                                protoSpan.getSpanId().toByteArray() :
-                                protoSpanBuilder.getSpanId().toByteArray())
-                .getLong();
+        ByteString spanId = getValue(Span::getSpanId, Span.Builder::getSpanId);
+        if (spanId != null) {
+            return ByteBuffer.wrap(spanId.toByteArray()).getLong();
+        } else {
+            return 0;
+        }
     }
 
     @Override
-    public void setSpanId(long spanId) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setSpanId(ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(spanId).array()));
+    public ProtoSpanAdapter setSpanId(long spanId) {
+        setValue(Span.Builder::setSpanId, ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(spanId).array()));
+        return this;
     }
 
     @Override
     public long getParentSpanId() {
-        return ByteBuffer.wrap(
-                        protoSpanBuilder == null ?
-                                protoSpan.getParentSpanId().toByteArray() :
-                                protoSpanBuilder.getParentSpanId().toByteArray())
-                .getLong();
+        ByteString parentSpanId = getValue(Span::getParentSpanId, Span.Builder::getParentSpanId);
+        if (parentSpanId != null) {
+            return ByteBuffer.wrap(parentSpanId.toByteArray()).getLong();
+        } else {
+            return 0;
+        }
     }
 
     @Override
-    public void setParentSpanId(long parentSpanId) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setParentSpanId(ByteString.copyFrom(
-                ByteBuffer.allocate(Long.BYTES).putLong(parentSpanId).array()));
+    public ProtoSpanAdapter setParentSpanId(long parentSpanId) {
+        setValue(Span.Builder::setParentSpanId,
+                ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).putLong(parentSpanId).array()));
+        return this;
     }
 
     @Override
     public String getTraceState() {
-        return protoSpanBuilder == null ? protoSpan.getTraceState() : protoSpanBuilder.getTraceState();
+        return getValue(Span::getTraceState, Span.Builder::getTraceState);
     }
 
     @Override
-    public void setTraceState(String traceState) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setTraceState(traceState);
+    public ProtoSpanAdapter setTraceState(String traceState) {
+        setValue(Span.Builder::setTraceState, traceState);
+        return this;
     }
 
     @Override
     public String getName() {
-        return protoSpanBuilder == null ? protoSpan.getName() : protoSpanBuilder.getName();
+        return getValue(Span::getName, Span.Builder::getName);
     }
 
     @Override
-    public void setName(String name) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setName(name);
+    public ProtoSpanAdapter setName(String name) {
+        setValue(Span.Builder::setName, name);
+        return this;
     }
 
     @Override
-    public long getStartUnixNano() {
-        return protoSpanBuilder == null ? protoSpan.getStartTimeUnixNano() : protoSpanBuilder.getStartTimeUnixNano();
+    public long getStartTimeUnixNano() {
+        return getValue(Span::getStartTimeUnixNano, Span.Builder::getStartTimeUnixNano);
     }
 
     @Override
-    public long getEndUnixNano() {
-        return protoSpanBuilder == null ? protoSpan.getEndTimeUnixNano() : protoSpanBuilder.getEndTimeUnixNano();
+    public long getEndTimeUnixNano() {
+        return getValue(Span::getEndTimeUnixNano, Span.Builder::getEndTimeUnixNano);
     }
 
     @Override
     public SpanKind getKind() {
-        return AdapterUtils.getKind(protoSpanBuilder == null ? protoSpan.getKind() : protoSpanBuilder.getKind());
+        return AdapterUtils.getKind(getValue(Span::getKind, Span.Builder::getKind));
     }
 
     @Override
-    public void setKind(SpanKind spanKind) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setKind(AdapterUtils.getKind(spanKind));
+    public ProtoSpanAdapter setKind(SpanKind spanKind) {
+        setValue(Span.Builder::setKind, AdapterUtils.getKind(spanKind));
+        return this;
     }
+
+
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(protoSpan.getAttributesList(), updatable);
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
         }
         return protoAttributesAdapter;
+    }
+
+    public ProtoStatusAdapter getStatus() {
+        if (protoStatusAdapter == null) {
+            protoStatusAdapter = new ProtoStatusAdapter(getMessage().getStatus(), isUpdatable());
+        }
+        return protoStatusAdapter;
     }
 
     @Override
     public ProtoResourceAdapter getResource() {
         if (protoResourceAdapter == null) {
-            protoResourceAdapter = new ProtoResourceAdapter(protoResource, updatable);
+            protoResourceAdapter = new ProtoResourceAdapter(protoResource, isUpdatable());
         }
         return protoResourceAdapter;
     }
@@ -180,7 +193,7 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
     @Override
     public ProtoInstrumentationScopeAdapter getInstrumentationScope() {
         if (protoInstrumentationScopeAdapter == null) {
-            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, updatable);
+            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, isUpdatable());
         }
         return protoInstrumentationScopeAdapter;
     }
@@ -188,7 +201,7 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
     @Override
     public ProtoLinksAdapter getLinks() {
         if (protoLinksAdapter == null) {
-            protoLinksAdapter = new ProtoLinksAdapter(protoSpan.getLinksList(), updatable);
+            protoLinksAdapter = new ProtoLinksAdapter(getMessage().getLinksList(), isUpdatable());
         }
         return protoLinksAdapter;
     }
@@ -196,108 +209,98 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
     @Override
     public ProtoEventsAdapter getEvents() {
         if (protoEventsAdapter == null) {
-            protoEventsAdapter = new ProtoEventsAdapter(protoSpan.getEventsList(), updatable);
+            protoEventsAdapter = new ProtoEventsAdapter(getMessage().getEventsList(), isUpdatable());
         }
         return protoEventsAdapter;
     }
 
     public Span getProtoSpan() {
-        return protoSpan;
+        return getMessage();
     }
 
 
     @Override
-    public void setStartTimeUnixNano(long startTimeUnixNano) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setStartTimeUnixNano(startTimeUnixNano);
+    public ProtoSpanAdapter setStartTimeUnixNano(long startTimeUnixNano) {
+        setValue(Span.Builder::setStartTimeUnixNano, startTimeUnixNano);
+        return this;
     }
 
     @Override
-    public void setEndTimeUnixNano(long endTimeUnixNano) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setEndTimeUnixNano(endTimeUnixNano);
+    public ProtoSpanAdapter setEndTimeUnixNano(long endTimeUnixNano) {
+        setValue(Span.Builder::setEndTimeUnixNano, endTimeUnixNano);
+        return this;
     }
 
     @Override
     public int getFlags() {
-        return protoSpanBuilder == null ? protoSpan.getFlags() : protoSpanBuilder.getFlags();
+        return getValue(Span::getFlags, Span.Builder::getFlags);
     }
 
     @Override
-    public void setFlags(int flags) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setFlags(flags);
+    public ProtoSpanAdapter setFlags(int flags) {
+        setValue(Span.Builder::setFlags, flags);
+        return this;
     }
 
     @Override
     public int getDroppedAttributesCount() {
-        return protoSpanBuilder == null ? protoSpan.getDroppedAttributesCount() : protoSpanBuilder.getDroppedAttributesCount();
+        return getValue(Span::getDroppedAttributesCount, Span.Builder::getDroppedAttributesCount);
     }
 
     @Override
-    public void setDroppedAttributesCount(int droppedAttributesCount) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setDroppedAttributesCount(droppedAttributesCount);
+    public ProtoSpanAdapter setDroppedAttributesCount(int droppedAttributesCount) {
+        setValue(Span.Builder::setDroppedAttributesCount, droppedAttributesCount);
+        return this;
     }
 
     @Override
     public int getDroppedEventsCount() {
-        return protoSpanBuilder == null ? protoSpan.getDroppedEventsCount() : protoSpanBuilder.getDroppedEventsCount();
+        return getValue(Span::getDroppedEventsCount, Span.Builder::getDroppedEventsCount);
     }
 
     @Override
-    public void setDroppedEventsCount(int droppedEventsCount) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setDroppedEventsCount(droppedEventsCount);
+    public ProtoSpanAdapter setDroppedEventsCount(int droppedEventsCount) {
+        setValue(Span.Builder::setDroppedEventsCount, droppedEventsCount);
+        return this;
     }
 
     @Override
     public int getDroppedLinksCount() {
-        return protoSpanBuilder == null ? protoSpan.getDroppedLinksCount() : protoSpanBuilder.getDroppedLinksCount();
+        return getValue(Span::getDroppedLinksCount, Span.Builder::getDroppedLinksCount);
     }
 
     @Override
-    public void setDroppedLinksCount(int droppedLinksCount) {
-        checkAndPrepareUpdate();
-        protoSpanBuilder.setDroppedLinksCount(droppedLinksCount);
+    public ProtoSpanAdapter setDroppedLinksCount(int droppedLinksCount) {
+        setValue(Span.Builder::setDroppedLinksCount, droppedLinksCount);
+        return this;
     }
 
+    @Override
     public boolean isUpdated() {
-        return updated;
+        return super.isUpdated() || attributesUpdated() || linksUpdated() ||
+                eventsUpdated();
     }
 
-
-    ProtoSpanAdapter getUpdated(boolean updatable) {
-        if (!updatable) {
-            return this;
-        } else if (!updated && !attributesUpdated() && !resourceUpdated() && linksUpdated() && eventsUpdated() &&
-                instrumentationScopeUpdated()) {
-            return this;
-        } else {
-            Span.Builder spanbuilder = null;
-            Resource resource = null;
-            InstrumentationScope insScope = null;
-            if (updated) {
-                spanbuilder = protoSpanBuilder;
-            } else {
-                spanbuilder = protoSpan.toBuilder();
-            }
-            if (attributesUpdated()) {
-                spanbuilder.clearAttributes();
-                spanbuilder.addAllAttributes(protoAttributesAdapter.getUpdated());
-            }
-            if (linksUpdated()) {
-                spanbuilder.clearLinks();
-                spanbuilder.addAllLinks(protoLinksAdapter.getUpdated());
-            }
-            return new ProtoSpanAdapter(spanbuilder.build(), resource, insScope, updatable);
+    @Override
+    protected void enrich(Span.Builder builder) {
+        if (attributesUpdated()) {
+            builder.clearAttributes();
+            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
+        }
+        if (linksUpdated()) {
+            builder.clearLinks();
+            builder.addAllLinks(protoLinksAdapter.getUpdated());
+        }
+        if (eventsUpdated()) {
+            builder.clearEvents();
+            builder.addAllEvents(protoEventsAdapter.getUpdated());
         }
     }
 
     @Override
     public ProtoSpanAdapter clone() {
-        return new ProtoSpanAdapter(getUpdatedSpan(),
-                getUpdatedResource(), getUpdatedInstrumentationScope(), updatable);
+        return new ProtoSpanAdapter(getUpdated(),
+                getUpdatedResource(), getUpdatedInstrumentationScope(), isUpdatable());
     }
 
     private boolean attributesUpdated() {
@@ -320,32 +323,8 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
         return protoInstrumentationScopeAdapter != null && protoInstrumentationScopeAdapter.isUpdated();
     }
 
-    public Span getUpdatedSpan() {
-        if (!updatable) {
-            return protoSpan;
-        } else if (!updated && !attributesUpdated() && !linksUpdated() && !eventsUpdated()) {
-            return protoSpan;
-        } else {
-            Span.Builder bld = protoSpanBuilder != null ? protoSpanBuilder : protoSpan.toBuilder();
-            if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-                bld.clearAttributes();
-                bld.addAllAttributes(protoAttributesAdapter.getUpdated());
-            }
-            if (protoLinksAdapter != null && protoLinksAdapter.isUpdated()) {
-                bld.clearLinks();
-                bld.addAllLinks(protoLinksAdapter.getUpdated());
-            }
-            if (protoEventsAdapter != null && protoEventsAdapter.isUpdated()) {
-                bld.clearEvents();
-                bld.addAllEvents(protoEventsAdapter.getUpdated());
-            }
-            return bld.build();
-
-        }
-    }
-
     public Resource getUpdatedResource() {
-        if (!updatable) {
+        if (!isUpdatable()) {
             return protoResource;
         } else if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
             return protoResource;
@@ -355,23 +334,13 @@ public class ProtoSpanAdapter implements ModifiableSpan, Clonable {
     }
 
     public InstrumentationScope getUpdatedInstrumentationScope() {
-        if (!updatable) {
+        if (!isUpdatable()) {
             return protoInstrumentationScope;
         } else if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
             return protoInstrumentationScope;
         } else {
             return protoInstrumentationScopeAdapter.getUpdated();
         }
-    }
-
-    private void checkAndPrepareUpdate() {
-        if (!updatable) {
-            throw new SigletError("trying to change a non updatable span");
-        }
-        if (protoSpanBuilder == null) {
-            protoSpanBuilder = protoSpan.toBuilder();
-        }
-        updated = true;
     }
 
 

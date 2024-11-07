@@ -21,11 +21,13 @@ public interface UnmodifiableSpan {
 
     String getName();
 
-    long getStartUnixNano();
+    long getStartTimeUnixNano();
 
-    long getEndUnixNano();
+    long getEndTimeUnixNano();
 
     SpanKind getKind();
+
+    UnmodifiableStatus getStatus();
 
     UnmodifiableAttributes getAttributes();
 

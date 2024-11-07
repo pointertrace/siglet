@@ -12,7 +12,7 @@ public final class ObjectConfigNode extends ConfigNode {
 
     private ValueCreator valueCreator;
 
-    protected ObjectConfigNode(List<Property> childrenProperties, Location location) {
+    ObjectConfigNode(List<Property> childrenProperties, Location location) {
         super(location);
         childrenProperties.forEach(prop -> {
             children.put(prop.getKey().getValue(), prop.getValue());

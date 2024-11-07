@@ -1,14 +1,8 @@
 package com.siglet.camel.component;
 
-import io.grpc.Server;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.spi.PropertyConfigurer;
 import org.apache.camel.support.DefaultComponent;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SigletComponent extends DefaultComponent {

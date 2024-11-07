@@ -29,7 +29,7 @@ public class ReceiverNode extends Node<ReceiverItem> {
     @Override
     public void createRoute(RouteCreator routeCreator) {
         if (getTo().size() == 1) {
-            getTo().getFirst().createRoute(routeCreator.addReceiver(getUri()));
+            getTo().getFirst().createRoute(routeCreator.addReceiver(getUri(),getName()));
         } else if (getTo().size() > 1) {
             throw new IllegalStateException("not yet implemented!");
         }

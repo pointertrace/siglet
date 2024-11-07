@@ -7,7 +7,7 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RouteCreatorTest extends CamelTestSupport {
     @Test
@@ -22,7 +22,7 @@ class RouteCreatorTest extends CamelTestSupport {
         RootRouteCreator root = new RootRouteCreator();
 
         root
-                .addReceiver("direct:start")
+                .addReceiver("direct:start","start")
                 .addProcessor(new SumProcessor(1))
                 .addProcessor(new SumProcessor(3))
                 .addExporter("mock:output");
@@ -67,7 +67,7 @@ class RouteCreatorTest extends CamelTestSupport {
         RootRouteCreator root = new RootRouteCreator();
 
         RouteCreator receiver1 = root
-                .addReceiver("direct:first-start");
+                .addReceiver("direct:first-start", "start");
 
         var receiver1Multicast = receiver1.startMulticast();
 
@@ -93,7 +93,7 @@ class RouteCreatorTest extends CamelTestSupport {
 
         receiver1Multicast.endMulticast();
 
-        RouteCreator receiver2 = root.addReceiver("direct:second-start");
+        RouteCreator receiver2 = root.addReceiver("direct:second-start", "second-start");
 
         receiver2.addProcessor(new SumProcessor(10000))
                 .addExporter("mock:sixth-output");

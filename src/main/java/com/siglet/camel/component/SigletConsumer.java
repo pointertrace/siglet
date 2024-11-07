@@ -1,13 +1,9 @@
 package com.siglet.camel.component;
 
 import io.grpc.Server;
-import io.grpc.netty.NettyServerBuilder;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.support.DefaultConsumer;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 
 public class SigletConsumer extends DefaultConsumer {
 

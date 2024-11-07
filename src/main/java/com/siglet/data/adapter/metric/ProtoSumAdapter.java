@@ -13,8 +13,8 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements Modifi
         super(protoSum, Sum::toBuilder, Sum.Builder::build, updatable);
     }
 
-    public ProtoSumAdapter(Sum.Builder sumBuilder) {
-        super(sumBuilder, Sum.Builder::build);
+    public ProtoSumAdapter() {
+        super(Sum.newBuilder(), Sum.Builder::build);
     }
 
     @Override

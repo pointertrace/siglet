@@ -1,7 +1,6 @@
 package com.siglet.config.item.repository;
 
 import com.siglet.config.item.PipelineItem;
-import com.siglet.config.item.TracePipelineItem;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
 
 import java.util.ArrayList;

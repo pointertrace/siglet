@@ -58,10 +58,10 @@ public class Main {
                 throw new IllegalStateException("Unexpected value: " + node);
         }
         System.out.println("nodevalue:"+ node);
-        System.out.println(String.format("Node [%s] starts at line %s, column %s",
-                node.getNodeId().name(), startMark.getLine(), startMark.getColumn()));
-        System.out.println(String.format("Node [%s] ends at line %s, column %s",
-                node.getNodeId().name(), endMark.getLine(), endMark.getColumn()));
+        System.out.printf("Node [%s] starts at line %s, column %s%n",
+                node.getNodeId().name(), startMark.getLine(), startMark.getColumn());
+        System.out.printf("Node [%s] ends at line %s, column %s%n",
+                node.getNodeId().name(), endMark.getLine(), endMark.getColumn());
 
         if (node instanceof MappingNode) {
             for (NodeTuple tuple : ((MappingNode) node).getValue()) {

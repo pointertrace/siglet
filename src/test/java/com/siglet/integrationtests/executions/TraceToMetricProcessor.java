@@ -7,15 +7,13 @@ import com.siglet.config.parser.node.ConfigNode;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 
 import static com.siglet.config.ConfigCheckFactory.globalConfigChecker;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class SimpleSpanletProcessor {
+public class TraceToMetricProcessor {
 
     public static void main(String[] args) throws Exception {
 
@@ -25,31 +23,48 @@ public class SimpleSpanletProcessor {
 
         var configFile = """
                 receivers:
-                - grpc: receiver
+                - grpc: trace-receiver
                   address: localhost:8080
                   signal-type: trace
+                - grpc: metric-receiver
+                  address: localhost:8080
+                  signal-type: metric
                 exporters:
                 - grpc: exporter
                   address: localhost:4317
                 pipelines:
-                - trace: simple pipeline
-                  from: receiver
-                  start: first spanlet
+                - trace: trace-pipeline
+                  from: trace-receiver
+                  start: spanlet
                   pipeline:
-                  - spanlet: first spanlet
-                    to: second spanlet
-                    type: processor
-                    config:
-                      action: >
-                        span.setName("prefix-" + span.getName())
-                        println "first spanId=" + span.getSpanId()
-                  - spanlet: second spanlet
+                  - spanlet: spanlet
                     to: exporter
                     type: processor
                     config:
-                      action: >
-                        span.setName(span.getName() + "-sufix")
-                        println "second spanId=" + span.getSpanId()
+                      action: |
+                        println "span spanId=" + span.getSpanId()
+                        newMetric = signalCreator.newMetric()
+                        newMetric.setName("gauge example novo")
+                                 .setDescription("gauge example description")
+                                 .setUnit("gauge example unit")
+                                 .gauge()
+                                 .getDataPoints().add()
+                                 .setTimeUnixNano(1)
+                                 .setAsLong(100)
+                                 .getAttributes()
+                                 .set("attribute", "attribute value");
+                
+                        sender.send("otelgrpc://localhost:8080?signalType=metric",newMetric)
+                - metric: metric-pipeline
+                  from: metric-receiver
+                  start: metriclet
+                  pipeline:
+                  - metriclet: metriclet
+                    to: exporter
+                    type: processor
+                    config:
+                      action: |
+                        println "metric name=" + metric.getName()
                 """;
 
 

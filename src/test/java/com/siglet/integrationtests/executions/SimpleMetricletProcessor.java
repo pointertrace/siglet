@@ -7,8 +7,6 @@ import com.siglet.config.parser.node.ConfigNode;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -26,7 +24,7 @@ public class SimpleMetricletProcessor {
         var configFile = """
                 receivers:
                 - grpc: receiver
-                  address: localhost:8080
+                  address: localhost:4317
                   signal-type: metric
                 exporters:
                 - grpc: exporter
@@ -41,8 +39,8 @@ public class SimpleMetricletProcessor {
                     type: processor
                     config:
                       action: >
-                        span.setName("prefix-" + span.getName())
-                        println "first spanId=" + span.getSpanId()
+                        metric.setName("prefix-" + metric.getName())
+                        println "metric-name="+ metric.getName()
                 """;
 
 
@@ -67,8 +65,16 @@ public class SimpleMetricletProcessor {
         camelContext.addRoutes(routeBuilder);
         camelContext.start();
 
+        camelContext.getEndpoints().forEach(e -> {
+            System.out.println("endpoint:"+e.getEndpointUri());
+            System.out.println("endpoint component:"+e.getComponent());
+        });
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> countDownLatch.countDown()));
+        camelContext.getRoutes().forEach(r -> {
+            System.out.println("rota:"+r.getId());
+        });
+
+        Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
 
         countDownLatch.await();
 

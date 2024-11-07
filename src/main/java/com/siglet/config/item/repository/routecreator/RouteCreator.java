@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 
 public interface RouteCreator {
 
-    RouteCreator addReceiver(String uri);
+    RouteCreator addReceiver(String uri, String routeName);
 
     void addExporter(String uri);
 

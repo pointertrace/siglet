@@ -1,14 +1,13 @@
 package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.unmodifiable.trace.UnmodifiableTrace;
 
-public interface ModifiableTrace extends UnmodifiableTrace {
+public interface ModifiableTrace<T extends ModifiableSpan> extends UnmodifiableTrace {
 
-    void add(ModifiableSpan span);
+    ModifiableTrace<T> add(T span);
 
     boolean remove(long spanId);
 
-    ModifiableSpan get(long spanId);
+    T get(long spanId);
 
 }

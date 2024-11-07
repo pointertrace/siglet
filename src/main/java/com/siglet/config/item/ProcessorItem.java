@@ -1,8 +1,5 @@
 package com.siglet.config.item;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessorItem extends Item {
@@ -11,8 +8,7 @@ public class ProcessorItem extends Item {
 
     private ValueItem<String> pipeline;
 
-   private ArrayItem<ValueItem<String>> to;
-
+    private ArrayItem<ValueItem<String>> to;
 
     public ValueItem<String> getPipeline() {
         return pipeline;
@@ -30,8 +26,8 @@ public class ProcessorItem extends Item {
         this.to = to;
     }
 
-    public void setToSingleValue(ValueItem<String> to)  {
-        this.to = new ArrayItem<>(to.getLocation(),List.of(to));
+    public void setToSingleValue(ValueItem<String> to) {
+        this.to = new ArrayItem<>(to.getLocation(), List.of(to));
     }
 
     public Item getConfig() {

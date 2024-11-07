@@ -12,7 +12,7 @@ public final class ArrayConfigNode extends ConfigNode {
 
     private final List<ConfigNode> items;
 
-    protected ArrayConfigNode(List<ConfigNode> items, Location location) {
+    ArrayConfigNode(List<ConfigNode> items, Location location) {
         super(location);
         this.items = new ArrayList<>(items);
     }

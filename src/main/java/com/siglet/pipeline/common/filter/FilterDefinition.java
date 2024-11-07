@@ -6,7 +6,8 @@ import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaFactory;
 import com.siglet.pipeline.common.ConfigDefinition;
 
-import static com.siglet.config.parser.schema.SchemaFactory.*;
+import static com.siglet.config.parser.schema.SchemaFactory.requiredProperty;
+import static com.siglet.config.parser.schema.SchemaFactory.text;
 
 public class FilterDefinition implements ConfigDefinition {
 

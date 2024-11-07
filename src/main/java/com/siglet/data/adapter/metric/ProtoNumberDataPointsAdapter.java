@@ -1,13 +1,9 @@
 package com.siglet.data.adapter.metric;
 
-import com.siglet.SigletError;
-import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.AdapterList;
-import com.siglet.data.modifiable.metric.ModifiableNumberDataPoint;
 import com.siglet.data.modifiable.metric.ModifiableNumberDataPoints;
 import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, NumberDataPoint.Builder,
@@ -36,7 +32,7 @@ public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, N
 
     @Override
     protected ProtoNumberDataPointAdapter createNewAdapter() {
-        return new ProtoNumberDataPointAdapter(NumberDataPoint.newBuilder());
+        return new ProtoNumberDataPointAdapter();
     }
 
     @Override

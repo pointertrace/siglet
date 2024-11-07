@@ -2,12 +2,13 @@ package com.siglet.data.adapter.common;
 
 import com.siglet.SigletError;
 import com.siglet.data.adapter.Adapter;
-import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.AdapterList;
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.modifiable.ModifiableAttributes;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Builder,
         ProtoAttributesAdapter.KeyValueAdapter> implements ModifiableAttributes {

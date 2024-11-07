@@ -5,11 +5,13 @@ import com.siglet.SigletError;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.*;
 import com.siglet.data.trace.SpanKind;
+import com.siglet.data.trace.StatusCode;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
+import io.opentelemetry.proto.trace.v1.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,10 @@ class ProtoSpanAdapterTest {
                 .setDroppedEventsCount(2)
                 .setDroppedLinksCount(3)
                 .setKind(Span.SpanKind.SPAN_KIND_CLIENT)
+                .setStatus(Status.newBuilder()
+                        .setCode(Status.StatusCode.STATUS_CODE_OK)
+                        .setMessage("status-message")
+                        .build())
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("str-attribute")
                         .setValue(AnyValue.newBuilder().setStringValue("str-attribute-value").build())
@@ -108,27 +114,27 @@ class ProtoSpanAdapterTest {
 
     @Test
     public void setAndGet() {
-        protoSpanAdapter.setTraceId(10L, 20L);
-        protoSpanAdapter.setSpanId(10L);
-        protoSpanAdapter.setParentSpanId(30L);
-        protoSpanAdapter.setName("new-name");
-        protoSpanAdapter.setStartTimeUnixNano(3L);
-        protoSpanAdapter.setEndTimeUnixNano(4L);
-        protoSpanAdapter.setFlags(2);
-        protoSpanAdapter.setTraceState("new-trace-state");
-        protoSpanAdapter.setDroppedAttributesCount(10);
-        protoSpanAdapter.setDroppedEventsCount(20);
-        protoSpanAdapter.setDroppedLinksCount(30);
-        protoSpanAdapter.setKind(SpanKind.SERVER);
-
+        protoSpanAdapter
+                .setTraceId(10L, 20L)
+                .setSpanId(10L)
+                .setParentSpanId(30L)
+                .setName("new-name")
+                .setStartTimeUnixNano(3L)
+                .setEndTimeUnixNano(4L)
+                .setFlags(2)
+                .setTraceState("new-trace-state")
+                .setDroppedAttributesCount(10)
+                .setDroppedEventsCount(20)
+                .setDroppedLinksCount(30)
+                .setKind(SpanKind.SERVER);
 
         assertEquals(protoSpanAdapter.getTraceIdHigh(), 10);
         assertEquals(protoSpanAdapter.getTraceIdLow(), 20);
         assertEquals(protoSpanAdapter.getSpanId(), 10L);
         assertEquals(protoSpanAdapter.getParentSpanId(), 30L);
         assertEquals(protoSpanAdapter.getName(), "new-name");
-        assertEquals(protoSpanAdapter.getStartUnixNano(), 3L);
-        assertEquals(protoSpanAdapter.getEndUnixNano(), 4L);
+        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 3L);
+        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 4L);
         assertEquals(protoSpanAdapter.getFlags(), 2);
         assertEquals(protoSpanAdapter.getTraceState(), "new-trace-state");
         assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 10);
@@ -170,6 +176,8 @@ class ProtoSpanAdapterTest {
         assertThrowsExactly(SigletError.class, () ->
                 protoSpanAdapter.getResource().setDroppedAttributesCount(1));
 
+        assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getStatus().setCode(StatusCode.OK));
+
         assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getAttributes().remove("str-key"));
 
         assertThrowsExactly(SigletError.class, () -> protoSpanAdapter.getLinks().remove(0, 0, 0));
@@ -186,8 +194,8 @@ class ProtoSpanAdapterTest {
         assertEquals(protoSpanAdapter.getSpanId(), 1L);
         assertEquals(protoSpanAdapter.getParentSpanId(), 3L);
         assertEquals(protoSpanAdapter.getName(), "span-name");
-        assertEquals(protoSpanAdapter.getStartUnixNano(), 1L);
-        assertEquals(protoSpanAdapter.getEndUnixNano(), 2L);
+        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 1L);
+        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 2L);
         assertEquals(protoSpanAdapter.getFlags(), 1);
         assertEquals(protoSpanAdapter.getTraceState(), "trace-state");
         assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 1);
@@ -205,14 +213,35 @@ class ProtoSpanAdapterTest {
         assertEquals(protoSpanAdapter.getSpanId(), 1L);
         assertEquals(protoSpanAdapter.getParentSpanId(), 3L);
         assertEquals(protoSpanAdapter.getName(), "span-name");
-        assertEquals(protoSpanAdapter.getStartUnixNano(), 1L);
-        assertEquals(protoSpanAdapter.getEndUnixNano(), 2L);
+        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 1L);
+        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 2L);
         assertEquals(protoSpanAdapter.getFlags(), 1);
         assertEquals(protoSpanAdapter.getTraceState(), "trace-state");
         assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 1);
         assertEquals(protoSpanAdapter.getDroppedEventsCount(), 2);
         assertEquals(protoSpanAdapter.getDroppedLinksCount(), 3);
         assertEquals(protoSpanAdapter.getKind(), SpanKind.CLIENT);
+
+    }
+
+    @Test
+    public void statusGet() {
+        ProtoStatusAdapter protoStatusAdapter = protoSpanAdapter.getStatus();
+
+        assertEquals(StatusCode.OK, protoStatusAdapter.getCode());
+        assertEquals("status-message", protoStatusAdapter.getStatusMessage());
+
+    }
+
+    @Test
+    public void statusGetAndSet() {
+        ProtoStatusAdapter protoStatusAdapter = protoSpanAdapter.getStatus();
+
+        protoStatusAdapter.setCode(StatusCode.ERROR);
+        protoStatusAdapter.setStatusMessage("new-status-message");
+
+        assertEquals(StatusCode.ERROR, protoStatusAdapter.getCode());
+        assertEquals("new-status-message", protoStatusAdapter.getStatusMessage());
 
     }
 
@@ -343,7 +372,7 @@ class ProtoSpanAdapterTest {
     public void getUpdatedSpan_notUpdatable() {
 
         protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, false);
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
@@ -352,7 +381,7 @@ class ProtoSpanAdapterTest {
     @Test
     public void getUpdatedSpan_nothingUpdated() {
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
@@ -361,21 +390,22 @@ class ProtoSpanAdapterTest {
     @Test
     public void getUpdatedSpan_onlySpanUpdated() {
 
-        protoSpanAdapter.setTraceId(10, 20);
-        protoSpanAdapter.setSpanId(30);
-        protoSpanAdapter.setParentSpanId(40);
-        protoSpanAdapter.setName("new-name");
-        protoSpanAdapter.setStartTimeUnixNano(3);
-        protoSpanAdapter.setEndTimeUnixNano(4);
-        protoSpanAdapter.setFlags(2);
-        protoSpanAdapter.setTraceState("new-trace-state");
-        protoSpanAdapter.setDroppedAttributesCount(10);
-        protoSpanAdapter.setDroppedEventsCount(20);
-        protoSpanAdapter.setDroppedLinksCount(30);
-        protoSpanAdapter.setKind(SpanKind.SERVER);
+        protoSpanAdapter
+                .setTraceId(10, 20)
+                .setSpanId(30)
+                .setParentSpanId(40)
+                .setName("new-name")
+                .setStartTimeUnixNano(3)
+                .setEndTimeUnixNano(4)
+                .setFlags(2)
+                .setTraceState("new-trace-state")
+                .setDroppedAttributesCount(10)
+                .setDroppedEventsCount(20)
+                .setDroppedLinksCount(30)
+                .setKind(SpanKind.SERVER);
 
 
-        Span actual = protoSpanAdapter.getUpdatedSpan();
+        Span actual = protoSpanAdapter.getUpdated();
         assertEquals(10, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
         assertEquals(20, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
         assertEquals(30, AdapterUtils.spanId(actual.getSpanId().toByteArray()));
@@ -388,23 +418,24 @@ class ProtoSpanAdapterTest {
         assertEquals(10, actual.getDroppedAttributesCount());
         assertEquals(20, actual.getDroppedEventsCount());
         assertEquals(30, actual.getDroppedLinksCount());
-        assertEquals(Span.SpanKind.SPAN_KIND_SERVER,actual.getKind());
+        assertEquals(Span.SpanKind.SPAN_KIND_SERVER, actual.getKind());
 
         assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
         assertSame(protoSpan.getLinksList(), actual.getLinksList());
         assertSame(protoSpan.getEventsList(), actual.getEventsList());
 
-        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
     }
+
     @Test
     public void getUpdatedSpan_onlyAttributesChange() {
 
 
         protoSpanAdapter.getAttributes().set("str-attribute", "new-value");
 
-        Span actual = protoSpanAdapter.getUpdatedSpan();
+        Span actual = protoSpanAdapter.getUpdated();
 
         assertEquals(0, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
         assertEquals(2, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
@@ -418,7 +449,7 @@ class ProtoSpanAdapterTest {
         assertEquals(1, actual.getDroppedAttributesCount());
         assertEquals(2, actual.getDroppedEventsCount());
         assertEquals(3, actual.getDroppedLinksCount());
-        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT,actual.getKind());
+        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT, actual.getKind());
 
         assertNotSame(protoSpan.getAttributesList(), actual.getAttributesList());
 
@@ -437,7 +468,7 @@ class ProtoSpanAdapterTest {
         assertSame(protoSpan.getLinksList(), actual.getLinksList());
         assertSame(protoSpan.getEventsList(), actual.getEventsList());
 
-        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
     }
@@ -448,7 +479,7 @@ class ProtoSpanAdapterTest {
 
         protoSpanAdapter.getEvents().remove(0);
 
-        Span actual = protoSpanAdapter.getUpdatedSpan();
+        Span actual = protoSpanAdapter.getUpdated();
 
         assertEquals(0, AdapterUtils.traceIdHigh(actual.getTraceId().toByteArray()));
         assertEquals(2, AdapterUtils.traceIdLow(actual.getTraceId().toByteArray()));
@@ -462,7 +493,7 @@ class ProtoSpanAdapterTest {
         assertEquals(1, actual.getDroppedAttributesCount());
         assertEquals(2, actual.getDroppedEventsCount());
         assertEquals(3, actual.getDroppedLinksCount());
-        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT,actual.getKind());
+        assertEquals(Span.SpanKind.SPAN_KIND_CLIENT, actual.getKind());
 
 
         assertEquals(1, actual.getEventsList().size());
@@ -475,7 +506,7 @@ class ProtoSpanAdapterTest {
         assertSame(protoSpan.getAttributesList(), actual.getAttributesList());
         assertSame(protoSpan.getLinksList(), actual.getLinksList());
 
-        assertSame(protoResource,protoSpanAdapter.getUpdatedResource());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
     }
@@ -492,7 +523,7 @@ class ProtoSpanAdapterTest {
 
         assertSame(protoResource.getAttributesList(), actual.getAttributesList());
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
 
     }
@@ -508,7 +539,7 @@ class ProtoSpanAdapterTest {
 
         assertSame(protoInstrumentationScope.getAttributesList(), actual.getAttributesList());
 
-        assertSame(protoSpan, protoSpanAdapter.getUpdatedSpan());
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
 
     }

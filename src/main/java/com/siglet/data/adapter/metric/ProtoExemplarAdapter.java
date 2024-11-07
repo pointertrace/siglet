@@ -1,13 +1,11 @@
 package com.siglet.data.adapter.metric;
 
 import com.google.protobuf.ByteString;
-import com.siglet.SigletError;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.modifiable.metric.ModifiableExemplar;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
-import io.opentelemetry.proto.trace.v1.Span;
 
 public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements ModifiableExemplar {
 

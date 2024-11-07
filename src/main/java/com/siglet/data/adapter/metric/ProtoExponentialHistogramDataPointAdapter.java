@@ -2,15 +2,8 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
-import com.siglet.data.modifiable.metric.ModifiableBuckets;
 import com.siglet.data.modifiable.metric.ModifiableExponentialHistogramDataPoint;
-import com.siglet.data.modifiable.metric.ModifiableHistogramDataPoint;
-import com.siglet.data.unmodifiable.metric.UnmodifiableBuckets;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
-import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProtoExponentialHistogramDataPointAdapter extends Adapter<ExponentialHistogramDataPoint,
         ExponentialHistogramDataPoint.Builder> implements ModifiableExponentialHistogramDataPoint {

@@ -28,8 +28,8 @@ public class RootRouteCreator implements RouteCreator {
     }
 
     @Override
-    public RouteCreator addReceiver(String uri) {
-        return new SimpleRouteCreator(seed, routeBuilder, routeBuilder.from(uri));
+    public RouteCreator addReceiver(String uri, String routeName) {
+        return new SimpleRouteCreator(seed, routeBuilder, routeBuilder.from(uri).routeId(routeName));
     }
 
     @Override

@@ -30,9 +30,9 @@ public class PropertyChecker extends BasicPropertyChecker {
                 }
                 propertyNode.setValueSetter(getValueSetter());
             }
-        } catch (SingleSchemaValidationError e) {
+        } catch (SchemaValidationError e) {
             throw new SingleSchemaValidationError(String.format("property %s %s", getPropertyName(), e.getMessage()),
-                    e.getLocation());
+                    node.getLocation());
         }
     }
 

@@ -1,13 +1,6 @@
 package com.siglet.config.item.repository.validator;
 
-import com.siglet.SigletError;
-import com.siglet.config.item.repository.Node;
 import com.siglet.config.item.repository.NodeRepository;
-import com.siglet.config.item.repository.ReceiverNode;
-
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class OrphanReceiverValidator implements RepositoryValidator {
 

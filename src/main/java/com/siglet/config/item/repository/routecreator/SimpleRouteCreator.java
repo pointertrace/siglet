@@ -36,7 +36,7 @@ public class SimpleRouteCreator implements RouteCreator {
 
 
     @Override
-    public RouteCreator addReceiver(String uri) {
+    public RouteCreator addReceiver(String uri, String routeName) {
         throw new SigletError("cannot be called from a SimpleRouteCreator");
     }
 

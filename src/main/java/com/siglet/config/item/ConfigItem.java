@@ -5,9 +5,7 @@ import com.siglet.config.item.repository.NodeRepository;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
 import org.apache.camel.builder.RouteBuilder;
-import org.checkerframework.checker.units.qual.A;
 
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

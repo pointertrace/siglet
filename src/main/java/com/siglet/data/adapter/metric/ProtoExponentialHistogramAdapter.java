@@ -2,10 +2,8 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.modifiable.metric.ModifiableExponentialHistogram;
-import com.siglet.data.modifiable.metric.ModifiableHistogram;
 import com.siglet.data.unmodifiable.metric.AggregationTemporality;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogram;
-import io.opentelemetry.proto.metrics.v1.Histogram;
 
 public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogram, ExponentialHistogram.Builder>
         implements ModifiableExponentialHistogram {

@@ -21,6 +21,7 @@ public class GroovyProcessor implements Processor {
     public void process(Exchange exchange) throws Exception {
         groovyPropertySetter.setBodyInScript(exchange, script);
         script.run();
-
+        // criar um sender buscando a rota pelo nome e envidando via:
+        //   producerTemplate.sendBody("direct:nome-da-rota", mensagem);
     }
 }

@@ -18,9 +18,6 @@ public interface ModifiableNumberDataPoint extends UnmodifiableNumberDataPoint {
 
     ModifiableNumberDataPoint setAsDouble(double value);
 
-    long getAsLong();
-
-    double getAsDouble();
 
     ModifiableNumberDataPoint setFlags(int flags);
 

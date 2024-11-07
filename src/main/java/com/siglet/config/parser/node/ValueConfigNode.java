@@ -80,14 +80,14 @@ public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
 
     public final static class Float extends NumberConfigNode {
 
-        protected Float(java.lang.Float value, Location location) {
+        Float(java.lang.Float value, Location location) {
             super(value, location);
         }
     }
 
     public final static class Double extends NumberConfigNode {
 
-        protected Double(java.lang.Double value, Location location) {
+        Double(java.lang.Double value, Location location) {
             super(value, location);
         }
     }

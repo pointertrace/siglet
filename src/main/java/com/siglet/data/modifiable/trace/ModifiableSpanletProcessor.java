@@ -1,7 +1,5 @@
 package com.siglet.data.modifiable.trace;
 
-import com.siglet.data.modifiable.trace.ModifiableSpan;
-
 public interface ModifiableSpanletProcessor<T> {
 
 

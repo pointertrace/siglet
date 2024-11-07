@@ -2,15 +2,21 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: "0.0.0.0:4317"
-      http:
+        endpoint: "0.0.0.0:4317"   # Porta para receber dados via gRPC (OTLP)
 
 exporters:
+  debug:
+    verbosity: detailed
   prometheus:
-    endpoint: "0.0.0.0:8880"
+    endpoint: "0.0.0.0:9090"       # Exportador de métricas para Prometheus
+  otlp:
+    endpoint: "jaeger:4319"       # Exportador de traces para o Jaeger
 
 service:
   pipelines:
     metrics:
-      receivers: [otlp]
-      exporters: [prometheus]
+      receivers: [otlp]            # Pipeline de métricas recebendo via OTLP
+      exporters: [debug]      # Exportando métricas para o Prometheus
+    traces:
+      receivers: [otlp]            # Pipeline de traces recebendo via OTLP
+      exporters: [debug]          # Exportando traces para o Jaeger

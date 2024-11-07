@@ -1,7 +1,10 @@
 package com.siglet.data.adapter;
 
 import com.google.protobuf.ByteString;
-import io.opentelemetry.proto.common.v1.*;
+import io.opentelemetry.proto.common.v1.AnyValue;
+import io.opentelemetry.proto.common.v1.ArrayValue;
+import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.common.v1.KeyValueList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

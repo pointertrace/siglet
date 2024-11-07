@@ -2,9 +2,7 @@ package com.siglet.data.adapter.metric;
 
 import com.siglet.data.adapter.AdapterList;
 import com.siglet.data.modifiable.metric.ModifiableHistogramDataPoints;
-import com.siglet.data.modifiable.metric.ModifiableNumberDataPoints;
 import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
-import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
 import java.util.List;
 
