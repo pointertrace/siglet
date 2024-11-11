@@ -38,7 +38,7 @@ public class ProcessorTracelet extends CamelTestSupport {
                     to: exporter
                     type: processor
                     config:
-                      action: trace.get(1).name = "prefix-" + trace.get(1).name
+                      action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -107,7 +107,7 @@ public class ProcessorTracelet extends CamelTestSupport {
                     - second-exporter
                     type: processor
                     config:
-                      action: trace.get(1).name = "prefix-" + trace.get(1).name
+                      action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

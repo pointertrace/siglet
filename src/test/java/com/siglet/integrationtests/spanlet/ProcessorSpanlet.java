@@ -35,7 +35,7 @@ public class ProcessorSpanlet extends CamelTestSupport {
                     to: exporter
                     type: processor
                     config:
-                      action: span.name = span.name +"-suffix"
+                      action: thisSignal.name = thisSignal.name +"-suffix"
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -87,7 +87,7 @@ public class ProcessorSpanlet extends CamelTestSupport {
                     - second-exporter
                     type: processor
                     config:
-                      action: span.name = span.name +"-suffix"
+                      action: thisSignal.name = thisSignal.name +"-suffix"
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

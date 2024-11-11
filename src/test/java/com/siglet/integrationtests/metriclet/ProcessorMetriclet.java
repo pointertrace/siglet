@@ -40,7 +40,7 @@ public class ProcessorMetriclet extends CamelTestSupport {
                     to: exporter
                     type: processor
                     config:
-                      action: metric.gauge.dataPoints[0].asLong = metric.gauge.dataPoints[0].asLong * 10
+                      action: thisSignal.gauge.dataPoints[0].asLong = thisSignal.gauge.dataPoints[0].asLong * 10
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -105,7 +105,7 @@ public class ProcessorMetriclet extends CamelTestSupport {
                     - second-exporter
                     type: processor
                     config:
-                      action: span.name = span.name +"-suffix"
+                      action: thisSignal.name = thisSignal.name +"-suffix"
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

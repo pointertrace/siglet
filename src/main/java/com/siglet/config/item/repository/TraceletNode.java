@@ -3,7 +3,6 @@ package com.siglet.config.item.repository;
 import com.siglet.SigletError;
 import com.siglet.config.item.TraceletItem;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
-import com.siglet.pipeline.GroovyPropertySetter;
 import com.siglet.pipeline.common.filter.FilterConfig;
 import com.siglet.pipeline.common.filter.GroovyPredicate;
 import com.siglet.pipeline.common.processor.GroovyProcessor;
@@ -27,12 +26,12 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
                 }
                 if (getTo().size() == 1) {
                     getTo().getFirst().createRoute(routeCreator.
-                            addProcessor(new GroovyProcessor(processorConfig.getAction().getValue(),
-                                    GroovyPropertySetter.trace)));
+                            addProcessor(new GroovyProcessor(routeCreator.getContext(),
+                                    processorConfig.getAction().getValue())));
                 } else {
                     RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(processorConfig.getAction().getValue(),
-                                    GroovyPropertySetter.trace)).startMulticast();
+                            new GroovyProcessor(routeCreator.getContext(),
+                                    processorConfig.getAction().getValue())).startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
                     }
@@ -45,11 +44,10 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
                 }
                 if (getTo().size() == 1) {
                     getTo().getFirst().createRoute(routeCreator.addFilter(
-                            new GroovyPredicate(filterConfig.getExpression().getValue(), GroovyPropertySetter.trace)));
+                            new GroovyPredicate(filterConfig.getExpression().getValue())));
                 } else {
                     RouteCreator multicast = routeCreator.addFilter(
-                                    new GroovyPredicate(filterConfig.getExpression().getValue(),
-                                            GroovyPropertySetter.trace))
+                                    new GroovyPredicate(filterConfig.getExpression().getValue()))
                             .startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
@@ -64,7 +62,7 @@ public class TraceletNode extends ProcessorNode<TraceletItem> {
                 RouteCreator choice = routeCreator.startChoice();
                 for (Route route : routerConfig.getRoutes().getValue()) {
                     getNodeFromName(route.getTo().getValue()).createRoute(choice.addChoice(
-                            new GroovyPredicate(route.getExpression().getValue(), GroovyPropertySetter.trace)));
+                            new GroovyPredicate(route.getExpression().getValue())));
                 }
                 getNodeFromName(routerConfig.getDefaultRoute().getValue()).createRoute(choice.endChoice());
                 break;

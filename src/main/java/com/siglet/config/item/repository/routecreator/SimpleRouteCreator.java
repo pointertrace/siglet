@@ -2,10 +2,10 @@ package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
 import com.siglet.data.Clonable;
-import com.siglet.pipeline.GroovyPropertySetter;
 import com.siglet.pipeline.common.filter.GroovyPredicate;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregationStrategy;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
@@ -68,7 +68,7 @@ public class SimpleRouteCreator implements RouteCreator {
                 .expression(new TraceAggregatorCorrelationExpression());
 
         if (completionExpression != null) {
-            aggregate = aggregate.completion(new GroovyPredicate(completionExpression, GroovyPropertySetter.trace));
+            aggregate = aggregate.completion(new GroovyPredicate(completionExpression));
         }
         if (inactiveTimeoutMillis != null) {
             aggregate = aggregate.completionTimeout(inactiveTimeoutMillis);
@@ -97,6 +97,11 @@ public class SimpleRouteCreator implements RouteCreator {
     @Override
     public RouteCreator endChoice() {
         throw new SigletError("cannot be called from a SimpleRouteCreator");
+    }
+
+    @Override
+    public CamelContext getContext() {
+        return routeBuilder.getContext();
     }
 
     public static class CloneProcessor implements Processor {

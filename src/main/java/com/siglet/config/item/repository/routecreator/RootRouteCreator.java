@@ -1,6 +1,7 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -74,6 +75,11 @@ public class RootRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator endChoice() {
+        throw new SigletError("cannot be called from a RootRouteCreator");
+    }
+
+    @Override
+    public CamelContext getContext() {
         throw new SigletError("cannot be called from a RootRouteCreator");
     }
 }

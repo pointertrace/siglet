@@ -73,7 +73,8 @@ public class CounterGroovyTest {
                 """;
 
 
-        Script script = shellCreator.createScript(counterScript, spanAdapter);
+        Script script = shellCreator.compile(counterScript);
+        shellCreator.prepareScript(script, spanAdapter);
 
 
 

@@ -1,6 +1,7 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.model.MulticastDefinition;
@@ -59,6 +60,11 @@ public class MulticastRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator endChoice() {
+        throw new SigletError("cannot be called from a MulticastRouteCreator");
+    }
+
+    @Override
+    public CamelContext getContext() {
         throw new SigletError("cannot be called from a MulticastRouteCreator");
     }
 }

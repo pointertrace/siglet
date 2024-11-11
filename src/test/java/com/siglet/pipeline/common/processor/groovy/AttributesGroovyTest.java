@@ -114,7 +114,8 @@ public class AttributesGroovyTest {
                 }
                 """;
 
-        Script script = shellCreator.createScript(attributesScript, spanAdapter);
+        Script script = shellCreator.compile(attributesScript);
+        shellCreator.prepareScript(script, spanAdapter);
         script.run();
 
 
@@ -138,7 +139,8 @@ public class AttributesGroovyTest {
                 }
                 """;
 
-        Script script = shellCreator.createScript(attributesScript, metricAdapter);
+        Script script = shellCreator.compile(attributesScript);
+        shellCreator.prepareScript(script, spanAdapter);
         script.run();
 
         ProtoAttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().getAt(0).getAttributes();

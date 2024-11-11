@@ -39,7 +39,7 @@ public class FilterTracelet extends CamelTestSupport {
                     type: filter
                     config:
                       expression: >
-                        trace.get(1).name.startsWith("prefix")
+                        thisSignal.get(1).name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -103,7 +103,7 @@ public class FilterTracelet extends CamelTestSupport {
                     type: filter
                     config:
                       expression: >
-                        trace.get(1).name.startsWith("prefix")
+                        thisSignal.get(1).name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -169,7 +169,7 @@ public class FilterTracelet extends CamelTestSupport {
                     type: filter
                     config:
                       expression: >
-                        trace.get(1).name.startsWith("prefix")
+                        thisSignal.get(1).name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -245,7 +245,7 @@ public class FilterTracelet extends CamelTestSupport {
                     type: filter
                     config:
                       expression: >
-                        trace.get(1).name.startsWith("prefix")
+                        thisSignal.get(1).name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

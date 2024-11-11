@@ -12,15 +12,18 @@ public class ShellCreator {
         this.scriptBaseClass = scriptBaseClass;
     }
 
-    protected ShellCreator() {
+    public ShellCreator() {
         this.scriptBaseClass = ScriptBaseClass.class;
     }
 
-    public Script createScript(String script, Object thisSignal) {
+    public Script prepareScript(Script script, Object thisSignal) {
+        script.getBinding().setProperty("thisSignal", thisSignal);
+        return script;
+    }
+
+    public Script compile(String scriptText) {
         CompilerConfiguration config = new CompilerConfiguration();
         config.setScriptBaseClass(scriptBaseClass.getName());
-        Script parsedScript = new GroovyShell(scriptBaseClass.getClassLoader(), config).parse(script);
-        parsedScript.getBinding().setProperty("thisSignal", thisSignal);
-        return parsedScript;
+        return new GroovyShell(scriptBaseClass.getClassLoader(), config).parse(scriptText);
     }
 }

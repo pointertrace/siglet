@@ -1,5 +1,6 @@
 package com.siglet.config.item.repository.routecreator;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 
@@ -24,5 +25,7 @@ public interface RouteCreator {
     RouteCreator addChoice(Predicate predicate);
 
     RouteCreator endChoice();
+
+    CamelContext getContext();
 
 }

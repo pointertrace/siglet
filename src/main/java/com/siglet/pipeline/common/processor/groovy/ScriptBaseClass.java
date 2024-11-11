@@ -11,6 +11,7 @@ import groovy.lang.Closure;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
+import org.apache.camel.ProducerTemplate;
 
 public abstract class ScriptBaseClass extends Script {
 
@@ -34,6 +35,10 @@ public abstract class ScriptBaseClass extends Script {
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
         closure.call();
         return newMetric;
+    }
+
+    public SignalSender to(String destination) {
+        return new SignalSender(destination);
     }
 
     public void span(Closure<Void> closure) {

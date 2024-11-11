@@ -44,9 +44,9 @@ public class RouterSpanlet extends CamelTestSupport {
                     config:
                       default: third-exporter
                       routes:
-                      - when: span.name == "first"
+                      - when: thisSignal.name == "first"
                         to: first-exporter
-                      - when: span.name == "second"
+                      - when: thisSignal.name == "second"
                         to: second-exporter
                 """;
 

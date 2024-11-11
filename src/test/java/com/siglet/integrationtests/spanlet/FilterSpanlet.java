@@ -35,7 +35,7 @@ public class FilterSpanlet extends CamelTestSupport {
                     to: exporter
                     type: filter
                     config:
-                      expression: span.name.startsWith("prefix")
+                      expression: thisSignal.name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -90,7 +90,7 @@ public class FilterSpanlet extends CamelTestSupport {
                     - second-exporter
                     type: filter
                     config:
-                      expression: span.name.startsWith("prefix")
+                      expression: thisSignal.name.startsWith("prefix")
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

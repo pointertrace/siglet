@@ -82,7 +82,7 @@ public class SpanGroovyTest {
 
     @Test
     public void span() {
-        String gaugeScript = """
+        String spanScript = """
                 span {
                     name "new span name"
                     spanId 10
@@ -104,7 +104,8 @@ public class SpanGroovyTest {
                 """;
 
 
-        Script script = shellCreator.createScript(gaugeScript, spanAdapter);
+        Script script = shellCreator.compile(spanScript);
+        shellCreator.prepareScript(script, spanAdapter);
 
         script.run();
         assertEquals("new span name", spanAdapter.getName());
@@ -136,7 +137,7 @@ public class SpanGroovyTest {
 
     @Test
     public void spanWithThisSignal() {
-        String gaugeScript = """
+        String spanScript = """
                 span {
                     name "new "+ thisSignal.name
                     spanId thisSignal.spanId + 10
@@ -162,7 +163,8 @@ public class SpanGroovyTest {
                 }
                 """;
 
-        Script script = shellCreator.createScript(gaugeScript, spanAdapter);
+        Script script = shellCreator.compile(spanScript);
+        shellCreator.prepareScript(script, spanAdapter);
 
         script.run();
 
@@ -173,6 +175,7 @@ public class SpanGroovyTest {
         assertEquals(44, spanAdapter.getDroppedEventsCount());
         assertEquals(55, spanAdapter.getDroppedLinksCount());
         assertEquals(66, spanAdapter.getDroppedAttributesCount());
+
         assertEquals(77, spanAdapter.getFlags());
         assertEquals(88, spanAdapter.getStartTimeUnixNano());
         assertEquals(99, spanAdapter.getEndTimeUnixNano());

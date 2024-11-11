@@ -40,7 +40,7 @@ public class TraceAggregator extends CamelTestSupport {
                       config:
                         timeout-millis: 1000
                         inactive-timeout-millis: 2000
-                        completion-expression: return trace.size == 2
+                        completion-expression: return thisSignal.size == 2
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -106,7 +106,7 @@ public class TraceAggregator extends CamelTestSupport {
                       config:
                         timeout-millis: 1000
                         inactive-timeout-millis: 2000
-                        completion-expression: return trace.size == 2
+                        completion-expression: return thisSignal.size == 2
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();

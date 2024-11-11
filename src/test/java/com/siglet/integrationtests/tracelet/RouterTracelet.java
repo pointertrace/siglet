@@ -46,9 +46,9 @@ public class RouterTracelet extends CamelTestSupport {
                     config:
                       default: third-exporter
                       routes:
-                      - when: trace.get(1).name == "first-span"
+                      - when: thisSignal.get(1).name == "first-span"
                         to: first-exporter
-                      - when: trace.get(1).name == "second-span"
+                      - when: thisSignal.get(1).name == "second-span"
                         to: second-exporter
                 """;
 
@@ -128,9 +128,9 @@ public class RouterTracelet extends CamelTestSupport {
                     config:
                       default: third-exporter
                       routes:
-                      - when: trace.get(1).name == "first-span"
+                      - when: thisSignal.get(1).name == "first-span"
                         to: first-exporter
-                      - when: trace.get(1).name == "second-span"
+                      - when: thisSignal.get(1).name == "second-span"
                         to: second-exporter
                 """;
 
@@ -207,9 +207,9 @@ public class RouterTracelet extends CamelTestSupport {
                     config:
                       default: third-exporter
                       routes:
-                      - when: trace.get(1).name == "first-span"
+                      - when: thisSignal.get(1).name == "first-span"
                         to: first-exporter
-                      - when: trace.get(1).name == "second-span"
+                      - when: thisSignal.get(1).name == "second-span"
                         to: second-exporter
                 """;
 
