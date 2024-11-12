@@ -22,17 +22,10 @@ public class SigleletStarter implements Runnable{
         try  {
             String configFileContent = new String(Files.readAllBytes(Paths.get(filePath)));
 
-            ConfigFactory configFactory = new ConfigFactory();
-            Config config = configFactory.create(configFileContent);
+            Siglet siglet = new Siglet(configFileContent);
 
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-            try (CamelContext camelContext = new DefaultCamelContext()) {
-                camelContext.addComponent("otelgrpc", new SigletComponent());
-                camelContext.addRoutes(config.getRouteBuilder());
-                camelContext.start();
-                Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
-                countDownLatch.await();
-            }
+            siglet.start();
+
         } catch (Exception e) {
             System.out.println("error starting siglet:"+e.getMessage());
             e.printStackTrace(System.out);

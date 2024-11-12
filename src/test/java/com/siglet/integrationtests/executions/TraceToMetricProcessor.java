@@ -1,6 +1,7 @@
 package com.siglet.integrationtests.executions;
 
 import com.siglet.camel.component.SigletComponent;
+import com.siglet.cli.Siglet;
 import com.siglet.config.item.ConfigItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;
@@ -18,10 +19,7 @@ public class TraceToMetricProcessor {
     public static void main(String[] args) throws Exception {
 
 
-        ConfigParser configParser = new ConfigParser();
-
-
-        var configFile = """
+        var config = """
                 receivers:
                 - grpc: trace-receiver
                   address: localhost:8080
@@ -42,19 +40,14 @@ public class TraceToMetricProcessor {
                     type: processor
                     config:
                       action: |
-                        println "span spanId=" + span.getSpanId()
-                        newMetric = signalCreator.newMetric()
-                        newMetric.setName("gauge example novo")
-                                 .setDescription("gauge example description")
-                                 .setUnit("gauge example unit")
-                                 .gauge()
-                                 .getDataPoints().add()
-                                 .setTimeUnixNano(1)
-                                 .setAsLong(100)
-                                 .getAttributes()
-                                 .set("attribute", "attribute value");
-                
-                        sender.send("otelgrpc://localhost:8080?signalType=metric",newMetric)
+                        println "span spanId=" + thisSignal.getSpanId()
+                        to "metric-receiver" send newGauge {
+                          name "derivated metric"
+                          unit "tests per second"
+                          dataPoint {
+                            value 1000
+                          }
+                        }
                 - metric: metric-pipeline
                   from: metric-receiver
                   start: metriclet
@@ -64,35 +57,13 @@ public class TraceToMetricProcessor {
                     type: processor
                     config:
                       action: |
-                        println "metric name=" + metric.getName()
+                        println "metric name=" + thisSignal.getName()
                 """;
 
 
-        ConfigNode node = configParser.parse(configFile);
+        Siglet siglet = new Siglet(config);
 
-
-        globalConfigChecker().check(node);
-
-        Object conf = node.getValue();
-
-        var globalConfig = assertInstanceOf(ConfigItem.class, conf);
-
-        globalConfig.build();
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        CamelContext camelContext = new DefaultCamelContext();
-        camelContext.addComponent("otelgrpc", new SigletComponent());
-        RouteBuilder routeBuilder = globalConfig.build();
-        routeBuilder.getRoutes().getRoutes().forEach(rd -> {
-            System.out.println(rd.toString());
-        });
-        camelContext.addRoutes(routeBuilder);
-        camelContext.start();
-
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> countDownLatch.countDown()));
-
-        countDownLatch.await();
+        siglet.start();
 
     }
 }

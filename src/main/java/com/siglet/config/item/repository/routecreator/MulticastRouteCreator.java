@@ -6,6 +6,8 @@ import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.model.MulticastDefinition;
 
+import java.util.function.Supplier;
+
 public class MulticastRouteCreator implements RouteCreator {
 
     private final MulticastDefinition multicastDefinition;
@@ -63,8 +65,4 @@ public class MulticastRouteCreator implements RouteCreator {
         throw new SigletError("cannot be called from a MulticastRouteCreator");
     }
 
-    @Override
-    public CamelContext getContext() {
-        throw new SigletError("cannot be called from a MulticastRouteCreator");
-    }
 }

@@ -20,7 +20,7 @@ public class ConfigFactory {
         Object conf = node.getValue();
 
         if (conf instanceof ConfigItem configItem) {
-            return new Config(configItem.build());
+            return new Config(configItem);
         } else {
             throw new SigletError("Internal error: config must be a ConfigItem");
         }

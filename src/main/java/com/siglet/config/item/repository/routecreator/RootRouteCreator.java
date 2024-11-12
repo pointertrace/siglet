@@ -7,6 +7,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class RootRouteCreator implements RouteCreator {
 
@@ -78,8 +79,4 @@ public class RootRouteCreator implements RouteCreator {
         throw new SigletError("cannot be called from a RootRouteCreator");
     }
 
-    @Override
-    public CamelContext getContext() {
-        throw new SigletError("cannot be called from a RootRouteCreator");
-    }
 }

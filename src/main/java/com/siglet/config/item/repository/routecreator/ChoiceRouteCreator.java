@@ -8,6 +8,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.ChoiceDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class ChoiceRouteCreator implements RouteCreator {
 
@@ -80,8 +81,4 @@ public class ChoiceRouteCreator implements RouteCreator {
         return new SimpleRouteCreator(seed, routeBuilder, routeBuilder.from(choiceRouterLink.getLink()));
     }
 
-    @Override
-    public CamelContext getContext() {
-        throw new SigletError("cannot be called from a ChoiceRouteCreator");
-    }
 }

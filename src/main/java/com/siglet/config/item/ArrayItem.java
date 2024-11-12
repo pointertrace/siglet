@@ -3,6 +3,7 @@ package com.siglet.config.item;
 import com.siglet.config.located.Location;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ArrayItem<T extends Item> extends Item {
 
@@ -16,6 +17,10 @@ public class ArrayItem<T extends Item> extends Item {
 
     public List<T> getValue() {
         return values;
+    }
+
+    public Stream<T> stream() {
+        return values.stream();
     }
 
 }

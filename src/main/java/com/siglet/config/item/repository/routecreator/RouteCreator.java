@@ -4,6 +4,8 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 
+import java.util.function.Supplier;
+
 public interface RouteCreator {
 
     RouteCreator addReceiver(String uri, String routeName);
@@ -25,7 +27,5 @@ public interface RouteCreator {
     RouteCreator addChoice(Predicate predicate);
 
     RouteCreator endChoice();
-
-    CamelContext getContext();
 
 }

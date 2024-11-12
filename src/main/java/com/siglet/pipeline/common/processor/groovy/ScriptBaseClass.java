@@ -1,6 +1,7 @@
 package com.siglet.pipeline.common.processor.groovy;
 
 import com.siglet.SigletError;
+import com.siglet.cli.SigletContext;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.adapter.trace.ProtoTraceAdapter;
@@ -11,7 +12,10 @@ import groovy.lang.Closure;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
+import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+
+import java.util.function.Supplier;
 
 public abstract class ScriptBaseClass extends Script {
 
@@ -39,6 +43,10 @@ public abstract class ScriptBaseClass extends Script {
 
     public SignalSender to(String destination) {
         return new SignalSender(destination);
+    }
+
+    public CamelContext getContext() {
+        return SigletContext.getInstance().getContextSupplier().get();
     }
 
     public void span(Closure<Void> closure) {

@@ -13,6 +13,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class SimpleRouteCreator implements RouteCreator {
 
@@ -97,11 +98,6 @@ public class SimpleRouteCreator implements RouteCreator {
     @Override
     public RouteCreator endChoice() {
         throw new SigletError("cannot be called from a SimpleRouteCreator");
-    }
-
-    @Override
-    public CamelContext getContext() {
-        return routeBuilder.getContext();
     }
 
     public static class CloneProcessor implements Processor {

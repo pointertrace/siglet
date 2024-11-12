@@ -1,5 +1,6 @@
 package com.siglet.integrationtests.spanlet;
 
+import com.siglet.cli.SigletContext;
 import com.siglet.config.Config;
 import com.siglet.config.ConfigFactory;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
@@ -9,6 +10,8 @@ import io.opentelemetry.proto.trace.v1.Span;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -50,6 +53,7 @@ public class RouterSpanlet extends CamelTestSupport {
                         to: second-exporter
                 """;
 
+        SigletContext.init(()-> context, Map.of());
         ConfigFactory configFactory = new ConfigFactory();
 
         Config config = configFactory.create(yaml);

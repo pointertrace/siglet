@@ -28,12 +28,10 @@ public class SpanletNode extends ProcessorNode<SpanletItem> {
                 }
                 if (getTo().size() == 1) {
                     getTo().getFirst().createRoute(routeCreator
-                            .addProcessor(new GroovyProcessor(routeCreator.getContext(),
-                                    processorConfig.getAction().getValue())));
+                            .addProcessor(new GroovyProcessor(processorConfig.getAction().getValue())));
                 } else {
                     RouteCreator multicast = routeCreator.addProcessor(
-                            new GroovyProcessor(routeCreator.getContext(),
-                                    processorConfig.getAction().getValue())).startMulticast();
+                            new GroovyProcessor(processorConfig.getAction().getValue())).startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
                     }
