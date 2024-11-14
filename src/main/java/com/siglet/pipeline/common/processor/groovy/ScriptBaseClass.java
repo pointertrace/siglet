@@ -41,6 +41,10 @@ public abstract class ScriptBaseClass extends Script {
         return newMetric;
     }
 
+    public Expression when(Closure<Boolean> closure) {
+        return closure.call()? Expression.TRUE_EXPRESSION: Expression.FALSE_EXPRESSION;
+    }
+
     public SignalSender to(String destination) {
         return new SignalSender(destination);
     }
