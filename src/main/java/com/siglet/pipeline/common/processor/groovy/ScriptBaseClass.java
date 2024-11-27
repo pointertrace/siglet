@@ -42,7 +42,7 @@ public abstract class ScriptBaseClass extends Script {
     }
 
     public Expression when(Closure<Boolean> closure) {
-        return closure.call()? Expression.TRUE_EXPRESSION: Expression.FALSE_EXPRESSION;
+        return closure.call() ? Expression.TRUE_EXPRESSION : Expression.FALSE_EXPRESSION;
     }
 
     public SignalSender to(String destination) {

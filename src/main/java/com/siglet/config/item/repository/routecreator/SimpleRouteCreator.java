@@ -58,7 +58,8 @@ public class SimpleRouteCreator implements RouteCreator {
     }
 
     public RouteCreator startMulticast() {
-        return new MulticastRouteCreator(routeDefinition.multicast().onPrepare(new CloneProcessor()));
+        return new MulticastRouteCreator(seed, routeBuilder, routeDefinition, routeDefinition.multicast()
+                .onPrepare(new CloneProcessor()));
     }
 
     @Override

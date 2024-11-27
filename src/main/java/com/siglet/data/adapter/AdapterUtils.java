@@ -31,12 +31,21 @@ public class AdapterUtils {
         return ByteBuffer.wrap(spanId).getLong();
     }
 
+    public static String traceIdEx(ByteString traceId) {
+        return Long.toHexString(traceIdHigh(traceId.toByteArray())) +
+                Long.toHexString(traceIdLow(traceId.toByteArray()));
+    }
+
+    public static String spanIdEx(ByteString spanId) {
+        return Long.toHexString(traceIdHigh(spanId.toByteArray()));
+    }
+
     public static long traceIdHigh(byte[] traceId) {
-        return ByteBuffer.wrap(Arrays.copyOfRange(traceId,0,8)).getLong();
+        return ByteBuffer.wrap(Arrays.copyOfRange(traceId, 0, 8)).getLong();
     }
 
     public static long traceIdLow(byte[] traceId) {
-        return ByteBuffer.wrap(Arrays.copyOfRange(traceId,8,16)).getLong();
+        return ByteBuffer.wrap(Arrays.copyOfRange(traceId, 8, 16)).getLong();
     }
 
     public static Object anyValueToObject(AnyValue anyValue) {
@@ -120,8 +129,7 @@ public class AdapterUtils {
             }
             case byte[] b -> AnyValue.newBuilder().setBytesValue(ByteString.copyFrom(b)).build();
             case null -> AnyValue.newBuilder().build();
-            default ->
-                    throw new SigletError(value.getClass().getSimpleName() + "is not a valid attriute type!");
+            default -> throw new SigletError(value.getClass().getSimpleName() + "is not a valid attriute type!");
         };
     }
 

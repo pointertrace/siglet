@@ -124,7 +124,7 @@ class ProtoEventsAdapterTest {
         ProtoAttributesAdapter attributes = protoEventAdapter.getAttributes();
 
         assertEquals(1, attributes.getSize());
-        assertTrue(attributes.has("str-attribute"));
+        assertTrue(attributes.containsKey("str-attribute"));
         assertTrue(attributes.isString("str-attribute"));
         assertEquals("str-attribute-value", attributes.getAsString("str-attribute"));
     }

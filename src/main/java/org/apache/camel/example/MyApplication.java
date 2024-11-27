@@ -16,7 +16,7 @@
  */
 package org.apache.camel.example;
 
-import com.siglet.camel.component.SigletComponent;
+import com.siglet.camel.component.otelgrpc.SigletComponent;
 import org.apache.camel.main.Main;
 
 /**

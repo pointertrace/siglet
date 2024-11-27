@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
@@ -19,14 +19,12 @@ public class SigletComponent extends DefaultComponent {
 
     @Override
     public void start() {
-        System.out.println("component started");
         super.start();
         grpcServers.start();
     }
 
     @Override
     public void stop() {
-        System.out.println("component stoped");
         super.stop();
         grpcServers.stop();
     }

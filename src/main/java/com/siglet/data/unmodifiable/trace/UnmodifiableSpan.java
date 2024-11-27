@@ -17,6 +17,12 @@ public interface UnmodifiableSpan {
 
     long getParentSpanId();
 
+    String getSpanIdEx();
+
+    String getTraceIdEx();
+
+    String getParentSpanIdEx();
+
     String getTraceState();
 
     String getName();
@@ -42,5 +48,7 @@ public interface UnmodifiableSpan {
     int getDroppedEventsCount() ;
 
     int getDroppedLinksCount() ;
+
+    boolean isRoot();
 
 }

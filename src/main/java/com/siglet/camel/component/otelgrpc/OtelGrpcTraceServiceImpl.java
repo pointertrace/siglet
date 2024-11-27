@@ -1,5 +1,6 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
+import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
@@ -29,7 +30,8 @@ public class OtelGrpcTraceServiceImpl extends TraceServiceGrpc.TraceServiceImplB
             for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
-                    System.out.println("span received:" + span);
+                    System.out.println("span received traceIdHigh" + AdapterUtils.traceIdEx(span.getTraceId())
+                            + " spanId" + AdapterUtils.spanIdEx(span.getSpanId()));
                     Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
                     // TODO verifica se precisa de resource e scope builder/
                     exchange.getIn().setBody(new ProtoSpanAdapter(span, resource.toBuilder().build(), instrumentationScope.toBuilder().build(), true));

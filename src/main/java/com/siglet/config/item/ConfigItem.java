@@ -77,6 +77,7 @@ public class ConfigItem extends Item {
                 .flatMap(this::getItems)
                 .forEach(nodeRepository::addItem);
 
+        nodeRepository.addItem(new DropExporterItem());
         nodeRepository.connect();
 
         return nodeRepository;

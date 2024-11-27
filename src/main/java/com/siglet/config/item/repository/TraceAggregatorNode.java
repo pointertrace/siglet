@@ -1,9 +1,12 @@
 package com.siglet.config.item.repository;
 
 import com.siglet.SigletError;
+import com.siglet.config.item.ValueItem;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorConfig;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
+
+import java.util.function.Supplier;
 
 public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 
@@ -23,14 +26,15 @@ public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
                 if (getTo().size() == 1) {
 
                     getTo().getFirst().createRoute(routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression().getValue(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis().getValue(),
-                            traceAggregatorConfig.getTimeoutMillis().getValue()));
+                            getValue(traceAggregatorConfig.getCompletionExpression()),
+                            getValue(traceAggregatorConfig.getInactiveTimeoutMillis()),
+                            getValue(traceAggregatorConfig.getTimeoutMillis())));
                 } else {
+                    // TODO ver se precisa de getValue!!!!!
                     RouteCreator multicast = routeCreator.traceAggregator(
-                            traceAggregatorConfig.getCompletionExpression().getValue(),
-                            traceAggregatorConfig.getInactiveTimeoutMillis().getValue(),
-                            traceAggregatorConfig.getTimeoutMillis().getValue()).startMulticast();
+                            getValue(traceAggregatorConfig.getCompletionExpression()),
+                            getValue(traceAggregatorConfig.getInactiveTimeoutMillis()),
+                            getValue(traceAggregatorConfig.getTimeoutMillis())).startMulticast();
                     for (Node<?> node : getTo()) {
                         node.createRoute(multicast);
                     }
@@ -43,5 +47,8 @@ public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 
     }
 
+    private <T> T getValue(ValueItem<T> valueItem) {
+        return valueItem == null? null: valueItem.getValue();
+    }
 
 }

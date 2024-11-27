@@ -1,17 +1,7 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.camel.component.SigletComponent;
 import com.siglet.cli.Siglet;
-import com.siglet.config.item.ConfigItem;
-import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
-import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
 
-import java.util.concurrent.CountDownLatch;
-
-import static com.siglet.config.ConfigCheckFactory.globalConfigChecker;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class TraceToMetricProcessor {

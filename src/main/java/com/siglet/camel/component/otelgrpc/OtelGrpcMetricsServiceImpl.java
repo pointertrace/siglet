@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import io.grpc.stub.StreamObserver;

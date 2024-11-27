@@ -12,7 +12,8 @@ public class GroovyPredicate implements Predicate {
 
     private final Script script;
 
-    private final ShellCreator shellCreator = SigletContext.getInstance().getShellCreator();
+    //TODO para singleton
+    private final ShellCreator shellCreator = new ShellCreator();
 
     public GroovyPredicate(String script) {
         this.script = shellCreator.compile(script);

@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import io.grpc.Server;
 import org.apache.camel.Endpoint;
@@ -11,7 +11,6 @@ public class SigletConsumer extends DefaultConsumer {
 
     public SigletConsumer(Endpoint endpoint, Processor processor) {
         super(endpoint, processor);
-        System.out.println("consumer criado uri " + endpoint.getEndpointUri());
 
         SigletEndpoint sigletEndpoint = (SigletEndpoint) endpoint;
         if (sigletEndpoint.getEndpointUri().contains("?signalType=trace")) {
@@ -26,12 +25,10 @@ public class SigletConsumer extends DefaultConsumer {
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        System.out.println("depois iniciado");
     }
 
     @Override
     protected void doStop() throws Exception {
         super.doStop();
-        System.out.println("depois finalizado");
     }
 }

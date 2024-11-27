@@ -1,6 +1,6 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.camel.component.SigletComponent;
+import com.siglet.camel.component.otelgrpc.SigletComponent;
 import com.siglet.config.item.ConfigItem;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.ConfigNode;

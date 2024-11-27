@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface UnmodifiableAttributes {
 
-    boolean has(String key);
+    boolean containsKey(String key);
 
     boolean isString(String key);
 

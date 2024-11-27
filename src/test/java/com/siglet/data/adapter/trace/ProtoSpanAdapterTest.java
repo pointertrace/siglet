@@ -128,7 +128,7 @@ class ProtoSpanAdapterTest {
                 .setDroppedLinksCount(30)
                 .setKind(SpanKind.SERVER);
 
-        assertEquals(protoSpanAdapter.getTraceIdHigh(), 10);
+        assertEquals(10, protoSpanAdapter.getTraceIdHigh());
         assertEquals(protoSpanAdapter.getTraceIdLow(), 20);
         assertEquals(protoSpanAdapter.getSpanId(), 10L);
         assertEquals(protoSpanAdapter.getParentSpanId(), 30L);
@@ -141,6 +141,7 @@ class ProtoSpanAdapterTest {
         assertEquals(protoSpanAdapter.getDroppedEventsCount(), 20);
         assertEquals(protoSpanAdapter.getDroppedLinksCount(), 30);
         assertEquals(protoSpanAdapter.getKind(), SpanKind.SERVER);
+        assertFalse(protoSpanAdapter.isRoot());
 
     }
 
@@ -202,6 +203,7 @@ class ProtoSpanAdapterTest {
         assertEquals(protoSpanAdapter.getDroppedEventsCount(), 2);
         assertEquals(protoSpanAdapter.getDroppedLinksCount(), 3);
         assertEquals(protoSpanAdapter.getKind(), SpanKind.CLIENT);
+        assertFalse(protoSpanAdapter.isRoot());
 
     }
 
@@ -221,7 +223,7 @@ class ProtoSpanAdapterTest {
         assertEquals(protoSpanAdapter.getDroppedEventsCount(), 2);
         assertEquals(protoSpanAdapter.getDroppedLinksCount(), 3);
         assertEquals(protoSpanAdapter.getKind(), SpanKind.CLIENT);
-
+        assertFalse(protoSpanAdapter.isRoot());
     }
 
     @Test
@@ -250,7 +252,7 @@ class ProtoSpanAdapterTest {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoSpanAdapter.getAttributes();
 
-        assertTrue(protoAttributesAdapter.has("str-attribute"));
+        assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
 
@@ -269,7 +271,7 @@ class ProtoSpanAdapterTest {
         protoAttributesAdapter.set("bool-attribute", true);
         protoAttributesAdapter.remove("long-attribute");
 
-        assertTrue(protoAttributesAdapter.has("str-attribute"));
+        assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
 
@@ -294,7 +296,7 @@ class ProtoSpanAdapterTest {
 
         assertEquals(1, attributes.getSize());
 
-        assertTrue(attributes.has("lnk-str-attribute"));
+        assertTrue(attributes.containsKey("lnk-str-attribute"));
         assertTrue(attributes.isString("lnk-str-attribute"));
         assertEquals("lnk-str-attribute-value", attributes.getAsString("lnk-str-attribute"));
 
@@ -322,7 +324,7 @@ class ProtoSpanAdapterTest {
 
         assertEquals(1, attributes.getSize());
 
-        assertTrue(attributes.has("evt-str-attribute"));
+        assertTrue(attributes.containsKey("evt-str-attribute"));
         assertTrue(attributes.isString("evt-str-attribute"));
         assertEquals("evt-str-attribute-value", attributes.getAsString("evt-str-attribute"));
 
@@ -344,7 +346,7 @@ class ProtoSpanAdapterTest {
 
         assertEquals(1, attributes.getSize());
 
-        assertTrue(attributes.has("rs-str-attribute"));
+        assertTrue(attributes.containsKey("rs-str-attribute"));
         assertTrue(attributes.isString("rs-str-attribute"));
         assertEquals("rs-str-attribute-value", attributes.getAsString("rs-str-attribute"));
 
@@ -363,7 +365,7 @@ class ProtoSpanAdapterTest {
 
         assertEquals(1, attributes.getSize());
 
-        assertTrue(attributes.has("is-str-attribute"));
+        assertTrue(attributes.containsKey("is-str-attribute"));
         assertTrue(attributes.isString("is-str-attribute"));
         assertEquals("is-str-attribute-value", attributes.getAsString("is-str-attribute"));
     }
@@ -542,5 +544,17 @@ class ProtoSpanAdapterTest {
         assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
 
+    }
+
+    @Test
+    public void isRoot() {
+        Span span = Span.newBuilder()
+                .setName("root span")
+                .build();
+
+        protoSpanAdapter = new ProtoSpanAdapter(span, Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build(),true);
+
+        assertTrue(protoSpanAdapter.isRoot());
     }
 }

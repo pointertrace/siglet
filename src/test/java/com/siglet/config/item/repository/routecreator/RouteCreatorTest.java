@@ -1,13 +1,22 @@
 package com.siglet.config.item.repository.routecreator;
 
+import com.google.protobuf.ByteString;
 import com.siglet.data.Clonable;
+import com.siglet.data.adapter.AdapterUtils;
+import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.pipeline.common.processor.GroovyProcessor;
+import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.resource.v1.Resource;
+import io.opentelemetry.proto.trace.v1.Span;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.Route;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class RouteCreatorTest extends CamelTestSupport {
     @Test
@@ -22,7 +31,7 @@ class RouteCreatorTest extends CamelTestSupport {
         RootRouteCreator root = new RootRouteCreator();
 
         root
-                .addReceiver("direct:start","start")
+                .addReceiver("direct:start", "start")
                 .addProcessor(new SumProcessor(1))
                 .addProcessor(new SumProcessor(3))
                 .addExporter("mock:output");
@@ -44,6 +53,115 @@ class RouteCreatorTest extends CamelTestSupport {
 
     }
 
+    /*
+
+    receiver(1,start);
+      -> processor(1_1,sum(1))
+        -> aggregator(1_1_1)
+        -> exporter(second-exporter)
+      -> exporter(first-exporter)
+    */
+    @Test
+    public void processorToMulticast() throws Exception {
+
+        var firstProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
+                .setName("first-span")
+                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
+                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(1)))
+                .build(),
+                Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build(), true);
+
+        var secondProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
+                .setName("second-span")
+                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
+                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
+                .build(),
+                Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build(), true);
+
+        RootRouteCreator root = new RootRouteCreator();
+        RouteCreator receiver = root
+                .addReceiver("direct:start", "start");
+
+        var processor1_1 = receiver.addProcessor(new GroovyProcessor("thisSignal.name = thisSignal.name + \"_altered\""));
+        var aggregator = processor1_1.traceAggregator("thisSignal.size == 2", 1_000L,1_000L);
+        aggregator.addExporter("mock:first-exporter");
+        var multicast = receiver.startMulticast();
+        multicast.addExporter("mock:second-exporter");
+        multicast.endMulticast();
+
+        context.addRoutes(root.getRouteBuilder());
+
+
+
+        template.sendBody("direct:start", firstProtoSpan );
+
+
+        MockEndpoint firstExporter = getMockEndpoint("mock:first-exporter");
+
+        MockEndpoint secondExporter = getMockEndpoint("mock:second-exporter");
+
+        secondExporter.expectedMessageCount(1);
+
+        assertEquals(1, secondExporter.getExchanges().size());
+        var firstSpanAdapter = secondExporter.getExchanges().getFirst().getIn().getBody(ProtoSpanAdapter.class);
+        assertEquals(firstProtoSpan.getTraceIdHigh(), firstSpanAdapter.getTraceIdHigh());
+        assertEquals(firstProtoSpan.getTraceIdLow(), firstSpanAdapter.getTraceIdLow());
+        assertEquals(firstProtoSpan.getName(), firstSpanAdapter.getName());
+
+    }
+
+    @Test
+    public void processorToMulticastX() throws Exception {
+
+        var firstProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
+                .setName("first-span")
+                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
+                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(1)))
+                .build(),
+                Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build(), true);
+
+        var secondProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
+                .setName("second-span")
+                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
+                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
+                .build(),
+                Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build(), true);
+
+        RootRouteCreator root = new RootRouteCreator();
+        RouteCreator receiver = root
+                .addReceiver("direct:start", "start");
+
+        var multicast = receiver.startMulticast();
+        var processor1_1 = multicast.addProcessor(new GroovyProcessor("thisSignal.name = thisSignal.name + \"_altered\""));
+        var aggregator = processor1_1.traceAggregator("thisSignal.size == 2", 1_000L,1_000L);
+        aggregator.addExporter("mock:first-exporter");
+        multicast.addExporter("mock:second-exporter");
+        multicast.endMulticast();
+
+        context.addRoutes(root.getRouteBuilder());
+
+
+
+        template.sendBody("direct:start", firstProtoSpan );
+
+
+        MockEndpoint firstExporter = getMockEndpoint("mock:first-exporter");
+
+        MockEndpoint secondExporter = getMockEndpoint("mock:second-exporter");
+
+        secondExporter.expectedMessageCount(1);
+
+        assertEquals(1, secondExporter.getExchanges().size());
+        var firstSpanAdapter = secondExporter.getExchanges().getFirst().getIn().getBody(ProtoSpanAdapter.class);
+        assertEquals(firstProtoSpan.getTraceIdHigh(), firstSpanAdapter.getTraceIdHigh());
+        assertEquals(firstProtoSpan.getTraceIdLow(), firstSpanAdapter.getTraceIdLow());
+        assertEquals(firstProtoSpan.getName(), firstSpanAdapter.getName());
+
+    }
     // TODO new test!
 //    @Test
     public void complex() throws Exception {

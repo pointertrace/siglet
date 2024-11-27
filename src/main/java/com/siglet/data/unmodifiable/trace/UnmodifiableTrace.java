@@ -8,6 +8,8 @@ public interface UnmodifiableTrace {
 
     byte[] getTraceId();
 
+    String getTraceIdEx();
+
     UnmodifiableSpan get(long spanId);
 
     UnmodifiableSpan getAt(int index);

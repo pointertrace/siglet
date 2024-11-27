@@ -45,6 +45,16 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
                 getValue(Span.Link::getSpanId, Span.Link.Builder::getSpanId).toByteArray()).getLong();
     }
 
+    @Override
+    public String getSpanIdEx() {
+        return Long.toHexString(getSpanId());
+    }
+
+    @Override
+    public String getTraceIdEx() {
+        return Long.toHexString(getTraceIdHigh()) + Long.toHexString(getTraceIdLow());
+    }
+
     public ProtoLinkAdapter setSpanId(long spanId) {
         setValue(Span.Link.Builder::setSpanId, ByteString.copyFrom(ByteBuffer.allocate(Long.BYTES).
                 putLong(spanId).array()));

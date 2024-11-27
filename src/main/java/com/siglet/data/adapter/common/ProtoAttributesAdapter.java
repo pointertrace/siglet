@@ -18,7 +18,7 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
     }
 
     @Override
-    public boolean has(String key) {
+    public boolean containsKey(String key) {
         return getAt(key) != null;
     }
 

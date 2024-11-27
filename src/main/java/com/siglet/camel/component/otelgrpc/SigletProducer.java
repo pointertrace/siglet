@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
@@ -45,11 +45,7 @@ public class SigletProducer extends DefaultProducer {
 
             Span span = spanAdapter.getUpdated();
             System.out.println("sending ----------------");
-            System.out.println("endponit = " + getEndpoint());
-            System.out.println("span =" + spanAdapter);
-            System.out.println("span name =" + spanAdapter.getName());
-            System.out.println("span id =" + spanAdapter.getSpanId());
-            System.out.println("updated span name=" + span.getName());
+            System.out.println("traceId:" + spanAdapter.getTraceIdEx());
             System.out.println("----------------");
             Resource resource = spanAdapter.getUpdatedResource();
             InstrumentationScope instrumentationScope = spanAdapter.getUpdatedInstrumentationScope();
@@ -65,16 +61,13 @@ public class SigletProducer extends DefaultProducer {
             ExportTraceServiceResponse resp = traceServiceStub.export(exportTraceServiceRequest);
         } else if (body instanceof ProtoTraceAdapter traceAdapter) {
 
-            System.out.println("span[0].id =" + traceAdapter.getAt(0).getSpanId());
+            System.out.println("span[0].id =" + traceAdapter.getAt(0).getSpanIdEx());
             traceAdapter.forEachSpan(modifiableSpan -> {
 
                 ProtoSpanAdapter spanAdapter = (ProtoSpanAdapter) modifiableSpan;
                 Span span = spanAdapter.getUpdated();
                 System.out.println("sending ----------------");
-                System.out.println("endponit = " + getEndpoint());
-                System.out.println("span =" + spanAdapter);
-                System.out.println("span name =" + spanAdapter.getName());
-                System.out.println("updated span name=" + span.getName());
+                System.out.println("traceId:" + spanAdapter.getTraceIdEx());
                 System.out.println("----------------");
                 Resource resource = spanAdapter.getUpdatedResource();
                 InstrumentationScope instrumentationScope = spanAdapter.getUpdatedInstrumentationScope();

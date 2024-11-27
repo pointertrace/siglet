@@ -96,7 +96,7 @@ class ProtoLinksAdapterTest {
         ProtoAttributesAdapter protoAttributesAdapter = protoLinkAdapter.getAttributes();
 
         assertEquals(1, protoAttributesAdapter.getSize());
-        assertTrue(protoAttributesAdapter.has("str-key"));
+        assertTrue(protoAttributesAdapter.containsKey("str-key"));
         assertTrue(protoAttributesAdapter.isString("str-key"));
         assertEquals("str-value", protoAttributesAdapter.getAsString("str-key"));
 

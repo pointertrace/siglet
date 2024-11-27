@@ -49,24 +49,24 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
     @Override
     public long getTraceIdHigh() {
         ByteString traceId = getValue(Span::getTraceId, Span.Builder::getTraceId);
-        if (traceId != null) {
+        if (traceId == null || traceId.isEmpty()) {
+            return 0;
+        } else {
             return ByteBuffer.wrap(
                             Arrays.copyOfRange(traceId.toByteArray(), 0, 8))
                     .getLong();
-        } else {
-            return 0;
         }
     }
 
     @Override
     public long getTraceIdLow() {
         ByteString traceId = getValue(Span::getTraceId, Span.Builder::getTraceId);
-        if (traceId != null) {
+        if (traceId == null || traceId.isEmpty()) {
+            return 0;
+        } else {
             return ByteBuffer.wrap(
                     Arrays.copyOfRange(traceId.toByteArray(), 8, 16)
             ).getLong();
-        } else {
-            return 0;
         }
     }
 
@@ -92,10 +92,10 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
     @Override
     public long getSpanId() {
         ByteString spanId = getValue(Span::getSpanId, Span.Builder::getSpanId);
-        if (spanId != null) {
-            return ByteBuffer.wrap(spanId.toByteArray()).getLong();
-        } else {
+        if (spanId == null || spanId.isEmpty()) {
             return 0;
+        } else {
+            return ByteBuffer.wrap(spanId.toByteArray()).getLong();
         }
     }
 
@@ -108,11 +108,26 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
     @Override
     public long getParentSpanId() {
         ByteString parentSpanId = getValue(Span::getParentSpanId, Span.Builder::getParentSpanId);
-        if (parentSpanId != null) {
-            return ByteBuffer.wrap(parentSpanId.toByteArray()).getLong();
-        } else {
+        if (parentSpanId == null || parentSpanId.isEmpty()) {
             return 0;
+        } else {
+            return ByteBuffer.wrap(parentSpanId.toByteArray()).getLong();
         }
+    }
+
+    @Override
+    public String getSpanIdEx() {
+        return Long.toHexString(getSpanId());
+    }
+
+    @Override
+    public String getTraceIdEx() {
+        return Long.toHexString(getTraceIdLow()) + Long.toHexString(getTraceIdHigh());
+    }
+
+    @Override
+    public String getParentSpanIdEx() {
+        return Long.toHexString(getParentSpanId());
     }
 
     @Override
@@ -164,8 +179,6 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
         setValue(Span.Builder::setKind, AdapterUtils.getKind(spanKind));
         return this;
     }
-
-
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
@@ -235,6 +248,13 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
     public int getFlags() {
         return getValue(Span::getFlags, Span.Builder::getFlags);
     }
+
+
+    @Override
+    public boolean isRoot() {
+        return getParentSpanId() == 0;
+    }
+
 
     @Override
     public ProtoSpanAdapter setFlags(int flags) {

@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import com.siglet.SigletError;
 import io.grpc.BindableService;
@@ -54,7 +54,6 @@ public class GrpcServers {
         serversBuilders.values().stream()
                 .map(ForwardingServerBuilder::build)
                 .forEach(this::stopServer);
-
     }
 
 

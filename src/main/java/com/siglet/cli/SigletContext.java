@@ -15,13 +15,9 @@ public class SigletContext {
 
     private final Map<String,String> receiverConsumers;
 
-    private final ShellCreator shellCreator;
-
     private SigletContext(Supplier<CamelContext> contextSupplier, Map<String, String> receiverConsumers) {
         this.contextSupplier = contextSupplier;
         this.receiverConsumers = receiverConsumers;
-        this.shellCreator = new ShellCreator();
-
     }
 
     public static synchronized SigletContext getInstance() {
@@ -47,7 +43,4 @@ public class SigletContext {
         return receiverConsumers;
     }
 
-    public ShellCreator getShellCreator() {
-        return shellCreator;
-    }
 }

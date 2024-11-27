@@ -44,6 +44,11 @@ public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clo
     }
 
     @Override
+    public String getTraceIdEx() {
+        return Long.toHexString(getTraceIdHigh()) + Long.toHexString(getTraceIdLow());
+    }
+
+    @Override
     public ProtoTraceAdapter add(ProtoSpanAdapter span) {
         checkUpdate();
         spansBySpanId.put(span.getSpanId(), span);
@@ -77,9 +82,8 @@ public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clo
         return spansBySpanId.size();
     }
 
-
-    private boolean hasRoot() {
-        return spansBySpanId.values().stream().anyMatch(span -> span.getLinks().getSize() == 0);
+    public boolean hasRoot() {
+        return spansBySpanId.values().stream().anyMatch(span -> span.getParentSpanId() == 0);
     }
 
     private boolean hasOrphan() {

@@ -177,7 +177,7 @@ class ProtoAttributesAdapterTest {
         assertTrue(protoAttributesAdapter.isString("new-string-key"));
         assertEquals(protoAttributesAdapter.getAsString("new-string-key"), "new-value");
 
-        assertFalse(protoAttributesAdapter.has("bool-key"));
+        assertFalse(protoAttributesAdapter.containsKey("bool-key"));
 
         assertTrue(protoAttributesAdapter.isLong("long-key"));
         assertEquals(protoAttributesAdapter.getAsLong("long-key"), 20L);

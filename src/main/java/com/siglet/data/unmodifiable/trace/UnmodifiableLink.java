@@ -10,6 +10,10 @@ public interface UnmodifiableLink {
 
     long getSpanId();
 
+    String getSpanIdEx();
+
+    String getTraceIdEx();
+
     String getTraceState() ;
 
     int getFlags() ;

@@ -88,7 +88,7 @@ class ProtoEventAdapterTest {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoEventAdapter.getAttributes();
 
-        assertTrue(protoAttributesAdapter.has("str-attribute"));
+        assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
 
@@ -105,7 +105,7 @@ class ProtoEventAdapterTest {
         protoAttributesAdapter.set("bool-attribute", true);
         protoAttributesAdapter.remove("long-attribute");
 
-        assertTrue(protoAttributesAdapter.has("str-attribute"));
+        assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
         assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
 

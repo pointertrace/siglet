@@ -1,4 +1,4 @@
-package com.siglet.camel.component;
+package com.siglet.camel.component.otelgrpc;
 
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
@@ -23,7 +23,6 @@ public class SigletEndpoint extends DefaultEndpoint {
         super(uri, component);
         this.grpcServers = grpcServers;
         socketAddress = SigletEndpoint.getSocketAddress(uri);
-        System.out.println("endpoint criado " + uri);
     }
 
     public InetSocketAddress getSocketAddress() {
@@ -36,7 +35,6 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     @Override
     public Producer createProducer() {
-        System.out.println("criando producer");
         return new SigletProducer(this);
     }
 
@@ -47,7 +45,6 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     @Override
     public Consumer createConsumer(Processor processor) {
-        System.out.println("criando consumer");
         return new SigletConsumer(this, processor);
     }
 
@@ -72,7 +69,6 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     public void setSignalType(String value) {
         this.signalType = signalType;
-        System.out.println("aqui!!!!");
     }
 
     public String getSignalType() {
@@ -81,13 +77,11 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     @Override
     public void start() {
-        System.out.println("endpoint started! " + getEndpointUri());
         super.start();
     }
 
     @Override
     public void stop() {
-        System.out.println("endpoint stoped!" + getEndpointUri());
         super.stop();
     }
 }

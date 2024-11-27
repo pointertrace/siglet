@@ -87,6 +87,7 @@ class ProtoAttributesAdapterGroovyTest {
         protoAttributesAdapter["byte-array-key"] = new byte[]{3, 4}
 
 
+        assertTrue(protoAttributesAdapter.containsKey("string-key"))
         assertEquals("other-value", protoAttributesAdapter["string-key"])
         assertTrue("string-key" in protoAttributesAdapter)
         assertEquals("new-value", protoAttributesAdapter["new-string-key"])
