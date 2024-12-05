@@ -5,7 +5,7 @@ import com.siglet.config.Config;
 import com.siglet.config.ConfigFactory;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -75,7 +75,7 @@ public class RouterTracelet extends CamelTestSupport {
                 .build();
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
 
-        ProtoTraceAdapter protoTraceAdapter = new ProtoTraceAdapter(protoSpanAdapter1, true);
+        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
 
         template.sendBody("direct:start", protoTraceAdapter);
@@ -85,7 +85,7 @@ public class RouterTracelet extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertNotNull(traceAdapter.get(1));
         assertNotNull(traceAdapter.get(2));
@@ -157,7 +157,7 @@ public class RouterTracelet extends CamelTestSupport {
                 .build();
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
 
-        ProtoTraceAdapter protoTraceAdapter = new ProtoTraceAdapter(protoSpanAdapter1, true);
+        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
 
         template.sendBody("direct:start", protoTraceAdapter);
@@ -168,7 +168,7 @@ public class RouterTracelet extends CamelTestSupport {
 
         mock = getMockEndpoint("mock:second-output");
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertNotNull(traceAdapter.get(1));
         assertNotNull(traceAdapter.get(2));
@@ -236,7 +236,7 @@ public class RouterTracelet extends CamelTestSupport {
                 .build();
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
 
-        ProtoTraceAdapter protoTraceAdapter = new ProtoTraceAdapter(protoSpanAdapter1, true);
+        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
 
         template.sendBody("direct:start", protoTraceAdapter);
@@ -251,7 +251,7 @@ public class RouterTracelet extends CamelTestSupport {
 
         mock = getMockEndpoint("mock:third-output");
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertNotNull(traceAdapter.get(1));
         assertNotNull(traceAdapter.get(2));

@@ -1,11 +1,10 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
-import com.siglet.data.Clonable;
+import com.siglet.data.CloneableAdapter;
 import com.siglet.pipeline.common.filter.GroovyPredicate;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregationStrategy;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
@@ -13,7 +12,6 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 public class SimpleRouteCreator implements RouteCreator {
 
@@ -106,8 +104,8 @@ public class SimpleRouteCreator implements RouteCreator {
         @Override
         public void process(Exchange exchange) throws Exception {
             Object body = exchange.getIn().getBody();
-            if (body instanceof Clonable clonable) {
-                exchange.getIn().setBody(clonable.clone());
+            if (body instanceof CloneableAdapter<?> cloneableAdapter) {
+                exchange.getIn().setBody(cloneableAdapter.cloneAdapter());
             } else {
                 throw new SigletError("type " + body.getClass().getName() + " is not clonable!");
             }

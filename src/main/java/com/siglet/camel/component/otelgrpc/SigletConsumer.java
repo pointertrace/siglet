@@ -7,8 +7,6 @@ import org.apache.camel.support.DefaultConsumer;
 
 public class SigletConsumer extends DefaultConsumer {
 
-    private Server server;
-
     public SigletConsumer(Endpoint endpoint, Processor processor) {
         super(endpoint, processor);
 
@@ -22,13 +20,5 @@ public class SigletConsumer extends DefaultConsumer {
         }
     }
 
-    @Override
-    protected void doStart() throws Exception {
-        super.doStart();
-    }
 
-    @Override
-    protected void doStop() throws Exception {
-        super.doStop();
-    }
 }

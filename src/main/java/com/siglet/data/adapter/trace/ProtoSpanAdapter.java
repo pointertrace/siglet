@@ -1,7 +1,7 @@
 package com.siglet.data.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.data.Clonable;
+import com.siglet.data.CloneableAdapter;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.common.ProtoAttributesAdapter;
@@ -17,7 +17,8 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements ModifiableSpan, Clonable {
+public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
+        implements ModifiableSpan, CloneableAdapter<ProtoSpanAdapter> {
 
     private Resource protoResource;
 
@@ -364,4 +365,8 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder> implements Mod
     }
 
 
+    @Override
+    public ProtoSpanAdapter cloneAdapter() {
+        return new ProtoSpanAdapter(getUpdated(), getUpdatedResource(), getUpdatedInstrumentationScope(), isUpdatable());
+    }
 }

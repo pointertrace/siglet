@@ -148,7 +148,6 @@ class ProtoResourceAdapterTest {
         assertTrue(attrAsMap.containsKey("bool-attribute"));
 
 
-
     }
 
     @Test
@@ -170,4 +169,5 @@ class ProtoResourceAdapterTest {
         assertTrue(attrAsMap.containsKey("bool-attribute"));
 
     }
+
 }

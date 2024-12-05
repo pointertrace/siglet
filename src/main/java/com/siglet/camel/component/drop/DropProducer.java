@@ -3,7 +3,7 @@ package com.siglet.camel.component.drop;
 import com.siglet.SigletError;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
@@ -25,7 +25,7 @@ public class DropProducer extends DefaultProducer {
                 System.out.println("span.traceId=" + spanAdapter.getTraceIdEx());
                 System.out.println("span.spanId=" + spanAdapter.getSpanIdEx());
             }
-            case ProtoTraceAdapter traceAdapter -> {
+            case ProtoTrace traceAdapter -> {
                 System.out.println("trace.traceId=" + traceAdapter.getTraceIdEx());
                 System.out.println("num spans=" + traceAdapter.getSize());
                 traceAdapter.forEachSpan(span -> {

@@ -5,7 +5,7 @@ import com.siglet.config.Config;
 import com.siglet.config.ConfigFactory;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -75,7 +75,7 @@ public class TraceAggregator extends CamelTestSupport {
 
 
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
 
     }
@@ -140,7 +140,7 @@ public class TraceAggregator extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertNotNull(traceAdapter.get(1));
         assertNotNull(traceAdapter.get(2));
@@ -151,7 +151,7 @@ public class TraceAggregator extends CamelTestSupport {
         mock.assertIsSatisfied();
 
         assertEquals(1, mock.getExchanges().size());
-        traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertNotNull(traceAdapter.get(1));
         assertNotNull(traceAdapter.get(2));

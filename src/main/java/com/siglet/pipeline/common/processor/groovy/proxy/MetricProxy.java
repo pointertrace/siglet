@@ -6,7 +6,7 @@ public class MetricProxy extends BaseProxy{
 
     protected final ProtoMetricAdapter metricAdapter;
 
-    public MetricProxy(Object thisSignal,ProtoMetricAdapter metricAdapter) {
+    public MetricProxy(Object thisSignal, ProtoMetricAdapter metricAdapter) {
         super(thisSignal);
         this.metricAdapter = metricAdapter;
     }

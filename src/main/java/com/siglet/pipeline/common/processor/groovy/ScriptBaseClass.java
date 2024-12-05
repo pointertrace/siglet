@@ -4,7 +4,7 @@ import com.siglet.SigletError;
 import com.siglet.cli.SigletContext;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import com.siglet.pipeline.common.processor.groovy.proxy.CounterProxy;
 import com.siglet.pipeline.common.processor.groovy.proxy.GaugeProxy;
 import com.siglet.pipeline.common.processor.groovy.proxy.SpanProxy;
@@ -13,9 +13,6 @@ import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import org.apache.camel.CamelContext;
-import org.apache.camel.ProducerTemplate;
-
-import java.util.function.Supplier;
 
 public abstract class ScriptBaseClass extends Script {
 
@@ -77,7 +74,7 @@ public abstract class ScriptBaseClass extends Script {
                 case ProtoSpanAdapter spanAdapter -> {
                     return spanAdapter.getUpdatedResource();
                 }
-                case ProtoTraceAdapter traceAdapter -> {
+                case ProtoTrace traceAdapter -> {
                     if (traceAdapter.getSize() == 0) {
                         throw new SigletError("Cannot get resource from a trace without spans");
                     } else {
@@ -103,7 +100,7 @@ public abstract class ScriptBaseClass extends Script {
                 case ProtoSpanAdapter spanAdapter -> {
                     return spanAdapter.getUpdatedInstrumentationScope();
                 }
-                case ProtoTraceAdapter traceAdapter -> {
+                case ProtoTrace traceAdapter -> {
                     if (traceAdapter.getSize() == 0) {
                         throw new SigletError("Cannot get resource from a trace without spans");
                     } else {

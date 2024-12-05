@@ -228,5 +228,6 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
             return this;
         }
     }
+
 }
 

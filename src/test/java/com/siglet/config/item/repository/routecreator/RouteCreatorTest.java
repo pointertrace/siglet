@@ -1,7 +1,7 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.google.protobuf.ByteString;
-import com.siglet.data.Clonable;
+import com.siglet.data.CloneableAdapter;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.pipeline.common.processor.GroovyProcessor;
@@ -10,7 +10,6 @@ import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.Route;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class RouteCreatorTest extends CamelTestSupport {
         context.addRoutes(root.getRouteBuilder());
 
 
-        ClonableInteger i = new ClonableInteger(1);
+        CloneableAdapterInteger i = new CloneableAdapterInteger(1);
         template.sendBody("direct:start", i);
 
 
@@ -49,7 +48,7 @@ class RouteCreatorTest extends CamelTestSupport {
 
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(5, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(5, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
     }
 
@@ -220,8 +219,8 @@ class RouteCreatorTest extends CamelTestSupport {
         context.addRoutes(root.getRouteBuilder());
 
 
-        template.sendBody("direct:first-start", new ClonableInteger(0));
-        template.sendBody("direct:second-start", new ClonableInteger(0));
+        template.sendBody("direct:first-start", new CloneableAdapterInteger(0));
+        template.sendBody("direct:second-start", new CloneableAdapterInteger(0));
 
 
         MockEndpoint mock = getMockEndpoint("mock:first-output");
@@ -229,42 +228,42 @@ class RouteCreatorTest extends CamelTestSupport {
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(11, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(11, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
         mock = getMockEndpoint("mock:second-output");
 
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(21, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(21, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
         mock = getMockEndpoint("mock:third-output");
 
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(1100, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(1100, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
         mock = getMockEndpoint("mock:forth-output");
 
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(2100, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(2100, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
         mock = getMockEndpoint("mock:fifth-output");
 
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(0, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(0, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
 
         mock = getMockEndpoint("mock:sixth-output");
 
         mock.expectedMessageCount(1);
 
         assertEquals(1, mock.getExchanges().size());
-        assertEquals(10000, mock.getExchanges().getFirst().getIn().getBody(ClonableInteger.class).getValue());
+        assertEquals(10000, mock.getExchanges().getFirst().getIn().getBody(CloneableAdapterInteger.class).getValue());
     }
 
     public static class SumProcessor implements Processor {
@@ -277,26 +276,31 @@ class RouteCreatorTest extends CamelTestSupport {
 
         @Override
         public void process(Exchange exchange) throws Exception {
-            ClonableInteger i = exchange.getIn().getBody(ClonableInteger.class);
-            exchange.getIn().setBody(new ClonableInteger(i.getValue() + summand));
+            CloneableAdapterInteger i = exchange.getIn().getBody(CloneableAdapterInteger.class);
+            exchange.getIn().setBody(new CloneableAdapterInteger(i.getValue() + summand));
         }
     }
 
-    public static class ClonableInteger implements Clonable {
+    public static class CloneableAdapterInteger implements CloneableAdapter<CloneableAdapterInteger> {
 
         private final int value;
 
-        public ClonableInteger(int value) {
+        public CloneableAdapterInteger(int value) {
             this.value = value;
         }
 
         @Override
         public Object clone() {
-            return new ClonableInteger(value);
+            return new CloneableAdapterInteger(value);
         }
 
         public int getValue() {
             return value;
+        }
+
+        @Override
+        public CloneableAdapterInteger cloneAdapter() {
+            return null;
         }
     }
 

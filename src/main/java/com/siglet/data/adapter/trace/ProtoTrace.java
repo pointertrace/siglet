@@ -1,7 +1,7 @@
 package com.siglet.data.adapter.trace;
 
 import com.siglet.SigletError;
-import com.siglet.data.Clonable;
+import com.siglet.data.CloneableAdapter;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.modifiable.trace.ModifiableTrace;
 
@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clonable {
+
+// TODO extender o trace
+public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter> {
 
     private final boolean updatable;
 
@@ -21,7 +23,7 @@ public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clo
 
     private final List<ProtoSpanAdapter> spans = new ArrayList<>();
 
-    public ProtoTraceAdapter(ProtoSpanAdapter firstSpan, boolean updatable) {
+    public ProtoTrace(ProtoSpanAdapter firstSpan, boolean updatable) {
         this.firstSpan = firstSpan;
         this.spansBySpanId.put(firstSpan.getSpanId(), firstSpan);
         this.spans.add(firstSpan);
@@ -49,7 +51,7 @@ public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clo
     }
 
     @Override
-    public ProtoTraceAdapter add(ProtoSpanAdapter span) {
+    public ProtoTrace add(ProtoSpanAdapter span) {
         checkUpdate();
         spansBySpanId.put(span.getSpanId(), span);
         spans.add(span);
@@ -101,8 +103,8 @@ public class ProtoTraceAdapter implements ModifiableTrace<ProtoSpanAdapter>, Clo
     }
 
     @Override
-    public ProtoTraceAdapter clone() {
-        ProtoTraceAdapter result = new ProtoTraceAdapter(firstSpan, updatable);
+    public ProtoTrace clone() {
+        ProtoTrace result = new ProtoTrace(firstSpan, updatable);
         spansBySpanId.values().forEach(result::add);
         return result;
     }

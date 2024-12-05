@@ -1,5 +1,6 @@
 package com.siglet.data.adapter.common;
 
+import com.siglet.data.CloneableAdapter;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.modifiable.ModifiableResource;
 import io.opentelemetry.proto.resource.v1.Resource;
@@ -39,4 +40,5 @@ public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> im
             builder.addAllAttributes(protoAttributesAdapter.getUpdated());
         }
     }
+
 }

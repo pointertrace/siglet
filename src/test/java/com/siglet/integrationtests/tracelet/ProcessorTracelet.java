@@ -5,7 +5,7 @@ import com.siglet.config.Config;
 import com.siglet.config.ConfigFactory;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -65,7 +65,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
 
-        ProtoTraceAdapter protoTraceAdapter = new ProtoTraceAdapter(protoSpanAdapter1, true);
+        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
 
         template.sendBody("direct:start",protoTraceAdapter);
@@ -76,7 +76,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
 
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertEquals("prefix-first-span", traceAdapter.get(1).getName());
         assertEquals("second-span", traceAdapter.get(2).getName());
@@ -134,7 +134,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
 
-        ProtoTraceAdapter protoTraceAdapter = new ProtoTraceAdapter(protoSpanAdapter1, true);
+        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
 
         template.sendBody("direct:start",protoTraceAdapter);
@@ -145,7 +145,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
 
         assertEquals(1, mock.getExchanges().size());
-        var traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertEquals("prefix-first-span", traceAdapter.get(1).getName());
         assertEquals("second-span", traceAdapter.get(2).getName());
@@ -157,7 +157,7 @@ public class ProcessorTracelet extends CamelTestSupport {
 
 
         assertEquals(1, mock.getExchanges().size());
-        traceAdapter = assertInstanceOf(ProtoTraceAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
+        traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
         assertEquals("prefix-first-span", traceAdapter.get(1).getName());
         assertEquals("second-span", traceAdapter.get(2).getName());

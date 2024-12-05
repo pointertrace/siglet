@@ -1,7 +1,6 @@
 package com.siglet.data.adapter.metric;
 
 import com.siglet.SigletError;
-import com.siglet.data.Clonable;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.adapter.common.ProtoInstrumentationScopeAdapter;
 import com.siglet.data.adapter.common.ProtoResourceAdapter;
@@ -11,7 +10,7 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements ModifiableMetric, Clonable {
+public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements ModifiableMetric {
 
 
     private Resource protoResource;
@@ -41,11 +40,11 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public ProtoMetricAdapter() {
-        super(Metric.newBuilder(),Metric.Builder::build);
+        super(Metric.newBuilder(), Metric.Builder::build);
     }
 
     public ProtoMetricAdapter(Resource protoResource, InstrumentationScope protoInstrumentationScope) {
-        super(Metric.newBuilder(),Metric.Builder::build);
+        super(Metric.newBuilder(), Metric.Builder::build);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
     }
@@ -92,6 +91,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         protoSumAdapter = new ProtoSumAdapter();
         return protoSumAdapter;
     }
+
     @Override
     public ModifiableData getData() {
         if (hasGauge()) {
@@ -200,6 +200,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         }
         return protoInstrumentationScopeAdapter;
     }
+
     public Resource getUpdatedResource() {
         if (!isUpdatable()) {
             return protoResource;

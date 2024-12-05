@@ -2,6 +2,7 @@ package com.siglet.data.adapter;
 
 import com.google.protobuf.Message;
 import com.siglet.SigletError;
+import com.siglet.data.CloneableAdapter;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -100,6 +101,5 @@ public class Adapter<M extends Message, B extends Message.Builder> {
             updated = true;
         }
     }
-
 
 }

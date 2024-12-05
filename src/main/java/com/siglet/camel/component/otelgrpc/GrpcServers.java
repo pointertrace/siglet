@@ -4,6 +4,7 @@ import com.siglet.SigletError;
 import io.grpc.BindableService;
 import io.grpc.ForwardingServerBuilder;
 import io.grpc.Server;
+import io.grpc.ServerInterceptor;
 import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
@@ -19,7 +20,9 @@ public class GrpcServers {
     public void addServer(InetSocketAddress address, BindableService service) {
         NettyServerBuilder builder = serversBuilders.get(address);
         if (builder == null) {
-            builder = NettyServerBuilder.forAddress(address);
+            builder = NettyServerBuilder.forAddress(address)
+                    .keepAliveTime(5, TimeUnit.SECONDS)
+                    .keepAliveTimeout(20, TimeUnit.SECONDS);
             serversBuilders.put(address, builder);
         }
         builder.addService(service);

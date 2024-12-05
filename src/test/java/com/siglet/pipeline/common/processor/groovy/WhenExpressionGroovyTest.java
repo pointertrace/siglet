@@ -2,11 +2,7 @@ package com.siglet.pipeline.common.processor.groovy;
 
 import com.google.protobuf.ByteString;
 import com.siglet.data.adapter.AdapterUtils;
-import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoStatusAdapter;
-import com.siglet.data.trace.SpanKind;
-import com.siglet.data.trace.StatusCode;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;

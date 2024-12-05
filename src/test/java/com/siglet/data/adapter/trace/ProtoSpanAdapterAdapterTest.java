@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProtoSpanAdapterTest {
+class ProtoSpanAdapterAdapterTest {
 
     private Span protoSpan;
 
@@ -129,18 +129,18 @@ class ProtoSpanAdapterTest {
                 .setKind(SpanKind.SERVER);
 
         assertEquals(10, protoSpanAdapter.getTraceIdHigh());
-        assertEquals(protoSpanAdapter.getTraceIdLow(), 20);
-        assertEquals(protoSpanAdapter.getSpanId(), 10L);
-        assertEquals(protoSpanAdapter.getParentSpanId(), 30L);
-        assertEquals(protoSpanAdapter.getName(), "new-name");
-        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 3L);
-        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 4L);
-        assertEquals(protoSpanAdapter.getFlags(), 2);
-        assertEquals(protoSpanAdapter.getTraceState(), "new-trace-state");
-        assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 10);
-        assertEquals(protoSpanAdapter.getDroppedEventsCount(), 20);
-        assertEquals(protoSpanAdapter.getDroppedLinksCount(), 30);
-        assertEquals(protoSpanAdapter.getKind(), SpanKind.SERVER);
+        assertEquals(20, protoSpanAdapter.getTraceIdLow());
+        assertEquals(10L, protoSpanAdapter.getSpanId());
+        assertEquals(30L, protoSpanAdapter.getParentSpanId());
+        assertEquals("new-name", protoSpanAdapter.getName());
+        assertEquals(3L, protoSpanAdapter.getStartTimeUnixNano());
+        assertEquals(4L, protoSpanAdapter.getEndTimeUnixNano());
+        assertEquals(2, protoSpanAdapter.getFlags());
+        assertEquals("new-trace-state", protoSpanAdapter.getTraceState());
+        assertEquals(10, protoSpanAdapter.getDroppedAttributesCount());
+        assertEquals(20, protoSpanAdapter.getDroppedEventsCount());
+        assertEquals(30, protoSpanAdapter.getDroppedLinksCount());
+        assertEquals(SpanKind.SERVER, protoSpanAdapter.getKind());
         assertFalse(protoSpanAdapter.isRoot());
 
     }
@@ -192,17 +192,17 @@ class ProtoSpanAdapterTest {
     public void setAndGetNotChangedValues() {
         protoSpanAdapter.setTraceId(10L, 20L);
 
-        assertEquals(protoSpanAdapter.getSpanId(), 1L);
-        assertEquals(protoSpanAdapter.getParentSpanId(), 3L);
-        assertEquals(protoSpanAdapter.getName(), "span-name");
-        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 1L);
-        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 2L);
-        assertEquals(protoSpanAdapter.getFlags(), 1);
-        assertEquals(protoSpanAdapter.getTraceState(), "trace-state");
-        assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 1);
-        assertEquals(protoSpanAdapter.getDroppedEventsCount(), 2);
-        assertEquals(protoSpanAdapter.getDroppedLinksCount(), 3);
-        assertEquals(protoSpanAdapter.getKind(), SpanKind.CLIENT);
+        assertEquals(1L,protoSpanAdapter.getSpanId());
+        assertEquals(3L, protoSpanAdapter.getParentSpanId());
+        assertEquals("span-name",protoSpanAdapter.getName());
+        assertEquals(1L, protoSpanAdapter.getStartTimeUnixNano());
+        assertEquals(2L, protoSpanAdapter.getEndTimeUnixNano());
+        assertEquals(1, protoSpanAdapter.getFlags());
+        assertEquals("trace-state",protoSpanAdapter.getTraceState());
+        assertEquals(1,protoSpanAdapter.getDroppedAttributesCount());
+        assertEquals(2, protoSpanAdapter.getDroppedEventsCount());
+        assertEquals(3, protoSpanAdapter.getDroppedLinksCount());
+        assertEquals(SpanKind.CLIENT,protoSpanAdapter.getKind());
         assertFalse(protoSpanAdapter.isRoot());
 
     }
@@ -210,19 +210,19 @@ class ProtoSpanAdapterTest {
     @Test
     public void get() {
 
-        assertEquals(protoSpanAdapter.getTraceIdHigh(), 0);
-        assertEquals(protoSpanAdapter.getTraceIdLow(), 2);
-        assertEquals(protoSpanAdapter.getSpanId(), 1L);
-        assertEquals(protoSpanAdapter.getParentSpanId(), 3L);
-        assertEquals(protoSpanAdapter.getName(), "span-name");
-        assertEquals(protoSpanAdapter.getStartTimeUnixNano(), 1L);
-        assertEquals(protoSpanAdapter.getEndTimeUnixNano(), 2L);
-        assertEquals(protoSpanAdapter.getFlags(), 1);
-        assertEquals(protoSpanAdapter.getTraceState(), "trace-state");
-        assertEquals(protoSpanAdapter.getDroppedAttributesCount(), 1);
-        assertEquals(protoSpanAdapter.getDroppedEventsCount(), 2);
-        assertEquals(protoSpanAdapter.getDroppedLinksCount(), 3);
-        assertEquals(protoSpanAdapter.getKind(), SpanKind.CLIENT);
+        assertEquals(0, protoSpanAdapter.getTraceIdHigh());
+        assertEquals(2, protoSpanAdapter.getTraceIdLow());
+        assertEquals(1L, protoSpanAdapter.getSpanId());
+        assertEquals(3L, protoSpanAdapter.getParentSpanId());
+        assertEquals("span-name",protoSpanAdapter.getName());
+        assertEquals(1L, protoSpanAdapter.getStartTimeUnixNano());
+        assertEquals(2L, protoSpanAdapter.getEndTimeUnixNano());
+        assertEquals(1, protoSpanAdapter.getFlags());
+        assertEquals("trace-state",protoSpanAdapter.getTraceState());
+        assertEquals(1, protoSpanAdapter.getDroppedAttributesCount());
+        assertEquals(2,protoSpanAdapter.getDroppedEventsCount());
+        assertEquals(3,protoSpanAdapter.getDroppedLinksCount());
+        assertEquals(SpanKind.CLIENT,protoSpanAdapter.getKind());
         assertFalse(protoSpanAdapter.isRoot());
     }
 
@@ -254,7 +254,7 @@ class ProtoSpanAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
+        assertEquals("str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
@@ -273,7 +273,7 @@ class ProtoSpanAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
+        assertEquals("new-str-attribute-value",protoAttributesAdapter.getAsString("str-attribute"));
 
         assertTrue(protoAttributesAdapter.isUpdated());
     }
@@ -499,7 +499,7 @@ class ProtoSpanAdapterTest {
 
 
         assertEquals(1, actual.getEventsList().size());
-        Span.Event event = actual.getEventsList().get(0);
+        Span.Event event = actual.getEventsList().getFirst();
         assertEquals("second-event-name", event.getName());
         assertEquals(2, event.getTimeUnixNano());
         assertEquals(40, event.getDroppedAttributesCount());
@@ -553,8 +553,102 @@ class ProtoSpanAdapterTest {
                 .build();
 
         protoSpanAdapter = new ProtoSpanAdapter(span, Resource.newBuilder().build(),
-                InstrumentationScope.newBuilder().build(),true);
+                InstrumentationScope.newBuilder().build(), true);
 
         assertTrue(protoSpanAdapter.isRoot());
+    }
+
+    @Test
+    public void clone_noChange() {
+
+        ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
+
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+
+        assertSame(protoSpan, clonedSpanAdapter.getUpdated());
+        assertSame(protoResource, clonedSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, clonedSpanAdapter.getUpdatedInstrumentationScope());
+    }
+
+    @Test
+    public void clone_changeOriginal() {
+
+        ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
+
+        protoSpanAdapter.setName("new-name");
+        protoSpanAdapter.getResource().setDroppedAttributesCount(1000);
+        protoSpanAdapter.getInstrumentationScope().setName("new-name");
+
+        assertNotSame(protoSpan, protoSpanAdapter.getUpdated());
+        assertEquals("new-name", protoSpanAdapter.getName());
+
+        assertNotSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertEquals(1000,protoSpanAdapter.getUpdatedResource().getDroppedAttributesCount());
+
+        assertNotSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+        assertEquals("new-name", protoSpanAdapter.getInstrumentationScope().getName());
+
+        assertSame(protoSpan, clonedSpanAdapter.getUpdated());
+        assertSame(protoResource, clonedSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, clonedSpanAdapter.getUpdatedInstrumentationScope());
+    }
+
+    @Test
+    public void clone_changeCloned() {
+
+        ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
+
+        clonedSpanAdapter.setName("new-name");
+        clonedSpanAdapter.getResource().setDroppedAttributesCount(1000);
+        clonedSpanAdapter.getInstrumentationScope().setName("new-name");
+
+        assertNotSame(protoSpan, clonedSpanAdapter.getUpdated());
+        assertEquals("new-name", clonedSpanAdapter.getName());
+
+        assertNotSame(protoResource, clonedSpanAdapter.getUpdatedResource());
+        assertEquals(1000,clonedSpanAdapter.getUpdatedResource().getDroppedAttributesCount());
+
+        assertNotSame(protoInstrumentationScope, clonedSpanAdapter.getUpdatedInstrumentationScope());
+        assertEquals("new-name", clonedSpanAdapter.getInstrumentationScope().getName());
+
+        assertSame(protoSpan, protoSpanAdapter.getUpdated());
+        assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+    }
+
+
+    @Test
+    public void clone_bothChanged() {
+
+        ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
+
+        protoSpanAdapter.setName("new-name-original");
+        protoSpanAdapter.getResource().setDroppedAttributesCount(1000);
+        protoSpanAdapter.getInstrumentationScope().setName("new-name-original");
+
+        clonedSpanAdapter.setName("new-name-cloned");
+        clonedSpanAdapter.getResource().setDroppedAttributesCount(2000);
+        clonedSpanAdapter.getInstrumentationScope().setName("new-name-cloned");
+
+        assertNotSame(protoSpan, protoSpanAdapter.getUpdated());
+        assertEquals("new-name-original", protoSpanAdapter.getName());
+
+        assertNotSame(protoResource, protoSpanAdapter.getUpdatedResource());
+        assertEquals(1000,protoSpanAdapter.getUpdatedResource().getDroppedAttributesCount());
+
+        assertNotSame(protoInstrumentationScope, protoSpanAdapter.getUpdatedInstrumentationScope());
+        assertEquals("new-name-original", protoSpanAdapter.getInstrumentationScope().getName());
+
+
+        assertNotSame(protoSpan, clonedSpanAdapter.getUpdated());
+        assertEquals("new-name-cloned", clonedSpanAdapter.getName());
+
+        assertNotSame(protoResource, clonedSpanAdapter.getUpdatedResource());
+        assertEquals(2000,clonedSpanAdapter.getUpdatedResource().getDroppedAttributesCount());
+
+        assertNotSame(protoInstrumentationScope, clonedSpanAdapter.getUpdatedInstrumentationScope());
+        assertEquals("new-name-cloned", clonedSpanAdapter.getInstrumentationScope().getName());
     }
 }

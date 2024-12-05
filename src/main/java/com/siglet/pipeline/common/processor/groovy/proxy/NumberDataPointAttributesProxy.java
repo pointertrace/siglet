@@ -9,7 +9,7 @@ public class NumberDataPointAttributesProxy extends AttributesProxy {
 
     private final ProtoMetricAdapter metricAdapter;
 
-    public NumberDataPointAttributesProxy(Object thisSignal, ProtoMetricAdapter metricAdapter,ProtoNumberDataPointAdapter numberDataPointAdapter) {
+    public NumberDataPointAttributesProxy(Object thisSignal, ProtoMetricAdapter metricAdapter, ProtoNumberDataPointAdapter numberDataPointAdapter) {
         super(thisSignal,numberDataPointAdapter.getAttributes());
         this.metricAdapter = metricAdapter;
         this.numberDataPointAdapter = numberDataPointAdapter;

@@ -2,7 +2,7 @@ package com.siglet.camel.component.otelgrpc;
 
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.data.adapter.trace.ProtoTraceAdapter;
+import com.siglet.data.adapter.trace.ProtoTrace;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
@@ -59,7 +59,7 @@ public class SigletProducer extends DefaultProducer {
                     .build();
 
             ExportTraceServiceResponse resp = traceServiceStub.export(exportTraceServiceRequest);
-        } else if (body instanceof ProtoTraceAdapter traceAdapter) {
+        } else if (body instanceof ProtoTrace traceAdapter) {
 
             System.out.println("span[0].id =" + traceAdapter.getAt(0).getSpanIdEx());
             traceAdapter.forEachSpan(modifiableSpan -> {
