@@ -8,6 +8,7 @@ import io.grpc.ServerInterceptor;
 import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +21,7 @@ public class GrpcServers {
     public void addServer(InetSocketAddress address, BindableService service) {
         NettyServerBuilder builder = serversBuilders.get(address);
         if (builder == null) {
-            builder = NettyServerBuilder.forAddress(address)
-                    .keepAliveTime(5, TimeUnit.SECONDS)
-                    .keepAliveTimeout(20, TimeUnit.SECONDS);
+            builder = NettyServerBuilder.forAddress(address);
             serversBuilders.put(address, builder);
         }
         builder.addService(service);

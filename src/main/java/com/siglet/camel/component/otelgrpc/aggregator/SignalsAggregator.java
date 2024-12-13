@@ -2,6 +2,8 @@ package com.siglet.camel.component.otelgrpc.aggregator;
 
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
@@ -13,12 +15,17 @@ import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SignalsAggregator {
 
     private final List<ResourceSpans.Builder> resourceSpansBuilders = new ArrayList<>();
 
     private final List<ResourceMetrics.Builder> resourceMetricsBuilders = new ArrayList<>();
+
+    private boolean hasSpans;
+
+    private boolean hasMetrics;
 
 
     public void add(ProtoSpanAdapter spanAdapter) {
@@ -31,10 +38,12 @@ public class SignalsAggregator {
                     for (ScopeSpans.Builder scopedSpanBld : resourceSpanBld.getScopeSpansBuilderList()) {
                         if (isToAdd.equals(scopedSpanBld.getScope())) {
                             scopedSpanBld.addSpans(spanToAdd);
+                            hasSpans = true;
                             return;
                         }
                     }
                     resourceSpanBld.addScopeSpansBuilder().setScope(isToAdd).addSpans(spanToAdd);
+                    hasSpans = true;
                     return;
                 }
             }
@@ -45,6 +54,7 @@ public class SignalsAggregator {
                                     .setScope(isToAdd)
                                     .addSpans(spanToAdd)
                                     .build()));
+            hasSpans = true;
         } else {
             resourceSpansBuilders.add(ResourceSpans.newBuilder()
                     .setResource(rsToAdd)
@@ -52,6 +62,7 @@ public class SignalsAggregator {
                             .setScope(isToAdd)
                             .addSpans(spanToAdd)
                             .build()));
+            hasSpans = true;
         }
     }
 
@@ -65,10 +76,12 @@ public class SignalsAggregator {
                     for (ScopeMetrics.Builder scopedMetricBld : resourceMetricBld.getScopeMetricsBuilderList()) {
                         if (isToAdd.equals(scopedMetricBld.getScope())) {
                             scopedMetricBld.addMetrics(metricToAdd);
+                            hasMetrics = true;
                             return;
                         }
                     }
                     resourceMetricBld.addScopeMetricsBuilder().setScope(isToAdd).addMetrics(metricToAdd);
+                    hasMetrics = true;
                     return;
                 }
             }
@@ -79,6 +92,7 @@ public class SignalsAggregator {
                                     .setScope(isToAdd)
                                     .addMetrics(metricToAdd)
                                     .build()));
+            hasMetrics = true;
         } else {
             resourceMetricsBuilders.add(ResourceMetrics.newBuilder()
                     .setResource(rsToAdd)
@@ -86,6 +100,8 @@ public class SignalsAggregator {
                             .setScope(isToAdd)
                             .addMetrics(metricToAdd)
                             .build()));
+
+            hasMetrics = true;
         }
     }
 
@@ -96,4 +112,32 @@ public class SignalsAggregator {
     public List<ResourceMetrics.Builder> getResourceMetricsBuilders() {
         return resourceMetricsBuilders;
     }
+
+    public Optional<ExportTraceServiceRequest> createTraceServiceRequest() {
+        if (!hasSpans) {
+            return Optional.empty();
+        } else {
+            ExportTraceServiceRequest.Builder builder = ExportTraceServiceRequest.newBuilder();
+            resourceSpansBuilders.forEach(builder::addResourceSpans);
+            return Optional.of(builder.build());
+        }
+    }
+
+    public Optional<ExportMetricsServiceRequest> createMetricServiceRequest() {
+        if (!hasMetrics) {
+            return Optional.empty();
+        }
+        ExportMetricsServiceRequest.Builder builder = ExportMetricsServiceRequest.newBuilder();
+        resourceMetricsBuilders.forEach(builder::addResourceMetrics);
+        return Optional.of(builder.build());
+    }
+
+    public boolean isHasSpans() {
+        return hasSpans;
+    }
+
+    public boolean isHasMetrics() {
+        return hasMetrics;
+    }
+
 }

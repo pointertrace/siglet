@@ -59,6 +59,9 @@ public class SchemaFactory {
         return property(valueSetter, propertyName, true, propertyChecks);
     }
 
+    public static <T, E> PropertyChecker optionalProperty(BiConsumer<T, E> valueSetter, String propertyName, NodeChecker... propertyChecks) {
+        return property(valueSetter, propertyName, false, propertyChecks);
+    }
     public static <T, E> DynamicPropertyChecker requiredDynamicProperty(String propertyName, DynamicCheckerDiscriminator discriminator) {
         return dynamicProperty( propertyName, true, discriminator);
     }

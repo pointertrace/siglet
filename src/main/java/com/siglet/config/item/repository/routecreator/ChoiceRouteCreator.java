@@ -1,14 +1,19 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
+import com.siglet.camel.component.otelgrpc.aggregator.SignalAggregationStrategy;
+import com.siglet.config.item.GrpcExporterUri;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.AggregateDefinition;
 import org.apache.camel.model.ChoiceDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+
+import static org.apache.camel.language.constant.ConstantLanguage.constant;
 
 public class ChoiceRouteCreator implements RouteCreator {
 
@@ -34,7 +39,19 @@ public class ChoiceRouteCreator implements RouteCreator {
 
     @Override
     public void addExporter(String uri) {
-        choiceDefinition.to(uri);
+        if (uri.startsWith("otelgrpc")) {
+            AggregateDefinition aggregateDefinition = choiceDefinition.aggregate(constant(true), new SignalAggregationStrategy());
+            GrpcExporterUri grpcExporterUri = GrpcExporterUri.of(uri);
+            if (grpcExporterUri.getBatchSizeInSignals() != null) {
+                aggregateDefinition = aggregateDefinition.completionSize(grpcExporterUri.getBatchSizeInSignals());
+            }
+            if (grpcExporterUri.getBatchTimeoutInMillis() != null) {
+                aggregateDefinition = aggregateDefinition.completionTimeout(grpcExporterUri.getBatchTimeoutInMillis());
+            }
+            aggregateDefinition.end().to(uri);
+        } else {
+            choiceDefinition.to(uri);
+        }
     }
 
     @Override

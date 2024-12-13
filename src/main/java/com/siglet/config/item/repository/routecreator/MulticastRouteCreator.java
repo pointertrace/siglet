@@ -1,6 +1,8 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
+import com.siglet.camel.component.otelgrpc.aggregator.SignalAggregationStrategy;
+import com.siglet.config.item.GrpcExporterUri;
 import com.siglet.pipeline.common.filter.GroovyPredicate;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregationStrategy;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorCorrelationExpression;
@@ -8,11 +10,14 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.AggregateDefinition;
 import org.apache.camel.model.MulticastDefinition;
 import org.apache.camel.model.RouteDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+
+import static org.apache.camel.language.constant.ConstantLanguage.constant;
 
 public class MulticastRouteCreator implements RouteCreator {
 
@@ -49,7 +54,19 @@ public class MulticastRouteCreator implements RouteCreator {
 
     @Override
     public void addExporter(String uri) {
-        multicastDefinition.to(uri);
+        if (uri.startsWith("otelgrpc")) {
+            AggregateDefinition aggregateDefinition = multicastDefinition.aggregate(constant(true), new SignalAggregationStrategy());
+            GrpcExporterUri grpcExporterUri = GrpcExporterUri.of(uri);
+            if (grpcExporterUri.getBatchSizeInSignals() != null) {
+                aggregateDefinition = aggregateDefinition.completionSize(grpcExporterUri.getBatchSizeInSignals());
+            }
+            if (grpcExporterUri.getBatchTimeoutInMillis() != null) {
+                aggregateDefinition = aggregateDefinition.completionTimeout(grpcExporterUri.getBatchTimeoutInMillis());
+            }
+            aggregateDefinition.end().to(uri);
+        } else {
+            multicastDefinition.to(uri);
+        }
     }
 
     public RouteCreator addProcessor(Processor processor) {

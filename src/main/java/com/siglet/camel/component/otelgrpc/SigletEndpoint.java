@@ -19,6 +19,8 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     private String signalType;
 
+    private int batchSizeInSignals;
+
     public SigletEndpoint(String uri, Component component, GrpcServers grpcServers) {
         super(uri, component);
         this.grpcServers = grpcServers;
@@ -75,13 +77,12 @@ public class SigletEndpoint extends DefaultEndpoint {
         return signalType;
     }
 
-    @Override
-    public void start() {
-        super.start();
+    public void setBatchSizeInSignals(int batchSizeInSignals) {
+       this.batchSizeInSignals = batchSizeInSignals;
     }
 
-    @Override
-    public void stop() {
-        super.stop();
+    public int getBatchSizeInSignals() {
+        return batchSizeInSignals;
     }
+
 }

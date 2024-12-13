@@ -19,6 +19,10 @@ public class ConfigCheckFactory {
 
     public static final String ADDRESS_PROP = "address";
 
+    public static final String BATCH_SIZE_IN_SIGNAL_PROP = "batch-size-in-signals";
+
+    public static final String BATCH_TIMEOUT_IN_MILLIS_PROP = "batch-timeout-in-millis";
+
     public static final String SIGNAL_TYPE_PROP = "signal-type";
 
     public static final String DEBUG_PROP = "debug";
@@ -78,8 +82,9 @@ public class ConfigCheckFactory {
                 alternative(
                         strictObject(GrpcExporterItem::new,
                                 requiredProperty(GrpcExporterItem::setName, GRPC_PROP, text()),
-                                requiredProperty(GrpcExporterItem::setAddress, ADDRESS_PROP, text(inetSocketAddress()))
-                        ),
+                                requiredProperty(GrpcExporterItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
+                                optionalProperty(GrpcExporterItem::setBatchSizeInSignals,BATCH_SIZE_IN_SIGNAL_PROP,numberInt()),
+                                optionalProperty(GrpcExporterItem::setBatchTimeoutInMillis,BATCH_TIMEOUT_IN_MILLIS_PROP,numberInt())),
                         strictObject(DebugExporterItem::new,
                                 requiredProperty(DebugExporterItem::setName, DEBUG_PROP, text()),
                                 requiredProperty(DebugExporterItem::setAddress, ADDRESS_PROP, text()))

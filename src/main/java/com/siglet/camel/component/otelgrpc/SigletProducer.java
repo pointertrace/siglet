@@ -1,5 +1,6 @@
 package com.siglet.camel.component.otelgrpc;
 
+import com.siglet.camel.component.otelgrpc.aggregator.SignalsAggregator;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.adapter.trace.ProtoTrace;
@@ -41,7 +42,18 @@ public class SigletProducer extends DefaultProducer {
 
         Object body = exchange.getIn().getBody();
 
-        if (body instanceof ProtoSpanAdapter spanAdapter) {
+        if (body instanceof SignalsAggregator aggregator) {
+
+            aggregator.createTraceServiceRequest().ifPresent((request) -> {
+                ExportTraceServiceResponse traceResp = traceServiceStub.export(request);
+            });
+
+
+            aggregator.createMetricServiceRequest().ifPresent((request) -> {
+                ExportMetricsServiceResponse metricResp = metricServicesStub.export(request);
+            });
+
+        } else if (body instanceof ProtoSpanAdapter spanAdapter) {
 
             Span span = spanAdapter.getUpdated();
             System.out.println("sending ----------------");

@@ -15,6 +15,7 @@ public class SimpleSpanProcessor {
                 exporters:
                 - grpc: exporter
                   address: localhost:50051
+                  batch-size-in-signals: 4
                 pipelines:
                 - trace: trace-pipeline
                   from: trace-receiver

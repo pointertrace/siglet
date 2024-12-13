@@ -29,6 +29,7 @@ public class SimpleMetricletProcessor {
                 exporters:
                 - grpc: exporter
                   address: localhost:4317
+                  batchSizeInSignals: 3
                 pipelines:
                 - metric: simple pipeline
                   from: receiver
