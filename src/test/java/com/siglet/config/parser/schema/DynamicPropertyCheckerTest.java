@@ -14,7 +14,7 @@ class DynamicPropertyCheckerTest {
 
 
     @Test
-    public void checkDynamicProperty() throws Exception {
+    void checkDynamicProperty() {
 
         ObjectChecker objectCheck = new ObjectChecker(MyBean::new, false,
                 new PropertyChecker("discriminator", true, new TextChecker()),
@@ -47,7 +47,7 @@ class DynamicPropertyCheckerTest {
 
 
     @Test
-    public void check_discriminator_int() throws Exception {
+    void check_discriminator_int() {
 
         ObjectChecker objectCheck = new ObjectChecker(MyBean::new, true,
                 new PropertyChecker("discriminator", true, new TextChecker()),
@@ -77,7 +77,7 @@ class DynamicPropertyCheckerTest {
     }
 
     @Test
-    public void check_discriminator_text() throws Exception {
+    void check_discriminator_text() {
 
         ObjectChecker objectCheck = new ObjectChecker(MyBean::new, true,
                 new PropertyChecker("discriminator", true, new TextChecker()),

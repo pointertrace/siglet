@@ -8,7 +8,7 @@ class ValueSetterTest {
 
 
     @Test
-    public void of() {
+    void of() {
 
         ValueSetter valueSetter = ValueSetter.of(Bean::setValue);
 

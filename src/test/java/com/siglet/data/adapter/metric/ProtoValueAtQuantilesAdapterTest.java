@@ -41,13 +41,13 @@ class ProtoValueAtQuantilesAdapterTest {
     }
 
     @Test
-    public void size() {
+    void size() {
 
         assertEquals(2, protoValueAtQuantilesAdapter.getSize());
     }
 
     @Test
-    public void get_At_notChanged() {
+    void get_At_notChanged() {
 
         assertSame(firstValueAtQuantile, protoValueAtQuantilesAdapter.getUpdated().get(0));
         assertSame(secondValueAtQuantile, protoValueAtQuantilesAdapter.getUpdated().get(1));
@@ -55,7 +55,7 @@ class ProtoValueAtQuantilesAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
         protoValueAtQuantilesAdapter.remove(0);
 
         assertEquals(1, protoValueAtQuantilesAdapter.getSize());
@@ -64,7 +64,7 @@ class ProtoValueAtQuantilesAdapterTest {
     }
 
     @Test
-    public void add_andGetAt() {
+    void add_andGetAt() {
 
         protoValueAtQuantilesAdapter.add()
                 .setValue(7.7)
@@ -81,7 +81,7 @@ class ProtoValueAtQuantilesAdapterTest {
     }
 
     @Test
-    public void get_At_notUpdatable() {
+    void get_At_notUpdatable() {
 
         protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile, false);
 
@@ -93,7 +93,7 @@ class ProtoValueAtQuantilesAdapterTest {
     }
 
     @Test
-    public void update_notUpdatable() {
+    void update_notUpdatable() {
 
         protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile, false);
 

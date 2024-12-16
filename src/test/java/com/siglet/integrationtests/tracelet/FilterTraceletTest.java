@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class FilterTracelet extends CamelTestSupport {
+class FilterTraceletTest extends CamelTestSupport {
 
     @Test
-    public void testSimple_passFilter() throws Exception {
+    void testSimple_passFilter() throws Exception {
 
 
         String yaml = """
@@ -83,7 +83,7 @@ public class FilterTracelet extends CamelTestSupport {
     }
 
     @Test
-    public void testSimple_nonPassFilter() throws Exception {
+    void testSimple_nonPassFilter() throws Exception {
 
 
         String yaml = """
@@ -145,7 +145,7 @@ public class FilterTracelet extends CamelTestSupport {
 
 
     @Test
-    public void testMultiple_passFilter() throws Exception {
+    void testMultiple_passFilter() throws Exception {
 
 
         String yaml = """
@@ -221,7 +221,7 @@ public class FilterTracelet extends CamelTestSupport {
     }
 
     @Test
-    public void testMultiple_nonPassFilter() throws Exception {
+    void testMultiple_nonPassFilter() throws Exception {
 
 
         String yaml = """

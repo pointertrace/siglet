@@ -40,7 +40,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         KeyValueAdapter firstAdapter = keyValues.getAdapter(0);
 
@@ -55,7 +55,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void get_twiceAndCheck() {
+    void get_twiceAndCheck() {
 
         assertSame(first, keyValues.getAdapter(0).getUpdated());
         assertSame(first, keyValues.getAdapter(0).getUpdated());
@@ -64,7 +64,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void add() {
+    void add() {
 
         keyValues.add().setKey("new-key").setValue("new-value");
         assertEquals(3, keyValues.getSize());
@@ -76,7 +76,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void remove_index() {
+    void remove_index() {
 
         keyValues.remove(0);
 
@@ -90,7 +90,7 @@ class AdapterListTest {
 
 
     @Test
-    public void remove_predicate() {
+    void remove_predicate() {
 
         assertTrue(keyValues.remove(kv -> "second".equals(kv.getKey()), kvb -> "second".equals(kvb.getKey())));
 
@@ -103,7 +103,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void find_adapter() {
+    void find_adapter() {
 
         KeyValueAdapter adapter = keyValues.find(kv -> "first".equals(kv.getKey()), kvb -> "first".equals(kvb.getKey()));
 
@@ -116,7 +116,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void find_index() {
+    void find_index() {
 
         assertEquals(1, keyValues.findIndex(kv -> "second".equals(kv.getKey()), kvb -> "second".equals(kvb.getKey())));
         assertEquals(-1, keyValues.findIndex(kv -> "third".equals(kv.getKey()), kvb -> "third".equals(kvb.getKey())));
@@ -142,27 +142,27 @@ class AdapterListTest {
     }
 
     @Test
-    public void isUpdated_nothingChange() {
+    void isUpdated_nothingChange() {
 
         assertFalse(keyValues.isUpdated());
     }
 
     @Test
-    public void isUpdated_getAdapter() {
+    void isUpdated_getAdapter() {
 
         keyValues.getAdapter(0);
         assertFalse(keyValues.isUpdated());
     }
 
     @Test
-    public void isUpdated_onlyAdapterChanged() {
+    void isUpdated_onlyAdapterChanged() {
 
         keyValues.getAdapter(0).setKey("new-key");
         assertTrue(keyValues.isUpdated());
     }
 
     @Test
-    public void getUpdated_notUpdated() {
+    void getUpdated_notUpdated() {
 
         keyValues = new KeyValues(keyValueList, false);
 
@@ -173,7 +173,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void getUpdated_noChanges() {
+    void getUpdated_noChanges() {
 
         List<KeyValue> actual = keyValues.getUpdated();
 
@@ -182,7 +182,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void getUpdated_add() {
+    void getUpdated_add() {
 
         keyValues.add().setKey("new-key").setValue("new-value");
         assertNull(keyValues.getMessage(2));
@@ -204,7 +204,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void getUpdated_remove() {
+    void getUpdated_remove() {
 
         keyValues.remove(0);
 
@@ -216,7 +216,7 @@ class AdapterListTest {
     }
 
     @Test
-    public void notUpdatable() {
+    void notUpdatable() {
 
         keyValues = new KeyValues(keyValueList, false);
 

@@ -88,7 +88,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertEquals(1, protoExponentialHistogramDataPointAdapter.getFlags());
         assertEquals(2, protoExponentialHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(3, protoExponentialHistogramDataPointAdapter.getStartTimeUnixNano());
@@ -116,18 +116,18 @@ class ProtoExponentialHistogramDataPointAdapterTest {
 
         assertEquals(1, protoExponentialHistogramDataPointAdapter.getPositive().getOffset());
         assertEquals(1, protoExponentialHistogramDataPointAdapter.getPositive().getBucketCounts().size());
-        assertEquals(10, protoExponentialHistogramDataPointAdapter.getPositive().getBucketCounts().get(0));
+        assertEquals(10, protoExponentialHistogramDataPointAdapter.getPositive().getBucketCounts().getFirst());
 
         assertEquals(2, protoExponentialHistogramDataPointAdapter.getNegative().getOffset());
         assertEquals(1, protoExponentialHistogramDataPointAdapter.getNegative().getBucketCounts().size());
-        assertEquals(20, protoExponentialHistogramDataPointAdapter.getNegative().getBucketCounts().get(0));
+        assertEquals(20, protoExponentialHistogramDataPointAdapter.getNegative().getBucketCounts().getFirst());
 
         assertFalse(protoExponentialHistogramDataPointAdapter.isUpdated());
 
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoExponentialHistogramDataPointAdapter
                 .setFlags(10)
@@ -158,7 +158,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         protoExponentialHistogramDataPointAdapter.getAttributes().set("first-attribute", "new-value");
         protoExponentialHistogramDataPointAdapter.getAttributes().set("extra-attribute", "extra-attribute-value");
@@ -173,7 +173,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void exemplarsChangeAndGet() {
+    void exemplarsChangeAndGet() {
 
         protoExponentialHistogramDataPointAdapter.getExemplars().add()
                 .setTraceId(100, 200)
@@ -209,7 +209,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void positiveBucketsChangeAndGet() {
+    void positiveBucketsChangeAndGet() {
 
         protoExponentialHistogramDataPointAdapter.getPositive()
                 .clearBucketCounts()
@@ -227,7 +227,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void negativeBucketsChangeAndGet() {
+    void negativeBucketsChangeAndGet() {
 
         protoExponentialHistogramDataPointAdapter.getNegative()
                 .clearBucketCounts()
@@ -245,7 +245,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(
                 exponentialHistogramDataPoint, false);
@@ -257,7 +257,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         ExponentialHistogramDataPoint histogramDataPoint = protoExponentialHistogramDataPointAdapter.getUpdated();
 
@@ -265,7 +265,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyAttributesUpdated() {
+    void getUpdated_onlyAttributesUpdated() {
 
         ProtoAttributesAdapter attributes = protoExponentialHistogramDataPointAdapter.getAttributes();
 
@@ -291,7 +291,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyExemplarsUpdated() {
+    void getUpdated_onlyExemplarsUpdated() {
 
         ProtoExemplarsAdapter exemplars = protoExponentialHistogramDataPointAdapter.getExemplars();
 

@@ -58,7 +58,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertEquals(1, protoSummaryDataPointAdapter.getFlags());
         assertEquals(2, protoSummaryDataPointAdapter.getTimeUnixNano());
         assertEquals(3, protoSummaryDataPointAdapter.getStartTimeUnixNano());
@@ -82,7 +82,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoSummaryDataPointAdapter
                 .setFlags(10)
@@ -100,7 +100,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         protoSummaryDataPointAdapter.getAttributes().set("first-attribute", "new-value");
         protoSummaryDataPointAdapter.getAttributes().set("extra-attribute", "extra-attribute-value");
@@ -115,7 +115,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void exemplarsChangeAndGet() {
+    void exemplarsChangeAndGet() {
 
         protoSummaryDataPointAdapter.getQuantileValues().add()
                 .setValue(9.10)
@@ -132,7 +132,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint, false);
 
@@ -141,13 +141,13 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(summaryDataPoint, protoSummaryDataPointAdapter.getUpdated());
     }
 
     @Test
-    public void getUpdated_onlyAttributesUpdated() {
+    void getUpdated_onlyAttributesUpdated() {
 
         ProtoAttributesAdapter attributes = protoSummaryDataPointAdapter.getAttributes();
 
@@ -188,7 +188,7 @@ class ProtoSummaryDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyQuantileValuesUpdated() {
+    void getUpdated_onlyQuantileValuesUpdated() {
 
         ProtoValueAtQuantilesAdapter quantileValues = protoSummaryDataPointAdapter.getQuantileValues();
 

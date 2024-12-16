@@ -26,7 +26,7 @@ class ProtoValueAtQuantileAdapterTest {
     }
 
     @Test
-    public void get(){
+    void get(){
 
         assertEquals(3.4, protoValueAtQuantileAdapter.getQuantile());
         assertEquals(1.2,protoValueAtQuantileAdapter.getValue());
@@ -35,7 +35,7 @@ class ProtoValueAtQuantileAdapterTest {
     }
 
     @Test
-    public void setAndGet(){
+    void setAndGet(){
 
         protoValueAtQuantileAdapter.setQuantile(5.6);
         protoValueAtQuantileAdapter.setValue(7.8);
@@ -46,7 +46,7 @@ class ProtoValueAtQuantileAdapterTest {
     }
 
     @Test
-    public void changeNotUpdated(){
+    void changeNotUpdated(){
 
         protoValueAtQuantileAdapter = new ProtoValueAtQuantileAdapter(protoValueAtQuantile, false);
 

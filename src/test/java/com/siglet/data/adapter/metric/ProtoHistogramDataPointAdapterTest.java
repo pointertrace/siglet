@@ -69,7 +69,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertEquals(1, protoHistogramDataPointAdapter.getFlags());
         assertEquals(1, protoHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(2, protoHistogramDataPointAdapter.getStartTimeUnixNano());
@@ -101,7 +101,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoHistogramDataPointAdapter
                 .setFlags(100)
@@ -130,7 +130,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         protoHistogramDataPointAdapter.getAttributes().set("first-attribute", "new-value");
         protoHistogramDataPointAdapter.getAttributes().set("extra-attribute", "extra-attribute-value");
@@ -145,7 +145,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void exemplarsChangeAndGet() {
+    void exemplarsChangeAndGet() {
 
         protoHistogramDataPointAdapter.getExemplars().add()
                 .setTraceId(100, 200)
@@ -181,7 +181,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoHistogramDataPointAdapter = new ProtoHistogramDataPointAdapter(protoHistogramDataPoint, false);
 
@@ -192,7 +192,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         HistogramDataPoint histogramDataPoint = protoHistogramDataPointAdapter.getUpdated();
 
@@ -200,7 +200,7 @@ class ProtoHistogramDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyNumberDataPointAdapterUpdated() {
+    void getUpdated_onlyNumberDataPointAdapterUpdated() {
 
         protoHistogramDataPointAdapter
                 .setFlags(100)
@@ -242,7 +242,7 @@ class ProtoHistogramDataPointAdapterTest {
 
     }
     @Test
-    public void getUpdated_onlyAttributesUpdated() {
+    void getUpdated_onlyAttributesUpdated() {
 
         ProtoAttributesAdapter attributes = protoHistogramDataPointAdapter.getAttributes();
 

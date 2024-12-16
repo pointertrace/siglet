@@ -17,8 +17,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RouteCreatorTest extends CamelTestSupport {
+
     @Test
-    public void testSimple() throws Exception {
+    void testSimple() throws Exception {
         /*
         Test for a simple route
 
@@ -60,7 +61,7 @@ class RouteCreatorTest extends CamelTestSupport {
       -> exporter(first-exporter)
     */
     @Test
-    public void processorToMulticast() throws Exception {
+    void processorToMulticast() throws Exception {
 
         var firstProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
                 .setName("first-span")
@@ -111,7 +112,7 @@ class RouteCreatorTest extends CamelTestSupport {
     }
 
     @Test
-    public void processorToMulticastX() throws Exception {
+    void processorToMulticastX() throws Exception {
 
         var firstProtoSpan = new ProtoSpanAdapter(Span.newBuilder()
                 .setName("first-span")

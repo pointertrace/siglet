@@ -19,7 +19,7 @@ class ConfigItemTest {
     }
 
     @Test
-    public void validateUniqueNames() throws Exception {
+    void validateUniqueNames() throws Exception {
 
 
         var yaml = """

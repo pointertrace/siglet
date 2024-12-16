@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RouterTracelet extends CamelTestSupport {
+class RouterTraceletTest extends CamelTestSupport {
 
     @Test
-    public void testSimple_firstRoute() throws Exception {
+    void testSimple_firstRoute() throws Exception {
 
 
         String yaml = """
@@ -100,7 +100,7 @@ public class RouterTracelet extends CamelTestSupport {
     }
 
     @Test
-    public void testSimple_scondRoute() throws Exception {
+    void testSimple_scondRoute() throws Exception {
 
 
         String yaml = """
@@ -179,7 +179,7 @@ public class RouterTracelet extends CamelTestSupport {
     }
 
     @Test
-    public void testSimple_thirdRoute() throws Exception {
+    void testSimple_thirdRoute() throws Exception {
 
 
         String yaml = """

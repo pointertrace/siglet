@@ -4,15 +4,7 @@ import com.siglet.cli.Siglet;
 
 public class ComplexProcessor {
 
-    public static void main(String[] args) throws Exception {
-
-//        to "metric-receiver" send newGauge {
-//            name "derivated metric"
-//            unit "tests per second"
-//            dataPoint {
-//                value 1000
-//            }
-//        }
+    public static void main(String[] args) {
 
         var config = """
                 receivers:

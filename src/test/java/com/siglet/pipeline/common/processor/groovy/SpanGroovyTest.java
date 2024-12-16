@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SpanGroovyTest {
+class SpanGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
@@ -81,7 +81,7 @@ public class SpanGroovyTest {
 
 
     @Test
-    public void span() {
+    void span() {
         String spanScript = """
                 span {
                     name "new span name"
@@ -136,7 +136,7 @@ public class SpanGroovyTest {
     }
 
     @Test
-    public void spanWithThisSignal() {
+    void spanWithThisSignal() {
         String spanScript = """
                 span {
                     name "new "+ thisSignal.name

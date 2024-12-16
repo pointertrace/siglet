@@ -79,7 +79,7 @@ class SignalsAggregatorTest {
     }
 
     @Test
-    public void add_span_sameResource_sameInstrumentation() {
+    void add_span_sameResource_sameInstrumentation() {
 
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
 
@@ -109,7 +109,7 @@ class SignalsAggregatorTest {
     }
 
     @Test
-    public void add_span_sameResource_twoInstrumentation() {
+    void add_span_sameResource_twoInstrumentation() {
 
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
 
@@ -141,7 +141,7 @@ class SignalsAggregatorTest {
     }
 
     @Test
-    public void add_span_twoResource_twoInstrumentation() {
+    void add_span_twoResource_twoInstrumentation() {
 
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
 
@@ -181,7 +181,7 @@ class SignalsAggregatorTest {
 
 
     @Test
-    public void add_metric_sameResource_sameInstrumentation() {
+    void add_metric_sameResource_sameInstrumentation() {
 
         protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1, true);
 
@@ -211,7 +211,7 @@ class SignalsAggregatorTest {
     }
 
     @Test
-    public void add_metric_sameResource_twoInstrumentation() {
+    void add_metric_sameResource_twoInstrumentation() {
 
         protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1, true);
 
@@ -243,7 +243,7 @@ class SignalsAggregatorTest {
     }
 
     @Test
-    public void add_metric_twoResource_twoInstrumentation() {
+    void add_metric_twoResource_twoInstrumentation() {
 
         protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1, true);
 

@@ -38,14 +38,14 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals(1, protoResourceAdapter.getDroppedAttributesCount());
 
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
         protoResourceAdapter.setDroppedAttributesCount(2);
 
         assertEquals(2, protoResourceAdapter.getDroppedAttributesCount());
@@ -56,13 +56,13 @@ class ProtoResourceAdapterTest {
 
 
     @Test
-    public void attributesGet() {
+    void attributesGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoResourceAdapter.getAttributes();
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
+        assertEquals("str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
@@ -71,7 +71,7 @@ class ProtoResourceAdapterTest {
 
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoResourceAdapter.getAttributes();
 
@@ -81,7 +81,7 @@ class ProtoResourceAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
+        assertEquals("new-str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
@@ -89,7 +89,7 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
 
         protoResourceAdapter = new ProtoResourceAdapter(Resource.newBuilder().build(), false);
 
@@ -101,7 +101,7 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         Resource actualProtoResource = Resource.newBuilder().build();
         protoResourceAdapter = new ProtoResourceAdapter(actualProtoResource, false);
@@ -111,7 +111,7 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(protoResource, protoResourceAdapter.getUpdated());
         assertSame(protoResource.getAttributesList(), protoResourceAdapter.getUpdated().getAttributesList());
@@ -119,7 +119,7 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyResourceUpdated() {
+    void getUpdated_onlyResourceUpdated() {
 
         protoResourceAdapter.setDroppedAttributesCount(2);
 
@@ -132,7 +132,7 @@ class ProtoResourceAdapterTest {
 
 
     @Test
-    public void getUpdated_onlyPropertiesUpdated() {
+    void getUpdated_onlyPropertiesUpdated() {
 
         protoResourceAdapter.getAttributes().set("bool-attribute", true);
 
@@ -151,7 +151,7 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    public void getUpdated_ResourceAndPropertiesUpdated() {
+    void getUpdated_ResourceAndPropertiesUpdated() {
 
         protoResourceAdapter.setDroppedAttributesCount(2);
         protoResourceAdapter.getAttributes().set("bool-attribute", true);

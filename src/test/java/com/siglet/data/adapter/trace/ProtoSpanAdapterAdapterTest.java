@@ -113,7 +113,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
         protoSpanAdapter
                 .setTraceId(10L, 20L)
                 .setSpanId(10L)
@@ -146,7 +146,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable() {
+    void setNonUpdatable() {
         protoSpanAdapter = new ProtoSpanAdapter(Span.newBuilder().build(), Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
@@ -189,7 +189,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void setAndGetNotChangedValues() {
+    void setAndGetNotChangedValues() {
         protoSpanAdapter.setTraceId(10L, 20L);
 
         assertEquals(1L,protoSpanAdapter.getSpanId());
@@ -208,7 +208,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals(0, protoSpanAdapter.getTraceIdHigh());
         assertEquals(2, protoSpanAdapter.getTraceIdLow());
@@ -227,7 +227,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void statusGet() {
+    void statusGet() {
         ProtoStatusAdapter protoStatusAdapter = protoSpanAdapter.getStatus();
 
         assertEquals(StatusCode.OK, protoStatusAdapter.getCode());
@@ -236,7 +236,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void statusGetAndSet() {
+    void statusGetAndSet() {
         ProtoStatusAdapter protoStatusAdapter = protoSpanAdapter.getStatus();
 
         protoStatusAdapter.setCode(StatusCode.ERROR);
@@ -248,7 +248,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void attributesGet() {
+    void attributesGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoSpanAdapter.getAttributes();
 
@@ -263,7 +263,7 @@ class ProtoSpanAdapterAdapterTest {
 
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoSpanAdapter.getAttributes();
 
@@ -279,7 +279,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void linksGet() {
+    void linksGet() {
 
         ProtoLinksAdapter protoLinksAdapter = protoSpanAdapter.getLinks();
 
@@ -310,7 +310,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void eventsGet() {
+    void eventsGet() {
 
         ProtoEventsAdapter protoEventsAdapter = protoSpanAdapter.getEvents();
 
@@ -336,7 +336,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void resourceGet() {
+    void resourceGet() {
 
         ProtoResourceAdapter protoResourceAdapter = protoSpanAdapter.getResource();
 
@@ -354,7 +354,7 @@ class ProtoSpanAdapterAdapterTest {
 
 
     @Test
-    public void instrumentationScopeGet() {
+    void instrumentationScopeGet() {
         ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter =
                 protoSpanAdapter.getInstrumentationScope();
 
@@ -371,7 +371,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedSpan_notUpdatable() {
+    void getUpdatedSpan_notUpdatable() {
 
         protoSpanAdapter = new ProtoSpanAdapter(protoSpan, protoResource, protoInstrumentationScope, false);
         assertSame(protoSpan, protoSpanAdapter.getUpdated());
@@ -381,7 +381,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedSpan_nothingUpdated() {
+    void getUpdatedSpan_nothingUpdated() {
 
         assertSame(protoSpan, protoSpanAdapter.getUpdated());
         assertSame(protoResource, protoSpanAdapter.getUpdatedResource());
@@ -390,7 +390,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedSpan_onlySpanUpdated() {
+    void getUpdatedSpan_onlySpanUpdated() {
 
         protoSpanAdapter
                 .setTraceId(10, 20)
@@ -432,7 +432,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedSpan_onlyAttributesChange() {
+    void getUpdatedSpan_onlyAttributesChange() {
 
 
         protoSpanAdapter.getAttributes().set("str-attribute", "new-value");
@@ -477,7 +477,7 @@ class ProtoSpanAdapterAdapterTest {
 
 
     @Test
-    public void getUpdatedSpan_onlyEventsChange() {
+    void getUpdatedSpan_onlyEventsChange() {
 
         protoSpanAdapter.getEvents().remove(0);
 
@@ -514,7 +514,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedResource_onlyResourceChange() {
+    void getUpdatedResource_onlyResourceChange() {
 
         protoSpanAdapter.getResource().setDroppedAttributesCount(20);
 
@@ -531,7 +531,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void getUpdatedInstrumentationScope_onlyInstrumentationScopedChange() {
+    void getUpdatedInstrumentationScope_onlyInstrumentationScopedChange() {
 
         protoSpanAdapter.getInstrumentationScope().setName("new-name");
 
@@ -547,7 +547,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void isRoot() {
+    void isRoot() {
         Span span = Span.newBuilder()
                 .setName("root span")
                 .build();
@@ -559,7 +559,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void clone_noChange() {
+    void clone_noChange() {
 
         ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
 
@@ -573,7 +573,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void clone_changeOriginal() {
+    void clone_changeOriginal() {
 
         ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
 
@@ -596,7 +596,7 @@ class ProtoSpanAdapterAdapterTest {
     }
 
     @Test
-    public void clone_changeCloned() {
+    void clone_changeCloned() {
 
         ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
 
@@ -620,7 +620,7 @@ class ProtoSpanAdapterAdapterTest {
 
 
     @Test
-    public void clone_bothChanged() {
+    void clone_bothChanged() {
 
         ProtoSpanAdapter clonedSpanAdapter = protoSpanAdapter.cloneAdapter();
 

@@ -6,11 +6,11 @@ import groovy.lang.Script;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.jupiter.api.Test;
 
-public class GroovyTest {
+class GroovyTest {
 
 
     @Test
-    public void executeScript() {
+    void executeScript() {
         String testScript = """
                 sendTo "destination" greet {
                     name "este eh um nome"

@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AggregationIntegrationTest extends CamelTestSupport {
+class AggregationIntegrationTest extends CamelTestSupport {
 
     private Resource resource1;
 
@@ -99,7 +99,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
     }
 
     @Test
-    public void aggregate() throws InterruptedException {
+    void aggregate() throws InterruptedException {
         template.sendBody("direct:start", protoSpanAdapter1);
         template.sendBody("direct:start", protoSpanAdapter2);
         template.sendBody("direct:start", protoMetricAdapter1);

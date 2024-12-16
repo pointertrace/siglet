@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class ProcessorSpanlet extends CamelTestSupport {
+class ProcessorSpanletTest extends CamelTestSupport {
 
     @Test
-    public void testSimple() throws Exception {
+    void testSimple() throws Exception {
 
 
         String yaml = """
@@ -64,7 +64,7 @@ public class ProcessorSpanlet extends CamelTestSupport {
     }
 
     @Test
-    public void testMultiple() throws Exception {
+    void testMultiple() throws Exception {
 
 
         String yaml = """

@@ -26,7 +26,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseInt() {
+    void parseInt() {
         String config = "1";
 
         ConfigNode node = configParser.parse(config);
@@ -42,7 +42,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseLong() {
+    void parseLong() {
         String config = "" + (Integer.MAX_VALUE + 1L);
 
         ConfigNode node = configParser.parse(config);
@@ -58,7 +58,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseBigInteger() {
+    void parseBigInteger() {
         String config = ("" + Long.MAX_VALUE) + "0";
 
         ConfigNode node = configParser.parse(config);
@@ -73,7 +73,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseFloat() {
+    void parseFloat() {
         String config = "1.1";
 
         ConfigNode node = configParser.parse(config);
@@ -88,7 +88,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseDouble() {
+    void parseDouble() {
         String config = "4.4E38";
 
         ConfigNode node = configParser.parse(config);
@@ -103,7 +103,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseBigDecimal() {
+    void parseBigDecimal() {
         String config = "9.9E1000";
 
         ConfigNode node = configParser.parse(config);
@@ -118,7 +118,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseText() {
+    void parseText() {
         String config = "text value";
 
         ConfigNode node = configParser.parse(config);
@@ -133,7 +133,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseBooleanTrue() {
+    void parseBooleanTrue() {
         String config = "true";
 
         ConfigNode node = configParser.parse(config);
@@ -148,7 +148,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseBooleanFalse() {
+    void parseBooleanFalse() {
         String config = "false";
 
         ConfigNode node = configParser.parse(config);
@@ -163,7 +163,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseNull() {
+    void parseNull() {
         String config = "null";
 
         ConfigNode node = configParser.parse(config);
@@ -178,7 +178,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseObject() {
+    void parseObject() {
         String config = """
                 first-object:
                     prop1: prop1-value
@@ -217,7 +217,7 @@ class ConfigParserTest {
     }
 
     @Test
-    public void parseArray() {
+    void parseArray() {
         String config = """
                 first-object:
                     - item1

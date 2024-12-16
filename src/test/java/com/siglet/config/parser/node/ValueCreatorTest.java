@@ -10,7 +10,7 @@ class ValueCreatorTest {
     
     
     @Test
-    public void of() {
+    void of() {
         
         ValueCreator valueCreator = ValueCreator.of(StringItem::new);
 

@@ -26,7 +26,7 @@ class AdapterTest {
 
 
     @Test
-    public void getValue_message() {
+    void getValue_message() {
 
         assertEquals("key", adapter.getValue(KeyValue::getKey, KeyValue.Builder::getKey));
         assertFalse(adapter.isUpdated());
@@ -34,7 +34,7 @@ class AdapterTest {
 
 
     @Test
-    public void getValue_builder() {
+    void getValue_builder() {
 
         KeyValue.Builder builder = KeyValue.newBuilder().setKey("other-key");
         adapter = new Adapter<>(builder, KeyValue.Builder::build);
@@ -44,7 +44,7 @@ class AdapterTest {
     }
 
     @Test
-    public void setAndGetValue_message() {
+    void setAndGetValue_message() {
 
         adapter.setValue(KeyValue.Builder::setKey, "new-value");
         assertEquals("new-value", adapter.getValue(KeyValue::getKey, KeyValue.Builder::getKey));
@@ -52,7 +52,7 @@ class AdapterTest {
     }
 
     @Test
-    public void setAndGetValue_builder() {
+    void setAndGetValue_builder() {
 
         KeyValue.Builder builder = KeyValue.newBuilder().setKey("other-key");
 
@@ -65,14 +65,14 @@ class AdapterTest {
     }
 
     @Test
-    public void getUpdated_messageNoChange() {
+    void getUpdated_messageNoChange() {
 
         assertSame(keyValue, adapter.getUpdated());
 
     }
 
     @Test
-    public void getUpdated_builderNoChange() {
+    void getUpdated_builderNoChange() {
 
         KeyValue.Builder builder = KeyValue.newBuilder()
                 .setKey("key")
@@ -90,7 +90,7 @@ class AdapterTest {
     }
 
     @Test
-    public void getUpdated_builderChange() {
+    void getUpdated_builderChange() {
 
         KeyValue.Builder builder = KeyValue.newBuilder()
                 .setKey("key")
@@ -109,7 +109,7 @@ class AdapterTest {
     }
 
     @Test
-    public void enrich() {
+    void enrich() {
 
         AdapterWithBuilderEnrich adapter = new AdapterWithBuilderEnrich(keyValue);
         adapter.setValue(KeyValue.Builder::setKey,"new-value");

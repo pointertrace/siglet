@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CounterGroovyTest {
+class CounterGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
@@ -55,7 +55,7 @@ public class CounterGroovyTest {
 
 
     @Test
-    public void newCounter()  {
+    void newCounter()  {
         String counterScript = """
                 newCounter {
                     name "counter name " + thisSignal.name

@@ -39,7 +39,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals("event-name", protoEventAdapter.getName());
         assertEquals(1, protoEventAdapter.getTimeUnixNano());
@@ -49,7 +49,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoEventAdapter.setName("new-event-name");
         protoEventAdapter.setTimeUnixNano(2);
@@ -62,7 +62,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
         protoEventAdapter = new ProtoEventAdapter(Span.Event.newBuilder().build(), false);
 
 
@@ -84,20 +84,20 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void attributesGet() {
+    void attributesGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoEventAdapter.getAttributes();
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
+        assertEquals("str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoEventAdapter.getAttributes();
 
@@ -107,14 +107,14 @@ class ProtoEventAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
+        assertEquals("new-str-attribute-value",protoAttributesAdapter.getAsString("str-attribute"));
 
         assertTrue(protoAttributesAdapter.isUpdated());
     }
 
 
     @Test
-    public void getUpdate_notUpdatable() {
+    void getUpdate_notUpdatable() {
 
         Span.Event actualProtoEvent = Span.Event.newBuilder().build();
         protoEventAdapter = new ProtoEventAdapter(actualProtoEvent, false);
@@ -124,7 +124,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(protoEvent, protoEventAdapter.getUpdated());
         assertSame(protoEvent.getAttributesList(), protoEventAdapter.getUpdated().getAttributesList());
@@ -132,7 +132,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyEventUpdated() {
+    void getUpdated_onlyEventUpdated() {
 
         protoEventAdapter.setName("new-name");
 
@@ -145,7 +145,7 @@ class ProtoEventAdapterTest {
 
 
     @Test
-    public void getUpdated_onlyPropertiesUpdated() {
+    void getUpdated_onlyPropertiesUpdated() {
 
         protoEventAdapter.getAttributes().set("bool-attribute", true);
 
@@ -167,7 +167,7 @@ class ProtoEventAdapterTest {
     }
 
     @Test
-    public void getUpdated_EventAndPropertiesUpdated() {
+    void getUpdated_EventAndPropertiesUpdated() {
 
         protoEventAdapter.getAttributes().set("bool-attribute", true);
         protoEventAdapter.setName("new-name");

@@ -19,7 +19,7 @@ class AdapterUtilsTest {
 
 
     @Test
-    public void anyValueToObject_stringValue() {
+    void anyValueToObject_stringValue() {
 
         AnyValue actual = AnyValue.newBuilder().setStringValue("value").build();
 
@@ -27,7 +27,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_booleanValue() {
+    void anyValueToObject_booleanValue() {
 
         AnyValue actual = AnyValue.newBuilder().setBoolValue(true).build();
 
@@ -35,7 +35,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_intValue() {
+    void anyValueToObject_intValue() {
 
         AnyValue actual = AnyValue.newBuilder().setIntValue(10L).build();
 
@@ -43,7 +43,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_doubleValue() {
+    void anyValueToObject_doubleValue() {
 
         AnyValue actual = AnyValue.newBuilder().setDoubleValue(2.5).build();
 
@@ -51,7 +51,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_arrayValueValue() {
+    void anyValueToObject_arrayValueValue() {
 
         ArrayValue arrayValue = ArrayValue.newBuilder()
                 .addValues(AnyValue.newBuilder().setStringValue("value").build())
@@ -68,7 +68,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_kvListValue() {
+    void anyValueToObject_kvListValue() {
 
         KeyValueList keyValueList = KeyValueList.newBuilder()
                 .addValues(KeyValue.newBuilder()
@@ -102,7 +102,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_bytes() {
+    void anyValueToObject_bytes() {
 
         AnyValue actual = AnyValue.newBuilder().
                 setBytesValue(ByteString.copyFrom("value", StandardCharsets.UTF_8))
@@ -118,7 +118,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void anyValueToObject_null() {
+    void anyValueToObject_null() {
 
         AnyValue actual = AnyValue.newBuilder().build();
 
@@ -126,7 +126,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void mapToKeyValueList() {
+    void mapToKeyValueList() {
         Map<String, Object> map = new HashMap<>();
 
         map.put("str-key", "str-value");
@@ -147,7 +147,7 @@ class AdapterUtilsTest {
     }
 
     @Test
-    public void keyValueListToMap() {
+    void keyValueListToMap() {
         List<KeyValue> kvl = KeyValueList.newBuilder()
                 .addValues(KeyValue.newBuilder()
                         .setKey("str-key").
