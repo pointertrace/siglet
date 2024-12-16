@@ -17,7 +17,7 @@ public class ShellCreator {
     }
 
     public Script prepareScript(Script script, Object thisSignal) {
-        script.getBinding().setProperty("thisSignal", thisSignal);
+        script.getBinding().setProperty(ScriptBaseClass.SIGNAL_INTRINSIC_VAR_NAME, thisSignal);
         return script;
     }
 

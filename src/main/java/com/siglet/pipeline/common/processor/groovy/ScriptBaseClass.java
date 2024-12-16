@@ -16,11 +16,13 @@ import org.apache.camel.CamelContext;
 
 public abstract class ScriptBaseClass extends Script {
 
+    public static final String SIGNAL_INTRINSIC_VAR_NAME = "thisSignal";
+
     public ProtoMetricAdapter newGauge(Closure<Void> closure) {
 
         ProtoMetricAdapter newMetric = new ProtoMetricAdapter(getResource(), getInstrumentationScope());
         newMetric.gauge();
-        GaugeProxy gaugeProxy = new GaugeProxy(getBinding().getProperty("thisSignal"), newMetric);
+        GaugeProxy gaugeProxy = new GaugeProxy(getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(gaugeProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
         closure.call();
@@ -31,7 +33,7 @@ public abstract class ScriptBaseClass extends Script {
 
         ProtoMetricAdapter newMetric = new ProtoMetricAdapter(getResource(), getInstrumentationScope());
         newMetric.sum();
-        CounterProxy counterProxy = new CounterProxy(getBinding().getProperty("thisSignal"), newMetric);
+        CounterProxy counterProxy = new CounterProxy(getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(counterProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
         closure.call();
@@ -52,10 +54,10 @@ public abstract class ScriptBaseClass extends Script {
 
     public void span(Closure<Void> closure) {
 
-        if (!getBinding().hasVariable("thisSignal")) {
+        if (!getBinding().hasVariable(SIGNAL_INTRINSIC_VAR_NAME)) {
             throw new SigletError("Could not find thisSignal property!");
         }
-        if (!(getBinding().getProperty("thisSignal") instanceof ProtoSpanAdapter spanAdapter)) {
+        if (!(getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME) instanceof ProtoSpanAdapter spanAdapter)) {
             throw new SigletError("Property thisSignal is not a span!");
         }
         SpanProxy spanProxy = new SpanProxy(spanAdapter, spanAdapter);
@@ -65,8 +67,8 @@ public abstract class ScriptBaseClass extends Script {
     }
 
     private Resource getResource() {
-        if (getBinding().hasVariable("thisSignal")) {
-            Object closureThis = getBinding().getProperty("thisSignal");
+        if (getBinding().hasVariable(SIGNAL_INTRINSIC_VAR_NAME)) {
+            Object closureThis = getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME);
             switch (closureThis) {
                 case ProtoMetricAdapter metricAdapter -> {
                     return metricAdapter.getUpdatedResource();
@@ -91,8 +93,8 @@ public abstract class ScriptBaseClass extends Script {
     }
 
     private InstrumentationScope getInstrumentationScope() {
-        if (getBinding().hasVariable("thisSignal")) {
-            Object closureThis = getBinding().getProperty("thisSignal");
+        if (getBinding().hasVariable(SIGNAL_INTRINSIC_VAR_NAME)) {
+            Object closureThis = getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME);
             switch (closureThis) {
                 case ProtoMetricAdapter metricAdapter -> {
                     return metricAdapter.getUpdatedInstrumentationScope();
