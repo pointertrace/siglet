@@ -1,13 +1,11 @@
 package com.siglet.config.item.repository.routecreator;
 
 import com.siglet.SigletError;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 public class RootRouteCreator implements RouteCreator {
 

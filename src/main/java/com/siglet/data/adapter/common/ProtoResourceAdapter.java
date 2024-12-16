@@ -1,6 +1,5 @@
 package com.siglet.data.adapter.common;
 
-import com.siglet.data.CloneableAdapter;
 import com.siglet.data.adapter.Adapter;
 import com.siglet.data.modifiable.ModifiableResource;
 import io.opentelemetry.proto.resource.v1.Resource;

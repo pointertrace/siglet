@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class AggregationIntegrationTest extends CamelTestSupport {
 
@@ -44,8 +43,6 @@ public class AggregationIntegrationTest extends CamelTestSupport {
     private ProtoMetricAdapter protoMetricAdapter1;
 
     private ProtoMetricAdapter protoMetricAdapter2;
-
-    private SignalsAggregator signalsAggregator;
 
     @BeforeEach
     void setUpTest() {
@@ -76,8 +73,6 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         metric2 = Metric.newBuilder()
                 .setName("metric2")
                 .build();
-
-        signalsAggregator = new SignalsAggregator();
 
 
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
@@ -110,11 +105,11 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         template.sendBody("direct:start", protoMetricAdapter1);
         template.sendBody("direct:start", protoMetricAdapter2);
 
-        MockEndpoint.assertIsSatisfied(context);
 
         MockEndpoint mock = getMockEndpoint("mock:output");
 
         mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
 
         assertEquals(1, getMockEndpoint("mock:output").getExchanges().size());
 

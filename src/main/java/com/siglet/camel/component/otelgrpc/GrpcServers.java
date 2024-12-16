@@ -4,11 +4,9 @@ import com.siglet.SigletError;
 import io.grpc.BindableService;
 import io.grpc.ForwardingServerBuilder;
 import io.grpc.Server;
-import io.grpc.ServerInterceptor;
 import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
-import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;

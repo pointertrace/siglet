@@ -1,7 +1,6 @@
 package com.siglet.data.adapter.trace;
 
 import com.siglet.SigletError;
-import com.siglet.data.CloneableAdapter;
 import com.siglet.data.modifiable.trace.ModifiableSpan;
 import com.siglet.data.modifiable.trace.ModifiableTrace;
 

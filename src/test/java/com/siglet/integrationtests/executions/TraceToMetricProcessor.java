@@ -2,8 +2,6 @@ package com.siglet.integrationtests.executions;
 
 import com.siglet.cli.Siglet;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-
 public class TraceToMetricProcessor {
 
     public static void main(String[] args) throws Exception {

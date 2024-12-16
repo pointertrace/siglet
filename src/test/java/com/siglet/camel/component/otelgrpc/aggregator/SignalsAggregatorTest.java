@@ -3,11 +3,11 @@ package com.siglet.camel.component.otelgrpc.aggregator;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.Span;
-import io.opentelemetry.proto.metrics.v1.Metric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

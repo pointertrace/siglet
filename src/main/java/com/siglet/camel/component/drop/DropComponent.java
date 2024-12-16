@@ -1,8 +1,5 @@
 package com.siglet.camel.component.drop;
 
-import com.siglet.camel.component.otelgrpc.SigletEndpoint;
-import org.apache.camel.CamelContext;
-import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
 

@@ -3,8 +3,6 @@ package com.siglet.config.item;
 import com.siglet.SigletError;
 import com.siglet.config.located.Location;
 
-import java.net.InetSocketAddress;
-
 // TODO rever herança
 public class DropExporterItem extends ExporterItem {
 

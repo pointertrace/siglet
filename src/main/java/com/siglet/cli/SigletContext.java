@@ -1,7 +1,6 @@
 package com.siglet.cli;
 
 import com.siglet.SigletError;
-import com.siglet.pipeline.common.processor.groovy.ShellCreator;
 import org.apache.camel.CamelContext;
 
 import java.util.Map;
