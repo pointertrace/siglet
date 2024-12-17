@@ -40,7 +40,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals("name-value", protoInstrumentationScopeAdapter.getName());
         assertEquals("version-value", protoInstrumentationScopeAdapter.getVersion());
@@ -49,7 +49,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoInstrumentationScopeAdapter.setName("new-name-value");
         protoInstrumentationScopeAdapter.setVersion("new-version-value");
@@ -61,13 +61,13 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void attributesGet() {
+    void attributesGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoInstrumentationScopeAdapter.getAttributes();
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
+        assertEquals("str-attribute-value",protoAttributesAdapter.getAsString("str-attribute"));
 
         assertEquals(10L, protoAttributesAdapter.getAsLong("long-attribute"));
 
@@ -76,7 +76,7 @@ class ProtoInstrumentationScopeAdapterTest {
 
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoInstrumentationScopeAdapter.getAttributes();
 
@@ -86,7 +86,7 @@ class ProtoInstrumentationScopeAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
+        assertEquals("new-str-attribute-value",protoAttributesAdapter.getAsString("str-attribute"));
 
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
@@ -95,7 +95,7 @@ class ProtoInstrumentationScopeAdapterTest {
 
 
     @Test
-    public void changeNotUpdatable() {
+    void changeNotUpdatable() {
         protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(
                 InstrumentationScope.newBuilder().build(), false);
 
@@ -117,7 +117,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void getUpdate_notUpdatable() {
+    void getUpdate_notUpdatable() {
 
         InstrumentationScope actualProtoInstAdapt = InstrumentationScope.newBuilder().build();
         protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(actualProtoInstAdapt, false);
@@ -127,7 +127,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(protoInstrumentationScope, protoInstrumentationScopeAdapter.getUpdated());
         assertSame(protoInstrumentationScope.getAttributesList(),
@@ -136,7 +136,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyResourceUpdated() {
+    void getUpdated_onlyResourceUpdated() {
 
         protoInstrumentationScopeAdapter.setName("new-name");
         protoInstrumentationScopeAdapter.setVersion("new-version");
@@ -151,7 +151,7 @@ class ProtoInstrumentationScopeAdapterTest {
 
 
     @Test
-    public void getUpdated_onlyPropertiesUpdated() {
+    void getUpdated_onlyPropertiesUpdated() {
 
         protoInstrumentationScopeAdapter.getAttributes().set("bool-attribute", true);
 
@@ -171,7 +171,7 @@ class ProtoInstrumentationScopeAdapterTest {
     }
 
     @Test
-    public void getUpdated_ResourceAndPropertiesUpdated() {
+    void getUpdated_ResourceAndPropertiesUpdated() {
 
         protoInstrumentationScopeAdapter.setName("new-name");
         protoInstrumentationScopeAdapter.setVersion("new-version");

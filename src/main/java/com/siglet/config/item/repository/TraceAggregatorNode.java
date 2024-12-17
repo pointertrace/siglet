@@ -6,8 +6,6 @@ import com.siglet.config.item.repository.routecreator.RouteCreator;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorConfig;
 import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
 
-import java.util.function.Supplier;
-
 public class TraceAggregatorNode extends ProcessorNode<TraceAggregatorItem> {
 
     public TraceAggregatorNode(String name, TraceAggregatorItem item) {

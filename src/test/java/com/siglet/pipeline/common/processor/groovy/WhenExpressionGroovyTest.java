@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class WhenExpressionGroovyTest {
+class WhenExpressionGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
@@ -77,7 +77,7 @@ public class WhenExpressionGroovyTest {
 
 
     @Test
-    public void WhenTrue() {
+    void WhenTrue() {
         String spanScript = """
                 when { thisSignal.name == "span name" } then {
                   span {
@@ -95,7 +95,7 @@ public class WhenExpressionGroovyTest {
     }
 
     @Test
-    public void WhenFalse() {
+    void WhenFalse() {
         String spanScript = """
                 when { thisSignal.name != "span name" } then {
                   span {

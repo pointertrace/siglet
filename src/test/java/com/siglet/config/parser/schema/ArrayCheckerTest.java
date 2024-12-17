@@ -17,7 +17,7 @@ class ArrayCheckerTest {
     }
 
     @Test
-    public void array() throws SchemaValidationError {
+    void array() throws SchemaValidationError {
 
         ConfigNode node = parser.parse("""
                 - 1

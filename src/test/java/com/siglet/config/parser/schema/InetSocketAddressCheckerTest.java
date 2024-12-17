@@ -13,7 +13,7 @@ class InetSocketAddressCheckerTest {
 
 
     @Test
-    public void getValue() throws Exception {
+    void getValue() {
 
         TextChecker textChecker = new TextChecker(new InetSocketAddressChecker());
 

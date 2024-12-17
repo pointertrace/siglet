@@ -12,7 +12,7 @@ class JoiningTest {
 
 
     @Test
-    public void collection_oneElement() {
+    void collection_oneElement() {
         Collection<String>  elements = List.of("one");
 
         assertEquals("one", Joining.collection(",", "and", elements));
@@ -21,7 +21,7 @@ class JoiningTest {
 
 
     @Test
-    public void collection_twoElement() {
+    void collection_twoElement() {
         Collection<String>  elements = List.of("one","two");
 
         assertEquals("one and two", Joining.collection(",", " and ", elements));
@@ -29,7 +29,7 @@ class JoiningTest {
     }
 
     @Test
-    public void collection_moreThanTwoElement() {
+    void collection_moreThanTwoElement() {
         Collection<String>  elements = List.of("one","two","three");
 
         assertEquals("one, two and three", Joining.collection(", ", " and ", elements));

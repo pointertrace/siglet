@@ -22,7 +22,7 @@ class ObjectCheckTest {
     }
 
     @Test
-    public void check() {
+    void check() {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),
@@ -38,7 +38,7 @@ class ObjectCheckTest {
 
 
     @Test
-    public void check_notObject() {
+    void check_notObject() {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),
@@ -55,7 +55,7 @@ class ObjectCheckTest {
     }
 
     @Test
-    public void check_onePropertyNotDefined() {
+    void check_onePropertyNotDefined() {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),
@@ -73,7 +73,7 @@ class ObjectCheckTest {
     }
 
     @Test
-    public void check_twoPropertiesNotDefined() {
+    void check_twoPropertiesNotDefined() {
 
         objectCheck = new ObjectChecker(Bean::new, true,
                 new PropertyChecker("prop1", true, new IntChecker()),
@@ -101,23 +101,5 @@ class ObjectCheckTest {
 
 
     public static class Bean extends Item {
-        private int prop1;
-        private String prop2;
-
-        public int getProp1() {
-            return prop1;
-        }
-
-        public void setProp1(int prop1) {
-            this.prop1 = prop1;
-        }
-
-        public String getProp2() {
-            return prop2;
-        }
-
-        public void setProp2(String prop2) {
-            this.prop2 = prop2;
-        }
     }
 }

@@ -136,7 +136,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void get_gaugeMetric() {
+    void get_gaugeMetric() {
 
         assertEquals("gauge-metric-name", protoGaugeMetricAdapter.getName());
         assertEquals("gauge-metric-description", protoGaugeMetricAdapter.getDescription());
@@ -156,7 +156,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void get_sumMetric() {
+    void get_sumMetric() {
 
         assertEquals("sum-metric-name", protoSumMetricAdapter.getName());
         assertEquals("sum-metric-description", protoSumMetricAdapter.getDescription());
@@ -176,7 +176,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void get_histogramMetric() {
+    void get_histogramMetric() {
 
         assertEquals("histogram-metric-name", protoHistogramMetricAdapter.getName());
         assertEquals("histogram-metric-description", protoHistogramMetricAdapter.getDescription());
@@ -196,7 +196,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void get_exponentialHistogramMetric() {
+    void get_exponentialHistogramMetric() {
 
         assertEquals("exponential-histogram-metric-name", protoExponentialHistogramMetricAdapter.getName());
         assertEquals("exponential-histogram-metric-description",
@@ -218,7 +218,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void get_summaryMetric() {
+    void get_summaryMetric() {
 
         assertEquals("summary-metric-name", protoSummaryMetricAdapter.getName());
         assertEquals("summary-metric-description", protoSummaryMetricAdapter.getDescription());
@@ -239,7 +239,7 @@ class ProtoMetricAdapterAdapterTest {
 
 
     @Test
-    public void setAndGet_gaugeMetric() {
+    void setAndGet_gaugeMetric() {
         protoGaugeMetricAdapter
                 .setName("new-name")
                 .setDescription("new-description")
@@ -270,7 +270,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setAndGet_sumMetric() {
+    void setAndGet_sumMetric() {
         protoSumMetricAdapter
                 .setName("new-name")
                 .setDescription("new-description")
@@ -301,7 +301,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setAndGet_exponentialHistogramMetric() {
+    void setAndGet_exponentialHistogramMetric() {
         protoExponentialHistogramMetricAdapter
                 .setName("new-name")
                 .setDescription("new-description")
@@ -333,7 +333,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setAndGet_summaryMetric() {
+    void setAndGet_summaryMetric() {
         protoSummaryMetricAdapter
                 .setName("new-name")
                 .setDescription("new-description")
@@ -364,7 +364,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable_gaugeMetric() {
+    void setNonUpdatable_gaugeMetric() {
         protoGaugeMetricAdapter = new ProtoMetricAdapter(protoGaugeMetric, Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
@@ -380,7 +380,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable_sumMetric() {
+    void setNonUpdatable_sumMetric() {
         protoSumMetricAdapter = new ProtoMetricAdapter(protoSumMetric, Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
@@ -396,7 +396,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable_histogramMetric() {
+    void setNonUpdatable_histogramMetric() {
         protoHistogramMetricAdapter = new ProtoMetricAdapter(protoHistogramMetric, Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build(), false);
 
@@ -412,7 +412,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable_exponentialHistogramMetric() {
+    void setNonUpdatable_exponentialHistogramMetric() {
         protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter(protoExponentialHistogramMetric,
                 Resource.newBuilder().build(), InstrumentationScope.newBuilder().build(), false);
 
@@ -431,7 +431,7 @@ class ProtoMetricAdapterAdapterTest {
     }
 
     @Test
-    public void setNonUpdatable_summaryMetric() {
+    void setNonUpdatable_summaryMetric() {
         protoSummaryMetricAdapter = new ProtoMetricAdapter(protoSummaryMetric,
                 Resource.newBuilder().build(), InstrumentationScope.newBuilder().build(), false);
 

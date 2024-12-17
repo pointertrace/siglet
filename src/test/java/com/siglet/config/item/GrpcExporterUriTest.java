@@ -13,7 +13,7 @@ class GrpcExporterUriTest {
 
 
     @Test
-    public void toString_noParams() throws Exception {
+    void toString_noParams() {
 
         grpcExporterUri = new GrpcExporterUri(InetSocketAddress.createUnresolved("localhost", 500), null, null);
 
@@ -23,7 +23,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void toString_batchSize() throws Exception {
+    void toString_batchSize() {
 
         grpcExporterUri = new GrpcExporterUri(InetSocketAddress.createUnresolved("localhost", 500), 100, null);
 
@@ -33,7 +33,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void toString_batchTimout() throws Exception {
+    void toString_batchTimout() {
 
         grpcExporterUri = new GrpcExporterUri(InetSocketAddress.createUnresolved("localhost", 500), null, 200);
 
@@ -43,7 +43,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void toString_batchSize_batchTimout() throws Exception {
+    void toString_batchSize_batchTimout() {
 
         grpcExporterUri = new GrpcExporterUri(InetSocketAddress.createUnresolved("localhost", 500), 100, 200);
 
@@ -53,7 +53,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void of() throws Exception {
+    void of() {
 
         grpcExporterUri = GrpcExporterUri.of("otelgrpc:address:500");
 
@@ -64,7 +64,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void of_batchSizeInSignals() throws Exception {
+    void of_batchSizeInSignals() {
 
         grpcExporterUri = GrpcExporterUri.of("otelgrpc:address:500?batchSizeInSignals=100");
 
@@ -75,7 +75,7 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void of_batchTimeoutInMillis() throws Exception {
+    void of_batchTimeoutInMillis() {
 
         grpcExporterUri = GrpcExporterUri.of("otelgrpc:address:500?batchTimeoutInMillis=200");
 
@@ -86,43 +86,40 @@ class GrpcExporterUriTest {
     }
 
     @Test
-    public void of_invalidSchema() throws Exception {
+    void of_invalidSchema() {
 
         // invalid schema
-        SigletError e = assertThrowsExactly(SigletError.class, () -> {
-            GrpcExporterUri.of("other:address:500?batchTimeoutInMillis=200");
-        });
+        SigletError e = assertThrowsExactly(SigletError.class,
+                () -> GrpcExporterUri.of("other:address:500?batchTimeoutInMillis=200"));
 
         assertEquals("Invalid scheme: other:address:500", e.getMessage());
 
     }
 
     @Test
-    public void of_invalidPort() throws Exception {
+    void of_invalidPort() {
         // invalid address
-        Exception e = assertThrowsExactly(SigletError.class, () -> {
-            GrpcExporterUri.of("otelgrpc:address:xxx?batchTimeoutInMillis=200");
-        });
+        Exception e = assertThrowsExactly(SigletError.class,
+                () -> GrpcExporterUri.of("otelgrpc:address:xxx?batchTimeoutInMillis=200"));
+
         assertEquals("Invalid numeric value For input string: \"xxx\"", e.getMessage());
 
     }
 
     @Test
-    public void of_invalidParameter() throws Exception {
+    void of_invalidParameter() {
         // invalid parameter
-        Exception e = assertThrowsExactly(SigletError.class, () -> {
-            GrpcExporterUri.of("otelgrpc:address:500?invalidParameter=200");
-        });
+        Exception e = assertThrowsExactly(SigletError.class,
+                () -> GrpcExporterUri.of("otelgrpc:address:500?invalidParameter=200"));
 
         assertEquals("Invalid parameter: invalidParameter=200", e.getMessage());
     }
 
     @Test
-    public void of_invalidParameterValue() throws Exception {
+    void of_invalidParameterValue() {
         // invalid parameter value
-        Exception e = assertThrowsExactly(SigletError.class, () -> {
-            GrpcExporterUri.of("otelgrpc:address:500?batchSizeInSignals=xxx");
-        });
+        Exception e = assertThrowsExactly(SigletError.class,
+                () -> GrpcExporterUri.of("otelgrpc:address:500?batchSizeInSignals=xxx"));
 
         assertEquals("Invalid numeric value For input string: \"xxx\"", e.getMessage());
     }

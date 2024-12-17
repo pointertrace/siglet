@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RouteLinkTest {
 
     @Test
-    public void incrementAndGetString() {
+    void incrementAndGetString() {
 
         AtomicInteger seed = new AtomicInteger(1);
 

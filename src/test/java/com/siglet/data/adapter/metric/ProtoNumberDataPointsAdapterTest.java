@@ -54,13 +54,13 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void size() {
+    void size() {
 
         assertEquals(2, protoNumberDataPointsAdapter.getSize());
     }
 
     @Test
-    public void get_At_notChanged() {
+    void get_At_notChanged() {
 
         assertSame(firstNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(0));
         assertSame(secondNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(1));
@@ -68,7 +68,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
         protoNumberDataPointsAdapter.remove(0);
 
         assertEquals(1, protoNumberDataPointsAdapter.getSize());
@@ -77,7 +77,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void add_andGetAt() {
+    void add_andGetAt() {
 
         protoNumberDataPointsAdapter.add()
                 .setAsLong(100)
@@ -92,7 +92,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void get_At_notUpdatable() {
+    void get_At_notUpdatable() {
 
         protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
 
@@ -104,7 +104,7 @@ class ProtoNumberDataPointsAdapterTest {
     }
 
     @Test
-    public void update_notUpdatable() {
+    void update_notUpdatable() {
 
         protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
 

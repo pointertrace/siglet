@@ -51,13 +51,13 @@ class ProtoHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void size() {
+    void size() {
 
         assertEquals(2, protoHistogramDataPointsAdapter.getSize());
     }
 
     @Test
-    public void get_At_notChanged() {
+    void get_At_notChanged() {
 
         assertSame(firstHistogramDataPoint, protoHistogramDataPointsAdapter.getUpdated().get(0));
         assertSame(secondHistogramDataPoint, protoHistogramDataPointsAdapter.getUpdated().get(1));
@@ -65,7 +65,7 @@ class ProtoHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
         protoHistogramDataPointsAdapter.remove(0);
 
         assertEquals(1, protoHistogramDataPointsAdapter.getSize());
@@ -74,7 +74,7 @@ class ProtoHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void add_andGetAt() {
+    void add_andGetAt() {
 
         protoHistogramDataPointsAdapter.add()
                 .setStartTimeUnixNano(200)
@@ -88,7 +88,7 @@ class ProtoHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void get_At_notUpdatable() {
+    void get_At_notUpdatable() {
 
         protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints, false);
 
@@ -100,7 +100,7 @@ class ProtoHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void update_notUpdatable() {
+    void update_notUpdatable() {
 
         protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints, false);
 

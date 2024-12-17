@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 
 // TODO extender o trace
-public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter> {
+public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter>, CloneableAdapter<ProtoTrace> {
 
     private final boolean updatable;
 
@@ -103,7 +103,7 @@ public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter> {
     }
 
     @Override
-    public ProtoTrace clone() {
+    public ProtoTrace cloneAdapter() {
         ProtoTrace result = new ProtoTrace(firstSpan, updatable);
         spansBySpanId.values().forEach(result::add);
         return result;
@@ -112,4 +112,5 @@ public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter> {
     public void forEachSpan(Consumer<ModifiableSpan> spanConsumer) {
         spans.forEach(spanConsumer);
     }
+
 }

@@ -64,7 +64,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertEquals(1, protoNumberDataPointAdapter.getFlags());
         assertEquals(1, protoNumberDataPointAdapter.getTimeUnixNano());
         assertEquals(2, protoNumberDataPointAdapter.getStartTimeUnixNano());
@@ -89,7 +89,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoNumberDataPointAdapter.setFlags(100);
         protoNumberDataPointAdapter.setTimeUnixNano(200);
@@ -106,7 +106,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         protoNumberDataPointAdapter.getAttributes().set("first-attribute", "new-value");
         protoNumberDataPointAdapter.getAttributes().set("extra-attribute", "extra-attribute-value");
@@ -121,7 +121,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void exemplarsChangeAndGet() {
+    void exemplarsChangeAndGet() {
 
         protoNumberDataPointAdapter.getExemplars().add()
                 .setTraceId(100, 200)
@@ -157,7 +157,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter(protoNumberDataPoint, false);
 
@@ -168,7 +168,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdated();
 
@@ -176,7 +176,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyNumberDataPointAdapterUpdated() {
+    void getUpdated_onlyNumberDataPointAdapterUpdated() {
 
         protoNumberDataPointAdapter.setTimeUnixNano(2500);
         protoNumberDataPointAdapter.setStartTimeUnixNano(3500);
@@ -206,7 +206,7 @@ class ProtoNumberDataPointAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyAttributesUpdated() {
+    void getUpdated_onlyAttributesUpdated() {
 
         ProtoAttributesAdapter attributes = protoNumberDataPointAdapter.getAttributes();
 

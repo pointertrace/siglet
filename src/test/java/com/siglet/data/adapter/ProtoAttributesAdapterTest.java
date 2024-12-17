@@ -69,7 +69,7 @@ class ProtoAttributesAdapterTest {
 
 
     @Test
-    public void isType() {
+    void isType() {
 
         assertTrue(protoAttributesAdapter.isString("string-key"));
         assertTrue(protoAttributesAdapter.isBoolean("bool-key"));
@@ -83,17 +83,18 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void getAttributeAsType() {
+    void getAttributeAsType() {
 
-        assertEquals(protoAttributesAdapter.getAsString("string-key"), "string-value");
+        assertEquals("string-value", protoAttributesAdapter.getAsString("string-key"));
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-key"));
-        assertEquals(protoAttributesAdapter.getAsLong("long-key"), 10L);
-        assertEquals(protoAttributesAdapter.getAsDouble("double-key"), 1.2);
-        assertArrayEquals(protoAttributesAdapter.getAsArray("array-key"), new Object[]{"1", "2"});
-        assertEquals(protoAttributesAdapter.getAsKeyValueList("key-value-list-key"), List.of(
-                new AbstractMap.SimpleImmutableEntry<>("key1", "value1"),
-                new AbstractMap.SimpleImmutableEntry<>("key2", "value2")));
-        assertArrayEquals(protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"), new byte[]{0, 1, 2});
+        assertEquals(10L, protoAttributesAdapter.getAsLong("long-key"));
+        assertEquals(1.2, protoAttributesAdapter.getAsDouble("double-key"));
+        assertArrayEquals(new Object[]{"1", "2"}, protoAttributesAdapter.getAsArray("array-key"));
+        assertEquals(List.of(
+                        new AbstractMap.SimpleImmutableEntry<>("key1", "value1"),
+                        new AbstractMap.SimpleImmutableEntry<>("key2", "value2")),
+                protoAttributesAdapter.getAsKeyValueList("key-value-list-key"));
+        assertArrayEquals(new byte[]{0, 1, 2}, protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"));
         assertFalse(protoAttributesAdapter.isUpdated());
 
 
@@ -156,7 +157,7 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void changeAttributes() {
+    void changeAttributes() {
 
         protoAttributesAdapter
                 .set("string-key", "other-value")
@@ -172,29 +173,30 @@ class ProtoAttributesAdapterTest {
 
 
         assertTrue(protoAttributesAdapter.isString("string-key"));
-        assertEquals(protoAttributesAdapter.getAsString("string-key"), "other-value");
+        assertEquals("other-value", protoAttributesAdapter.getAsString("string-key"));
 
         assertTrue(protoAttributesAdapter.isString("new-string-key"));
-        assertEquals(protoAttributesAdapter.getAsString("new-string-key"), "new-value");
+        assertEquals("new-value", protoAttributesAdapter.getAsString("new-string-key"));
 
         assertFalse(protoAttributesAdapter.containsKey("bool-key"));
 
         assertTrue(protoAttributesAdapter.isLong("long-key"));
-        assertEquals(protoAttributesAdapter.getAsLong("long-key"), 20L);
+        assertEquals(20L, protoAttributesAdapter.getAsLong("long-key"));
 
         assertTrue(protoAttributesAdapter.isDouble("double-key"));
-        assertEquals(protoAttributesAdapter.getAsDouble("double-key"), 2.3);
+        assertEquals(2.3, protoAttributesAdapter.getAsDouble("double-key"));
 
         assertTrue(protoAttributesAdapter.isArray("array-key"));
-        assertArrayEquals(protoAttributesAdapter.getAsArray("array-key"), new Object[]{"3", "4"});
+        assertArrayEquals(new Object[]{"3", "4"}, protoAttributesAdapter.getAsArray("array-key"));
 
         assertTrue(protoAttributesAdapter.isKeyValueList("key-value-list-key"));
-        assertEquals(protoAttributesAdapter.getAsKeyValueList("key-value-list-key"), List.of(
-                new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
-                new AbstractMap.SimpleImmutableEntry<>("key3", "value3")));
+        assertEquals(List.of(
+                        new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
+                        new AbstractMap.SimpleImmutableEntry<>("key3", "value3")),
+                protoAttributesAdapter.getAsKeyValueList("key-value-list-key"));
 
         assertTrue(protoAttributesAdapter.isByteArray("byte-array-key"));
-        assertArrayEquals(protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"), new byte[]{3, 4});
+        assertArrayEquals(new byte[]{3, 4}, protoAttributesAdapter.getAttributeAsByteArray("byte-array-key"));
 
         assertTrue(protoAttributesAdapter.isUpdated());
 
@@ -262,7 +264,7 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
         protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
 
         assertThrowsExactly(SigletError.class, () -> {
@@ -300,7 +302,7 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
 
@@ -309,14 +311,14 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
 
     }
 
     @Test
-    public void getUpdated_getAttribute() {
+    void getUpdated_getAttribute() {
 
         assertEquals("string-value", protoAttributesAdapter.getAsString("string-key"));
 
@@ -325,7 +327,7 @@ class ProtoAttributesAdapterTest {
     }
 
     @Test
-    public void getUpdated_attributeChange() {
+    void getUpdated_attributeChange() {
 
         protoAttributesAdapter.set("string-key", "new-string-value");
 

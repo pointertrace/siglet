@@ -25,7 +25,7 @@ class ProtoBucketsAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals(1, protoBucketsAdapter.getOffset());
         assertEquals(1, protoBucketsAdapter.getBucketCounts().size());
@@ -35,7 +35,7 @@ class ProtoBucketsAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
 
         protoBucketsAdapter
                 .setOffset(10)
@@ -50,7 +50,7 @@ class ProtoBucketsAdapterTest {
     }
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
 
         protoBucketsAdapter = new ProtoBucketsAdapter(protoBuckets, false);
 

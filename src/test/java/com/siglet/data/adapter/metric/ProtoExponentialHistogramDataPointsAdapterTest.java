@@ -50,13 +50,13 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void size() {
+    void size() {
 
         assertEquals(2, protoExponentialHistogramDataPointsAdapter.getSize());
     }
 
     @Test
-    public void get_At_notChanged() {
+    void get_At_notChanged() {
 
         assertSame(firstExponentialHistogramDataPoint, protoExponentialHistogramDataPointsAdapter.getUpdated().get(0));
         assertSame(secondExponentialHistogramDataPoint, protoExponentialHistogramDataPointsAdapter.getUpdated().get(1));
@@ -64,16 +64,16 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
         protoExponentialHistogramDataPointsAdapter.remove(0);
 
         assertEquals(1, protoExponentialHistogramDataPointsAdapter.getSize());
-        assertSame(secondExponentialHistogramDataPoint, protoExponentialHistogramDataPointsAdapter.getUpdated().get(0));
+        assertSame(secondExponentialHistogramDataPoint, protoExponentialHistogramDataPointsAdapter.getUpdated().getFirst());
 
     }
 
     @Test
-    public void add_andGetAt() {
+    void add_andGetAt() {
 
         protoExponentialHistogramDataPointsAdapter.add()
                 .setStartTimeUnixNano(200)
@@ -88,7 +88,7 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void get_At_notUpdatable() {
+    void get_At_notUpdatable() {
 
         protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter(
                 protoExponentialHistogramDataPoints, false);
@@ -101,7 +101,7 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     }
 
     @Test
-    public void update_notUpdatable() {
+    void update_notUpdatable() {
 
         protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter(
                 protoExponentialHistogramDataPoints, false);

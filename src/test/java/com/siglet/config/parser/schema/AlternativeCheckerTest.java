@@ -23,7 +23,7 @@ class AlternativeCheckerTest {
     }
 
     @Test
-    public void check_firstOption() throws SchemaValidationError {
+    void check_firstOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -42,7 +42,7 @@ class AlternativeCheckerTest {
 
 
     @Test
-    public void check_secondOption() throws SchemaValidationError {
+    void check_secondOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -64,7 +64,7 @@ class AlternativeCheckerTest {
     }
 
     @Test
-    public void check_noValidOption() throws SchemaValidationError {
+    void check_noValidOption() throws SchemaValidationError {
 
         alternativeChecker = new AlternativeChecker(
                 new TextChecker(),
@@ -79,7 +79,7 @@ class AlternativeCheckerTest {
       assertEquals("""
               None of alternatives are valid:
                 - text because: (1:1) is not a text value!
-                - array because: (1:1) is not a array!   
+                - array because: (1:1) is not a array!
               """, ex.getMessage());
 
     }

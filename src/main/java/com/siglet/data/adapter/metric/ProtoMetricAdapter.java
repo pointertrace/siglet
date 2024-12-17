@@ -229,8 +229,4 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         }
     }
 
-    @Override
-    public Object clone() {
-        return null;
-    }
 }

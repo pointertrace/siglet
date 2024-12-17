@@ -30,7 +30,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseGrpcReceivers() {
+    void parseGrpcReceivers() {
 
         String config = """
                 - grpc: first
@@ -70,7 +70,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseDebugReceivers() {
+    void parseDebugReceivers() {
 
         String config = """
                 - debug: first
@@ -109,7 +109,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseGrpcExporters() {
+    void parseGrpcExporters() {
 
         String config = """
                   - grpc: first
@@ -161,7 +161,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseDebugExporters() {
+    void parseDebugExporters() {
 
         String config = """
                   - debug: first
@@ -203,7 +203,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseProcessorSpanlet() {
+    void parseProcessorSpanlet() {
 
         var config = """
                 spanlet: name-value
@@ -252,7 +252,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseProcessorTracelet() {
+    void parseProcessorTracelet() {
 
 
         var config = """
@@ -300,7 +300,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseFilterSpanlet() {
+    void parseFilterSpanlet() {
 
 
         var config = """
@@ -341,7 +341,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseFilterTracelet() {
+    void parseFilterTracelet() {
 
 
         var config = """
@@ -384,7 +384,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseRouterSpanlet() {
+    void parseRouterSpanlet() {
 
 
         var config = """
@@ -449,7 +449,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseRouterTracelet() {
+    void parseRouterTracelet() {
 
 
         var config = """
@@ -519,7 +519,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseTraceAggregatorSpanlet() {
+    void parseTraceAggregatorSpanlet() {
 
 
         var config = """
@@ -569,7 +569,7 @@ class ConfigCheckFactoryTest {
     }
 
     @Test
-    public void parseTracePipeline() {
+    void parseTracePipeline() {
 
         var config = """
                   trace: name-value
@@ -636,7 +636,7 @@ class ConfigCheckFactoryTest {
 
 
     @Test
-    public void parseGlobalConfig() {
+    void parseGlobalConfig() {
 
         var config = """
                 receivers:

@@ -42,7 +42,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void has() {
+    void has() {
 
         assertTrue(protoLinksAdapter.has(0, 1, 2));
         assertTrue(protoLinksAdapter.has(3, 4, 5));
@@ -51,7 +51,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         assertEquals(2, protoLinksAdapter.getSize());
 
         ProtoLinkAdapter protoLinkAdapter = protoLinksAdapter.get(0, 1, 2);
@@ -75,7 +75,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void add() {
+    void add() {
 
         assertEquals(2, protoLinksAdapter.getSize());
 
@@ -103,7 +103,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
 
         assertEquals(2, protoLinksAdapter.getSize());
         assertTrue(protoLinksAdapter.has(0, 1, 2));
@@ -119,7 +119,7 @@ class ProtoLinksAdapterTest {
 
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
 
         protoLinksAdapter = new ProtoLinksAdapter(Collections.emptyList(), false);
 
@@ -132,7 +132,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoLinksAdapter = new ProtoLinksAdapter(protoLinks, false);
 
@@ -142,7 +142,7 @@ class ProtoLinksAdapterTest {
 
 
     @Test
-    public void getUpdated_notingUpdated() {
+    void getUpdated_notingUpdated() {
 
         protoLinksAdapter = new ProtoLinksAdapter(protoLinks, true);
 
@@ -151,7 +151,7 @@ class ProtoLinksAdapterTest {
     }
 
     @Test
-    public void getUpdated_listChanged() {
+    void getUpdated_listChanged() {
 
         protoLinksAdapter.remove(0, 1, 2);
 
@@ -171,7 +171,7 @@ class ProtoLinksAdapterTest {
 
 
     @Test
-    public void getUpdated_listContentChanged() {
+    void getUpdated_listContentChanged() {
 
         protoLinksAdapter.get(0, 1, 2).setDroppedAttributesCount(3);
 

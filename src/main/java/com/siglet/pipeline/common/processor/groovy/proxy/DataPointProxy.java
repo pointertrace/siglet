@@ -38,7 +38,8 @@ public class DataPointProxy extends BaseProxy {
     public Object getValue(){
         if (dataPointAdapter.hasDoubleValue()) {
             return dataPointAdapter.getAsDouble();
-        } if (dataPointAdapter.hasLongValue()) {
+        }
+        if (dataPointAdapter.hasLongValue()) {
             return dataPointAdapter.getAsLong();
         } else {
             throw new SigletError("Data point has no long or double value");

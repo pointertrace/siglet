@@ -3,7 +3,6 @@ package com.siglet.config.item.repository.routecreator;
 import com.siglet.SigletError;
 import com.siglet.camel.component.otelgrpc.aggregator.SignalAggregationStrategy;
 import com.siglet.config.item.GrpcExporterUri;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -11,7 +10,6 @@ import org.apache.camel.model.AggregateDefinition;
 import org.apache.camel.model.ChoiceDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import static org.apache.camel.language.constant.ConstantLanguage.constant;
 

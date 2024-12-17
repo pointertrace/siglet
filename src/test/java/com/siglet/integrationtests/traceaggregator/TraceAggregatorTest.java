@@ -1,4 +1,4 @@
-package com.siglet.integrationtests.tracelet;
+package com.siglet.integrationtests.traceaggregator;
 
 import com.google.protobuf.ByteString;
 import com.siglet.config.Config;
@@ -13,13 +13,13 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ProcessorTracelet extends CamelTestSupport {
+class TraceAggregatorTest extends CamelTestSupport {
+
 
     @Test
-    public void testSimple() throws Exception {
+    void testSimpl() throws Exception {
 
 
         String yaml = """
@@ -32,13 +32,15 @@ public class ProcessorTracelet extends CamelTestSupport {
                 pipelines:
                 - trace: pipeline
                   from: receiver
-                  start: tracelet
+                  start: trace-aggregator
                   pipeline:
-                  - tracelet: tracelet
-                    to: exporter
-                    type: processor
-                    config:
-                      action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
+                    - trace-aggregator: trace-aggregator
+                      to: exporter
+                      type: default
+                      config:
+                        timeout-millis: 1000
+                        inactive-timeout-millis: 2000
+                        completion-expression: return thisSignal.size == 2
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -56,35 +58,30 @@ public class ProcessorTracelet extends CamelTestSupport {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        template.sendBody("direct:start", protoSpanAdapter1);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(3, 4)))
                 .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
                 .setName("second-span")
                 .build();
-
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
-
-        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
-        protoTraceAdapter.add(protoSpanAdapter2);
-
-        template.sendBody("direct:start",protoTraceAdapter);
+        template.sendBody("direct:start", protoSpanAdapter2);
 
         MockEndpoint mock = getMockEndpoint("mock:output");
-
+        mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
         mock.expectedMessageCount(1);
 
 
         assertEquals(1, mock.getExchanges().size());
         var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
-        assertEquals("prefix-first-span", traceAdapter.get(1).getName());
-        assertEquals("second-span", traceAdapter.get(2).getName());
 
     }
 
     @Test
-    public void testMultiple() throws Exception {
+    void testMultiple() throws Exception {
 
 
         String yaml = """
@@ -99,15 +96,17 @@ public class ProcessorTracelet extends CamelTestSupport {
                 pipelines:
                 - trace: pipeline
                   from: receiver
-                  start: tracelet
+                  start: trace-aggregator
                   pipeline:
-                  - tracelet: tracelet
-                    to:
-                    - first-exporter
-                    - second-exporter
-                    type: processor
-                    config:
-                      action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
+                    - trace-aggregator: trace-aggregator
+                      to:
+                      - first-exporter
+                      - second-exporter
+                      type: default
+                      config:
+                        timeout-millis: 1000
+                        inactive-timeout-millis: 2000
+                        completion-expression: return thisSignal.size == 2
                 """;
 
         ConfigFactory configFactory = new ConfigFactory();
@@ -125,42 +124,36 @@ public class ProcessorTracelet extends CamelTestSupport {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        template.sendBody("direct:start", protoSpanAdapter1);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(3, 4)))
                 .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
                 .setName("second-span")
                 .build();
-
         ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        template.sendBody("direct:start", protoSpanAdapter2);
 
-        ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
-        protoTraceAdapter.add(protoSpanAdapter2);
-
-        template.sendBody("direct:start",protoTraceAdapter);
 
         MockEndpoint mock = getMockEndpoint("mock:first-output");
-
         mock.expectedMessageCount(1);
-
+        mock.assertIsSatisfied();
 
         assertEquals(1, mock.getExchanges().size());
         var traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
-        assertEquals("prefix-first-span", traceAdapter.get(1).getName());
-        assertEquals("second-span", traceAdapter.get(2).getName());
-
+        assertNotNull(traceAdapter.get(1));
+        assertNotNull(traceAdapter.get(2));
 
 
         mock = getMockEndpoint("mock:second-output");
         mock.expectedMessageCount(1);
-
+        mock.assertIsSatisfied();
 
         assertEquals(1, mock.getExchanges().size());
         traceAdapter = assertInstanceOf(ProtoTrace.class, mock.getExchanges().getFirst().getIn().getBody());
         assertEquals(2, traceAdapter.getSize());
-        assertEquals("prefix-first-span", traceAdapter.get(1).getName());
-        assertEquals("second-span", traceAdapter.get(2).getName());
+        assertNotNull(traceAdapter.get(1));
+        assertNotNull(traceAdapter.get(2));
     }
-
 }

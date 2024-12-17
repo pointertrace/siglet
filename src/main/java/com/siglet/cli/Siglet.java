@@ -1,5 +1,6 @@
 package com.siglet.cli;
 
+import com.siglet.SigletError;
 import com.siglet.camel.component.drop.DropComponent;
 import com.siglet.camel.component.otelgrpc.SigletComponent;
 import com.siglet.config.Config;
@@ -32,8 +33,11 @@ public class Siglet {
             Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
             countDownLatch.await();
             camelContext.stop();
+        } catch (InterruptedException e) {
+           Thread.currentThread().interrupt();
+           throw new SigletError("Error starting siglet! "+e,e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new SigletError("Error starting siglet! "+e,e);
         }
     }
 }

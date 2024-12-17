@@ -37,34 +37,34 @@ class ProtoExemplarAdapterTest {
 
 
     @Test
-    public void get() {
-        assertEquals(protoExemplarAdapter.getTimeUnixNanos(), 10);
-        assertEquals(protoExemplarAdapter.getAsLong(), 100);
-        assertEquals(protoExemplarAdapter.getSpanId(), 10);
-        assertEquals(protoExemplarAdapter.getTraceIdHigh(), 1);
-        assertEquals(protoExemplarAdapter.getTraceIdLow(), 2);
-        assertArrayEquals(protoExemplarAdapter.getTraceId(), new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2});
+    void get() {
+        assertEquals(10, protoExemplarAdapter.getTimeUnixNanos());
+        assertEquals(100, protoExemplarAdapter.getAsLong());
+        assertEquals(10, protoExemplarAdapter.getSpanId());
+        assertEquals(1, protoExemplarAdapter.getTraceIdHigh());
+        assertEquals(2, protoExemplarAdapter.getTraceIdLow());
+        assertArrayEquals(new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2}, protoExemplarAdapter.getTraceId());
 
         assertEquals(1, protoExemplarAdapter.getAttributes().getSize());
         assertEquals("value", protoExemplarAdapter.getAttributes().getAsString("key"));
     }
 
     @Test
-    public void setAndGet() {
+    void setAndGet() {
         protoExemplarAdapter.setTimeUnixNanos(1);
         protoExemplarAdapter.setSpanId(2);
         protoExemplarAdapter.setTraceId(3, 4);
 
-        assertEquals(protoExemplarAdapter.getTimeUnixNanos(), 1);
-        assertEquals(protoExemplarAdapter.getSpanId(), 2);
-        assertEquals(protoExemplarAdapter.getTraceIdHigh(), 3);
-        assertEquals(protoExemplarAdapter.getTraceIdLow(), 4);
+        assertEquals(1, protoExemplarAdapter.getTimeUnixNanos());
+        assertEquals(2, protoExemplarAdapter.getSpanId());
+        assertEquals(3, protoExemplarAdapter.getTraceIdHigh());
+        assertEquals(4, protoExemplarAdapter.getTraceIdLow());
 
         protoExemplarAdapter.setAsLong(100);
-        assertEquals(protoExemplarAdapter.getAsLong(), 100);
+        assertEquals(100, protoExemplarAdapter.getAsLong());
 
         protoExemplarAdapter.setAsDouble(1.2);
-        assertEquals(protoExemplarAdapter.getAsDouble(), 1.2);
+        assertEquals(1.2, protoExemplarAdapter.getAsDouble());
 
         assertNotNull(protoExemplarAdapter.getAttributes());
 
@@ -79,7 +79,7 @@ class ProtoExemplarAdapterTest {
 
 
     @Test
-    public void setNotUpdatable() {
+    void setNotUpdatable() {
         protoExemplarAdapter = new ProtoExemplarAdapter(Exemplar.newBuilder().build(), false);
 
         assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setTimeUnixNanos(1));
@@ -94,7 +94,7 @@ class ProtoExemplarAdapterTest {
     }
 
     @Test
-    public void getUpdatedExemplar_notUpdatable() {
+    void getUpdatedExemplar_notUpdatable() {
 
         protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar, false);
 
@@ -103,14 +103,14 @@ class ProtoExemplarAdapterTest {
     }
 
     @Test
-    public void getUpdatableExemplar_nothingUpdated() {
+    void getUpdatableExemplar_nothingUpdated() {
 
         assertSame(protoExemplar, protoExemplarAdapter.getUpdated());
 
     }
 
     @Test
-    public void getUpdatedExemplar_onlyExemplarUpdated() {
+    void getUpdatedExemplar_onlyExemplarUpdated() {
 
         protoExemplarAdapter.setSpanId(1);
         protoExemplarAdapter.setTraceId(2, 3);
@@ -118,25 +118,25 @@ class ProtoExemplarAdapterTest {
         protoExemplarAdapter.setAsLong(10);
 
         Exemplar updatedExemplar = protoExemplarAdapter.getUpdated();
-        assertEquals(updatedExemplar.getTimeUnixNano(), 4);
-        assertEquals(updatedExemplar.getAsInt(), 10);
-        assertEquals(updatedExemplar.getSpanId(), ByteString.copyFrom(AdapterUtils.spanId(1)));
-        assertEquals(updatedExemplar.getTraceId(), ByteString.copyFrom(AdapterUtils.traceId(2, 3)));
+        assertEquals(4, updatedExemplar.getTimeUnixNano());
+        assertEquals(10, updatedExemplar.getAsInt());
+        assertEquals(ByteString.copyFrom(AdapterUtils.spanId(1)),updatedExemplar.getSpanId());
+        assertEquals(ByteString.copyFrom(AdapterUtils.traceId(2, 3)),updatedExemplar.getTraceId());
 
         assertSame(protoExemplar.getFilteredAttributesList(), updatedExemplar.getFilteredAttributesList());
     }
 
     @Test
-    public void getUpdatedExemplar_onlyAttributesChanged() {
+    void getUpdatedExemplar_onlyAttributesChanged() {
 
         protoExemplarAdapter.getAttributes().set("str-attribute", "new-value");
 
-        assertEquals(protoExemplarAdapter.getTimeUnixNanos(), 10);
-        assertEquals(protoExemplarAdapter.getAsLong(), 100);
-        assertEquals(protoExemplarAdapter.getSpanId(), 10);
-        assertEquals(protoExemplarAdapter.getTraceIdHigh(), 1);
-        assertEquals(protoExemplarAdapter.getTraceIdLow(), 2);
-        assertArrayEquals(protoExemplarAdapter.getTraceId(), new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2});
+        assertEquals(10, protoExemplarAdapter.getTimeUnixNanos());
+        assertEquals(100, protoExemplarAdapter.getAsLong());
+        assertEquals(10, protoExemplarAdapter.getSpanId());
+        assertEquals(1, protoExemplarAdapter.getTraceIdHigh());
+        assertEquals(2, protoExemplarAdapter.getTraceIdLow());
+        assertArrayEquals(new byte[]{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2}, protoExemplarAdapter.getTraceId());
 
         assertEquals(2, protoExemplarAdapter.getAttributes().getSize());
         assertEquals("value", protoExemplarAdapter.getAttributes().getAsString("key"));

@@ -76,6 +76,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
                 .setName("metric2")
                 .build();
 
+
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
 
         protoSpanAdapter2 = new ProtoSpanAdapter(span2, resource1, instrumentationScope1, true);
@@ -111,6 +112,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         MockEndpoint mock = getMockEndpoint("mock:output");
 
         mock.expectedMessageCount(1);
+        mock.assertIsSatisfied();
 
         assertEquals(1, getMockEndpoint("mock:output").getExchanges().size());
 

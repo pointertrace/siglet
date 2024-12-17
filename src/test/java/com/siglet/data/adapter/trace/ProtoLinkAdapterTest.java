@@ -24,8 +24,8 @@ class ProtoLinkAdapterTest {
     void setUp() {
 
         protoLink = Span.Link.newBuilder()
-                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0,1)))
-                        .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
+                .setTraceId(ByteString.copyFrom(AdapterUtils.traceId(0, 1)))
+                .setSpanId(ByteString.copyFrom(AdapterUtils.spanId(2)))
                 .setFlags(1)
                 .setTraceState("trace-state")
                 .setDroppedAttributesCount(2)
@@ -37,14 +37,14 @@ class ProtoLinkAdapterTest {
                         .setKey("long-attribute")
                         .setValue(AnyValue.newBuilder().setIntValue(10L).build())
                         .build())
-        .build();
+                .build();
 
         protoLinkAdapter = new ProtoLinkAdapter(protoLink, true);
 
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals(0, protoLinkAdapter.getTraceIdHigh());
         assertEquals(1, protoLinkAdapter.getTraceIdLow());
@@ -57,8 +57,8 @@ class ProtoLinkAdapterTest {
     }
 
     @Test
-    public void setAndGet() {
-        protoLinkAdapter.setTraceId(3,4);
+    void setAndGet() {
+        protoLinkAdapter.setTraceId(3, 4);
         protoLinkAdapter.setSpanId(5);
         protoLinkAdapter.setFlags(2);
         protoLinkAdapter.setTraceState("new-trace-state");
@@ -74,20 +74,20 @@ class ProtoLinkAdapterTest {
     }
 
     @Test
-    public void attributesGet() {
+    void attributesGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoLinkAdapter.getAttributes();
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "str-attribute-value");
+        assertEquals("str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertFalse(protoAttributesAdapter.isUpdated());
     }
 
 
     @Test
-    public void attributesChangeAndGet() {
+    void attributesChangeAndGet() {
 
         ProtoAttributesAdapter protoAttributesAdapter = protoLinkAdapter.getAttributes();
 
@@ -97,7 +97,7 @@ class ProtoLinkAdapterTest {
 
         assertTrue(protoAttributesAdapter.containsKey("str-attribute"));
         assertTrue(protoAttributesAdapter.isString("str-attribute"));
-        assertEquals(protoAttributesAdapter.getAsString("str-attribute"), "new-str-attribute-value");
+        assertEquals("new-str-attribute-value", protoAttributesAdapter.getAsString("str-attribute"));
 
         assertTrue(protoAttributesAdapter.getAsBoolean("bool-attribute"));
 
@@ -106,12 +106,12 @@ class ProtoLinkAdapterTest {
 
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
 
         protoLinkAdapter = new ProtoLinkAdapter(Span.Link.newBuilder().build(), false);
 
         assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setTraceId(3,4);
+            protoLinkAdapter.setTraceId(3, 4);
         });
 
         assertThrowsExactly(SigletError.class, () -> {
@@ -137,7 +137,7 @@ class ProtoLinkAdapterTest {
 
 
     @Test
-    public void getUpdate_notUpdatable() {
+    void getUpdate_notUpdatable() {
 
         Span.Link actualProtoLink = Span.Link.newBuilder().build();
         protoLinkAdapter = new ProtoLinkAdapter(actualProtoLink, false);
@@ -147,7 +147,7 @@ class ProtoLinkAdapterTest {
     }
 
     @Test
-    public void getUpdated_nothingUpdated() {
+    void getUpdated_nothingUpdated() {
 
         assertSame(protoLink, protoLinkAdapter.getUpdated());
         assertSame(protoLink.getAttributesList(), protoLinkAdapter.getUpdated().getAttributesList());
@@ -155,9 +155,9 @@ class ProtoLinkAdapterTest {
     }
 
     @Test
-    public void getUpdated_onlyLinkUpdated() {
+    void getUpdated_onlyLinkUpdated() {
 
-        protoLinkAdapter.setTraceId(3,4);
+        protoLinkAdapter.setTraceId(3, 4);
         protoLinkAdapter.setSpanId(5);
 
         Span.Link actual = protoLinkAdapter.getUpdated();
@@ -171,7 +171,7 @@ class ProtoLinkAdapterTest {
 
 
     @Test
-    public void getUpdated_onlyPropertiesUpdated() {
+    void getUpdated_onlyPropertiesUpdated() {
 
         protoLinkAdapter.getAttributes().set("bool-attribute", true);
 
@@ -189,9 +189,9 @@ class ProtoLinkAdapterTest {
     }
 
     @Test
-    public void getUpdated_LinkAndPropertiesUpdated() {
+    void getUpdated_LinkAndPropertiesUpdated() {
 
-        protoLinkAdapter.setTraceId(3,4);
+        protoLinkAdapter.setTraceId(3, 4);
         protoLinkAdapter.setSpanId(5);
         protoLinkAdapter.getAttributes().set("bool-attribute", true);
 

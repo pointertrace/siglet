@@ -14,7 +14,7 @@ class DomainCheckerTest {
 
 
     @Test
-    public void check() throws Exception {
+    void check() {
         TextChecker checker = new TextChecker(new DomainChecker(() -> List.of("a","b","c")));
 
 
@@ -33,7 +33,7 @@ class DomainCheckerTest {
     }
 
     @Test
-    public void check_notInSet() throws Exception {
+    void check_notInSet() {
         TextChecker checker = new TextChecker(new DomainChecker(() -> List.of("a","b","c")));
 
 

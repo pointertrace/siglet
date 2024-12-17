@@ -1,10 +1,7 @@
 package com.siglet.config.item.repository.routecreator;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
-
-import java.util.function.Supplier;
 
 public interface RouteCreator {
 

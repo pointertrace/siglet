@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GaugeGroovyTest {
+class GaugeGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
@@ -54,7 +54,7 @@ public class GaugeGroovyTest {
 
 
     @Test
-    public void newGauge() {
+    void newGauge() {
         String gaugeScript = """
                 newGauge {
                     name "gauge name from " + thisSignal.name

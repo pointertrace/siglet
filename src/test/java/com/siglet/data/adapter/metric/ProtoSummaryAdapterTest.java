@@ -35,14 +35,14 @@ class ProtoSummaryAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         protoSummaryAdapter.getDataPoints().getAt(0);
         assertSame(protoSummaryDataPoint, protoSummaryAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoSummaryAdapter.isUpdated());
     }
 
     @Test
-    public void addNumberDataPoint() {
+    void addNumberDataPoint() {
 
         protoSummaryAdapter.getDataPoints().add()
                 .setTimeUnixNano(100)
@@ -62,7 +62,7 @@ class ProtoSummaryAdapterTest {
     }
 
     @Test
-    public void removeDataPoint() {
+    void removeDataPoint() {
 
         protoSummaryAdapter.getDataPoints().remove(0);
 
@@ -76,7 +76,7 @@ class ProtoSummaryAdapterTest {
     }
 
     @Test
-    public void get_updatableNotUpdated() {
+    void get_updatableNotUpdated() {
 
         protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary, false);
 
@@ -89,7 +89,7 @@ class ProtoSummaryAdapterTest {
     }
 
     @Test
-    public void change_notUpdatable() {
+    void change_notUpdatable() {
 
         protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary, false);
 

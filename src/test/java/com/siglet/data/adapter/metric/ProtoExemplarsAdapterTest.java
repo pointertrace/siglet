@@ -48,38 +48,38 @@ class ProtoExemplarsAdapterTest {
     }
 
     @Test
-    public void size() {
+    void size() {
         assertEquals(2, protoExemplarsAdapter.getSize());
         assertFalse(protoExemplarsAdapter.isUpdated());
     }
 
     @Test
-    public void getUpdated_notChanged() {
+    void getUpdated_notChanged() {
         assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
         assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));
     }
 
     @Test
-    public void get() {
+    void get() {
         assertNotNull(protoExemplarsAdapter.get(0));
         assertArrayEquals(AdapterUtils.traceId(1, 2),
-                protoExemplarsAdapter.getUpdated().get(0).getTraceId().toByteArray());
+                protoExemplarsAdapter.getUpdated().getFirst().getTraceId().toByteArray());
         assertArrayEquals(AdapterUtils.spanId(3),
-                protoExemplarsAdapter.getUpdated().get(0).getSpanId().toByteArray());
+                protoExemplarsAdapter.getUpdated().getFirst().getSpanId().toByteArray());
     }
 
     @Test
-    public void remove() {
+    void remove() {
         protoExemplarsAdapter.remove(0);
 
         assertEquals(1, protoExemplarsAdapter.getSize());
-        assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
+        assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().getFirst());
         assertTrue(protoExemplarsAdapter.isUpdated());
 
     }
 
     @Test
-    public void add_andGet() {
+    void add_andGet() {
 
         protoExemplarsAdapter.add()
                 .setAsLong(30)
@@ -100,7 +100,7 @@ class ProtoExemplarsAdapterTest {
     }
 
     @Test
-    public void get_notUpdatable() {
+    void get_notUpdatable() {
         protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
 
         assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
@@ -109,7 +109,7 @@ class ProtoExemplarsAdapterTest {
     }
 
     @Test
-    public void update_notUpdatable() {
+    void update_notUpdatable() {
         protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
 
         assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.add());

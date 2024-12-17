@@ -39,14 +39,14 @@ class ProtoSumAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         protoSumAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoSumAdapter.isUpdated());
     }
 
     @Test
-    public void update_andGet() {
+    void update_andGet() {
 
         protoSumAdapter.getDataPoints().add()
                 .setTimeUnixNano(10)
@@ -68,7 +68,7 @@ class ProtoSumAdapterTest {
     }
 
     @Test
-    public void get_updatableNotUpdated() {
+    void get_updatableNotUpdated() {
 
         protoSumAdapter = new ProtoSumAdapter(protoSum, false);
 
@@ -81,7 +81,7 @@ class ProtoSumAdapterTest {
     }
 
     @Test
-    public void change_notUpdatable() {
+    void change_notUpdatable() {
 
         protoSumAdapter = new ProtoSumAdapter(protoSum, false);
 

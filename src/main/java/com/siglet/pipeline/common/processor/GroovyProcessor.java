@@ -2,11 +2,8 @@ package com.siglet.pipeline.common.processor;
 
 import com.siglet.pipeline.common.processor.groovy.ShellCreator;
 import groovy.lang.Script;
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-
-import java.util.function.Supplier;
 
 public class GroovyProcessor implements Processor {
 

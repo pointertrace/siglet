@@ -69,7 +69,7 @@ public class SigletEndpoint extends DefaultEndpoint {
 
     }
 
-    public void setSignalType(String value) {
+    public void setSignalType(String signalType) {
         this.signalType = signalType;
     }
 

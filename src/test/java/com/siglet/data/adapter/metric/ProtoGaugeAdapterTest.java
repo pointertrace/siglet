@@ -36,14 +36,14 @@ class ProtoGaugeAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
         protoGaugeAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoGaugeAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoGaugeAdapter.isUpdated());
     }
 
     @Test
-    public void addNumberDataPoint() {
+    void addNumberDataPoint() {
 
         protoGaugeAdapter.getDataPoints().add()
                 .setTimeUnixNano(100)
@@ -64,7 +64,7 @@ class ProtoGaugeAdapterTest {
     }
 
     @Test
-    public void removeDataPoint() {
+    void removeDataPoint() {
 
         protoGaugeAdapter.getDataPoints().remove(0);
 
@@ -78,7 +78,7 @@ class ProtoGaugeAdapterTest {
     }
 
     @Test
-    public void get_updatableNotUpdated() {
+    void get_updatableNotUpdated() {
 
         protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge, false);
 
@@ -91,7 +91,7 @@ class ProtoGaugeAdapterTest {
     }
 
     @Test
-    public void change_notUpdatable() {
+    void change_notUpdatable() {
 
         protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge, false);
 

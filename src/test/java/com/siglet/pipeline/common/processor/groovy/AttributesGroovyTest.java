@@ -26,7 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class AttributesGroovyTest {
+class AttributesGroovyTest {
 
     private ProtoSpanAdapter spanAdapter;
 
@@ -104,7 +104,7 @@ public class AttributesGroovyTest {
     }
 
     @Test
-    public void spanAttributes() {
+    void spanAttributes() {
         String attributesScript = """
                 spanAttributes {
                   remove "first attribute key"
@@ -128,7 +128,7 @@ public class AttributesGroovyTest {
     }
 
     @Test
-    public void metricAttributes() {
+    void metricAttributes() {
         String attributesScript = """
                 metricAttributes {
                   remove "first attribute key"

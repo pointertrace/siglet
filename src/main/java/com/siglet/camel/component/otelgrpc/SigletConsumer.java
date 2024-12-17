@@ -1,6 +1,5 @@
 package com.siglet.camel.component.otelgrpc;
 
-import io.grpc.Server;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.support.DefaultConsumer;

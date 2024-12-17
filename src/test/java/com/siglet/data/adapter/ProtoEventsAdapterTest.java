@@ -37,7 +37,7 @@ class ProtoEventsAdapterTest {
     }
 
     @Test
-    public void get() {
+    void get() {
 
         assertEquals(2, protoEventsAdapter.getSize());
 
@@ -60,7 +60,7 @@ class ProtoEventsAdapterTest {
     }
 
     @Test
-    public void changeNonUpdatable() {
+    void changeNonUpdatable() {
         protoEventsAdapter = new ProtoEventsAdapter(List.of(Span.Event.newBuilder().build()), false);
 
 
@@ -76,7 +76,7 @@ class ProtoEventsAdapterTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
 
 
         assertEquals(2, protoEventsAdapter.getSize());
@@ -94,7 +94,7 @@ class ProtoEventsAdapterTest {
     }
 
     @Test
-    public void add() {
+    void add() {
         protoEventsAdapter.add()
                 .setName("third-event")
                 .setTimeUnixNano(1)
@@ -131,7 +131,7 @@ class ProtoEventsAdapterTest {
 
 
     @Test
-    public void getUpdated_notUpdatable() {
+    void getUpdated_notUpdatable() {
 
         protoEventsAdapter = new ProtoEventsAdapter(protoEvents, false);
 
@@ -141,14 +141,14 @@ class ProtoEventsAdapterTest {
 
 
     @Test
-    public void getUpdated_notingUpdated() {
+    void getUpdated_notingUpdated() {
 
         assertSame(protoEvents, protoEventsAdapter.getUpdated());
 
     }
 
     @Test
-    public void getUpdated_listChanged() {
+    void getUpdated_listChanged() {
 
         protoEventsAdapter.remove(0);
 
@@ -167,7 +167,7 @@ class ProtoEventsAdapterTest {
 
 
     @Test
-    public void getUpdated_listContentChanged() {
+    void getUpdated_listContentChanged() {
 
         protoEventsAdapter.get(0).setName("new-name");
 
@@ -175,7 +175,7 @@ class ProtoEventsAdapterTest {
         assertNotSame(protoEvents, actual);
 
         assertEquals(2, actual.size());
-        Span.Event protoEvent = actual.get(0);
+        Span.Event protoEvent = actual.getFirst();
 
         assertNotNull(protoEvent);
 
