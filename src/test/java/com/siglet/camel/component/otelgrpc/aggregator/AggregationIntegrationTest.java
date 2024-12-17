@@ -14,6 +14,7 @@ import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +46,6 @@ public class AggregationIntegrationTest extends CamelTestSupport {
 
     private ProtoMetricAdapter protoMetricAdapter2;
 
-    private SignalsAggregator signalsAggregator;
-
     @BeforeEach
     void setUpTest() {
         resource1 = Resource.newBuilder()
@@ -76,9 +75,6 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         metric2 = Metric.newBuilder()
                 .setName("metric2")
                 .build();
-
-        signalsAggregator = new SignalsAggregator();
-
 
         protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
 
@@ -121,10 +117,8 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         SignalsAggregator signalsAggregator = assertInstanceOf(SignalsAggregator.class,
                 getMockEndpoint("mock:output").getExchanges().getFirst().getIn().getBody());
 
-        assertEquals(1, signalsAggregator.getResourceSpansBuilders().size());
-        List<ResourceSpans> resourceSpansList = signalsAggregator.getResourceSpansBuilders().stream()
-                .map(ResourceSpans.Builder::build)
-                .toList();
+        List<ResourceSpans> resourceSpansList = new ArrayList<>();
+        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
 
         // spans
         assertEquals(1, resourceSpansList.size());
@@ -141,10 +135,8 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         assertSame(span1, resourceSpans.getScopeSpansList().getFirst().getSpansList().getFirst());
         assertSame(span2, resourceSpans.getScopeSpansList().getFirst().getSpansList().get(1));
 
-        assertEquals(2, signalsAggregator.getResourceMetricsBuilders().size());
-        List<ResourceMetrics> resourceMetricsList = signalsAggregator.getResourceMetricsBuilders().stream()
-                .map(ResourceMetrics.Builder::build)
-                .toList();
+        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
+        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
 
         // metrics
         assertEquals(2, resourceMetricsList.size());

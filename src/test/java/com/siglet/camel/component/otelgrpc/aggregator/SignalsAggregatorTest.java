@@ -11,6 +11,7 @@ import io.opentelemetry.proto.metrics.v1.Metric;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,9 +89,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoSpanAdapter1);
         signalsAggregator.add(protoSpanAdapter2);
 
-        List<ResourceSpans> resourceSpansList = signalsAggregator.getResourceSpansBuilders().stream()
-                .map(ResourceSpans.Builder::build)
-                .toList();
+        List<ResourceSpans> resourceSpansList = new ArrayList<>();
+
+        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
 
         assertEquals(1, resourceSpansList.size());
 
@@ -118,9 +119,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoSpanAdapter1);
         signalsAggregator.add(protoSpanAdapter2);
 
-        List<ResourceSpans> resourceSpansList = signalsAggregator.getResourceSpansBuilders().stream()
-                .map(ResourceSpans.Builder::build)
-                .toList();
+        List<ResourceSpans> resourceSpansList = new ArrayList<>();
+
+        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
 
         assertEquals(1, resourceSpansList.size());
 
@@ -150,9 +151,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoSpanAdapter1);
         signalsAggregator.add(protoSpanAdapter2);
 
-        List<ResourceSpans> resourceSpansList = signalsAggregator.getResourceSpansBuilders().stream()
-                .map(ResourceSpans.Builder::build)
-                .toList();
+        List<ResourceSpans> resourceSpansList = new ArrayList<>();
+
+        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
 
         assertEquals(2, resourceSpansList.size());
 
@@ -190,9 +191,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoMetricAdapter1);
         signalsAggregator.add(protoMetricAdapter2);
 
-        List<ResourceMetrics> resourceMetricsList = signalsAggregator.getResourceMetricsBuilders().stream()
-                .map(ResourceMetrics.Builder::build)
-                .toList();
+        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
+
+        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
 
         assertEquals(1, resourceMetricsList.size());
 
@@ -220,9 +221,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoMetricAdapter1);
         signalsAggregator.add(protoMetricAdapter2);
 
-        List<ResourceMetrics> resourceMetricsList = signalsAggregator.getResourceMetricsBuilders().stream()
-                .map(ResourceMetrics.Builder::build)
-                .toList();
+        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
+
+        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
 
         assertEquals(1, resourceMetricsList.size());
 
@@ -252,9 +253,9 @@ class SignalsAggregatorTest {
         signalsAggregator.add(protoMetricAdapter1);
         signalsAggregator.add(protoMetricAdapter2);
 
-        List<ResourceMetrics> resourceMetricsList = signalsAggregator.getResourceMetricsBuilders().stream()
-                .map(ResourceMetrics.Builder::build)
-                .toList();
+        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
+
+        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
 
         assertEquals(2, resourceMetricsList.size());
 

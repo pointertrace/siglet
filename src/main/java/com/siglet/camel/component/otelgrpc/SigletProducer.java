@@ -6,6 +6,7 @@ import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.adapter.trace.ProtoTrace;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
+import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequestOrBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
@@ -44,14 +45,23 @@ public class SigletProducer extends DefaultProducer {
 
         if (body instanceof SignalsAggregator aggregator) {
 
-            aggregator.createTraceServiceRequest().ifPresent((request) -> {
-                ExportTraceServiceResponse traceResp = traceServiceStub.export(request);
-            });
+            if (aggregator.hasMetrics()){
+                ExportMetricsServiceRequest.Builder metricsServiceRequestBuilder =
+                        ExportMetricsServiceRequest.newBuilder();
 
+                aggregator.consumeMetricsBuilder(metricsServiceRequestBuilder::addResourceMetrics);
 
-            aggregator.createMetricServiceRequest().ifPresent((request) -> {
-                ExportMetricsServiceResponse metricResp = metricServicesStub.export(request);
-            });
+                ExportMetricsServiceResponse metricResp = metricServicesStub.export(metricsServiceRequestBuilder.build());
+            }
+
+            if (aggregator.hasSpans()){
+                ExportTraceServiceRequest.Builder spansServiceRequestBuilder =
+                        ExportTraceServiceRequest.newBuilder();
+
+                aggregator.consumeSpansBuilder(spansServiceRequestBuilder::addResourceSpans);
+
+                ExportTraceServiceResponse traceResp = traceServiceStub.export(spansServiceRequestBuilder.build());
+            }
 
         } else if (body instanceof ProtoSpanAdapter spanAdapter) {
 
