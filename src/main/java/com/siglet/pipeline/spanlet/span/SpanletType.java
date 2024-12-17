@@ -6,13 +6,10 @@ public class SpanletType {
 
     private final ConfigDefinition configDefinition;
 
-    private final Class<?> clazz;
-
     private final String name;
 
-    public SpanletType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
+    public SpanletType(String name, ConfigDefinition configDefinition) {
         this.name = name;
-        this.clazz = clazz;
         this.configDefinition = configDefinition;
     }
 

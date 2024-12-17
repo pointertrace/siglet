@@ -3,8 +3,7 @@ package com.siglet.config.parser.node;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.located.Location;
 
-public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
-        ValueConfigNode.Text, ValueConfigNode.NumberConfigNode, ValueConfigNode.Null, ValueConfigNode.Boolean, ValueConfigNode.Binary {
+public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
 
     private final T value;
 
@@ -25,10 +24,12 @@ public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
         return new ValueItem<>(getLocation(), value);
     }
 
+    @Override
     public ValueSetter getValueSetter() {
         return valueSetter;
     }
 
+    @Override
     public void setValueSetter(ValueSetter valueSetter) {
         this.valueSetter = valueSetter;
     }
@@ -41,58 +42,56 @@ public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
         setValueSetter(null);
     }
 
-    public final static class Text extends ValueConfigNode<String> {
+    public static final class Text extends ValueConfigNode<String> {
 
         public Text(String value, Location location) {
             super(value, location);
         }
     }
 
-    public sealed abstract static class NumberConfigNode extends ValueConfigNode<Number> permits ValueConfigNode.Int,
-            ValueConfigNode.Long, ValueConfigNode.BigInteger, ValueConfigNode.Float, ValueConfigNode.Double,
-            ValueConfigNode.BigDecimal {
+    public abstract static sealed class NumberConfigNode extends ValueConfigNode<Number>  {
 
         protected NumberConfigNode(Number value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class Int extends NumberConfigNode {
+    public static final class Int extends NumberConfigNode {
 
         public Int(Integer value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class Long extends NumberConfigNode {
+    public static final class Long extends NumberConfigNode {
 
         public Long(java.lang.Long value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class BigInteger extends NumberConfigNode {
+    public static final class BigInteger extends NumberConfigNode {
 
         public BigInteger(java.math.BigInteger value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class Float extends NumberConfigNode {
+    public static final class Float extends NumberConfigNode {
 
         Float(java.lang.Float value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class Double extends NumberConfigNode {
+    public static final class Double extends NumberConfigNode {
 
         Double(java.lang.Double value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class BigDecimal extends NumberConfigNode {
+    public static final class BigDecimal extends NumberConfigNode {
 
         public BigDecimal(java.math.BigDecimal value, Location location) {
             super(value, location);
@@ -100,21 +99,21 @@ public sealed abstract class ValueConfigNode<T> extends ConfigNode permits
 
     }
 
-    public final static class Null extends ValueConfigNode {
+    public static final class Null extends ValueConfigNode {
 
         public Null(Location location) {
             super(null, location);
         }
     }
 
-    public final static class Boolean extends ValueConfigNode<java.lang.Boolean> {
+    public static final class Boolean extends ValueConfigNode<java.lang.Boolean> {
 
         public Boolean(java.lang.Boolean value, Location location) {
             super(value, location);
         }
     }
 
-    public final static class Binary extends ValueConfigNode {
+    public static final class Binary extends ValueConfigNode {
 
         public Binary(byte[] value, Location location) {
             super(value, location);

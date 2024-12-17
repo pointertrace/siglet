@@ -28,6 +28,7 @@ public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> im
         return this;
     }
 
+    @Override
     public boolean isUpdated() {
         return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ;
     }

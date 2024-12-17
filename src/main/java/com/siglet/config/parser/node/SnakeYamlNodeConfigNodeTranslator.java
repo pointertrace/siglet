@@ -11,6 +11,9 @@ import java.util.List;
 
 public class SnakeYamlNodeConfigNodeTranslator {
 
+    private SnakeYamlNodeConfigNodeTranslator() {
+
+    }
 
     public static ConfigNode translate(Node node) {
 

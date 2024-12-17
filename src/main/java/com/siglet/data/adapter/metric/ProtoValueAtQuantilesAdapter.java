@@ -26,11 +26,6 @@ public class ProtoValueAtQuantilesAdapter extends AdapterList<SummaryDataPoint.V
     }
 
     @Override
-    public ProtoValueAtQuantileAdapter add() {
-        return super.add();
-    }
-
-    @Override
     protected ProtoValueAtQuantileAdapter createNewAdapter() {
         return new ProtoValueAtQuantileAdapter(SummaryDataPoint.ValueAtQuantile.newBuilder());
     }

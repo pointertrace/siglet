@@ -18,7 +18,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     private boolean updated;
 
-    public AdapterList(List<M> messages, boolean updatable) {
+    protected AdapterList(List<M> messages, boolean updatable) {
         this.messages = messages;
         this.updatable = updatable;
     }

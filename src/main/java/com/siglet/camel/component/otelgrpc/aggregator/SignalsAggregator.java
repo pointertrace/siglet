@@ -2,8 +2,6 @@ package com.siglet.camel.component.otelgrpc.aggregator;
 
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
-import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
@@ -15,7 +13,6 @@ import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class SignalsAggregator {

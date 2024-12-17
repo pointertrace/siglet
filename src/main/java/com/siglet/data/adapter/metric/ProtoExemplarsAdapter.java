@@ -24,11 +24,6 @@ public class ProtoExemplarsAdapter extends AdapterList<Exemplar, Exemplar.Builde
     }
 
     @Override
-    public ProtoExemplarAdapter add() {
-        return super.add();
-    }
-
-    @Override
     protected ProtoExemplarAdapter createNewAdapter() {
         return new ProtoExemplarAdapter(Exemplar.newBuilder());
     }

@@ -18,9 +18,9 @@ public class MetricletTypes {
     }
 
     public MetricletTypes() {
-        add(new MetricletType("processor", null, new ProcessorDefinition()));
-        add(new MetricletType("filter", null, new FilterDefinition()));
-        add(new MetricletType("router", null, new RouterDefinition()));
+        add(new MetricletType("processor", new ProcessorDefinition()));
+        add(new MetricletType("filter", new FilterDefinition()));
+        add(new MetricletType("router", new RouterDefinition()));
     }
 
     public MetricletType get(String type) {

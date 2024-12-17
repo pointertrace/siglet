@@ -60,7 +60,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     @Override
     public List<Long> getBucketCounts() {
-        return new ArrayList(getValue(HistogramDataPoint::getBucketCountsList,
+        return new ArrayList<>(getValue(HistogramDataPoint::getBucketCountsList,
                 HistogramDataPoint.Builder::getBucketCountsList));
     }
 

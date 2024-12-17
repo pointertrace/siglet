@@ -6,7 +6,6 @@ import com.siglet.data.adapter.trace.ProtoSpanAdapter;
 import com.siglet.data.adapter.trace.ProtoTrace;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
-import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequestOrBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
@@ -123,11 +122,6 @@ public class SigletProducer extends DefaultProducer {
 
             ExportMetricsServiceResponse resp = metricServicesStub.export(exportMetricsServiceRequest);
         }
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
     }
 
     @Override

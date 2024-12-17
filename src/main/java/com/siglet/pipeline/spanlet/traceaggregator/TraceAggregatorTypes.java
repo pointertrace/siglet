@@ -14,7 +14,7 @@ public class TraceAggregatorTypes {
     }
 
     public TraceAggregatorTypes() {
-        add(new TraceAggregatorType("default", null, new TraceAggregationDefinition()));
+        add(new TraceAggregatorType("default", new TraceAggregationDefinition()));
     }
 
     public TraceAggregatorType get(String type) {

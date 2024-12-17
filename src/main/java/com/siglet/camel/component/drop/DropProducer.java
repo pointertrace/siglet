@@ -28,9 +28,9 @@ public class DropProducer extends DefaultProducer {
             case ProtoTrace traceAdapter -> {
                 System.out.println("trace.traceId=" + traceAdapter.getTraceIdEx());
                 System.out.println("num spans=" + traceAdapter.getSize());
-                traceAdapter.forEachSpan(span -> {
-                    System.out.println("   spanId=" + span.getSpanIdEx());
-                });
+                traceAdapter.forEachSpan(span ->
+                        System.out.println("   spanId=" + span.getSpanIdEx())
+                );
             }
             case ProtoMetricAdapter metricAdapter -> System.out.println("metric.name=" + metricAdapter.getName());
             default -> throw new SigletError("exchange contains invalid body type:" + body.getClass().getName());

@@ -18,9 +18,9 @@ public class TraceletTypes {
     }
 
     public TraceletTypes() {
-        add(new TraceletType("processor", null, new ProcessorDefinition()));
-        add(new TraceletType("filter", null, new FilterDefinition()));
-        add(new TraceletType("router", null, new RouterDefinition()));
+        add(new TraceletType("processor", new ProcessorDefinition()));
+        add(new TraceletType("filter", new FilterDefinition()));
+        add(new TraceletType("router", new RouterDefinition()));
     }
 
     public TraceletType get(String type) {

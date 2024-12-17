@@ -60,6 +60,7 @@ public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationSco
         }
     }
 
+    @Override
     public boolean isUpdated() {
         return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
 

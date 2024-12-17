@@ -6,20 +6,26 @@ import com.siglet.config.located.Location;
 // TODO rever herança
 public class DropExporterItem extends ExporterItem {
 
+    @Override
     public ValueItem<String> getName() {
-        return new ValueItem<String>(Location.of(0,0),"drop");
+        return new ValueItem<>(Location.of(0,0),"drop");
     }
 
+    @Override
     public void setName(ValueItem<String> name) {
         throw new SigletError("Drop exporter has a already defined name!");
     }
+
+    @Override
     public void setLocation(Location location) {
         throw new SigletError("Drop exporter has a already defined location!");
     }
 
+    @Override
     public Location getLocation() {
         return Location.of(0,0);
     }
+
     @Override
     public String getUri() {
         return "drop:teste";

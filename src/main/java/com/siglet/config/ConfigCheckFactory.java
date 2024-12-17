@@ -15,6 +15,10 @@ import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorTypes;
 import static com.siglet.config.parser.schema.SchemaFactory.*;
 
 public class ConfigCheckFactory {
+
+    private ConfigCheckFactory(){
+    }
+
     public static final String GRPC_PROP = "grpc";
 
     public static final String ADDRESS_PROP = "address";

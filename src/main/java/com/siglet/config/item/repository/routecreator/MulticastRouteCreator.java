@@ -8,7 +8,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.AggregateDefinition;
 import org.apache.camel.model.MulticastDefinition;
-import org.apache.camel.model.RouteDefinition;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,15 +15,9 @@ import static org.apache.camel.language.constant.ConstantLanguage.constant;
 
 public class MulticastRouteCreator implements RouteCreator {
 
-    private final RouteDefinition routeDefinition;
-
     private final RouteBuilder routeBuilder;
 
     private final MulticastDefinition multicastDefinition;
-
-    private final RouteLink filterRouterLink;
-
-    private final RouteLink aggregatorRouteLink;
 
     private final RouteLink multicastRouteLink;
 
@@ -32,13 +25,10 @@ public class MulticastRouteCreator implements RouteCreator {
     private final AtomicInteger seed;
 
     // TODO: juntar com SimpleRouteCreator
-    public MulticastRouteCreator(AtomicInteger seed,RouteBuilder routeBuilder, RouteDefinition routeDefinition, MulticastDefinition multicastDefinition) {
+    public MulticastRouteCreator(AtomicInteger seed,RouteBuilder routeBuilder, MulticastDefinition multicastDefinition) {
         this.seed = seed;
-        this.routeDefinition = routeDefinition;
         this.routeBuilder = routeBuilder;
         this.multicastDefinition = multicastDefinition;
-        this.filterRouterLink = new RouteLink(seed, "filter");
-        this.aggregatorRouteLink = new RouteLink(seed, "aggregator");
         this.multicastRouteLink = new RouteLink(seed, "multicast");
     }
 

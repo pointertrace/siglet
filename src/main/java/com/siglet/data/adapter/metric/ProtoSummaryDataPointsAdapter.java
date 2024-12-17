@@ -26,11 +26,6 @@ public class ProtoSummaryDataPointsAdapter extends AdapterList<SummaryDataPoint,
     }
 
     @Override
-    public ProtoSummaryDataPointAdapter add() {
-        return super.add();
-    }
-
-    @Override
     protected ProtoSummaryDataPointAdapter createNewAdapter() {
         return new ProtoSummaryDataPointAdapter(SummaryDataPoint.newBuilder());
     }

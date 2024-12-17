@@ -41,18 +41,8 @@ public class SigletEndpoint extends DefaultEndpoint {
     }
 
     @Override
-    public String getEndpointUri() {
-        return super.getEndpointUri();
-    }
-
-    @Override
     public Consumer createConsumer(Processor processor) {
         return new SigletConsumer(this, processor);
-    }
-
-    @Override
-    protected String createEndpointUri() {
-        return super.createEndpointUri();
     }
 
     // Testar!!!!!

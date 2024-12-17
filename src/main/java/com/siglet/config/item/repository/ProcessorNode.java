@@ -10,7 +10,7 @@ public abstract class ProcessorNode<T extends ProcessorItem> extends Node<T> {
     private List<Node<?>> to = new ArrayList<>();
     private PipelineNode pipeline;
 
-    public ProcessorNode(String name, T item) {
+    protected ProcessorNode(String name, T item) {
         super(name, item);
     }
 

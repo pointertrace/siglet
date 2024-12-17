@@ -19,12 +19,9 @@ public class ProtoEventsAdapter extends AdapterList<Span.Event, Span.Event.Build
     }
 
 
+    @Override
     public void remove(int i) {
         super.remove(i);
-    }
-
-    public ProtoEventAdapter add() {
-        return super.add();
     }
 
     @Override

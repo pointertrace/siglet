@@ -14,6 +14,9 @@ import java.util.*;
 
 public class AdapterUtils {
 
+    private AdapterUtils(){
+    }
+
     public static byte[] traceId(long high, long low) {
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES * 2);
         buffer.putLong(high);
@@ -65,7 +68,7 @@ public class AdapterUtils {
             case KVLIST_VALUE -> {
                 KeyValueList kvList = anyValue.getKvlistValue();
                 List<Map.Entry<String, Object>> result = new ArrayList<>(kvList.getValuesCount());
-                kvList.getValuesList().forEach((kv) ->
+                kvList.getValuesList().forEach(kv ->
                         result.add(new AbstractMap.SimpleImmutableEntry<>(kv.getKey(), anyValueToObject(kv.getValue())))
                 );
                 yield result;
@@ -113,7 +116,6 @@ public class AdapterUtils {
                 yield AnyValue.newBuilder().setArrayValue(avBuilder.build()).build();
             }
             case List<?> l -> {
-                List<KeyValue> kvList = new ArrayList<>(l.size());
                 KeyValueList.Builder kvLstBld = KeyValueList.newBuilder();
                 for (Object o : l) {
                     if (o instanceof Map.Entry<?, ?> e) {

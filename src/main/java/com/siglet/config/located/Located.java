@@ -31,10 +31,6 @@ public interface Located {
             return location;
         }
 
-        @Override
-        public JsonNode get(int index) {
-            return super.get(index);
-        }
     }
 
     class LocatedBigDecimalNode extends DecimalNode implements Located {

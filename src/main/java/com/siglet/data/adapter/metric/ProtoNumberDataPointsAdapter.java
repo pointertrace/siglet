@@ -26,11 +26,6 @@ public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, N
     }
 
     @Override
-    public ProtoNumberDataPointAdapter add() {
-        return super.add();
-    }
-
-    @Override
     protected ProtoNumberDataPointAdapter createNewAdapter() {
         return new ProtoNumberDataPointAdapter();
     }

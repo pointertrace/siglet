@@ -6,13 +6,10 @@ public class MetricletType {
 
     private final ConfigDefinition configDefinition;
 
-    private final Class<?> clazz;
-
     private final String name;
 
-    public MetricletType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
+    public MetricletType(String name, ConfigDefinition configDefinition) {
         this.name = name;
-        this.clazz = clazz;
         this.configDefinition = configDefinition;
     }
 

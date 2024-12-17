@@ -20,6 +20,7 @@ import static org.apache.camel.language.constant.ConstantLanguage.constant;
 
 public class SimpleRouteCreator implements RouteCreator {
 
+    public static final String CANNOT_BE_CALLED_ERROR_MESSAGE = "cannot be called from a SimpleRouteCreator";
     private final RouteBuilder routeBuilder;
 
     private final RouteDefinition routeDefinition;
@@ -41,7 +42,7 @@ public class SimpleRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator addReceiver(String uri, String routeName) {
-        throw new SigletError("cannot be called from a SimpleRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class SimpleRouteCreator implements RouteCreator {
     }
 
     public RouteCreator startMulticast() {
-        return new MulticastRouteCreator(seed, routeBuilder, routeDefinition, routeDefinition.multicast()
+        return new MulticastRouteCreator(seed, routeBuilder, routeDefinition.multicast()
                 .onPrepare(new CloneProcessor()));
     }
 
@@ -100,7 +101,7 @@ public class SimpleRouteCreator implements RouteCreator {
     }
 
     public void endMulticast() {
-        throw new SigletError("cannot be called from a SimpleRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
@@ -110,12 +111,12 @@ public class SimpleRouteCreator implements RouteCreator {
 
     @Override
     public RouteCreator addChoice(Predicate predicate) {
-        throw new SigletError("cannot be called from a SimpleRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator endChoice() {
-        throw new SigletError("cannot be called from a SimpleRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     public static class CloneProcessor implements Processor {

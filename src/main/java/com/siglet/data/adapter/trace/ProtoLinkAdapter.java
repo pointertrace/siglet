@@ -101,10 +101,6 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
     }
 
     @Override
-    protected Span.Link getMessage() {
-        return super.getMessage();
-    }
-
     public boolean isUpdated() {
         return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
     }

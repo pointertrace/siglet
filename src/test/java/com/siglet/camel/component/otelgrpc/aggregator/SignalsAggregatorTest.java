@@ -91,7 +91,7 @@ class SignalsAggregatorTest {
 
         List<ResourceSpans> resourceSpansList = new ArrayList<>();
 
-        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
+        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
 
         assertEquals(1, resourceSpansList.size());
 
@@ -121,7 +121,7 @@ class SignalsAggregatorTest {
 
         List<ResourceSpans> resourceSpansList = new ArrayList<>();
 
-        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
+        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
 
         assertEquals(1, resourceSpansList.size());
 
@@ -153,7 +153,7 @@ class SignalsAggregatorTest {
 
         List<ResourceSpans> resourceSpansList = new ArrayList<>();
 
-        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
+        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
 
         assertEquals(2, resourceSpansList.size());
 
@@ -193,7 +193,7 @@ class SignalsAggregatorTest {
 
         List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
 
-        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
+        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
 
         assertEquals(1, resourceMetricsList.size());
 
@@ -223,7 +223,7 @@ class SignalsAggregatorTest {
 
         List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
 
-        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
+        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
 
         assertEquals(1, resourceMetricsList.size());
 
@@ -255,7 +255,7 @@ class SignalsAggregatorTest {
 
         List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
 
-        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
+        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
 
         assertEquals(2, resourceMetricsList.size());
 

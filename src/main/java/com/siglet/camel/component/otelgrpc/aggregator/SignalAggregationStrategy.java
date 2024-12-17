@@ -24,12 +24,11 @@ public class SignalAggregationStrategy implements AggregationStrategy {
     }
 
     private void addToSignalsAggregator(SignalsAggregator signalsAggregator, Object protoAdapter) {
-        if (protoAdapter instanceof ProtoSpanAdapter protoSpanAdapter) {
-            signalsAggregator.add(protoSpanAdapter);
-        } else if (protoAdapter instanceof ProtoMetricAdapter protoMetricAdapter) {
-            signalsAggregator.add(protoMetricAdapter);
-        } else {
-            throw new SigletError("Unsupported proto adapter type: " + protoAdapter.getClass().getName());
+        switch (protoAdapter) {
+            case ProtoSpanAdapter protoSpanAdapter -> signalsAggregator.add(protoSpanAdapter);
+            case ProtoMetricAdapter protoMetricAdapter -> signalsAggregator.add(protoMetricAdapter);
+            case null -> throw new SigletError("proto adapter type is null");
+            default -> throw new SigletError("Unsupported proto adapter type: " + protoAdapter.getClass().getName());
         }
     }
 }

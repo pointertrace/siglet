@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class AggregationIntegrationTest extends CamelTestSupport {
+class AggregationIntegrationTest extends CamelTestSupport {
 
     private Resource resource1;
 
@@ -101,7 +101,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
     }
 
     @Test
-    public void aggregate() throws InterruptedException {
+    void aggregate() throws InterruptedException {
         template.sendBody("direct:start", protoSpanAdapter1);
         template.sendBody("direct:start", protoSpanAdapter2);
         template.sendBody("direct:start", protoMetricAdapter1);
@@ -120,7 +120,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
                 getMockEndpoint("mock:output").getExchanges().getFirst().getIn().getBody());
 
         List<ResourceSpans> resourceSpansList = new ArrayList<>();
-        signalsAggregator.consumeSpansBuilder((mb)-> resourceSpansList.add(mb.build()));
+        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
 
         // spans
         assertEquals(1, resourceSpansList.size());
@@ -138,7 +138,7 @@ public class AggregationIntegrationTest extends CamelTestSupport {
         assertSame(span2, resourceSpans.getScopeSpansList().getFirst().getSpansList().get(1));
 
         List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
-        signalsAggregator.consumeMetricsBuilder((mb)-> resourceMetricsList.add(mb.build()));
+        signalsAggregator.consumeMetricsBuilder((mb) -> resourceMetricsList.add(mb.build()));
 
         // metrics
         assertEquals(2, resourceMetricsList.size());

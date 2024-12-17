@@ -14,6 +14,7 @@ public abstract class BasicPropertyChecker extends AbstractPropertyChecker {
         this.valueSetter = valueSetter;
     }
 
+    @Override
     public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
             throw new SingleSchemaValidationError("is not a object", node.getLocation());

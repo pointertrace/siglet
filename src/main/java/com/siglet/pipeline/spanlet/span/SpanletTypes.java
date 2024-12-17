@@ -18,9 +18,9 @@ public class SpanletTypes {
     }
 
     public SpanletTypes() {
-        add(new SpanletType("processor", null, new ProcessorDefinition()));
-        add(new SpanletType("filter", null, new FilterDefinition()));
-        add(new SpanletType("router", null, new RouterDefinition()));
+        add(new SpanletType("processor", new ProcessorDefinition()));
+        add(new SpanletType("filter", new FilterDefinition()));
+        add(new SpanletType("router", new RouterDefinition()));
     }
 
     public SpanletType get(String type) {

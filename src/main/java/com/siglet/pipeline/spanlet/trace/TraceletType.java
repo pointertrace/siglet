@@ -6,13 +6,10 @@ public class TraceletType {
 
     private final ConfigDefinition configDefinition;
 
-    private final Class<?> clazz;
-
     private final String name;
 
-    public TraceletType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
+    public TraceletType(String name, ConfigDefinition configDefinition) {
         this.name = name;
-        this.clazz = clazz;
         this.configDefinition = configDefinition;
     }
 

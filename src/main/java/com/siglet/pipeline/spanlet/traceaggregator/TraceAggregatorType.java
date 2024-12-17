@@ -6,13 +6,10 @@ public class TraceAggregatorType {
 
     private final ConfigDefinition configDefinition;
 
-    private final Class<?> clazz;
-
     private final String name;
 
-    public TraceAggregatorType(String name, Class<?> clazz, ConfigDefinition configDefinition) {
+    public TraceAggregatorType(String name, ConfigDefinition configDefinition) {
         this.name = name;
-        this.clazz = clazz;
         this.configDefinition = configDefinition;
     }
 

@@ -9,10 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RootRouteCreator implements RouteCreator {
 
+    private static final String CANNOT_BE_CALLED_ERROR_MESSAGE = "cannot be called from a RootRouteCreator";
     private final RouteBuilder routeBuilder;
 
     private final AtomicInteger seed = new AtomicInteger(1);
-
 
 
     public RootRouteCreator() {
@@ -34,47 +34,49 @@ public class RootRouteCreator implements RouteCreator {
 
     @Override
     public void addExporter(String uri) {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator addProcessor(Processor processor) {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator addFilter(Predicate predicate) {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator startMulticast() {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator traceAggregator(String completionExpression, Long inactiveTimeoutMillis, Long timeoutMillis) {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public void endMulticast() {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator startChoice() {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator addChoice(Predicate predicate) {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
 
     @Override
     public RouteCreator endChoice() {
-        throw new SigletError("cannot be called from a RootRouteCreator");
+        throw new SigletError(CANNOT_BE_CALLED_ERROR_MESSAGE);
     }
+
+
 
 }

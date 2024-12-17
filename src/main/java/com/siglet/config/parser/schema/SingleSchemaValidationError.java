@@ -6,6 +6,7 @@ import com.siglet.config.located.Location;
 public class SingleSchemaValidationError extends SchemaValidationError {
 
     private final Location location;
+
     public SingleSchemaValidationError(String message, Location location) {
         super(message);
         this.location = location;

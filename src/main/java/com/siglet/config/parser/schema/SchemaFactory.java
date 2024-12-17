@@ -7,6 +7,10 @@ import java.util.function.Supplier;
 
 public class SchemaFactory {
 
+    private SchemaFactory() {
+
+    }
+
     public static NodeChecker text() {
         return new TextChecker();
     }
@@ -43,15 +47,15 @@ public class SchemaFactory {
         return new PropertyChecker(valueSetter, propertyName, required, propertyChecks);
     }
 
-    public static <T, E> AlternativePropertyChecker alternativePropertyChecker( String propertyName, boolean required, AbstractPropertyChecker ... abstractPropertyCheckers) {
+    public static AlternativePropertyChecker alternativePropertyChecker( String propertyName, boolean required, AbstractPropertyChecker ... abstractPropertyCheckers) {
         return new AlternativePropertyChecker( propertyName, required,abstractPropertyCheckers);
     }
 
-    public static <T, E> AlternativePropertyChecker alternativeRequiredProperty( String propertyName, AbstractPropertyChecker ... abstractPropertyCheckers) {
+    public static AlternativePropertyChecker alternativeRequiredProperty( String propertyName, AbstractPropertyChecker ... abstractPropertyCheckers) {
         return new AlternativePropertyChecker( propertyName, true,abstractPropertyCheckers);
     }
 
-    public static <T, E> DynamicPropertyChecker dynamicProperty(String propertyName, boolean required, DynamicCheckerDiscriminator discriminator) {
+    public static DynamicPropertyChecker dynamicProperty(String propertyName, boolean required, DynamicCheckerDiscriminator discriminator) {
         return new DynamicPropertyChecker( propertyName, required,discriminator);
     }
 
@@ -62,7 +66,7 @@ public class SchemaFactory {
     public static <T, E> PropertyChecker optionalProperty(BiConsumer<T, E> valueSetter, String propertyName, NodeChecker... propertyChecks) {
         return property(valueSetter, propertyName, false, propertyChecks);
     }
-    public static <T, E> DynamicPropertyChecker requiredDynamicProperty(String propertyName, DynamicCheckerDiscriminator discriminator) {
+    public static DynamicPropertyChecker requiredDynamicProperty(String propertyName, DynamicCheckerDiscriminator discriminator) {
         return dynamicProperty( propertyName, true, discriminator);
     }
 

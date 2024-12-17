@@ -25,6 +25,7 @@ public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> imple
         return protoSummaryDataPointsAdapter;
     }
 
+    @Override
     public boolean isUpdated() {
         return super.isUpdated() || (protoSummaryDataPointsAdapter != null && protoSummaryDataPointsAdapter.isUpdated());
     }

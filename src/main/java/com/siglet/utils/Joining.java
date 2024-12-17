@@ -5,6 +5,8 @@ import java.util.stream.Collector;
 
 public class Joining {
 
+    private Joining() {
+    }
 
     public static Collector<CharSequence, ?, String> twoDelimiters(String delimiter, String finalDelimiter, String prefix, String suffix) {
 

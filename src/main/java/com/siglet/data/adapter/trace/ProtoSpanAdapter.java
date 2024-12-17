@@ -318,18 +318,8 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
         }
     }
 
-    @Override
-    public ProtoSpanAdapter clone() {
-        return new ProtoSpanAdapter(getUpdated(),
-                getUpdatedResource(), getUpdatedInstrumentationScope(), isUpdatable());
-    }
-
     private boolean attributesUpdated() {
         return protoAttributesAdapter != null && protoAttributesAdapter.isUpdated();
-    }
-
-    private boolean resourceUpdated() {
-        return protoResourceAdapter != null && protoResourceAdapter.isUpdated();
     }
 
     private boolean linksUpdated() {

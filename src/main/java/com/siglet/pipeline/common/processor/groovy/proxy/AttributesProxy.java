@@ -7,7 +7,7 @@ public abstract class AttributesProxy extends BaseProxy{
 
     private final ProtoAttributesAdapter attributesAdapter;
 
-    public AttributesProxy(Object thisSignal,ProtoAttributesAdapter attributesAdapter) {
+    protected AttributesProxy(Object thisSignal,ProtoAttributesAdapter attributesAdapter) {
         super(thisSignal);
         this.attributesAdapter = attributesAdapter;
     }

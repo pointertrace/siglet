@@ -15,8 +15,9 @@ public class Config {
 
     public Config(ConfigItem configItem) {
         this.routeBuilder = configItem.build();
-        this.receiversUris = configItem.getReceivers().stream().collect(Collectors.toMap(
-                (ri) -> ri.getName().getValue(), ReceiverItem::getUri));
+        this.receiversUris = configItem.getReceivers().stream().collect(
+                Collectors.toMap(ri -> ri.getName().getValue(), ReceiverItem::getUri)
+        );
     }
 
     public RouteBuilder getRouteBuilder() {

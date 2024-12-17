@@ -4,7 +4,7 @@ import com.siglet.SigletError;
 
 public abstract class SchemaValidationError extends SigletError {
 
-    public SchemaValidationError(String message) {
+    protected SchemaValidationError(String message) {
         super(message);
     }
 

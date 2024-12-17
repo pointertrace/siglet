@@ -25,6 +25,7 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
         return protoNumberDataPointsAdapter;
     }
 
+    @Override
     public boolean isUpdated() {
         return super.isUpdated() || (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated());
     }
