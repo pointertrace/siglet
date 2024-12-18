@@ -14,6 +14,8 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class SignalsAggregator {
 
@@ -21,10 +23,51 @@ public class SignalsAggregator {
 
     private final List<ResourceMetrics.Builder> resourceMetricsBuilders = new ArrayList<>();
 
+    public void addx(ProtoSpanAdapter spanAdapter) {
+        Resource rsToAdd = spanAdapter.getUpdatedResource();
+        InstrumentationScope isToAdd = spanAdapter.getUpdatedInstrumentationScope();
+        Span spanToAdd = spanAdapter.getUpdated();
+
+        ResourceSpans.Builder resourceSpanBuilder = findOrDefault(
+                resourceSpansBuilders,
+                rsSpanBld -> rsToAdd.equals(rsSpanBld.getResource()),
+                ResourceSpans::newBuilder,
+                resourceSpansBuilders::add
+        );
+
+        resourceSpanBuilder.setResource(rsToAdd);
+
+        ScopeSpans.Builder scopeSpanBuilder = findOrDefault(
+                resourceSpanBuilder.getScopeSpansBuilderList(),
+                scSpanBld -> isToAdd.equals(scSpanBld.getScope()),
+                ScopeSpans::newBuilder,
+                resourceSpanBuilder::addScopeSpans
+        );
+
+        scopeSpanBuilder.setScope(isToAdd);
+
+        scopeSpanBuilder.addSpans(spanToAdd);
+
+    }
+
+    private <T> T findOrDefault(List<T> list, Predicate<T> predicate, Supplier<T> defaultValue, Consumer<T> listAdder) {
+        for (T e : list) {
+            if (predicate.test(e)) {
+                return e;
+            }
+        }
+        T newValue = defaultValue.get();
+        listAdder.accept(newValue);
+        return newValue;
+    }
+
+
     public void add(ProtoSpanAdapter spanAdapter) {
         Resource rsToAdd = spanAdapter.getUpdatedResource();
         InstrumentationScope isToAdd = spanAdapter.getUpdatedInstrumentationScope();
         Span spanToAdd = spanAdapter.getUpdated();
+
+
         if (!resourceSpansBuilders.isEmpty()) {
             for (ResourceSpans.Builder resourceSpanBld : resourceSpansBuilders) {
                 if (rsToAdd.equals(resourceSpanBld.getResource())) {
@@ -45,14 +88,14 @@ public class SignalsAggregator {
                                     .setScope(isToAdd)
                                     .addSpans(spanToAdd)
                                     .build()));
-        } else {
-            resourceSpansBuilders.add(ResourceSpans.newBuilder()
-                    .setResource(rsToAdd)
-                    .addScopeSpans(ScopeSpans.newBuilder()
-                            .setScope(isToAdd)
-                            .addSpans(spanToAdd)
-                            .build()));
+            return;
         }
+        resourceSpansBuilders.add(ResourceSpans.newBuilder()
+                .setResource(rsToAdd)
+                .addScopeSpans(ScopeSpans.newBuilder()
+                        .setScope(isToAdd)
+                        .addSpans(spanToAdd)
+                        .build()));
     }
 
     public void add(ProtoMetricAdapter metricAdapter) {
@@ -79,22 +122,22 @@ public class SignalsAggregator {
                                     .setScope(isToAdd)
                                     .addMetrics(metricToAdd)
                                     .build()));
-        } else {
-            resourceMetricsBuilders.add(ResourceMetrics.newBuilder()
-                    .setResource(rsToAdd)
-                    .addScopeMetrics(ScopeMetrics.newBuilder()
-                            .setScope(isToAdd)
-                            .addMetrics(metricToAdd)
-                            .build()));
-
+            return;
         }
+        resourceMetricsBuilders.add(ResourceMetrics.newBuilder()
+                .setResource(rsToAdd)
+                .addScopeMetrics(ScopeMetrics.newBuilder()
+                        .setScope(isToAdd)
+                        .addMetrics(metricToAdd)
+                        .build()));
+
     }
 
-    public void consumeMetricsBuilder(Consumer<ResourceMetrics.Builder>  metricsBuilderConsumer) {
+    public void consumeMetricsBuilder(Consumer<ResourceMetrics.Builder> metricsBuilderConsumer) {
         resourceMetricsBuilders.forEach(metricsBuilderConsumer);
     }
 
-    public void consumeSpansBuilder(Consumer<ResourceSpans.Builder>  spansBuilderConsumer) {
+    public void consumeSpansBuilder(Consumer<ResourceSpans.Builder> spansBuilderConsumer) {
         resourceSpansBuilders.forEach(spansBuilderConsumer);
     }
 
