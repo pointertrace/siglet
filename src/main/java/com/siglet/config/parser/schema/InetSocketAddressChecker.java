@@ -6,7 +6,7 @@ import com.siglet.config.parser.node.ValueTransformer;
 
 import java.net.InetSocketAddress;
 
-public class InetSocketAddressChecker implements NodeChecker {
+public class InetSocketAddressChecker extends NodeChecker {
 
     private final ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
 
@@ -14,10 +14,10 @@ public class InetSocketAddressChecker implements NodeChecker {
         if (node instanceof ValueConfigNode.Text textNode) {
             String validationError = getValidationErrorReason((String) textNode.getValue().getValue());
             if (validationError != null) {
-                throw new SingleSchemaValidationError(validationError, node.getLocation());
+                throw new SingleSchemaValidationError(node.getLocation(), validationError);
             }
         } else {
-            throw new SingleSchemaValidationError("is not a valid address <host>:<port>!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(), "is not a valid address <host>:<port>!");
         }
     }
 

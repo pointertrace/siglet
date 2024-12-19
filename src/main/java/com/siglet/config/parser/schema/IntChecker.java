@@ -5,7 +5,8 @@ import com.siglet.config.parser.node.ValueConfigNode;
 
 import java.util.List;
 
-public class IntChecker implements NodeChecker {
+public class IntChecker extends NodeChecker {
+
     private final List<NodeChecker> additionalCheckers;
 
     public IntChecker(NodeChecker... additionalCheckers) {
@@ -15,7 +16,7 @@ public class IntChecker implements NodeChecker {
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ValueConfigNode.Int intNode)) {
-            throw new SingleSchemaValidationError("is not a int value!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a int value!");
         }
         for (NodeChecker additionalChecker : additionalCheckers) {
             additionalChecker.check(intNode);

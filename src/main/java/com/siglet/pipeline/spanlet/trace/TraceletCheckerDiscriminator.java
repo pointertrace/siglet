@@ -18,14 +18,13 @@ public class TraceletCheckerDiscriminator implements DynamicCheckerDiscriminator
     }
 
     @Override
-    public NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationError {
-        if (!(configNode instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationError("must be an object!", configNode.getLocation());
+    public NodeChecker getChecker(ConfigNode node) throws SchemaValidationError {
+        if (!(node instanceof ObjectConfigNode objectNode)) {
+            throw new SingleSchemaValidationError(node.getLocation(),"must be an object!");
         }
         ConfigNode type = objectNode.get("type");
         if (type == null) {
-            throw new SingleSchemaValidationError("must have a type property!", objectNode.getLocation());
-
+            throw new SingleSchemaValidationError(node.getLocation(),"must have a type property!");
         }
 
         if (type.getValue() instanceof ValueItem valueItem){

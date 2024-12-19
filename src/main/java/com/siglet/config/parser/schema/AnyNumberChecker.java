@@ -5,7 +5,7 @@ import com.siglet.config.parser.node.ValueConfigNode;
 
 import java.util.List;
 
-public class AnyNumberChecker implements NodeChecker {
+public class AnyNumberChecker extends NodeChecker {
 
     private final List<NodeChecker> additionalCheckers;
 
@@ -16,7 +16,7 @@ public class AnyNumberChecker implements NodeChecker {
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ValueConfigNode.NumberConfigNode numberNode)) {
-            throw new SingleSchemaValidationError("is not a number value!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a number value!");
         }
         for (NodeChecker additionalChecker : additionalCheckers) {
             additionalChecker.check(numberNode);
@@ -26,5 +26,10 @@ public class AnyNumberChecker implements NodeChecker {
     @Override
     public String getName() {
         return "number";
+    }
+
+    @Override
+    public List<NodeChecker> getChildren() {
+        return additionalCheckers;
     }
 }

@@ -22,4 +22,9 @@ public class DynamicPropertyChecker extends BasicPropertyChecker {
     public String getName() {
         return "dynamic property";
     }
+
+    @Override
+    public String getDescription() {
+        return String.format("discriminator:%s",discriminator);
+    }
 }

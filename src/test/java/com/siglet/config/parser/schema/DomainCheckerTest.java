@@ -12,11 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DomainCheckerTest {
 
+    private String expected;
+
+    @Test
+    void describe() {
+
+        TextChecker checker = new TextChecker(new DomainChecker(() -> List.of("a","b","c")));
+
+        expected = """
+                text
+                  domain  (values [a, b, c])""";
+
+        assertEquals(expected, checker.describe());
+    }
 
     @Test
     void check() {
-        TextChecker checker = new TextChecker(new DomainChecker(() -> List.of("a","b","c")));
 
+        TextChecker checker = new TextChecker(new DomainChecker(() -> List.of("a","b","c")));
 
         var yaml = "a";
 
@@ -45,9 +58,7 @@ class DomainCheckerTest {
 
         var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 
-        assertEquals("must be one of [a, b, c]", ex.getMessage());
-        assertEquals(Location.of(1,1), ex.getLocation());
-
+        assertEquals("(1:1) must be one of [a, b, c]!", ex.explain());
 
     }
 }

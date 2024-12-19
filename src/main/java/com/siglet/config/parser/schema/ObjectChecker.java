@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ObjectChecker implements NodeChecker {
+public class ObjectChecker extends NodeChecker {
 
     private final boolean strict;
 
@@ -31,7 +31,7 @@ public class ObjectChecker implements NodeChecker {
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationError("expecting an object", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"expecting an object!");
         }
         for (AbstractPropertyChecker propertyCheck : getPropertyCheckers()) {
             propertyCheck.check(node);
@@ -48,28 +48,23 @@ public class ObjectChecker implements NodeChecker {
             List<SingleSchemaValidationError> errors = new ArrayList<>();
             for (String propName : propNames) {
                 errors.add(new SingleSchemaValidationError(
-                        String.format("property %s is not expected", propName),
-                        Location.of(objectNode.get(propName).getLocation().getLine(), 1)));
+                        Location.of(objectNode.get(propName).getLocation().getLine(), 1),
+                        String.format("property %s is not expected!", propName))
+                );
             }
             if (errors.size() == 1) {
                 throw errors.getFirst();
             } else if (errors.size() > 1) {
-                throw new MultipleSchemaValidationError(String.format("properties %s are not expected",
-                        Joining.collection(", "," and ", propNames)), errors);
+                throw new MultipleSchemaValidationError(node.getLocation(), "Object is not valid", errors);
 
             }
         }
         objectNode.setValueCreator(valueCreator);
     }
 
-    @Override
-    public String getName() {
-        return "object";
-    }
-
     protected List<AbstractPropertyChecker> getPropertyCheckers() {
         return propertiesCheck.stream()
-                .filter(p -> ! (p instanceof DynamicPropertyChecker))
+                .filter(p -> !(p instanceof DynamicPropertyChecker))
                 .map(AbstractPropertyChecker.class::cast)
                 .toList();
     }
@@ -81,4 +76,18 @@ public class ObjectChecker implements NodeChecker {
                 .toList();
     }
 
+    @Override
+    public String getName() {
+        return "object";
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @Override
+    public List<? extends NodeChecker> getChildren() {
+        return  propertiesCheck;
+    }
 }

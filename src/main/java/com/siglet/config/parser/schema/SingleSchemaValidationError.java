@@ -3,21 +3,30 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.located.Location;
 
+import java.io.Serial;
+
 public class SingleSchemaValidationError extends SchemaValidationError {
 
-    private final Location location;
+    @Serial
+    private static final long serialVersionUID = -30768105953872818L;
 
-    public SingleSchemaValidationError(String message, Location location) {
-        super(message);
-        this.location = location;
+    public SingleSchemaValidationError(Location location, String message) {
+        super(location, message);
     }
 
-    public Location getLocation() {
-        return location;
+    public SingleSchemaValidationError(Location location, String message, SchemaValidationError cause) {
+        super(location, message, cause);
     }
 
     @Override
-    public String toString() {
-        return String.format("(%d:%d) %s",location.getLine(), location.getColumn(), getMessage());
+    protected String explain(int level) {
+        if (getCause() != null) {
+            return String.format("%s(%d:%d) %s because:%n%s", PREFIX.repeat(level), getLocation().getLine(),
+                    getLocation().getColumn(), getMessage(), getCause().explain(level + 1));
+        } else {
+            return String.format("%s(%d:%d) %s", PREFIX.repeat(level), getLocation().getLine(),
+                    getLocation().getColumn(), getMessage());
+        }
     }
+
 }

@@ -17,16 +17,26 @@ public abstract class BasicPropertyChecker extends AbstractPropertyChecker {
     @Override
     public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationError("is not a object", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a object");
         }
         ConfigNode propNode = objectNode.get(getPropertyName());
         if (isRequired() && propNode == null) {
-            throw new SingleSchemaValidationError("must have a " + getPropertyName()+ " property!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"must have a " + getPropertyName()+ " property!");
         }
         return propNode;
     }
 
     public ValueSetter getValueSetter() {
         return valueSetter;
+    }
+
+    @Override
+    public String getName() {
+        return "basic property";
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format("name:%s, required:%b",getPropertyName(),isRequired());
     }
 }

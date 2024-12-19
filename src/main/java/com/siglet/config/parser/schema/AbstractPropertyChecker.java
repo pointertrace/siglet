@@ -3,7 +3,7 @@ package com.siglet.config.parser.schema;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ObjectConfigNode;
 
-public abstract class AbstractPropertyChecker implements NodeChecker {
+public abstract class AbstractPropertyChecker extends NodeChecker {
 
 
     private final String propertyName;
@@ -17,11 +17,11 @@ public abstract class AbstractPropertyChecker implements NodeChecker {
 
     public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ObjectConfigNode objectNode)) {
-            throw new SingleSchemaValidationError("is not a object", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a object");
         }
         ConfigNode propNode = objectNode.get(propertyName);
         if (required && propNode == null) {
-            throw new SingleSchemaValidationError("must have a " + propertyName + " property!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"must have a " + propertyName + " property!");
         }
         return propNode;
     }

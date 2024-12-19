@@ -16,11 +16,29 @@ class ObjectCheckTest {
 
     private ConfigParser parser;
 
+    private String expected;
+
     @BeforeEach
     public void setUp() {
         parser = new ConfigParser();
     }
 
+    @Test
+    void descibe() {
+
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new PropertyChecker("prop1", true, new IntChecker()),
+                new PropertyChecker("prop2", true, new TextChecker()));
+
+        expected = """
+                object
+                  property  (name:prop1, required:true)
+                    int
+                  property  (name:prop2, required:true)
+                    text""";
+
+        assertEquals(expected, objectCheck.describe());
+    }
     @Test
     void check() {
 
@@ -50,7 +68,7 @@ class ObjectCheckTest {
                 """);
 
         var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
-        assertEquals("expecting an object", ex.getMessage());
+        assertEquals("(1:1) expecting an object!", ex.explain());
         assertEquals(Location.of(1,1), ex.getLocation());
     }
 
@@ -68,7 +86,7 @@ class ObjectCheckTest {
                 """);
 
         var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
-        assertEquals("property prop5 is not expected", ex.getMessage());
+        assertEquals("property prop5 is not expected!", ex.getMessage());
         assertEquals(Location.of(3,1), ex.getLocation());
     }
 
@@ -86,16 +104,17 @@ class ObjectCheckTest {
                 prop6: 3
                 """);
 
-        var ex = assertThrows(MultipleSchemaValidationError.class, () -> objectCheck.check(node));
-        assertEquals("properties prop5 and prop6 are not expected", ex.getMessage());
+        MultipleSchemaValidationError ex = assertThrows(MultipleSchemaValidationError.class,
+        () -> objectCheck.check(node));
 
-        assertEquals(2, ex.getValidationExceptions().size());
+        expected = """
+        (1:1) Object is not valid because:
+          (3:1) property prop5 is not expected!
+          (4:1) property prop6 is not expected!""";
 
-        assertEquals("property prop5 is not expected", ex.getValidationExceptions().getFirst().getMessage());
-        assertEquals(Location.of(3,1), ex.getValidationExceptions().getFirst().getLocation());
+        assertEquals(expected, ex.explain());
 
-        assertEquals("property prop6 is not expected", ex.getValidationExceptions().get(1).getMessage());
-        assertEquals(Location.of(4,1), ex.getValidationExceptions().get(1).getLocation());
+
     }
 
 

@@ -11,6 +11,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InetSocketAddressCheckerTest {
 
+    String expected;
+
+    @Test
+    void describe() {
+
+        TextChecker textChecker = new TextChecker(new InetSocketAddressChecker());
+
+        expected = """
+                text
+                  inetSocketAddress""";
+
+        assertEquals(expected, textChecker.describe());
+    }
 
     @Test
     void getValue() {

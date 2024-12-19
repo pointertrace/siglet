@@ -6,7 +6,7 @@ import com.siglet.config.parser.node.ValueTransformer;
 
 import java.util.List;
 
-public class TextChecker implements NodeChecker {
+public class TextChecker extends NodeChecker {
 
     private final List<NodeChecker> additionalCheckers;
 
@@ -27,12 +27,17 @@ public class TextChecker implements NodeChecker {
             }
 
         } else {
-            throw new SingleSchemaValidationError("is not a text value!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a text value!");
         }
     }
 
     @Override
     public String getName() {
         return "text";
+    }
+
+    @Override
+    public List<? extends NodeChecker> getChildren() {
+        return additionalCheckers;
     }
 }

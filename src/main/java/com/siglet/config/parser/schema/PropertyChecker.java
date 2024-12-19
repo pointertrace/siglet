@@ -15,7 +15,7 @@ public class PropertyChecker extends BasicPropertyChecker {
         this.propertyChecks = List.of(propertyChecks);
     }
 
-    public <T, E> PropertyChecker(String name, boolean required, NodeChecker... propertyChecks) {
+    public PropertyChecker(String name, boolean required, NodeChecker... propertyChecks) {
         super(ValueSetter.EMPTY, name, required);
         this.propertyChecks = List.of(propertyChecks);
     }
@@ -31,14 +31,23 @@ public class PropertyChecker extends BasicPropertyChecker {
                 propertyNode.setValueSetter(getValueSetter());
             }
         } catch (SchemaValidationError e) {
-            throw new SingleSchemaValidationError(String.format("property %s %s", getPropertyName(), e.getMessage()),
-                    node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),
+                    String.format("property %s is not valid", getPropertyName()), e);
         }
     }
 
     @Override
     public String getName() {
-        return  "property";
+        return "property";
     }
 
+    @Override
+    public String getDescription() {
+        return String.format("name:%s, required:%b",getPropertyName(), isRequired());
+    }
+
+    @Override
+    public List<? extends NodeChecker> getChildren() {
+        return propertyChecks;
+    }
 }

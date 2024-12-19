@@ -17,9 +17,28 @@ class AlternativeCheckerTest {
 
     private ConfigParser parser;
 
+    private String expected;
+
     @BeforeEach
     public void setUp() {
         parser = new ConfigParser();
+    }
+
+    @Test
+    void describe() {
+
+        alternativeChecker = new AlternativeChecker(
+                new TextChecker(),
+                new ArrayChecker(new TextChecker())
+        );
+
+        expected = """
+                alternative
+                  text
+                  array
+                    text""";
+
+        assertEquals(expected, alternativeChecker.describe());
     }
 
     @Test
@@ -30,7 +49,7 @@ class AlternativeCheckerTest {
                 new ArrayChecker(new TextChecker())
         );
 
-        ConfigNode node = parser.parse("""
+       ConfigNode node = parser.parse("""
                 text value
                 """);
 
@@ -75,12 +94,14 @@ class AlternativeCheckerTest {
                 field: field value
                 """);
 
-      var ex = assertThrows(SchemaValidationError.class, () ->  alternativeChecker.check(node));
-      assertEquals("""
-              None of alternatives are valid:
-                - text because: (1:1) is not a text value!
-                - array because: (1:1) is not a array!
-              """, ex.getMessage());
+        var ex = assertThrows(SchemaValidationError.class, () -> alternativeChecker.check(node));
+
+        expected = """
+                (1:1) None of alternatives are valid because:
+                  (1:1) is not a text value!
+                  (1:1) is not a array!""";
+
+        assertEquals(expected, ex.explain());
 
     }
 }

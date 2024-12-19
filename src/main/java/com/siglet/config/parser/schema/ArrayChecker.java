@@ -5,7 +5,7 @@ import com.siglet.config.parser.node.ConfigNode;
 
 import java.util.List;
 
-public class ArrayChecker implements NodeChecker {
+public class ArrayChecker extends NodeChecker {
 
 
     private final List<NodeChecker> checks;
@@ -16,21 +16,31 @@ public class ArrayChecker implements NodeChecker {
 
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
-        if (! (node  instanceof ArrayConfigNode arrayNode )) {
-            throw new SingleSchemaValidationError("is not a array!", node.getLocation());
+        if (!(node instanceof ArrayConfigNode arrayNode)) {
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a array!");
         }
-        int length =  arrayNode.getLength();
-        for (int i = 0; i < length; i++) {
-            ConfigNode item = arrayNode.getItem(i);
-            for (NodeChecker check : checks) {
-                check.check(item);
+        int length = arrayNode.getLength();
+        try {
+            for (int i = 0; i < length; i++) {
+                ConfigNode item = arrayNode.getItem(i);
+                for (NodeChecker check : checks) {
+                    check.check(item);
+                }
             }
+        } catch (SingleSchemaValidationError e) {
+            throw new SingleSchemaValidationError(e.getLocation(),"array item is not valid",e);
+        } catch (MultipleSchemaValidationError e) {
+            throw new SingleSchemaValidationError(node.getLocation(),"array item is not valid",e);
         }
-
     }
 
     @Override
     public String getName() {
         return "array";
+    }
+
+    @Override
+    public List<NodeChecker> getChildren() {
+        return checks;
     }
 }

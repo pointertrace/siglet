@@ -2,9 +2,12 @@ package com.siglet.config.located;
 
 import org.yaml.snakeyaml.nodes.Node;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public interface Location {
+public interface Location extends Serializable {
+
     int getLine();
 
     int getColumn();
@@ -18,6 +21,9 @@ public interface Location {
     }
 
     class LocationImpl implements Location {
+
+        @Serial
+        private static final long serialVersionUID = 1834557946117632860L;
 
         private final int line;
 

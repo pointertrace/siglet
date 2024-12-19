@@ -20,9 +20,33 @@ class AlternativePropertyCheckerTest {
 
     private ConfigParser parser;
 
+    private String expected;
+
     @BeforeEach
     public void setUp() {
         parser = new ConfigParser();
+    }
+
+
+    @Test
+    void describe() {
+
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new AlternativePropertyChecker("prop1", true,
+                        new PropertyChecker(Bean::setProp1AsValue, "prop1", true, text()),
+                        new PropertyChecker(Bean::setProp1, "prop1", true, array(text()))));
+
+        expected = """
+                object
+                  alternative property
+                    alternative
+                      property  (name:prop1, required:true)
+                        text
+                      property  (name:prop1, required:true)
+                        array
+                          text""";
+
+        assertEquals(expected, objectCheck.describe());
     }
 
     @Test
@@ -66,6 +90,33 @@ class AlternativePropertyCheckerTest {
         var bean = assertInstanceOf(Bean.class, value);
         assertEquals(List.of("first-value", "second-value"),
                 bean.getProp1().getValue().stream().map(ValueItem::getValue).toList());
+    }
+
+    @Test
+    void check_noValidOption() throws SchemaValidationError {
+        objectCheck = new ObjectChecker(Bean::new, true,
+                new AlternativePropertyChecker("prop1", true,
+                        new PropertyChecker(Bean::setProp1AsValue, "prop1", true, text()),
+                        new PropertyChecker(Bean::setProp1, "prop1", true, array(text()))));
+
+        ConfigNode node = parser.parse("""
+                prop1:
+                - 10
+                """);
+
+        MultipleSchemaValidationError ex = assertThrowsExactly(MultipleSchemaValidationError.class,
+                () -> objectCheck.check(node));
+
+        expected = """
+        (1:1) None of alternatives are valid because:
+          (1:1) property prop1 is not valid because:
+            (1:1) is not a text value!
+          (1:1) property prop1 is not valid because:
+            (2:3) array item is not valid because:
+              (2:3) is not a text value!""";
+
+        assertEquals(expected, ex.explain());
+
     }
 
     public static class Bean extends Item {

@@ -2,11 +2,13 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.parser.node.ConfigNode;
 
+import java.util.List;
+
 public class AlternativePropertyChecker extends AbstractPropertyChecker {
 
     private final AlternativeChecker alternativeChecker;
 
-    public <T, E> AlternativePropertyChecker(String name, boolean required, AbstractPropertyChecker... propertyChecks) {
+    public AlternativePropertyChecker(String name, boolean required, AbstractPropertyChecker... propertyChecks) {
         super( name, required);
         this.alternativeChecker = new AlternativeChecker(propertyChecks);
     }
@@ -22,4 +24,8 @@ public class AlternativePropertyChecker extends AbstractPropertyChecker {
         return  "alternative property";
     }
 
+    @Override
+    public List<NodeChecker> getChildren() {
+        return List.of(alternativeChecker);
+    }
 }

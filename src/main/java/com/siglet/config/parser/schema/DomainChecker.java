@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class DomainChecker implements NodeChecker {
+public class DomainChecker extends NodeChecker {
 
     private final Supplier<Collection<?>> domainProvider;
 
@@ -20,19 +20,24 @@ public class DomainChecker implements NodeChecker {
     public void check(ConfigNode node) throws SchemaValidationError {
         Collection<?> domainValues = domainProvider.get();
         if (!(node.getValue() instanceof ValueItem<?> valueItem)) {
-            throw new SingleSchemaValidationError("is not a String value", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a String value!");
         }
         if (!(valueItem.getValue() instanceof String value)) {
-            throw new SingleSchemaValidationError("is not a String value", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"is not a String value!");
         }
         if (!domainValues.contains(value)) {
-            throw new SingleSchemaValidationError("must be one of [" + domainValues() + "]", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),"must be one of [" + domainValues() + "]!");
         }
     }
 
     @Override
     public String getName() {
-        return "domain [" + domainValues() + "]";
+        return "domain";
+    }
+
+    @Override
+    public String getDescription() {
+        return "values [" + domainValues() + "]";
     }
 
     private String domainValues() {

@@ -3,7 +3,7 @@ package com.siglet.config.parser.schema;
 import com.siglet.config.parser.node.ConfigNode;
 import com.siglet.config.parser.node.ValueConfigNode;
 
-public class IntRangeChecker implements NodeChecker {
+public class IntRangeChecker extends NodeChecker {
 
     private final Integer lowInclusive;
 
@@ -17,19 +17,24 @@ public class IntRangeChecker implements NodeChecker {
     @Override
     public void check(ConfigNode node) throws SchemaValidationError {
         if (!(node instanceof ValueConfigNode.Int intNode)) {
-            throw new SingleSchemaValidationError("must be an integer!", node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(), "must be an integer!");
         }
 
         if (lowInclusive != null && (int) intNode.getValue().getValue() < lowInclusive ||
                 highInclusive != null && (int) intNode.getValue().getValue() > highInclusive) {
-            throw new SingleSchemaValidationError(String.format("must be between %d and %d inclusive!",
-                    lowInclusive, highInclusive), node.getLocation());
+            throw new SingleSchemaValidationError(node.getLocation(),
+                    String.format("must be between %d and %d inclusive!", lowInclusive, highInclusive));
         }
 
     }
 
     @Override
     public String getName() {
-        return "int range [ " + lowInclusive + " to " + highInclusive + "] inclusive";
+        return "int range";
+    }
+
+    @Override
+    public String getDescription() {
+        return String.format("from %d to %d inclusive",lowInclusive, highInclusive);
     }
 }
