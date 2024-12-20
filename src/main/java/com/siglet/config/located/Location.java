@@ -12,6 +12,8 @@ public interface Location extends Serializable {
 
     int getColumn();
 
+    String describe();
+
     static Location of(int line, int column) {
         return new LocationImpl(line, column);
     }
@@ -42,6 +44,11 @@ public interface Location extends Serializable {
         @Override
         public int getColumn() {
             return column;
+        }
+
+        @Override
+        public String describe() {
+            return "(" + getLine() + ":" + getColumn() + ")";
         }
 
         @Override

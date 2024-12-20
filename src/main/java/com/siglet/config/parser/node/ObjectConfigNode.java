@@ -60,6 +60,23 @@ public final class ObjectConfigNode extends ConfigNode {
         return result;
     }
 
+    @Override
+    protected String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  object");
+        for (Map.Entry<String,ConfigNode> property: children.entrySet()) {
+            sb.append("\n");
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(property.getValue().getLocation().describe());
+            sb.append("  property  (");
+            sb.append(property.getKey());
+            sb.append(")");
+            sb.append("\n");
+            sb.append(property.getValue().describe(level + 2));
+        }
+        return sb.toString();
+    }
     public void adjustLocation() {
 
         for (String propName : getPropertyNames()) {

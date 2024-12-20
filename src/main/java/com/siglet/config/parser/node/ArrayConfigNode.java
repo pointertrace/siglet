@@ -34,4 +34,19 @@ public final class ArrayConfigNode extends ConfigNode {
         return new ArrayItem(getLocation(), itemList);
     }
 
+    @Override
+    protected String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  array");
+        for (ConfigNode child : items) {
+            sb.append("\n");
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(child.getLocation().describe());
+            sb.append("  array item");
+            sb.append("\n");
+            sb.append(child.describe(level + 2));
+        }
+        return sb.toString();
+    }
 }

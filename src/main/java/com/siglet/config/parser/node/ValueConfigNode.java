@@ -3,7 +3,7 @@ package com.siglet.config.parser.node;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.located.Location;
 
-public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
+public abstract sealed class ValueConfigNode<T> extends ConfigNode {
 
     private final T value;
 
@@ -12,7 +12,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
     private ValueTransformer valueTransformer;
 
     protected ValueConfigNode(T value, Location location) {
-        super( location);
+        super(location);
         this.value = value;
     }
 
@@ -47,9 +47,15 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
         public Text(String value, Location location) {
             super(value, location);
         }
+
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  text (" + getValue().getValue() + ")";
+        }
     }
 
-    public abstract static sealed class NumberConfigNode extends ValueConfigNode<Number>  {
+    public abstract static sealed class NumberConfigNode extends ValueConfigNode<Number> {
 
         protected NumberConfigNode(Number value, Location location) {
             super(value, location);
@@ -61,12 +67,23 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
         public Int(Integer value, Location location) {
             super(value, location);
         }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  int (" + getValue().getValue() + ")";
+        }
     }
 
     public static final class Long extends NumberConfigNode {
 
         public Long(java.lang.Long value, Location location) {
             super(value, location);
+        }
+
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  long (" + getValue().getValue() + ")";
         }
     }
 
@@ -75,6 +92,11 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
         public BigInteger(java.math.BigInteger value, Location location) {
             super(value, location);
         }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  bigInteger (" + getValue().getValue() + ")";
+        }
     }
 
     public static final class Float extends NumberConfigNode {
@@ -82,12 +104,22 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
         Float(java.lang.Float value, Location location) {
             super(value, location);
         }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  float (" + getValue().getValue() + ")";
+        }
     }
 
     public static final class Double extends NumberConfigNode {
 
         Double(java.lang.Double value, Location location) {
             super(value, location);
+        }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  double (" + getValue().getValue() + ")";
         }
     }
 
@@ -97,12 +129,21 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
             super(value, location);
         }
 
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  bigDecimal (" + getValue().getValue() + ")";
+        }
     }
 
-    public static final class Null extends ValueConfigNode {
+    public static final class Null extends ValueConfigNode<Object> {
 
         public Null(Location location) {
             super(null, location);
+        }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  null";
         }
     }
 
@@ -111,12 +152,22 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode  {
         public Boolean(java.lang.Boolean value, Location location) {
             super(value, location);
         }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  boolean (" + getValue().getValue() + ")";
+        }
     }
 
     public static final class Binary extends ValueConfigNode {
 
         public Binary(byte[] value, Location location) {
             super(value, location);
+        }
+
+        @Override
+        protected String describe(int level) {
+            return getDescriptionPrefix(level) + getLocation().describe() + "  byte[] (" + getValue().getValue() + ")";
         }
     }
 }

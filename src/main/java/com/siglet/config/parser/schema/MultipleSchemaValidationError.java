@@ -21,8 +21,8 @@ public class MultipleSchemaValidationError extends SchemaValidationError {
 
     @Override
     protected String explain(int level) {
-        StringBuilder msg = new StringBuilder(String.format("%s(%d:%d) %s because:", PREFIX.repeat(level),
-                getLocation().getLine(), getLocation().getColumn(), getMessage()));
+        StringBuilder msg = new StringBuilder(String.format("%s%s %s because:", PREFIX.repeat(level),
+                getLocation().describe(), getMessage()));
         for (SchemaValidationError causeExc : getValidationExceptions()) {
             msg.append('\n');
             msg.append(causeExc.explain(level + 1));

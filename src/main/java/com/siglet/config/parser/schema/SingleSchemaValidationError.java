@@ -21,11 +21,10 @@ public class SingleSchemaValidationError extends SchemaValidationError {
     @Override
     protected String explain(int level) {
         if (getCause() != null) {
-            return String.format("%s(%d:%d) %s because:%n%s", PREFIX.repeat(level), getLocation().getLine(),
-                    getLocation().getColumn(), getMessage(), getCause().explain(level + 1));
+            return String.format("%s%s %s because:%n%s", PREFIX.repeat(level), getLocation().describe(), getMessage(),
+                    getCause().explain(level + 1));
         } else {
-            return String.format("%s(%d:%d) %s", PREFIX.repeat(level), getLocation().getLine(),
-                    getLocation().getColumn(), getMessage());
+            return String.format("%s%s %s", PREFIX.repeat(level), getLocation().describe(), getMessage());
         }
     }
 
