@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ArrayConfigNodeTest {
+class ArrayNodeTest {
     private ConfigParser parser;
 
     private String expected;
@@ -19,25 +19,25 @@ class ArrayConfigNodeTest {
     @Test
     void parse() {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - first item
                 - 1""");
 
-        ArrayConfigNode objectConfigNode = assertInstanceOf(ArrayConfigNode.class, node);
+        ArrayNode objectConfigNode = assertInstanceOf(ArrayNode.class, node);
 
         assertEquals(2, objectConfigNode.getLength());
 
-        ValueConfigNode.Text text = assertInstanceOf(ValueConfigNode.Text.class, objectConfigNode.getItem(0));
+        ValueNode.Text text = assertInstanceOf(ValueNode.Text.class, objectConfigNode.getItem(0));
         assertEquals("first item", text.getValue().getValue());
 
-        ValueConfigNode.Int integer = assertInstanceOf(ValueConfigNode.Int.class, objectConfigNode.getItem(1));
+        ValueNode.Int integer = assertInstanceOf(ValueNode.Int.class, objectConfigNode.getItem(1));
         assertEquals(1, integer.getValue().getValue());
     }
 
     @Test
     void describe() {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - first item
                 - 1""");
 

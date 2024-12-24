@@ -5,14 +5,14 @@ import com.siglet.config.located.Location;
 
 import java.util.*;
 
-public final class ObjectConfigNode extends ConfigNode {
+public final class ObjectNode extends Node {
 
-    private final Map<String, ConfigNode> children = new HashMap<>();
+    private final Map<String, Node> children = new HashMap<>();
     private final Map<String, Location> childrenKeyLocation = new HashMap<>();
 
     private ValueCreator valueCreator;
 
-    ObjectConfigNode(List<Property> childrenProperties, Location location) {
+    ObjectNode(List<Property> childrenProperties, Location location) {
         super(location);
         childrenProperties.forEach(prop -> {
             children.put(prop.getKey().getValue(), prop.getValue());
@@ -28,7 +28,7 @@ public final class ObjectConfigNode extends ConfigNode {
         return Collections.unmodifiableSet(children.keySet());
     }
 
-    public ConfigNode get(String key) {
+    public Node get(String key) {
         return children.get(key);
     }
 
@@ -36,7 +36,7 @@ public final class ObjectConfigNode extends ConfigNode {
         return childrenKeyLocation.get(key);
     }
 
-    public Map<String, ConfigNode> getProperties() {
+    public Map<String, Node> getProperties() {
         return Collections.unmodifiableMap(this.children);
     }
 
@@ -52,7 +52,7 @@ public final class ObjectConfigNode extends ConfigNode {
         Item result = getValueCreator().create();
         result.setLocation(getLocation());
 
-        for (ConfigNode prop : getProperties().values()) {
+        for (Node prop : getProperties().values()) {
             Item propValue = prop.getValue();
             prop.getValueSetter().set(result, propValue);
         }
@@ -65,7 +65,7 @@ public final class ObjectConfigNode extends ConfigNode {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
         sb.append("  object");
-        for (Map.Entry<String,ConfigNode> property: children.entrySet()) {
+        for (Map.Entry<String, Node> property: children.entrySet()) {
             sb.append("\n");
             sb.append(getDescriptionPrefix(level + 1));
             sb.append(property.getValue().getLocation().describe());
@@ -80,7 +80,7 @@ public final class ObjectConfigNode extends ConfigNode {
     public void adjustLocation() {
 
         for (String propName : getPropertyNames()) {
-            ConfigNode propNode = get(propName);
+            Node propNode = get(propName);
             propNode.getValue().setLocation(getPropertyKeyLocation(propName));
         }
 
@@ -109,10 +109,10 @@ public final class ObjectConfigNode extends ConfigNode {
 
         private final Key key;
 
-        private final ConfigNode value;
+        private final Node value;
 
 
-        public Property(Key key, ConfigNode value) {
+        public Property(Key key, Node value) {
             this.key = key;
             this.value = value;
         }
@@ -121,7 +121,7 @@ public final class ObjectConfigNode extends ConfigNode {
             return key;
         }
 
-        public ConfigNode getValue() {
+        public Node getValue() {
             return value;
         }
 

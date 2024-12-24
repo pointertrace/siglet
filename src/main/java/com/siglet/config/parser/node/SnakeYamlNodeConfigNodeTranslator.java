@@ -15,7 +15,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     }
 
-    public static ConfigNode translate(Node node) {
+    public static Node translate(org.yaml.snakeyaml.nodes.Node node) {
 
         return switch (node) {
             case ScalarNode scalarNode when Tag.INT.equals(scalarNode.getTag()) ->  //
@@ -23,75 +23,75 @@ public class SnakeYamlNodeConfigNodeTranslator {
             case ScalarNode scalarNode when Tag.FLOAT.equals(scalarNode.getTag()) ->  //
                     getDecimalConfigNode(scalarNode);
             case ScalarNode scalarNode when Tag.STR.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Text(scalarNode.getValue(), Location.of(scalarNode));
+                    new ValueNode.Text(scalarNode.getValue(), Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BINARY.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Binary(scalarNode.getValue().getBytes(StandardCharsets.UTF_8),
+                    new ValueNode.Binary(scalarNode.getValue().getBytes(StandardCharsets.UTF_8),
                             Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BOOL.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Boolean(Boolean.valueOf(scalarNode.getValue()),
+                    new ValueNode.Boolean(Boolean.valueOf(scalarNode.getValue()),
                             Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.NULL.equals(scalarNode.getTag()) ->
-                    new ValueConfigNode.Null(Location.of(scalarNode));
+                    new ValueNode.Null(Location.of(scalarNode));
             case MappingNode mappingNode -> {
-                List<ObjectConfigNode.Property> properties = new ArrayList<>();
+                List<ObjectNode.Property> properties = new ArrayList<>();
                 mappingNode.getValue().forEach(nodeTuple -> {
-                    ObjectConfigNode.Key key = keyFromNode(nodeTuple.getKeyNode());
-                    ConfigNode value = translate(nodeTuple.getValueNode());
-                    if (value instanceof ObjectConfigNode objectValue) {
+                    ObjectNode.Key key = keyFromNode(nodeTuple.getKeyNode());
+                    Node value = translate(nodeTuple.getValueNode());
+                    if (value instanceof ObjectNode objectValue) {
                         objectValue.setLocation(key.getLocation());
                     }
-                    if (value instanceof ArrayConfigNode arrayConfigNode) {
-                        arrayConfigNode.setLocation(key.getLocation());
+                    if (value instanceof ArrayNode arrayNode) {
+                        arrayNode.setLocation(key.getLocation());
                     }
-                    ObjectConfigNode.Property prop = new ObjectConfigNode.Property(key, value);
+                    ObjectNode.Property prop = new ObjectNode.Property(key, value);
                     properties.add(prop);
 
                 });
-                yield new ObjectConfigNode(properties, Location.of(mappingNode));
+                yield new ObjectNode(properties, Location.of(mappingNode));
             }
             case SequenceNode sequenceNode -> {
-                List<ConfigNode> items = new ArrayList<>();
+                List<Node> items = new ArrayList<>();
                 sequenceNode.getValue().forEach(item -> items.add(translate(item)));
-                yield new ArrayConfigNode(items, Location.of(sequenceNode));
+                yield new ArrayNode(items, Location.of(sequenceNode));
             }
             default -> throw new IllegalStateException("Unexpected value: " + node);
         };
     }
 
-    protected static ObjectConfigNode.Key keyFromNode(Node propertyKeyNode) {
+    protected static ObjectNode.Key keyFromNode(org.yaml.snakeyaml.nodes.Node propertyKeyNode) {
         if (!Tag.STR.equals(propertyKeyNode.getTag()) || !(propertyKeyNode instanceof ScalarNode scalarKeyNode)) {
             throw new SigletParserError("object must have a str as key",
                     Location.of(propertyKeyNode));
         }
-        return new ObjectConfigNode.Key(scalarKeyNode.getValue(), Location.of(scalarKeyNode));
+        return new ObjectNode.Key(scalarKeyNode.getValue(), Location.of(scalarKeyNode));
     }
 
-    protected static ValueConfigNode.NumberConfigNode getIntConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getIntConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.Int(Integer.parseInt(value.getValue()), Location.of(value));
+            return new ValueNode.Int(Integer.parseInt(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getLongConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getLongConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.Long(Long.parseLong(value.getValue()), Location.of(value));
+            return new ValueNode.Long(Long.parseLong(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getBigIntegerConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getBigIntegerConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.BigInteger(new BigInteger(value.getValue()), Location.of(value));
+            return new ValueNode.BigInteger(new BigInteger(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getIntegerConfigNode(ScalarNode value) {
-        ValueConfigNode.NumberConfigNode result = getIntConfigNode(value);
+    protected static ValueNode.NumberNode getIntegerConfigNode(ScalarNode value) {
+        ValueNode.NumberNode result = getIntConfigNode(value);
         if (result == null) {
             result = getLongConfigNode(value);
         }
@@ -105,41 +105,41 @@ public class SnakeYamlNodeConfigNodeTranslator {
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getFloatConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getFloatConfigNode(ScalarNode value) {
         try {
             Float f = Float.parseFloat(value.getValue());
             if (f.isInfinite()) {
                 return null;
             } else {
-                return new ValueConfigNode.Float(f, Location.of(value));
+                return new ValueNode.Float(f, Location.of(value));
             }
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getDoubleConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getDoubleConfigNode(ScalarNode value) {
         try {
             Double d = Double.parseDouble(value.getValue());
             if (d.isInfinite()) {
                 return null;
             }
-            return new ValueConfigNode.Double(d, Location.of(value));
+            return new ValueNode.Double(d, Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getBigDecimalConfigNode(ScalarNode value) {
+    protected static ValueNode.NumberNode getBigDecimalConfigNode(ScalarNode value) {
         try {
-            return new ValueConfigNode.BigDecimal(new BigDecimal(value.getValue()), Location.of(value));
+            return new ValueNode.BigDecimal(new BigDecimal(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    protected static ValueConfigNode.NumberConfigNode getDecimalConfigNode(ScalarNode value) {
-        ValueConfigNode.NumberConfigNode result = getFloatConfigNode(value);
+    protected static ValueNode.NumberNode getDecimalConfigNode(ScalarNode value) {
+        ValueNode.NumberNode result = getFloatConfigNode(value);
         if (result == null) {
             result = getDoubleConfigNode(value);
         }

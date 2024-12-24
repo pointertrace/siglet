@@ -89,11 +89,8 @@ public class ConfigItem extends Item {
         return nodeRepository.createRouteBuilder();
     }
 
-    public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipline) {
-        System.out.println(pipline.getClass().getTypeName());
-        return pipline.getProcessors().getValue().stream();
-
-
+    public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipeline) {
+        return pipeline.getProcessors().getValue().stream();
     }
 
     @Override
@@ -104,5 +101,33 @@ public class ConfigItem extends Item {
         getPipelines().getValue().stream()
                 .flatMap(this::getItems)
                 .forEach(Item::afterSetValues);
+    }
+
+    @Override
+    public String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  ConfigItem");
+        sb.append("\n");
+
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(receiverItems.getLocation().describe());
+        sb.append("  receiverItems");
+        sb.append("\n");
+        sb.append(receiverItems.describe(level + 2));
+
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(exporterItems.getLocation().describe());
+        sb.append("  exporterItems");
+        sb.append("\n");
+        sb.append(exporterItems.describe(level + 2));
+
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(pipelines.getLocation().describe());
+        sb.append("  pipelines");
+        sb.append("\n");
+        sb.append(pipelines.describe(level + 2));
+
+        return sb.toString();
     }
 }

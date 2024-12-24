@@ -1,9 +1,8 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AlternativeChecker extends NodeChecker {
@@ -16,7 +15,7 @@ public class AlternativeChecker extends NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
+    public void check(Node node) throws SchemaValidationError {
         List<SingleSchemaValidationError> alternativeErrors = new ArrayList<>();
         for (NodeChecker alternative : alternatives) {
             try {

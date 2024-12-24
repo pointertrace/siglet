@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ValueConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueNode;
 
 public class IntRangeChecker extends NodeChecker {
 
@@ -15,8 +15,8 @@ public class IntRangeChecker extends NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ValueConfigNode.Int intNode)) {
+    public void check(Node node) throws SchemaValidationError {
+        if (!(node instanceof ValueNode.Int intNode)) {
             throw new SingleSchemaValidationError(node.getLocation(), "must be an integer!");
         }
 

@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ArrayConfigNode;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.ArrayNode;
+import com.siglet.config.parser.node.Node;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ public class ArrayChecker extends NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ArrayConfigNode arrayNode)) {
+    public void check(Node node) throws SchemaValidationError {
+        if (!(node instanceof ArrayNode arrayNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a array!");
         }
         int length = arrayNode.getLength();
         try {
             for (int i = 0; i < length; i++) {
-                ConfigNode item = arrayNode.getItem(i);
+                Node item = arrayNode.getItem(i);
                 for (NodeChecker check : checks) {
                     check.check(item);
                 }

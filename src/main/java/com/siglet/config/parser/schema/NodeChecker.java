@@ -1,6 +1,6 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ValueTransformer;
 
 import java.util.Collections;
@@ -10,7 +10,7 @@ public abstract class NodeChecker {
 
     private static final String PREFIX = "  ";
 
-    public abstract void check(ConfigNode node) throws SchemaValidationError;
+    public abstract void check(Node node) throws SchemaValidationError;
 
     public abstract String getName();
 

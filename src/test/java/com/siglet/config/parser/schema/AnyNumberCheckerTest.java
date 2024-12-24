@@ -2,11 +2,8 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
-import org.junit.jupiter.api.BeforeEach;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.Test;
-
-import java.net.InetSocketAddress;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +31,7 @@ class AnyNumberCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode node = parser.parse("100");
+        Node node = parser.parse("100");
 
         anyNumberChecker.check(node);
 
@@ -56,7 +53,7 @@ class AnyNumberCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode node = parser.parse("text");
+        Node node = parser.parse("text");
 
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> anyNumberChecker.check(node));

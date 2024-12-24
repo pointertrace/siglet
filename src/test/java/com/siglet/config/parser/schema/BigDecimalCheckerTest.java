@@ -2,7 +2,7 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ class BigDecimalCheckerTest {
 
         BigDecimal valueToBeParsed = BigDecimal.valueOf(Double.MAX_VALUE).add(BigDecimal.valueOf(Double.MAX_VALUE));
 
-        ConfigNode node = parser.parse(valueToBeParsed.toString());
+        Node node = parser.parse(valueToBeParsed.toString());
 
         bigDecimalChecker.check(node);
 
@@ -50,7 +50,7 @@ class BigDecimalCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode node = parser.parse("text");
+        Node node = parser.parse("text");
 
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> bigDecimalChecker.check(node));

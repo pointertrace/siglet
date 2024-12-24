@@ -1,13 +1,13 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ValueConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueNode;
 
 public class BigIntegerChecker extends NodeChecker {
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ValueConfigNode.BigInteger)) {
+    public void check(Node node) throws SchemaValidationError {
+        if (!(node instanceof ValueNode.BigInteger)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a big integer value!");
         }
     }

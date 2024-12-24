@@ -1,8 +1,8 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 
 public interface DynamicCheckerDiscriminator {
 
-    NodeChecker getChecker(ConfigNode configNode) throws SchemaValidationError;
+    NodeChecker getChecker(Node node) throws SchemaValidationError;
 }

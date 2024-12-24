@@ -3,12 +3,11 @@ package com.siglet.config.item;
 import com.siglet.SigletError;
 import com.siglet.config.located.Location;
 
-// TODO rever herança
 public class DropExporterItem extends ExporterItem {
 
     @Override
     public ValueItem<String> getName() {
-        return new ValueItem<>(Location.of(0,0),"drop");
+        return new ValueItem<>(Location.of(0, 0), "drop");
     }
 
     @Override
@@ -23,11 +22,17 @@ public class DropExporterItem extends ExporterItem {
 
     @Override
     public Location getLocation() {
-        return Location.of(0,0);
+        return Location.of(0, 0);
     }
 
     @Override
     public String getUri() {
         return "drop:teste";
     }
+
+    @Override
+    public String describe(int level) {
+        throw new SigletError("Drop exporter should not be described!");
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ValueConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueNode;
 import com.siglet.config.parser.node.ValueTransformer;
 
 import java.util.List;
@@ -16,8 +16,8 @@ public class TextChecker extends NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (node instanceof ValueConfigNode.Text textNode) {
+    public void check(Node node) throws SchemaValidationError {
+        if (node instanceof ValueNode.Text textNode) {
             for (NodeChecker additionalChecker : additionalCheckers) {
                 additionalChecker.check(textNode);
                 ValueTransformer valueTransformer = additionalChecker.getValueTransformer();

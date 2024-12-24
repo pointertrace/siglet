@@ -1,9 +1,8 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.located.Location;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -35,7 +34,7 @@ class DomainCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode root = parser.parse(yaml);
+        Node root = parser.parse(yaml);
 
         checker.check(root);
 
@@ -54,7 +53,7 @@ class DomainCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode root = parser.parse(yaml);
+        Node root = parser.parse(yaml);
 
         var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 

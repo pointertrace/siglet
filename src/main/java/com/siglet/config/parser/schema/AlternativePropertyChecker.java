@@ -1,6 +1,6 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class AlternativePropertyChecker extends AbstractPropertyChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
+    public void check(Node node) throws SchemaValidationError {
         propertyPresenceCheck(node);
         alternativeChecker.check(node);
     }

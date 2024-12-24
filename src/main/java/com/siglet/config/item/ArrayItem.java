@@ -1,6 +1,7 @@
 package com.siglet.config.item;
 
 import com.siglet.config.located.Location;
+import com.siglet.config.parser.node.Node;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,4 +24,19 @@ public class ArrayItem<T extends Item> extends Item {
         return values.stream();
     }
 
+    @Override
+    public String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  arrayItem");
+        for (Item child : values) {
+            sb.append("\n");
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(child.getLocation().describe());
+            sb.append("  array item");
+            sb.append("\n");
+            sb.append(child.describe(level + 2));
+        }
+        return sb.toString();
+    }
 }

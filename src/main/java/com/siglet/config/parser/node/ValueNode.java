@@ -3,7 +3,7 @@ package com.siglet.config.parser.node;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.located.Location;
 
-public abstract sealed class ValueConfigNode<T> extends ConfigNode {
+public abstract sealed class ValueNode<T> extends Node {
 
     private final T value;
 
@@ -11,7 +11,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
 
     private ValueTransformer valueTransformer;
 
-    protected ValueConfigNode(T value, Location location) {
+    protected ValueNode(T value, Location location) {
         super(location);
         this.value = value;
     }
@@ -42,7 +42,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         setValueSetter(null);
     }
 
-    public static final class Text extends ValueConfigNode<String> {
+    public static final class Text extends ValueNode<String> {
 
         public Text(String value, Location location) {
             super(value, location);
@@ -55,14 +55,14 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public abstract static sealed class NumberConfigNode extends ValueConfigNode<Number> {
+    public abstract static sealed class NumberNode extends ValueNode<Number> {
 
-        protected NumberConfigNode(Number value, Location location) {
+        protected NumberNode(Number value, Location location) {
             super(value, location);
         }
     }
 
-    public static final class Int extends NumberConfigNode {
+    public static final class Int extends NumberNode {
 
         public Int(Integer value, Location location) {
             super(value, location);
@@ -74,7 +74,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Long extends NumberConfigNode {
+    public static final class Long extends NumberNode {
 
         public Long(java.lang.Long value, Location location) {
             super(value, location);
@@ -87,7 +87,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class BigInteger extends NumberConfigNode {
+    public static final class BigInteger extends NumberNode {
 
         public BigInteger(java.math.BigInteger value, Location location) {
             super(value, location);
@@ -99,7 +99,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Float extends NumberConfigNode {
+    public static final class Float extends NumberNode {
 
         Float(java.lang.Float value, Location location) {
             super(value, location);
@@ -111,7 +111,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Double extends NumberConfigNode {
+    public static final class Double extends NumberNode {
 
         Double(java.lang.Double value, Location location) {
             super(value, location);
@@ -123,7 +123,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class BigDecimal extends NumberConfigNode {
+    public static final class BigDecimal extends NumberNode {
 
         public BigDecimal(java.math.BigDecimal value, Location location) {
             super(value, location);
@@ -135,7 +135,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Null extends ValueConfigNode<Object> {
+    public static final class Null extends ValueNode<Object> {
 
         public Null(Location location) {
             super(null, location);
@@ -147,7 +147,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Boolean extends ValueConfigNode<java.lang.Boolean> {
+    public static final class Boolean extends ValueNode<java.lang.Boolean> {
 
         public Boolean(java.lang.Boolean value, Location location) {
             super(value, location);
@@ -159,7 +159,7 @@ public abstract sealed class ValueConfigNode<T> extends ConfigNode {
         }
     }
 
-    public static final class Binary extends ValueConfigNode {
+    public static final class Binary extends ValueNode {
 
         public Binary(byte[] value, Location location) {
             super(value, location);

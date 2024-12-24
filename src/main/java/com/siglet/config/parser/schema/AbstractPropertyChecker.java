@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ObjectConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ObjectNode;
 
 public abstract class AbstractPropertyChecker extends NodeChecker {
 
@@ -15,11 +15,11 @@ public abstract class AbstractPropertyChecker extends NodeChecker {
         this.required = required;
     }
 
-    public ConfigNode propertyPresenceCheck(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ObjectConfigNode objectNode)) {
+    public Node propertyPresenceCheck(Node node) throws SchemaValidationError {
+        if (!(node instanceof ObjectNode objectNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a object");
         }
-        ConfigNode propNode = objectNode.get(propertyName);
+        Node propNode = objectNode.get(propertyName);
         if (required && propNode == null) {
             throw new SingleSchemaValidationError(node.getLocation(),"must have a " + propertyName + " property!");
         }

@@ -1,6 +1,6 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ValueSetter;
 
 import java.util.List;
@@ -21,8 +21,8 @@ public class PropertyChecker extends BasicPropertyChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        ConfigNode propertyNode = propertyPresenceCheck(node);
+    public void check(Node node) throws SchemaValidationError {
+        Node propertyNode = propertyPresenceCheck(node);
         try {
             if (propertyNode != null) {
                 for (NodeChecker propCheck : propertyChecks) {

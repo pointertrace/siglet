@@ -4,8 +4,8 @@ import com.siglet.SigletError;
 import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ObjectConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,7 @@ class DynamicPropertyCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode root = parser.parse(yaml);
+        Node root = parser.parse(yaml);
 
         objectCheck.check(root);
 
@@ -61,7 +61,7 @@ class DynamicPropertyCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode root = parser.parse(yaml);
+        Node root = parser.parse(yaml);
 
         objectCheck.check(root);
 
@@ -91,7 +91,7 @@ class DynamicPropertyCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode root = parser.parse(yaml);
+        Node root = parser.parse(yaml);
 
         objectCheck.check(root);
 
@@ -109,8 +109,8 @@ class DynamicPropertyCheckerTest {
     public static class Discriminator implements DynamicCheckerDiscriminator {
 
         @Override
-        public NodeChecker getChecker(ConfigNode configNode) {
-            if (configNode instanceof ObjectConfigNode objectNode) {
+        public NodeChecker getChecker(Node node) {
+            if (node instanceof ObjectNode objectNode) {
                 Item discriminator = objectNode.getProperties().get("discriminator").getValue();
                 if (! (discriminator instanceof ValueItem<?> valueItem)) {
                     throw new SigletError("discriminator is not a ValueItem");

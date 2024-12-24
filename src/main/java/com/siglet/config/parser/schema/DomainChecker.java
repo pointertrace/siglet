@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ public class DomainChecker extends NodeChecker {
 
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
+    public void check(Node node) throws SchemaValidationError {
         Collection<?> domainValues = domainProvider.get();
         if (!(node.getValue() instanceof ValueItem<?> valueItem)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a String value!");

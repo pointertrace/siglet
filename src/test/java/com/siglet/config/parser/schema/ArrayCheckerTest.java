@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class ArrayCheckerTest {
     @Test
     void array() throws SchemaValidationError {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - 1
                 - 2
                 """);
@@ -54,7 +54,7 @@ class ArrayCheckerTest {
     @Test
     void array_invalid() throws SchemaValidationError {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 key: value
                 """);
 
@@ -71,7 +71,7 @@ class ArrayCheckerTest {
     @Test
     void array_itemInvalidSingleValidationError() throws SchemaValidationError {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - str valuer
                 """);
 
@@ -92,7 +92,7 @@ class ArrayCheckerTest {
     @Test
     void array_itemInvalidMultipleValidationError() throws SchemaValidationError {
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - key: value
                 """);
 

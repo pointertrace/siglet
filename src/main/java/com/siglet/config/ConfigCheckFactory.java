@@ -16,7 +16,7 @@ import static com.siglet.config.parser.schema.SchemaFactory.*;
 
 public class ConfigCheckFactory {
 
-    private ConfigCheckFactory(){
+    private ConfigCheckFactory() {
     }
 
     public static final String GRPC_PROP = "grpc";
@@ -30,6 +30,8 @@ public class ConfigCheckFactory {
     public static final String SIGNAL_TYPE_PROP = "signal-type";
 
     public static final String DEBUG_PROP = "debug";
+
+    public static final String DROP_PROP = "drop";
 
     public static final String SPANLET_PROP = "spanlet";
 
@@ -64,36 +66,43 @@ public class ConfigCheckFactory {
 
     public static NodeChecker receiversChecker() {
 
-        return array(
-                alternative(
-                        strictObject(GrpcReceiverItem::new,
-                                requiredProperty(GrpcReceiverItem::setName, GRPC_PROP, text()),
-                                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
-                                property(GrpcReceiverItem::setSignalType, SIGNAL_TYPE_PROP, false, text())
-                        ),
-                        strictObject(DebugReceiverItem::new,
-                                requiredProperty(DebugReceiverItem::setName, DEBUG_PROP, text()),
-                                requiredProperty(DebugReceiverItem::setAddress, ADDRESS_PROP, text())
-                        )
-                )
-        );
+        return array(alternative(grpcReceiverChecker(), debugReceiverChecker()));
 
+    }
+
+    public static NodeChecker grpcReceiverChecker() {
+        return strictObject(GrpcReceiverItem::new,
+                requiredProperty(GrpcReceiverItem::setName, GRPC_PROP, text()),
+                requiredProperty(GrpcReceiverItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
+                property(GrpcReceiverItem::setSignalType, SIGNAL_TYPE_PROP, false, text())
+        );
+    }
+
+    public static NodeChecker debugReceiverChecker() {
+        return strictObject(DebugReceiverItem::new,
+                requiredProperty(DebugReceiverItem::setName, DEBUG_PROP, text()),
+                requiredProperty(DebugReceiverItem::setAddress, ADDRESS_PROP, text())
+        );
     }
 
     public static NodeChecker grpcExportersChecker() {
 
-        return array(
-                alternative(
-                        strictObject(GrpcExporterItem::new,
-                                requiredProperty(GrpcExporterItem::setName, GRPC_PROP, text()),
-                                requiredProperty(GrpcExporterItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
-                                optionalProperty(GrpcExporterItem::setBatchSizeInSignals,BATCH_SIZE_IN_SIGNAL_PROP,numberInt()),
-                                optionalProperty(GrpcExporterItem::setBatchTimeoutInMillis,BATCH_TIMEOUT_IN_MILLIS_PROP,numberInt())),
-                        strictObject(DebugExporterItem::new,
-                                requiredProperty(DebugExporterItem::setName, DEBUG_PROP, text()),
-                                requiredProperty(DebugExporterItem::setAddress, ADDRESS_PROP, text()))
-                )
-        );
+        return array(alternative(grpcExporterChecker(), debugExporterChecker()));
+
+    }
+
+    public static NodeChecker grpcExporterChecker() {
+        return strictObject(GrpcExporterItem::new,
+                requiredProperty(GrpcExporterItem::setName, GRPC_PROP, text()),
+                requiredProperty(GrpcExporterItem::setAddress, ADDRESS_PROP, text(inetSocketAddress())),
+                optionalProperty(GrpcExporterItem::setBatchSizeInSignals, BATCH_SIZE_IN_SIGNAL_PROP, numberInt()),
+                optionalProperty(GrpcExporterItem::setBatchTimeoutInMillis, BATCH_TIMEOUT_IN_MILLIS_PROP, numberInt()));
+    }
+
+    public static NodeChecker debugExporterChecker() {
+        return strictObject(DebugExporterItem::new,
+                requiredProperty(DebugExporterItem::setName, DEBUG_PROP, text()),
+                requiredProperty(DebugExporterItem::setAddress, ADDRESS_PROP, text()));
     }
 
     public static NodeChecker metricletChecker() {
@@ -139,12 +148,14 @@ public class ConfigCheckFactory {
         );
     }
 
+    public static NodeChecker pipelinesChecker() {
+        return array(pipelineChecker());
+    }
+
     public static NodeChecker pipelineChecker() {
-        return array(
-                alternative(
-                        tracePipelineChecker(),
-                        metricPipelineChecker()
-                )
+        return alternative(
+                tracePipelineChecker(),
+                metricPipelineChecker()
         );
     }
 
@@ -181,6 +192,6 @@ public class ConfigCheckFactory {
                 requiredProperty(ConfigItem::setExporters, EXPORTERS_PROP,
                         grpcExportersChecker()),
                 requiredProperty(ConfigItem::setPipelines, PIPELINES_PROP,
-                        pipelineChecker()));
+                        pipelinesChecker()));
     }
 }

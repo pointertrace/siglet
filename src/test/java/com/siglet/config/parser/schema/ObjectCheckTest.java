@@ -3,7 +3,7 @@ package com.siglet.config.parser.schema;
 import com.siglet.config.item.Item;
 import com.siglet.config.located.Location;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ class ObjectCheckTest {
                 new PropertyChecker("prop1", true, new IntChecker()),
                 new PropertyChecker("prop2", true, new TextChecker()));
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 prop1: 1
                 prop2: text value
                 """);
@@ -62,7 +62,7 @@ class ObjectCheckTest {
                 new PropertyChecker("prop1", true, new IntChecker()),
                 new PropertyChecker("prop2", true, new TextChecker()));
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - a
                 - b
                 """);
@@ -79,7 +79,7 @@ class ObjectCheckTest {
                 new PropertyChecker("prop1", true, new IntChecker()),
                 new PropertyChecker("prop2", true, new TextChecker()));
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 prop1: 1
                 prop2: test
                 prop5: 3
@@ -97,7 +97,7 @@ class ObjectCheckTest {
                 new PropertyChecker("prop1", true, new IntChecker()),
                 new PropertyChecker("prop2", true, new TextChecker()));
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 prop1: 1
                 prop2: test
                 prop5: 3

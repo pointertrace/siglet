@@ -2,10 +2,9 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +29,7 @@ class BigIntegerCheckerTest {
 
         BigInteger valueToBeParsed = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(Long.MAX_VALUE));
 
-        ConfigNode node = parser.parse(valueToBeParsed.toString());
+        Node node = parser.parse(valueToBeParsed.toString());
 
         bigIntegerChecker.check(node);
 
@@ -50,7 +49,7 @@ class BigIntegerCheckerTest {
 
         ConfigParser parser = new ConfigParser();
 
-        ConfigNode node = parser.parse("text");
+        Node node = parser.parse("text");
 
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> bigIntegerChecker.check(node));

@@ -7,12 +7,12 @@ import com.siglet.config.located.Location;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ArrayConfigNode extends ConfigNode {
+public final class ArrayNode extends Node {
 
 
-    private final List<ConfigNode> items;
+    private final List<Node> items;
 
-    ArrayConfigNode(List<ConfigNode> items, Location location) {
+    ArrayNode(List<Node> items, Location location) {
         super(location);
         this.items = new ArrayList<>(items);
     }
@@ -21,7 +21,7 @@ public final class ArrayConfigNode extends ConfigNode {
         return items.size();
     }
 
-    public ConfigNode getItem(int i) {
+    public Node getItem(int i) {
         return items.get(i);
     }
 
@@ -39,7 +39,7 @@ public final class ArrayConfigNode extends ConfigNode {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
         sb.append("  array");
-        for (ConfigNode child : items) {
+        for (Node child : items) {
             sb.append("\n");
             sb.append(getDescriptionPrefix(level + 1));
             sb.append(child.getLocation().describe());

@@ -3,8 +3,8 @@ package com.siglet.config;
 import com.siglet.config.item.*;
 import com.siglet.config.located.Location;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ObjectConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ObjectNode;
 import com.siglet.pipeline.common.filter.FilterConfig;
 import com.siglet.pipeline.common.processor.ProcessorConfig;
 import com.siglet.pipeline.common.router.Route;
@@ -39,7 +39,7 @@ class ConfigCheckFactoryTest {
                   address: localhost:8081""";
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         ConfigCheckFactory.receiversChecker().check(node);
 
@@ -78,7 +78,7 @@ class ConfigCheckFactoryTest {
                 - debug: second
                   address: direct:second""";
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         ConfigCheckFactory.receiversChecker().check(node);
 
@@ -121,7 +121,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         ConfigCheckFactory.grpcExportersChecker().check(node);
 
@@ -171,7 +171,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         ConfigCheckFactory.grpcExportersChecker().check(node);
 
@@ -216,11 +216,11 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
-        ((ObjectConfigNode) node).adjustLocation();
+        ((ObjectNode) node).adjustLocation();
         var value = node.getValue();
 
         assertNotNull(value);
@@ -266,7 +266,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -312,7 +312,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -353,7 +353,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -401,7 +401,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -466,7 +466,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -533,7 +533,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         spanletChecker().check(node);
 
@@ -584,7 +584,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         tracePipelineChecker().check(node);
 
@@ -662,7 +662,7 @@ class ConfigCheckFactoryTest {
                 """;
 
 
-        ConfigNode node = configParser.parse(config);
+        Node node = configParser.parse(config);
 
         globalConfigChecker().check(node);
 

@@ -4,10 +4,7 @@ import com.siglet.config.item.Item;
 import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
-import java.util.Collections;
-import java.util.List;
-
-public abstract sealed class ConfigNode implements Located permits ObjectConfigNode, ArrayConfigNode, ValueConfigNode {
+public abstract sealed class Node implements Located permits ObjectNode, ArrayNode, ValueNode {
 
     private static final String PREFIX = "  ";
 
@@ -15,7 +12,7 @@ public abstract sealed class ConfigNode implements Located permits ObjectConfigN
 
     private ValueSetter valueSetter;
 
-    protected ConfigNode(Location location) {
+    protected Node(Location location) {
         this.location = location;
     }
 

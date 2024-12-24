@@ -45,4 +45,45 @@ public class GrpcExporterItem extends ExporterItem {
         }
         return grpcExporterUri.toString();
     }
+
+    @Override
+    public String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  GrpcExporterItem");
+        sb.append("\n");
+        sb.append(getName().getDescriptionPrefix(level + 1));
+        sb.append(getName().getLocation().describe());
+        sb.append("  name");
+        sb.append("\n");
+        sb.append(getName().describe(level + 2));
+        sb.append("\n");
+
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(address.getLocation().describe());
+        sb.append("  address");
+        sb.append("\n");
+        sb.append(address.describe(level + 2));
+        sb.append("\n");
+
+        if (batchSizeInSignals != null) {
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(batchSizeInSignals.getLocation().describe());
+            sb.append("  batch-size-in-signal");
+            sb.append("\n");
+            sb.append(batchSizeInSignals.describe(level + 2));
+            sb.append("\n");
+        }
+
+        if (batchTimeoutInMillis != null) {
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(batchTimeoutInMillis.getLocation().describe());
+            sb.append("  batch-timeout-in-millis");
+            sb.append("\n");
+            sb.append(batchTimeoutInMillis.describe(level + 2));
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
 }

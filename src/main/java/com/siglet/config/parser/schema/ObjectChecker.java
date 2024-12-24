@@ -2,10 +2,9 @@ package com.siglet.config.parser.schema;
 
 import com.siglet.config.item.Item;
 import com.siglet.config.located.Location;
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ObjectConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ObjectNode;
 import com.siglet.config.parser.node.ValueCreator;
-import com.siglet.utils.Joining;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +28,8 @@ public class ObjectChecker extends NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ObjectConfigNode objectNode)) {
+    public void check(Node node) throws SchemaValidationError {
+        if (!(node instanceof ObjectNode objectNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"expecting an object!");
         }
         for (AbstractPropertyChecker propertyCheck : getPropertyCheckers()) {

@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ValueConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueNode;
 import com.siglet.config.parser.node.ValueTransformer;
 
 import java.net.InetSocketAddress;
@@ -10,8 +10,8 @@ public class InetSocketAddressChecker extends NodeChecker {
 
     private final ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
 
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (node instanceof ValueConfigNode.Text textNode) {
+    public void check(Node node) throws SchemaValidationError {
+        if (node instanceof ValueNode.Text textNode) {
             String validationError = getValidationErrorReason((String) textNode.getValue().getValue());
             if (validationError != null) {
                 throw new SingleSchemaValidationError(node.getLocation(), validationError);

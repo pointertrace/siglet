@@ -3,7 +3,7 @@ package com.siglet.integrationtests.executions;
 import com.siglet.camel.component.otelgrpc.SigletComponent;
 import com.siglet.config.item.ConfigItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -53,7 +53,7 @@ public class ForkSpanletProcessor {
                 """;
 
 
-        ConfigNode node = configParser.parse(configFile);
+        Node node = configParser.parse(configFile);
 
 
         globalConfigChecker().check(node);

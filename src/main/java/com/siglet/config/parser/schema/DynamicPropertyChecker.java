@@ -1,6 +1,6 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ValueSetter;
 
 public class DynamicPropertyChecker extends BasicPropertyChecker {
@@ -13,7 +13,7 @@ public class DynamicPropertyChecker extends BasicPropertyChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
+    public void check(Node node) throws SchemaValidationError {
         NodeChecker check = discriminator.getChecker(node);
         check.check(node);
     }

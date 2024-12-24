@@ -11,9 +11,14 @@ public class ValueItem<T> extends Item {
         this.value = value;
     }
 
-
     public T getValue() {
         return value;
     }
 
+    @Override
+    public String describe(int level) {
+        return getDescriptionPrefix(level) + getLocation().describe() + (value != null ?
+                "  " + value.getClass().getSimpleName() + "  (" + value + ")" :
+                "null");
+    }
 }

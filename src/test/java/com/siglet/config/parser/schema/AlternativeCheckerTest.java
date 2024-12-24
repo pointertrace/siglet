@@ -3,7 +3,7 @@ package com.siglet.config.parser.schema;
 import com.siglet.config.item.ArrayItem;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ class AlternativeCheckerTest {
                 new ArrayChecker(new TextChecker())
         );
 
-       ConfigNode node = parser.parse("""
+       Node node = parser.parse("""
                 text value
                 """);
 
@@ -68,7 +68,7 @@ class AlternativeCheckerTest {
                 new ArrayChecker(new TextChecker())
         );
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 - first value
                 - second value
                 """);
@@ -90,7 +90,7 @@ class AlternativeCheckerTest {
                 new ArrayChecker(new TextChecker())
         );
 
-        ConfigNode node = parser.parse("""
+        Node node = parser.parse("""
                 field: field value
                 """);
 

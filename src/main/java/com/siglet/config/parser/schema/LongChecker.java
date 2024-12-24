@@ -1,7 +1,7 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.parser.node.ConfigNode;
-import com.siglet.config.parser.node.ValueConfigNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueNode;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public class LongChecker extends NodeChecker {
     }
 
     @Override
-    public void check(ConfigNode node) throws SchemaValidationError {
-        if (!(node instanceof ValueConfigNode.Long longNode)) {
+    public void check(Node node) throws SchemaValidationError {
+        if (!(node instanceof ValueNode.Long longNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a long value!");
         }
         for (NodeChecker additionalChecker : additionalCheckers) {

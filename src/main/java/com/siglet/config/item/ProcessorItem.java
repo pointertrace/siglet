@@ -2,7 +2,7 @@ package com.siglet.config.item;
 
 import java.util.List;
 
-public class ProcessorItem extends Item {
+public abstract class ProcessorItem extends Item {
 
     private Item config;
 

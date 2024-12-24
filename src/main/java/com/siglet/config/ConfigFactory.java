@@ -3,7 +3,7 @@ package com.siglet.config;
 import com.siglet.SigletError;
 import com.siglet.config.item.ConfigItem;
 import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.ConfigNode;
+import com.siglet.config.parser.node.Node;
 
 import static com.siglet.config.ConfigCheckFactory.globalConfigChecker;
 
@@ -13,7 +13,7 @@ public class ConfigFactory {
 
         ConfigParser configParser = new ConfigParser();
 
-        ConfigNode node = configParser.parse(yaml);
+        Node node = configParser.parse(yaml);
 
         globalConfigChecker().check(node);
 
