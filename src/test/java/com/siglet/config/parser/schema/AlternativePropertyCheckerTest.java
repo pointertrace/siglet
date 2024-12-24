@@ -115,7 +115,7 @@ class AlternativePropertyCheckerTest {
             (2:3) array item is not valid because:
               (2:3) is not a text value!""";
 
-        assertEquals(expected, ex.explain());
+        assertEquals(expected, ex.getMessage());
 
     }
 

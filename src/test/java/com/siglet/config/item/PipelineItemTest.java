@@ -38,7 +38,7 @@ class PipelineItemTest {
         try {
             pipelineChecker().check(node);
         } catch (SchemaValidationError e) {
-            System.out.println(e.explain());
+            System.out.println(e.getMessage());
         }
 
         Item item = node.getValue();

@@ -101,7 +101,7 @@ class AlternativeCheckerTest {
                   (1:1) is not a text value!
                   (1:1) is not a array!""";
 
-        assertEquals(expected, ex.explain());
+        assertEquals(expected, ex.getMessage());
 
     }
 }

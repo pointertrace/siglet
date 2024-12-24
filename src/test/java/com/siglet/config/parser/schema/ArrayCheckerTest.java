@@ -64,7 +64,7 @@ class ArrayCheckerTest {
             arrayChecker.check(node);
         });
 
-        assertEquals("(1:1) is not a array!", ex.explain());
+        assertEquals("(1:1) is not a array!", ex.getMessage());
 
     }
 
@@ -85,7 +85,7 @@ class ArrayCheckerTest {
                 (1:3) array item is not valid because:
                   (1:3) is not a int value!""";
 
-        assertEquals(expected, ex.explain());
+        assertEquals(expected, ex.getMessage());
 
     }
 
@@ -108,7 +108,7 @@ class ArrayCheckerTest {
                     (1:3) is not a text value!
                     (1:3) is not a int value!""";
 
-        assertEquals(expected, ex.explain());
+        assertEquals(expected, ex.getMessage());
 
     }
 }

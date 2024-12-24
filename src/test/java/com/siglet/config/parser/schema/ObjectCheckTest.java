@@ -68,7 +68,7 @@ class ObjectCheckTest {
                 """);
 
         var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
-        assertEquals("(1:1) expecting an object!", ex.explain());
+        assertEquals("(1:1) expecting an object!", ex.getMessage());
         assertEquals(Location.of(1,1), ex.getLocation());
     }
 
@@ -86,7 +86,7 @@ class ObjectCheckTest {
                 """);
 
         var ex = assertThrows(SingleSchemaValidationError.class, () -> objectCheck.check(node));
-        assertEquals("property prop5 is not expected!", ex.getMessage());
+        assertEquals("(3:1) property prop5 is not expected!", ex.getMessage());
         assertEquals(Location.of(3,1), ex.getLocation());
     }
 
@@ -112,7 +112,7 @@ class ObjectCheckTest {
           (3:1) property prop5 is not expected!
           (4:1) property prop6 is not expected!""";
 
-        assertEquals(expected, ex.explain());
+        assertEquals(expected, ex.getMessage());
 
 
     }

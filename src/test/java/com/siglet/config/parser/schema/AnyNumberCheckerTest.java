@@ -58,7 +58,7 @@ class AnyNumberCheckerTest {
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> anyNumberChecker.check(node));
 
-        assertEquals("(1:1) is not a number value!", ex.explain());
+        assertEquals("(1:1) is not a number value!", ex.getMessage());
 
     }
 }

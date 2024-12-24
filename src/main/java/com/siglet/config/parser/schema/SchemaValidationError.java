@@ -11,16 +11,21 @@ public abstract class SchemaValidationError extends SigletError {
 
     private final Location location;
 
-    protected SchemaValidationError(Location location, String message) {
-        super(message);
+    private final String localMessage;
+
+    protected SchemaValidationError(Location location, String localMessage) {
+        super("");
         this.location = location;
+        this.localMessage = localMessage;
     }
 
-    protected SchemaValidationError(Location location, String message, SchemaValidationError cause) {
-        super(message, cause);
+    protected SchemaValidationError(Location location, String localMessage, SchemaValidationError cause) {
+        super("", cause);
         this.location = location;
+        this.localMessage = localMessage;
     }
 
+    @Override
     public SchemaValidationError getCause() {
         return (SchemaValidationError) super.getCause();
     }
@@ -29,7 +34,11 @@ public abstract class SchemaValidationError extends SigletError {
         return location;
     }
 
-    public String explain() {
+    public String getLocalMessage() {
+        return localMessage;
+    }
+
+    public String getMessage() {
         return explain(0);
 
     }

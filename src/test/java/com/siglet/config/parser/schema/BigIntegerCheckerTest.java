@@ -54,7 +54,7 @@ class BigIntegerCheckerTest {
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> bigIntegerChecker.check(node));
 
-        assertEquals("(1:1) is not a big integer value!", ex.explain());
+        assertEquals("(1:1) is not a big integer value!", ex.getMessage());
 
     }
 }

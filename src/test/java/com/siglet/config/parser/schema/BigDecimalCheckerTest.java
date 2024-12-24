@@ -55,7 +55,7 @@ class BigDecimalCheckerTest {
         SingleSchemaValidationError ex = assertThrowsExactly(SingleSchemaValidationError.class,
                 () -> bigDecimalChecker.check(node));
 
-        assertEquals("(1:1) is not a big decimal value!", ex.explain());
+        assertEquals("(1:1) is not a big decimal value!", ex.getMessage());
 
     }
 }

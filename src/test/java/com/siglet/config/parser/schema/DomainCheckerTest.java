@@ -57,7 +57,7 @@ class DomainCheckerTest {
 
         var ex = assertThrowsExactly(SingleSchemaValidationError.class,() -> { checker.check(root); });
 
-        assertEquals("(1:1) must be one of [a, b, c]!", ex.explain());
+        assertEquals("(1:1) must be one of [a, b, c]!", ex.getMessage());
 
     }
 }

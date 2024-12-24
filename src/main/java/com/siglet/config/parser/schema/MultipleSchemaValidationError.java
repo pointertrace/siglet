@@ -9,8 +9,8 @@ public class MultipleSchemaValidationError extends SchemaValidationError {
 
     private final List<? extends SchemaValidationError> validationExceptions;
 
-    public MultipleSchemaValidationError(Location location, String message, List<? extends SchemaValidationError> validationExceptions) {
-        super(location, message);
+    public MultipleSchemaValidationError(Location location, String localMessage, List<? extends SchemaValidationError> validationExceptions) {
+        super(location, localMessage);
         this.validationExceptions = validationExceptions;
     }
 
@@ -22,7 +22,7 @@ public class MultipleSchemaValidationError extends SchemaValidationError {
     @Override
     protected String explain(int level) {
         StringBuilder msg = new StringBuilder(String.format("%s%s %s because:", PREFIX.repeat(level),
-                getLocation().describe(), getMessage()));
+                getLocation().describe(), getLocalMessage()));
         for (SchemaValidationError causeExc : getValidationExceptions()) {
             msg.append('\n');
             msg.append(causeExc.explain(level + 1));
