@@ -12,6 +12,10 @@ public abstract sealed class Node implements Located permits ObjectNode, ArrayNo
 
     private ValueSetter valueSetter;
 
+    private ValueCreator valueCreator;
+
+    private LocationSetter locationSetter = LocationSetter.EMPTY;
+
     protected Node(Location location) {
         this.location = location;
     }
@@ -32,7 +36,15 @@ public abstract sealed class Node implements Located permits ObjectNode, ArrayNo
         this.valueSetter = valueSetter;
     }
 
-    public abstract Item getValue();
+    public void setLocationSetter(LocationSetter locationSetter) {
+        this.locationSetter = locationSetter;
+    }
+
+    public LocationSetter getLocationSetter() {
+        return locationSetter;
+    }
+
+    public abstract Object getValue();
 
     public String describe() {
         return describe(0);
@@ -45,4 +57,11 @@ public abstract sealed class Node implements Located permits ObjectNode, ArrayNo
     }
 
 
+    public ValueCreator getValueCreator() {
+        return valueCreator;
+    }
+
+    public void setValueCreator(ValueCreator valueCreator) {
+        this.valueCreator = valueCreator;
+    }
 }

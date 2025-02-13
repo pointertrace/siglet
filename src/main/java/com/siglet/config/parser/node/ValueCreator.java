@@ -7,9 +7,13 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface ValueCreator {
 
-    Item create();
+    Object create();
 
-    static <T extends Item> ValueCreator of(Supplier<T> valueCreator) {
-        return valueCreator::get;
+    static ValueCreator of(Supplier<? extends Object> valueCreator) {
+        if (valueCreator != null) {
+            return valueCreator::get;
+        } else {
+            return null;
+        }
     }
 }

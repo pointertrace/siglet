@@ -1,10 +1,13 @@
 package com.siglet.config.item;
 
 import com.siglet.SigletError;
+import com.siglet.config.located.Location;
 import com.siglet.config.parser.ConfigParser;
 import com.siglet.config.parser.node.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static com.siglet.config.ConfigCheckFactory.globalConfigChecker;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,64 +27,25 @@ class ConfigItemTest {
 
         var yaml = """
                 receivers:
-                - grpc: first-receiver
+                - grpc: first receiver
                   address: localhost:8080
-                - grpc: second-receiver
+                - grpc: second receiver
                   address: localhost:8081
                 exporters:
-                - grpc: first-exporter
+                - grpc: first exporter
                   address: localhost:8080
-                - grpc: second-exporter
+                - grpc: second exporter
                   address: localhost:8081
                 pipelines:
-                - trace: pipeline name
-                  from: first-receiver
-                  start: first-receiver
-                  pipeline:
-                  - spanlet: spanletItem-name
-                    to: destination-value
-                    type: processor
-                    config:
-                      action: action-value
-                """;
-
-
-        Node node = configParser.parse(yaml);
-
-        globalConfigChecker().check(node);
-
-        Object conf = node.getValue();
-
-        assertNotNull(conf);
-        var globalConfig = assertInstanceOf(ConfigItem.class, conf);
-
-        globalConfig.validateUniqueNames();
-
-    }
-
-    @Test
-    void explain() throws Exception {
-
-
-        var yaml = """
-                receivers:
-                - grpc: first-receiver
-                  address: localhost:8080
-                - grpc: second-receiver
-                  address: localhost:8081
-                exporters:
-                - grpc: first-exporter
-                  address: localhost:8080
-                - grpc: second-exporter
-                  address: localhost:8081
-                pipelines:
-                - trace: pipeline name
-                  from: first-receiver
-                  start: first-receiver
-                  pipeline:
-                  - spanlet: spanletItem-name
-                    to: destination-value
-                    type: processor
+                - name: pipeline name
+                  signal: trace
+                  from: first receiver
+                  start: spanlet name
+                  siglets:
+                  - name: spanlet name
+                    kind: spanlet
+                    to: first exporter
+                    type: groovy-action
                     config:
                       action: action-value
                 """;
@@ -96,119 +60,59 @@ class ConfigItemTest {
         assertNotNull(conf);
         ConfigItem config = assertInstanceOf(ConfigItem.class, conf);
 
-        String expected = """
-                (1:1)  ConfigItem
-                  (1:1)  receiverItems
-                    (1:1)  arrayItem
-                      (2:3)  array item
-                        (2:3)  GrpcReceiverItem
-                          (2:9)  name
-                            (2:9)  String  (first-receiver)
-                          (3:12)  address
-                            (3:12)  InetSocketAddress  (localhost/<unresolved>:8080)
+        List<ReceiverItem> receivers = config.getReceivers();
+        assertNotNull(receivers);
+        assertEquals(2, receivers.size());
+        assertEquals(Location.of(1,1), config.getReceiversLocation());
 
-                      (4:3)  array item
-                        (4:3)  GrpcReceiverItem
-                          (4:9)  name
-                            (4:9)  String  (second-receiver)
-                          (5:12)  address
-                            (5:12)  InetSocketAddress  (localhost/<unresolved>:8081)
-                  (6:1)  exporterItems
-                    (6:1)  arrayItem
-                      (7:3)  array item
-                        (7:3)  GrpcExporterItem
-                          (7:9)  name
-                            (7:9)  String  (first-exporter)
-                          (8:12)  address
-                            (8:12)  InetSocketAddress  (localhost/<unresolved>:8080)
+        assertEquals("first receiver", receivers.getFirst().getName());
+        assertEquals("second receiver", receivers.get(1).getName());
 
-                      (9:3)  array item
-                        (9:3)  GrpcExporterItem
-                          (9:9)  name
-                            (9:9)  String  (second-exporter)
-                          (10:12)  address
-                            (10:12)  InetSocketAddress  (localhost/<unresolved>:8081)
-                  (11:1)  pipelines
-                    (11:1)  arrayItem
-                      (12:3)  array item
-                        (12:3)  PipelineItem
-                          (12:10)  name
-                            (12:10)  String  (pipeline name)
-                          (13:9)  from
-                            (13:9)  String  (first-receiver)
-                          (14:10)  start
-                            (14:10)  String  (first-receiver)
-                          (15:3)  processors
-                            (15:3)  arrayItem
-                              (16:5)  array item
-                                (16:5)  spanletItem
-                                  (16:14)  name
-                                    (16:14)  String  (spanletItem-name)
-                                  (17:9)  to
-                                    (17:9)  arrayItem
-                                      (17:9)  array item
-                                        (17:9)  String  (destination-value)
-                                  (18:11)  type
-                                    (18:11)  String  (processor)
-                                  (19:5)  config
-                                    (19:5)  processorConfig
-                                      (20:15)  action
-                                        (20:15)  String  (action-value)""";
+        List<ExporterItem> exporters = config.getExporters();
+        assertNotNull(exporters);
+        assertEquals(2, exporters.size());
+        assertEquals(Location.of(6,1), config.getExportersLocation());
 
-        assertEquals(expected, config.describe());
+        assertEquals("first exporter", exporters.getFirst().getName());
+        assertEquals("second exporter", exporters.get(1).getName());
 
+        List<PipelineItem> pipelines = config.getPipelines();
+        assertNotNull(pipelines);
+        assertEquals(1, pipelines.size());
+        assertEquals(Location.of(11,1), config.getPipelinesLocation());
+
+        assertEquals("pipeline name",pipelines.getFirst().getName());
 
     }
-//    @Test
-    public void validateUniqueNames_notUnique() throws Exception {
+
+    @Test
+    void explain() throws Exception {
 
 
         var yaml = """
                 receivers:
-                - grpc: first
+                - grpc: first receiver
                   address: localhost:8080
-                - grpc: second
+                - grpc: second receiver
                   address: localhost:8081
                 exporters:
-                - grpc: first
+                - grpc: first exporter
                   address: localhost:8080
-                - grpc: second
+                - grpc: second exporter
                   address: localhost:8081
                 pipelines:
-                - trace: pipeline-name
-                  from: first
-                  start: first-destination
-                  pipeline:
-                  - spanlet: spanlet-name
-                    to:
-                    - first-destination
-                    - second-destination
-                    type: processor
-                    config:
-                      action: action-value
-                  - spanlet: spanlet-name
-                    to: destination-value
-                    type: processor
-                    config:
-                      action: action-value
-                - trace: pipeline-name
-                  from: second
-                  start: spanlet-name
-                  pipeline:
-                  - spanlet: spanlet-name
-                    to: destination-value
-                    type: processor
-                    config:
-                      action: action-value
-                  - spanlet: spanletItem-name
-                    to:
-                    - first-destination
-                    - second-destination
-                    type: processor
+                - name: pipeline name
+                  signal: trace
+                  from: first receiver
+                  start: spanlet name
+                  siglets:
+                  - name: spanlet name
+                    kind: spanlet
+                    to: first exporter
+                    type: groovy-action
                     config:
                       action: action-value
                 """;
-
 
         Node node = configParser.parse(yaml);
 
@@ -217,12 +121,44 @@ class ConfigItemTest {
         Object conf = node.getValue();
 
         assertNotNull(conf);
-        var globalConfig = assertInstanceOf(ConfigItem.class, conf);
+        ConfigItem config = assertInstanceOf(ConfigItem.class, conf);
 
-        SigletError ex = assertThrowsExactly(SigletError.class, globalConfig::validateUniqueNames);
+        String expected = """
+        (1:1)  config:
+          (1:1)  receivers:
+            (2:3)  GrpcReceiver
+              (2:9)  name: first receiver
+              (3:12)  address: localhost/<unresolved>:8080
+            (4:3)  GrpcReceiver
+              (4:9)  name: second receiver
+              (5:12)  address: localhost/<unresolved>:8081
+          (6:1)  exporters:
+            (7:3)  GrpcExporter
+              (7:9)  name: first exporter
+              (8:12)  address: localhost/<unresolved>:8080
+            (9:3)  GrpcExporter
+              (9:9)  name: second exporter
+              (10:12)  address: localhost/<unresolved>:8081
+          (11:1)  pipelines:
+            (12:3)  Pipeline:
+              (12:9)  name: pipeline name
+              (13:11)  signal: TRACE
+              (14:9)  from: first receiver
+              (15:10)  start:
+                (15:10)  spanlet name
+              (16:3)  siglets:
+                (17:5)  siglet:
+                  (17:11)  name: spanlet name
+                  (18:11)  kind: SPANLET
+                  (19:9)  to:
+                    (19:9)  first exporter
+                  (20:11)  type: groovy-action
+                  (21:5) config:
+                    (21:5)  processorConfig
+                      (22:15)  action: action-value""";
 
-        assertEquals("Names must be unique within the configuration file but: 'pipeline-name' appears twice," +
-                " 'spanletItem-name' appears 4 times, 'first' appears twice and 'second' appears twice!", ex.getMessage());
+        assertEquals(expected, config.describe());
+
 
     }
 }

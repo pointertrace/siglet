@@ -1,15 +1,15 @@
 package com.siglet.pipeline.processor;
 
 import com.siglet.SigletError;
-import com.siglet.config.item.ProcessorItem;
-import com.siglet.config.item.ProcessorKind;
+import com.siglet.config.item.SigletItem;
+import com.siglet.config.item.SigletKind;
 import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ObjectNode;
 import com.siglet.config.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaValidationError;
 import com.siglet.config.parser.schema.SingleSchemaValidationError;
-import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorConfig;
+import com.siglet.pipeline.processor.traceaggregator.TraceAggregatorConfig;
 
 import static com.siglet.config.parser.schema.SchemaFactory.*;
 
@@ -30,8 +30,8 @@ public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminato
         if (kind == null) {
             throw new SingleSchemaValidationError(node.getLocation(), "must have a kind property!");
         }
-        if (kind.getValue() instanceof ProcessorKind kindValue) {
-            if (kindValue == ProcessorKind.TRACE_AGGREGATOR) {
+        if (kind.getValue() instanceof SigletKind kindValue) {
+            if (kindValue == SigletKind.TRACE_AGGREGATOR) {
                 return traceAggregatorChecker();
             } else {
                 Node type = objectNode.get("type");
@@ -57,7 +57,7 @@ public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminato
     }
 
     private NodeChecker traceAggregatorChecker() {
-        return requiredProperty(ProcessorItem::setConfig, "config",
+        return requiredProperty(SigletItem::setConfig, "config",
                 strictObject(TraceAggregatorConfig::new,
                         property(TraceAggregatorConfig::setTimeoutMillis,
                                 "timeout-millis", false, anyNumberChecker()),

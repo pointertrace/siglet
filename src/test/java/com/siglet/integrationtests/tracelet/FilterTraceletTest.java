@@ -30,13 +30,15 @@ class FilterTraceletTest extends CamelTestSupport {
                 - debug: exporter
                   address: mock:output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to: exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: >
                         thisSignal.get(1).name.startsWith("prefix")
@@ -94,13 +96,15 @@ class FilterTraceletTest extends CamelTestSupport {
                 - debug: exporter
                   address: mock:output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to: exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: >
                         thisSignal.get(1).name.startsWith("prefix")
@@ -158,15 +162,17 @@ class FilterTraceletTest extends CamelTestSupport {
                 - debug: second-exporter
                   address: mock:second-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                     - first-exporter
                     - second-exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: >
                         thisSignal.get(1).name.startsWith("prefix")
@@ -234,15 +240,17 @@ class FilterTraceletTest extends CamelTestSupport {
                 - debug: second-exporter
                   address: mock:second-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                      - first-exporter
                      - second-exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: >
                         thisSignal.get(1).name.startsWith("prefix")

@@ -1,7 +1,7 @@
 package com.siglet.pipeline.processor.common.filter;
 
 
-import com.siglet.config.item.ProcessorItem;
+import com.siglet.config.item.SigletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.config.parser.schema.SchemaFactory;
 import com.siglet.pipeline.processor.common.ConfigDefinition;
@@ -14,7 +14,7 @@ public class FilterDefinition implements ConfigDefinition {
 
     @Override
     public NodeChecker getChecker() {
-        return SchemaFactory.requiredProperty(ProcessorItem::setConfig, ProcessorItem::setConfigLocation, "config",
+        return SchemaFactory.requiredProperty(SigletItem::setConfig, SigletItem::setConfigLocation, "config",
                 SchemaFactory.strictObject(FilterConfig::new,
                         requiredProperty(FilterConfig::setExpression,
                                 FilterConfig::setExpressionLocation,

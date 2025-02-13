@@ -5,6 +5,7 @@ import com.siglet.config.located.Location;
 
 import java.util.List;
 
+// todo testar
 public class RouterConfig extends Item {
 
     private List<Route> routes;

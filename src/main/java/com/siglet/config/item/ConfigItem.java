@@ -2,57 +2,65 @@ package com.siglet.config.item;
 
 import com.siglet.SigletError;
 import com.siglet.config.item.repository.NodeRepository;
+import com.siglet.config.located.Location;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
 import org.apache.camel.builder.RouteBuilder;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConfigItem extends Item {
 
-    private ArrayItem<ReceiverItem> receiverItems;
+    private List<ReceiverItem> receivers;
 
-    private ArrayItem<ExporterItem> exporterItems;
+    private Location receiversLocation;
 
-    private ArrayItem<PipelineItem<?>> pipelines;
+    private List<ExporterItem> exporters;
 
-    public ArrayItem<ReceiverItem> getReceivers() {
-        return receiverItems;
+    private Location exportersLocation;
+
+    private List<PipelineItem> pipelines;
+
+    private Location pipelinesLocation;
+
+    public List<ReceiverItem> getReceivers() {
+        return receivers;
     }
 
-    public void setReceivers(ArrayItem<ReceiverItem> receiverItems) {
-        this.receiverItems = receiverItems;
+    public void setReceivers(List<ReceiverItem> receiverItems) {
+        this.receivers = receiverItems;
     }
 
-    public ArrayItem<ExporterItem> getExporters() {
-        return exporterItems;
+    public List<ExporterItem> getExporters() {
+        return exporters;
     }
 
-    public void setExporters(ArrayItem<ExporterItem> exporterItems) {
-        this.exporterItems = exporterItems;
+    public void setExporters(List<ExporterItem> exporterItems) {
+        this.exporters = exporterItems;
     }
 
-    public ArrayItem<PipelineItem<?>> getPipelines() {
+    public List<PipelineItem> getPipelines() {
         return pipelines;
     }
 
-    public void setPipelines(ArrayItem<PipelineItem<?>> pipelines) {
+    public void setPipelines(List<PipelineItem> pipelines) {
         this.pipelines = pipelines;
     }
 
     protected void validateUniqueNames() {
         String notUniqueNames = Stream.of(
-                        getReceivers().getValue().stream()
+                        getReceivers().stream()
                                 .map(ReceiverItem::getName),
-                        getExporters().getValue().stream()
+                        getExporters().stream()
                                 .map(ExporterItem::getName),
-                        getPipelines().getValue().stream()
+                        getPipelines().stream()
                                 .map(PipelineItem::getName),
-                        getPipelines().getValue().stream()
-                                .flatMap(p -> p.getProcessors().getValue().stream())
-                                .map(ProcessorItem::getName)
+                        getPipelines().stream()
+                                .flatMap(p -> p.getSiglets().stream())
+                                .map(SigletItem::getName)
                 )
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
                 .filter(e -> e.getValue() > 1)
@@ -70,10 +78,10 @@ public class ConfigItem extends Item {
         NodeRepository nodeRepository = new NodeRepository();
 
 
-        getReceivers().getValue().forEach(nodeRepository::addItem);
-        getExporters().getValue().forEach(nodeRepository::addItem);
-        getPipelines().getValue().forEach(nodeRepository::addItem);
-        getPipelines().getValue().stream()
+        getReceivers().forEach(nodeRepository::addItem);
+        getExporters().forEach(nodeRepository::addItem);
+        getPipelines().forEach(nodeRepository::addItem);
+        getPipelines().stream()
                 .flatMap(this::getItems)
                 .forEach(nodeRepository::addItem);
 
@@ -89,16 +97,16 @@ public class ConfigItem extends Item {
         return nodeRepository.createRouteBuilder();
     }
 
-    public Stream<? extends ProcessorItem> getItems(PipelineItem<?> pipeline) {
-        return pipeline.getProcessors().getValue().stream();
+    public Stream<SigletItem> getItems(PipelineItem pipeline) {
+        return pipeline.getSiglets().stream();
     }
 
     @Override
     public void afterSetValues() {
-        getReceivers().getValue().forEach(Item::afterSetValues);
-        getExporters().getValue().forEach(Item::afterSetValues);
-        getPipelines().getValue().forEach(Item::afterSetValues);
-        getPipelines().getValue().stream()
+        getReceivers().forEach(Item::afterSetValues);
+        getExporters().forEach(Item::afterSetValues);
+        getPipelines().forEach(Item::afterSetValues);
+        getPipelines().stream()
                 .flatMap(this::getItems)
                 .forEach(Item::afterSetValues);
     }
@@ -107,27 +115,57 @@ public class ConfigItem extends Item {
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
-        sb.append("  ConfigItem");
+        sb.append("  config:");
         sb.append("\n");
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(receiverItems.getLocation().describe());
-        sb.append("  receiverItems");
+        sb.append(receiversLocation.describe());
+        sb.append("  receivers:");
         sb.append("\n");
-        sb.append(receiverItems.describe(level + 2));
+        for(ReceiverItem receiver: receivers) {
+            sb.append(receiver.describe(level + 2));
+        }
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(exporterItems.getLocation().describe());
-        sb.append("  exporterItems");
+        sb.append(exportersLocation.describe());
+        sb.append("  exporters:");
         sb.append("\n");
-        sb.append(exporterItems.describe(level + 2));
+        for(ExporterItem exporter: exporters) {
+            sb.append(exporter.describe(level + 2));
+        }
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(pipelines.getLocation().describe());
-        sb.append("  pipelines");
+        sb.append(pipelinesLocation.describe());
+        sb.append("  pipelines:");
         sb.append("\n");
-        sb.append(pipelines.describe(level + 2));
+        for(PipelineItem pipeline:pipelines) {
+            sb.append(pipeline.describe(level + 2));
+        }
 
         return sb.toString();
+    }
+
+    public Location getReceiversLocation() {
+        return receiversLocation;
+    }
+
+    public void setReceiversLocation(Location receiversLocation) {
+        this.receiversLocation = receiversLocation;
+    }
+
+    public Location getExportersLocation() {
+        return exportersLocation;
+    }
+
+    public void setExportersLocation(Location exportersLocation) {
+        this.exportersLocation = exportersLocation;
+    }
+
+    public Location getPipelinesLocation() {
+        return pipelinesLocation;
+    }
+
+    public void setPipelinesLocation(Location pipelinesLocation) {
+        this.pipelinesLocation = pipelinesLocation;
     }
 }

@@ -3,6 +3,7 @@ package com.siglet.pipeline.processor.common.action;
 import com.siglet.config.item.Item;
 import com.siglet.config.located.Location;
 
+// todo testar
 public class ActionConfig extends Item {
 
     private String action;
@@ -33,9 +34,7 @@ public class ActionConfig extends Item {
         sb.append("\n");
         sb.append(getDescriptionPrefix(level + 1));
         sb.append(getActionLocation().describe());
-        sb.append("  action");
-        sb.append("\n");
-        sb.append(getDescriptionPrefix(level + 2));
+        sb.append("  action: ");
         sb.append(getAction());
 
         return sb.toString();

@@ -1,6 +1,6 @@
 package com.siglet.pipeline.processor;
 
-import com.siglet.pipeline.common.ConfigDefinition;
+import com.siglet.pipeline.processor.common.ConfigDefinition;
 
 public class ProcessorType {
 

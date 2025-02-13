@@ -6,16 +6,16 @@ import com.siglet.config.item.repository.routecreator.RouteCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PipelineNode extends Node<PipelineItem<?>> {
+public final class PipelineNode extends Node<PipelineItem> {
 
     private List<ReceiverNode> from = new ArrayList<>();
 
-    private List<ProcessorNode<?>> start = new ArrayList<>();
+    private List<SigletNode> start = new ArrayList<>();
 
-    private List<ProcessorNode<?>> processors = new ArrayList<>();
+    private List<SigletNode> siglets = new ArrayList<>();
 
-    public PipelineNode(String name, PipelineItem<?> pipelineItem) {
-        super(name, pipelineItem);
+    public PipelineNode(PipelineItem pipelineItem, NodeRepository nodeRepository) {
+        super(pipelineItem, nodeRepository);
     }
 
     @Override
@@ -24,19 +24,19 @@ public class PipelineNode extends Node<PipelineItem<?>> {
             getStart().getFirst().createRoute(routeCreator);
         } else {
             RouteCreator multicast = routeCreator.startMulticast();
-            for (ProcessorNode<?> node : getStart()) {
+            for (SigletNode node : getStart()) {
                 node.createRoute(multicast);
             }
             multicast.endMulticast();
         }
     }
 
-    public List<ProcessorNode<?>> getProcessors() {
-        return processors;
+    public List<SigletNode> getSiglets() {
+        return siglets;
     }
 
-    public void setProcessors(List<ProcessorNode<?>> processors) {
-        this.processors = processors;
+    public void setSiglets(List<SigletNode> siglets) {
+        this.siglets = siglets;
     }
 
     public List<ReceiverNode> getFrom() {
@@ -47,11 +47,11 @@ public class PipelineNode extends Node<PipelineItem<?>> {
         this.from = from;
     }
 
-    public List<ProcessorNode<?>> getStart() {
+    public List<SigletNode> getStart() {
         return start;
     }
 
-    public void setStart(List<ProcessorNode<?>> start) {
+    public void setStart(List<SigletNode> start) {
         this.start = start;
     }
 }

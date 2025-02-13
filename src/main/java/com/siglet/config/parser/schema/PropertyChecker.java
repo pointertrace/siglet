@@ -1,5 +1,8 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.located.Located;
+import com.siglet.config.located.Location;
+import com.siglet.config.parser.node.LocationSetter;
 import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ValueSetter;
 
@@ -10,13 +13,19 @@ public class PropertyChecker extends BasicPropertyChecker {
 
     private final List<NodeChecker> propertyChecks;
 
+    public <T,E,R extends Located> PropertyChecker(BiConsumer<T, E> valueSetter, BiConsumer<R, Location> locationSetter,
+                           String name, boolean required, NodeChecker... propertyChecks) {
+        super(ValueSetter.of(valueSetter), LocationSetter.of(locationSetter), name, required);
+        this.propertyChecks = List.of(propertyChecks);
+    }
+
     public <T, E> PropertyChecker(BiConsumer<T, E> valueSetter, String name, boolean required, NodeChecker... propertyChecks) {
-        super(ValueSetter.of(valueSetter), name, required);
+        super(ValueSetter.of(valueSetter), null, name, required);
         this.propertyChecks = List.of(propertyChecks);
     }
 
     public PropertyChecker(String name, boolean required, NodeChecker... propertyChecks) {
-        super(ValueSetter.EMPTY, name, required);
+        super(ValueSetter.EMPTY, null, name, required);
         this.propertyChecks = List.of(propertyChecks);
     }
 
@@ -29,6 +38,7 @@ public class PropertyChecker extends BasicPropertyChecker {
                     propCheck.check(propertyNode);
                 }
                 propertyNode.setValueSetter(getValueSetter());
+                propertyNode.setLocationSetter(getLocationSetter());
             }
         } catch (SchemaValidationError e) {
             throw new SingleSchemaValidationError(node.getLocation(),
@@ -43,7 +53,7 @@ public class PropertyChecker extends BasicPropertyChecker {
 
     @Override
     public String getDescription() {
-        return String.format("name:%s, required:%b",getPropertyName(), isRequired());
+        return String.format("name:%s, required:%b", getPropertyName(), isRequired());
     }
 
     @Override

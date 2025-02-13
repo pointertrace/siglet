@@ -7,7 +7,7 @@ public class BigIntegerChecker extends NodeChecker {
 
     @Override
     public void check(Node node) throws SchemaValidationError {
-        if (!(node instanceof ValueNode.BigInteger)) {
+        if (!(node instanceof ValueNode.BigIntegerNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a big integer value!");
         }
     }

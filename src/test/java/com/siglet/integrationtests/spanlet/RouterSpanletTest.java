@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 class RouterSpanletTest extends CamelTestSupport {
 
     @Test
-    void testSimple() throws Exception {
+    void test() throws Exception {
 
 
         String yaml = """
@@ -34,16 +34,18 @@ class RouterSpanletTest extends CamelTestSupport {
                 - debug: third-exporter
                   address: mock:third-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: spanlet
-                  pipeline:
-                  - spanlet: spanlet
+                  siglets:
+                  - name: spanlet
+                    kind: spanlet
                     to:
                     - first-exporter
                     - second-exporter
                     - third-exporter
-                    type: router
+                    type: groovy-router
                     config:
                       default: third-exporter
                       routes:

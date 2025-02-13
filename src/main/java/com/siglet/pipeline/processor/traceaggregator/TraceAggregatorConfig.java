@@ -2,37 +2,68 @@ package com.siglet.pipeline.processor.traceaggregator;
 
 import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
+import com.siglet.config.located.Location;
 
 public class TraceAggregatorConfig extends Item {
 
-    private ValueItem<Long> timeoutMillis;
+    private Long timeoutMillis;
 
-    private ValueItem<Long> inactiveTimeoutMillis;
+    private Location timeoutMillisLocation;
 
-    private ValueItem<String> completionExpression;
+    private Long inactiveTimeoutMillis;
 
-    public ValueItem<Long> getTimeoutMillis() {
+    private Location inactiveTimeoutMillisLocation;
+
+    private String completionExpression;
+
+    private Location completionExpressionLocation;
+
+    public Long getTimeoutMillis() {
         return timeoutMillis;
     }
 
-    public void setTimeoutMillis(ValueItem<Number> timeoutMillis) {
-        this.timeoutMillis = new ValueItem<>(timeoutMillis.getLocation(), timeoutMillis.getValue().longValue());
+    public void setTimeoutMillis(Number timeoutMillis) {
+        this.timeoutMillis = timeoutMillis.longValue();
     }
 
-    public ValueItem<Long> getInactiveTimeoutMillis() {
+    public Location getTimeoutMillisLocation() {
+        return timeoutMillisLocation;
+    }
+
+    public void setTimeoutMillisLocation(Location timeoutMillisLocation) {
+        this.timeoutMillisLocation = timeoutMillisLocation;
+    }
+
+    public Long getInactiveTimeoutMillis() {
         return inactiveTimeoutMillis;
     }
 
-    public void setInactiveTimeoutMillis(ValueItem<Number> inactiveTimeoutMillis) {
-        this.inactiveTimeoutMillis = new ValueItem<>(inactiveTimeoutMillis.getLocation(),
-                inactiveTimeoutMillis.getValue().longValue());
+    public void setInactiveTimeoutMillis(Number inactiveTimeoutMillis) {
+        this.inactiveTimeoutMillis = inactiveTimeoutMillis.longValue();
     }
 
-    public ValueItem<String> getCompletionExpression() {
+    public Location getInactiveTimeoutMillisLocation() {
+        return inactiveTimeoutMillisLocation;
+    }
+
+    public void setInactiveTimeoutMillisLocation(Location inactiveTimeoutMillisLocation) {
+        this.inactiveTimeoutMillisLocation = inactiveTimeoutMillisLocation;
+    }
+    public String getCompletionExpression() {
         return completionExpression;
     }
 
-    public void setCompletionExpression(ValueItem<String> completionExpression) {
+    public void setCompletionExpression(String completionExpression) {
         this.completionExpression = completionExpression;
     }
+
+    public Location getCompletionExpressionLocation() {
+        return completionExpressionLocation;
+    }
+
+    public void setCompletionExpressionLocation(Location completionExpressionLocation) {
+        this.completionExpressionLocation = completionExpressionLocation;
+    }
+
+
 }

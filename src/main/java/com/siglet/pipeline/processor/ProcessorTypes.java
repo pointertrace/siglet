@@ -1,8 +1,8 @@
 package com.siglet.pipeline.processor;
 
-import com.siglet.pipeline.common.filter.FilterDefinition;
-import com.siglet.pipeline.common.processor.ActionDefinition;
-import com.siglet.pipeline.common.router.RouterDefinition;
+import com.siglet.pipeline.processor.common.filter.FilterDefinition;
+import com.siglet.pipeline.processor.common.action.ActionDefinition;
+import com.siglet.pipeline.processor.common.router.RouterDefinition;
 
 import java.util.Collections;
 import java.util.HashMap;

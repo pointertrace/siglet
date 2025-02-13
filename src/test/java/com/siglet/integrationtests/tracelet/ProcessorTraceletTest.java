@@ -30,13 +30,15 @@ class ProcessorTraceletTest extends CamelTestSupport {
                 - debug: exporter
                   address: mock:output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to: exporter
-                    type: processor
+                    type: groovy-action
                     config:
                       action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
                 """;
@@ -97,15 +99,17 @@ class ProcessorTraceletTest extends CamelTestSupport {
                 - debug: second-exporter
                   address: mock:second-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                     - first-exporter
                     - second-exporter
-                    type: processor
+                    type: groovy-action
                     config:
                       action: thisSignal.get(1).name = "prefix-" + thisSignal.get(1).name
                 """;

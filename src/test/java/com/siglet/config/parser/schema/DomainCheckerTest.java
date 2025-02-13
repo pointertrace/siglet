@@ -38,9 +38,9 @@ class DomainCheckerTest {
 
         checker.check(root);
 
-        var value = assertInstanceOf(ValueItem.class, root.getValue());
+        String value = assertInstanceOf(String.class, root.getValue());
 
-        assertEquals("a", value.getValue());
+        assertEquals("a", value);
 
     }
 

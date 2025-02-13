@@ -11,7 +11,7 @@ public class SimpleSpanProcessor {
                 receivers:
                 - grpc: trace-receiver
                   address: localhost:8081
-                  signal-type: trace
+                  signal: trace
                 exporters:
                 - grpc: exporter
                   address: localhost:50051

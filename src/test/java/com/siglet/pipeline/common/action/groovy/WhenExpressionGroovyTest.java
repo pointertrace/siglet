@@ -3,6 +3,7 @@ package com.siglet.pipeline.common.action.groovy;
 import com.google.protobuf.ByteString;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.pipeline.processor.common.action.groovy.ShellCreator;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;

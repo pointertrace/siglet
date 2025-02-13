@@ -15,7 +15,7 @@ public class LongChecker extends NodeChecker {
 
     @Override
     public void check(Node node) throws SchemaValidationError {
-        if (!(node instanceof ValueNode.Long longNode)) {
+        if (!(node instanceof ValueNode.LongNode longNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a long value!");
         }
         for (NodeChecker additionalChecker : additionalCheckers) {

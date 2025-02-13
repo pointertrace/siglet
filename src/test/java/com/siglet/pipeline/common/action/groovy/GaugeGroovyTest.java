@@ -4,6 +4,7 @@ import com.siglet.data.adapter.common.ProtoAttributesAdapter;
 import com.siglet.data.adapter.metric.ProtoMetricAdapter;
 import com.siglet.data.adapter.metric.ProtoNumberDataPointAdapter;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.pipeline.processor.common.action.groovy.ShellCreator;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;

@@ -19,10 +19,7 @@ public class DomainChecker extends NodeChecker {
     @Override
     public void check(Node node) throws SchemaValidationError {
         Collection<?> domainValues = domainProvider.get();
-        if (!(node.getValue() instanceof ValueItem<?> valueItem)) {
-            throw new SingleSchemaValidationError(node.getLocation(),"is not a String value!");
-        }
-        if (!(valueItem.getValue() instanceof String value)) {
+        if (!(node.getValue() instanceof String value)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a String value!");
         }
         if (!domainValues.contains(value)) {

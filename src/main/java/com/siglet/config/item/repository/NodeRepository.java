@@ -3,123 +3,100 @@ package com.siglet.config.item.repository;
 import com.siglet.SigletError;
 import com.siglet.config.item.*;
 import com.siglet.config.item.repository.routecreator.RootRouteCreator;
-import com.siglet.pipeline.spanlet.traceaggregator.TraceAggregatorItem;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NodeRepository {
 
-    private final Map<String, Node<?>> repository = new HashMap<>();
+    private final Map<String, Node<?>> nodes = new HashMap<>();
 
     public void addItem(Item item) {
         switch (item) {
-            case ReceiverItem receiverItem -> repository.put(receiverItem.getName().getValue(),
-                    new ReceiverNode(receiverItem.getName().getValue(), receiverItem));
-            case ExporterItem exporterItem -> repository.put(exporterItem.getName().getValue(),
-                    new ExporterNode(exporterItem.getName().getValue(), exporterItem));
-            case TracePipelineItem tracePipelineItem -> repository.put(tracePipelineItem.getName().getValue(),
-                    new PipelineNode(tracePipelineItem.getName().getValue(),
-                            tracePipelineItem));
-            case MetricPipelineItem metricPipelineItem -> repository.put(metricPipelineItem.getName().getValue(),
-                    new PipelineNode(metricPipelineItem.getName().getValue(),
-                            metricPipelineItem));
-            case SpanletItem spanletItem -> repository.put(spanletItem.getName().getValue(), new SpanletNode(
-                    spanletItem.getName().getValue(), spanletItem));
-            case MetricletItem metricletItem -> repository.put(metricletItem.getName().getValue(), new MetricletNode(
-                    metricletItem.getName().getValue(), metricletItem));
-            case TraceAggregatorItem traceAggregatorItem -> repository.put(traceAggregatorItem.getName().getValue(),
-                    new TraceAggregatorNode(traceAggregatorItem.getName().getValue(), traceAggregatorItem));
-            case TraceletItem traceletItem -> repository.put(traceletItem.getName().getValue(),
-                    new TraceletNode(traceletItem.getName().getValue(), traceletItem));
+            case ReceiverItem receiver -> nodes.put(receiver.getName(),
+                    new ReceiverNode(receiver, this));
+
+            case ExporterItem exporter -> nodes.put(exporter.getName(),
+                    new ExporterNode(exporter, this));
+
+            case PipelineItem pipeline -> nodes.put(pipeline.getName(),
+                    new PipelineNode(pipeline, this));
+
+            case SigletItem siglet -> nodes.put(siglet.getName(),
+                    new SigletNode(siglet, this));
+
             default -> throw new SigletError("Could not add config item type " + item.getClass().getName());
         }
     }
 
-    public List<ReceiverNode> getReceiverNodesFromNames(List<ValueItem<String>> names) {
-        List<ReceiverNode> nodes = new ArrayList<>();
-        for (String name : names.stream().map(ValueItem::getValue).toList()) {
-            Node<?> node = repository.get(name);
-            if (node == null) {
-                throw new SigletError("Could not find any config item named [" + name + "]");
-            } else {
-                if (!(node instanceof ReceiverNode receiverNode)) {
-                    throw new SigletError("Node [" + name + "] is a " + node.getClass().getName() + "not a ReceiverNode");
-                } else {
-                    nodes.add(receiverNode);
-                }
-            }
-        }
-        return nodes;
+
+    List<Node<?>> getNodesByName(List<String> names) {
+        return names.stream()
+                .map(this::getNodeByName)
+                .collect(Collectors.<Node<?>>toUnmodifiableList());
     }
 
-    List<Node<?>> getNodesFromNames(List<String> names) {
-        List<Node<?>> nodes = new ArrayList<>();
-        for (String name : names) {
-            Node<?> node = repository.get(name);
-            if (node == null) {
-                throw new SigletError("Could not find any config item named [" + name + "]");
+    <T extends Node<?>> List<T> getNodesByNameAndType(List<String> names, Class<T> nodeType) {
+        List<Node<?>> nodes = getNodesByName(names);
+        nodes.forEach(node -> {
+            if (!nodeType.isAssignableFrom(node.getClass())) {
+                throw new SigletError(String.format("Node named [%s] is %s and should be %s", node.getName(),
+                        node.getClass().getSimpleName(), nodeType.getSimpleName()));
             }
-            nodes.add(node);
-        }
-        return nodes;
+        });
+        return nodes.stream()
+                .map(nodeType::cast)
+                .toList();
     }
 
-    List<ProcessorNode<? extends ProcessorItem>> getProcessorNodesFromNames(List<String> names) {
-        List<ProcessorNode<? extends ProcessorItem>> nodes = new ArrayList<>();
-        for (String name : names) {
-            Node<?> node = repository.get(name);
-            if (node == null) {
-                throw new SigletError("Could not find any config item named [" + name + "]");
-            } else {
-                if (!(node instanceof ProcessorNode processorNode)) {
-                    throw new SigletError("Node [" + name + "] is a " + node.getClass().getName() + "not a ProcessorNode");
-                } else {
-                    nodes.add(processorNode);
-                }
-            }
+    Node<?> getNodeByName(String name) {
+        if (!nodes.containsKey(name)) {
+            throw new SigletError(String.format("Could not find any node named [%s]", name));
         }
-        return nodes;
+        return nodes.get(name);
+    }
+
+    <T extends Node<?>> T getNodeByNameAndType(String name, Class<T> nodeType) {
+        Node<?> node = getNodeByName(name);
+        if (!nodeType.isAssignableFrom(node.getClass())) {
+            throw new SigletError(String.format("Node named [%s] is %s and should be %s", name,
+                    node.getClass().getSimpleName(), nodeType.getSimpleName()));
+        }
+        return nodeType.cast(node);
     }
 
     public void connect() {
 
-        repository.values().forEach(node -> {
+        nodes.values().forEach(node -> {
             switch (node) {
-                case ProcessorNode<?> processorNode -> {
-                    List<Node<?>> toNodes = getNodesFromNames(
-                            processorNode.getItem().getTo().getValue().stream()
-                                    .map(ValueItem::getValue)
-                                    .toList());
-                    toNodes.forEach(toNode -> {
-                        if (toNode instanceof ExporterNode exporterNode) {
-                            exporterNode.getFrom().add(processorNode);
-                        }
-                    });
-                    processorNode.setTo(toNodes);
-
-                    processorNode.setPipeline((PipelineNode) repository.get(processorNode.getItem().getPipeline()));
-
+                case SigletNode sigletNode -> {
+                    sigletNode.setTo(getNodesByName(sigletNode.getItem().getToNames()));
+                    sigletNode.setPipeline(getNodeByNameAndType(sigletNode.getItem().getPipeline(), PipelineNode.class));
                 }
                 case PipelineNode pipelineNode -> {
-                    List<ReceiverNode> fromNodes = getReceiverNodesFromNames(pipelineNode .getItem().getFrom());
-                    fromNodes.forEach(fromNode -> {
-                        if (fromNode instanceof ReceiverNode receiverNode) {
-                            receiverNode.getTo().add(pipelineNode );
-                        }
-                    });
-                    pipelineNode .setFrom(fromNodes);
+                    pipelineNode.getFrom().add(getNodeByNameAndType(pipelineNode.getItem().getFrom(), ReceiverNode.class));
+                    pipelineNode.getStart().addAll(getNodesByNameAndType(pipelineNode.getItem().getStartNames(),
+                            SigletNode.class));
+                }
 
-                    // TODO rever generics!!!!!!
-                    List<ProcessorNode<?>> startNodes =
-                            getProcessorNodesFromNames(pipelineNode.getItem().getStart().stream().map(ValueItem::getValue).toList());
-                    pipelineNode .setStart(startNodes);
-                }
-                case ReceiverNode receiverNode -> {
-                }
-                case ExporterNode exporterNode -> {
-                }
-                default -> throw new IllegalStateException("not yet implemented!");
+                case ReceiverNode receiverNode -> receiverNode.getTo().addAll(nodes.values().stream()
+                        .filter(PipelineNode.class::isInstance)
+                        .map(PipelineNode.class::cast)
+                        .filter(p -> p.getItem().getFrom().equals(receiverNode.getName()))
+                        .map(Node::getName)
+                        .map(name -> getNodeByNameAndType(name, PipelineNode.class))
+                        .toList());
+
+
+                case ExporterNode exporterNode -> exporterNode.getFrom().addAll(nodes.values().stream()
+                        .filter(SigletNode.class::isInstance)
+                        .map(SigletNode.class::cast)
+                        .filter(s -> s.getItem().getToNames().contains(exporterNode.getName()))
+                        .map(Node::getName)
+                        .map(name -> getNodeByNameAndType(name, SigletNode.class))
+                        .toList());
+
             }
         });
     }
@@ -127,7 +104,7 @@ public class NodeRepository {
     public RouteBuilder createRouteBuilder() {
         RootRouteCreator routeCreator = new RootRouteCreator();
 
-        repository.values().stream()
+        nodes.values().stream()
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
                 .forEach(receiverNode -> {
@@ -139,7 +116,7 @@ public class NodeRepository {
 
 
     public Collection<Node<?>> getNodes() {
-        return repository.values();
+        return nodes.values();
     }
 
 }

@@ -55,8 +55,8 @@ class AlternativeCheckerTest {
 
         alternativeChecker.check(node);
 
-        ValueItem<String> text = assertInstanceOf(ValueItem.class, node.getValue());
-        assertEquals("text value", text.getValue());
+        String textNode = assertInstanceOf(String.class, node.getValue());
+        assertEquals("text value", textNode);
     }
 
 
@@ -75,11 +75,10 @@ class AlternativeCheckerTest {
 
         alternativeChecker.check(node);
 
-        var array = assertInstanceOf(ArrayItem.class, node.getValue());
-        List<ValueItem<String>> list = array.getValue();
+        List<String> list = assertInstanceOf(List.class, node.getValue());
         assertEquals(2, list.size());
-        assertEquals("first value", list.getFirst().getValue());
-        assertEquals("second value", list.get(1).getValue());
+        assertEquals("first value", list.getFirst());
+        assertEquals("second value", list.get(1));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.siglet.config.parser.node;
 
 import java.util.function.BiConsumer;
+import java.util.List;
 
 @FunctionalInterface
 public interface ValueSetter {
@@ -13,4 +14,9 @@ public interface ValueSetter {
     static <T, E> ValueSetter of(BiConsumer<T, E> valueSetter) {
         return (Object target, Object value) -> valueSetter.accept((T) target, (E) value);
     }
+
+    static ValueSetter listAdd() {
+        return of ((BiConsumer<List<Object>,Object>) List::add);
+    }
+
 }

@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString;
 import com.siglet.data.CloneableAdapter;
 import com.siglet.data.adapter.AdapterUtils;
 import com.siglet.data.adapter.trace.ProtoSpanAdapter;
-import com.siglet.pipeline.common.processor.GroovyProcessor;
+import com.siglet.pipeline.processor.common.action.GroovyProcessor;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;

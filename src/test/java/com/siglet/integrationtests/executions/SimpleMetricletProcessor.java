@@ -25,7 +25,7 @@ public class SimpleMetricletProcessor {
                 receivers:
                 - grpc: receiver
                   address: localhost:4317
-                  signal-type: metric
+                  signal: metric
                 exporters:
                 - grpc: exporter
                   address: localhost:4317

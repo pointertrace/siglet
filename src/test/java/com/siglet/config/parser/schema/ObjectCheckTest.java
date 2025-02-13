@@ -48,7 +48,7 @@ class ObjectCheckTest {
 
         Node node = parser.parse("""
                 prop1: 1
-                prop2: text value
+                prop2: textNode value
                 """);
 
         objectCheck.check(node);

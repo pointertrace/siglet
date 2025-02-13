@@ -19,7 +19,7 @@ class TraceAggregatorTest extends CamelTestSupport {
 
 
     @Test
-    void testSimpl() throws Exception {
+    void testSimple() throws Exception {
 
 
         String yaml = """
@@ -30,11 +30,13 @@ class TraceAggregatorTest extends CamelTestSupport {
                 - debug: exporter
                   address: mock:output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: trace-aggregator
-                  pipeline:
-                    - trace-aggregator: trace-aggregator
+                  siglets:
+                    - name: trace-aggregator
+                      kind: trace-aggregator
                       to: exporter
                       type: default
                       config:
@@ -94,11 +96,13 @@ class TraceAggregatorTest extends CamelTestSupport {
                 - debug: second-exporter
                   address: mock:second-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: trace-aggregator
-                  pipeline:
-                    - trace-aggregator: trace-aggregator
+                  siglets:
+                    - name: trace-aggregator
+                      kind: trace-aggregator
                       to:
                       - first-exporter
                       - second-exporter

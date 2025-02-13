@@ -8,32 +8,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SigletKindTransformerTest {
 
-    private ProcessorKindTransformer processorKindTransformer;
+    private SigletKindTransformer sigletKindTransformer;
 
     @BeforeEach
     public void setUp() {
-        processorKindTransformer = new ProcessorKindTransformer();
+        sigletKindTransformer = new SigletKindTransformer();
     }
 
     @Test
     void transform() {
 
-        assertEquals(SigletKind.METRICLET,processorKindTransformer.transform("metriclet"));
+        assertEquals(SigletKind.METRICLET, sigletKindTransformer.transform("metriclet"));
 
-        assertEquals(SigletKind.SPANLET,processorKindTransformer.transform("spanlet"));
+        assertEquals(SigletKind.SPANLET, sigletKindTransformer.transform("spanlet"));
 
-        assertEquals(SigletKind.TRACELET,processorKindTransformer.transform("tracelet"));
+        assertEquals(SigletKind.TRACELET, sigletKindTransformer.transform("tracelet"));
 
-        assertEquals(SigletKind.TRACE_AGGREGATOR,processorKindTransformer.transform("trace-aggregator"));
+        assertEquals(SigletKind.TRACE_AGGREGATOR, sigletKindTransformer.transform("trace-aggregator"));
 
     }
 
     @Test
     void transform_invalidValue(){
 
-        SigletError e = assertThrowsExactly(SigletError.class,() -> processorKindTransformer.transform("invalid"));
+        SigletError e = assertThrowsExactly(SigletError.class,() -> sigletKindTransformer.transform("invalid"));
 
-        assertEquals("The value [invalid] is not a valid processor kind [spanlet, tracelet, trace-aggregator, metriclet]", e.getMessage());
+        assertEquals("The value [invalid] is not a valid siglet kind [spanlet, tracelet, " +
+                "trace-aggregator, metriclet]", e.getMessage());
 
     }
 

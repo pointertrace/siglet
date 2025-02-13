@@ -3,25 +3,29 @@ package com.siglet.config.item.repository;
 import com.siglet.config.item.Item;
 import com.siglet.config.item.repository.routecreator.RouteCreator;
 
-public abstract class Node<T extends Item> {
+public abstract sealed class Node<T extends Item> permits ReceiverNode, PipelineNode, SigletNode, ExporterNode {
 
-
-    private final String name;
 
     private final T item;
 
-    protected Node(String name, T item) {
-        this.name = name;
+    private final NodeRepository nodeRepository;
+
+    protected Node(T item, NodeRepository nodeRepository) {
         this.item = item;
+        this.nodeRepository = nodeRepository;
     }
 
     public String getName() {
-        return name;
+        return item.getName();
     }
 
 
     public T getItem() {
         return item;
+    }
+
+    public NodeRepository getNodeRepository() {
+        return nodeRepository;
     }
 
     public abstract void createRoute(RouteCreator routeCreator);

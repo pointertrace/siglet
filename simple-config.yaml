@@ -1,7 +1,7 @@
 receivers:
   - grpc: receiver
     address: localhost:8080
-    signal-type: trace
+    signal: trace
 exporters:
   - grpc: exporter
     address: localhost:4317

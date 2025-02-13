@@ -36,9 +36,9 @@ class BigDecimalNodeCheckerTest {
         Object value = node.getValue();
 
         assertNotNull(value);
-        ValueItem<Number> anyNumber = assertInstanceOf(ValueItem.class, value);
+        Number anyNumber = assertInstanceOf(Number.class, value);
 
-        assertEquals(valueToBeParsed, anyNumber.getValue());
+        assertEquals(valueToBeParsed, anyNumber);
 
     }
 

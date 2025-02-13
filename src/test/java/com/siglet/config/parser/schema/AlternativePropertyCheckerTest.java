@@ -58,7 +58,7 @@ class AlternativePropertyCheckerTest {
                         new PropertyChecker(Bean::setProp1, "prop1", true, array(text()))));
 
         Node node = parser.parse("""
-                prop1: text-value
+                prop1: textNode-value
                 """);
 
         objectCheck.check(node);
@@ -66,7 +66,7 @@ class AlternativePropertyCheckerTest {
         Object value = node.getValue();
         assertNotNull(value);
         var bean = assertInstanceOf(Bean.class, value);
-        assertEquals(List.of("text-value"), bean.getProp1().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals(List.of("textNode-value"), bean.getProp1());
     }
 
     @Test
@@ -88,8 +88,7 @@ class AlternativePropertyCheckerTest {
         Object value = assertInstanceOf(Bean.class, node.getValue());
         assertNotNull(value);
         var bean = assertInstanceOf(Bean.class, value);
-        assertEquals(List.of("first-value", "second-value"),
-                bean.getProp1().getValue().stream().map(ValueItem::getValue).toList());
+        assertEquals(List.of("first-value", "second-value"), bean.getProp1());
     }
 
     @Test
@@ -121,17 +120,17 @@ class AlternativePropertyCheckerTest {
 
     public static class Bean extends Item {
 
-        private ArrayItem<ValueItem<String>> prop1;
+        private List<String> prop1;
 
-        public void setProp1(ArrayItem<ValueItem<String>> prop1) {
+        public void setProp1(List<String> prop1) {
             this.prop1 = prop1;
         }
 
-        public void setProp1AsValue(ValueItem<String> prop1) {
-            this.prop1 = new ArrayItem<>(Location.of(0, 0), List.of(prop1));
+        public void setProp1AsValue(String prop1) {
+            this.prop1 = List.of(prop1);
         }
 
-        public ArrayItem<ValueItem<String>> getProp1() {
+        public List<String> getProp1() {
             return prop1;
         }
     }

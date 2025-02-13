@@ -27,13 +27,15 @@ class FilterSpanletTest extends CamelTestSupport {
                 - debug: exporter
                   address: mock:output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: spanlet
-                  pipeline:
-                  - spanlet: spanlet
+                  siglets:
+                  - name: spanlet
+                    kind: spanlet
                     to: exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: thisSignal.name.startsWith("prefix")
                 """;
@@ -80,15 +82,17 @@ class FilterSpanletTest extends CamelTestSupport {
                 - debug: second-exporter
                   address: mock:second-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: spanlet
-                  pipeline:
-                  - spanlet: spanlet
+                  siglets:
+                  - name: spanlet
+                    kind: spanlet
                     to:
                     - first-exporter
                     - second-exporter
-                    type: filter
+                    type: groovy-filter
                     config:
                       expression: thisSignal.name.startsWith("prefix")
                 """;

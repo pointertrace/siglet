@@ -1,5 +1,6 @@
 package com.siglet.config.parser.schema;
 
+import com.siglet.config.parser.node.LocationSetter;
 import com.siglet.config.parser.node.Node;
 import com.siglet.config.parser.node.ObjectNode;
 import com.siglet.config.parser.node.ValueSetter;
@@ -9,9 +10,12 @@ public abstract class BasicPropertyChecker extends AbstractPropertyChecker {
 
     private final ValueSetter valueSetter;
 
-    protected BasicPropertyChecker(ValueSetter valueSetter, String propertyName, boolean required) {
+    private final LocationSetter locationSetter;
+
+    protected BasicPropertyChecker(ValueSetter valueSetter, LocationSetter locationSetter, String propertyName, boolean required) {
         super(propertyName, required);
         this.valueSetter = valueSetter;
+        this.locationSetter = locationSetter;
     }
 
     @Override
@@ -28,6 +32,10 @@ public abstract class BasicPropertyChecker extends AbstractPropertyChecker {
 
     public ValueSetter getValueSetter() {
         return valueSetter;
+    }
+
+    public LocationSetter getLocationSetter() {
+        return locationSetter;
     }
 
     @Override

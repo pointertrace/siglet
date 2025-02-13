@@ -8,7 +8,7 @@ public class ShellCreator {
 
     private final Class<?> scriptBaseClass;
 
-    protected ShellCreator(Class<?> scriptBaseClass) {
+    public ShellCreator(Class<?> scriptBaseClass) {
         this.scriptBaseClass = scriptBaseClass;
     }
 

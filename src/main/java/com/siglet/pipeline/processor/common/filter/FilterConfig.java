@@ -4,6 +4,7 @@ import com.siglet.config.item.Item;
 import com.siglet.config.item.ValueItem;
 import com.siglet.config.located.Location;
 
+// todo testar
 public class FilterConfig extends Item {
 
     private String expression;

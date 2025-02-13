@@ -6,12 +6,12 @@ import com.siglet.config.item.repository.routecreator.RouteCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExporterNode extends Node<ExporterItem> {
+public final class ExporterNode extends Node<ExporterItem> {
 
     private List<Node<?>> from = new ArrayList<>();
 
-    public ExporterNode(String name, ExporterItem exporterItem) {
-        super(name, exporterItem);
+    public ExporterNode(ExporterItem exporterItem, NodeRepository nodeRepository) {
+        super(exporterItem, nodeRepository);
     }
 
     @Override

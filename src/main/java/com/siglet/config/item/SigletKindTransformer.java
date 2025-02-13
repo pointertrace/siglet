@@ -21,7 +21,7 @@ public class SigletKindTransformer implements ValueTransformer {
             strValue = strValue.replace("-", "_").toUpperCase();
             return SigletKind.valueOf(strValue.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new SigletError(String.format("The value [%s] is not a valid processor kind [%s]", value,
+            throw new SigletError(String.format("The value [%s] is not a valid siglet kind [%s]", value,
                     Stream.of(SigletKind.values())
                             .map(Enum::name)
                             .map(v -> v.replace('_', '-').toLowerCase())

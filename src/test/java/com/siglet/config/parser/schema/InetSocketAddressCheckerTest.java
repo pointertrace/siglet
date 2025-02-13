@@ -40,9 +40,9 @@ class InetSocketAddressCheckerTest {
         Object value = inetAddressNode.getValue();
 
         assertNotNull(value);
-        var inetAddress = assertInstanceOf(ValueItem.class, value);
+        InetSocketAddress inetAddress = assertInstanceOf(InetSocketAddress.class, value);
 
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), inetAddress.getValue());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), inetAddress);
 
 
     }

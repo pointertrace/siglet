@@ -33,16 +33,18 @@ class RouterTraceletTest extends CamelTestSupport {
                 - debug: third-exporter
                   address: mock:third-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                     - first-exporter
                     - second-exporter
                     - third-exporter
-                    type: router
+                    type: groovy-router
                     config:
                       default: third-exporter
                       routes:
@@ -115,16 +117,18 @@ class RouterTraceletTest extends CamelTestSupport {
                 - debug: third-exporter
                   address: mock:third-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                     - first-exporter
                     - second-exporter
                     - third-exporter
-                    type: router
+                    type: groovy-router
                     config:
                       default: third-exporter
                       routes:
@@ -194,16 +198,18 @@ class RouterTraceletTest extends CamelTestSupport {
                 - debug: third-exporter
                   address: mock:third-output
                 pipelines:
-                - trace: pipeline
+                - name: pipeline
+                  signal: trace
                   from: receiver
                   start: tracelet
-                  pipeline:
-                  - tracelet: tracelet
+                  siglets:
+                  - name: tracelet
+                    kind: tracelet
                     to:
                     - first-exporter
                     - second-exporter
                     - third-exporter
-                    type: router
+                    type: groovy-router
                     config:
                       default: third-exporter
                       routes:

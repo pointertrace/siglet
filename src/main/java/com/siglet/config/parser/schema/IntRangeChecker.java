@@ -16,12 +16,12 @@ public class IntRangeChecker extends NodeChecker {
 
     @Override
     public void check(Node node) throws SchemaValidationError {
-        if (!(node instanceof ValueNode.Int intNode)) {
+        if (!(node instanceof ValueNode.IntNode intNode)) {
             throw new SingleSchemaValidationError(node.getLocation(), "must be an integer!");
         }
 
-        if (lowInclusive != null && (int) intNode.getValue().getValue() < lowInclusive ||
-                highInclusive != null && (int) intNode.getValue().getValue() > highInclusive) {
+        if (lowInclusive != null && (int) intNode.getValue() < lowInclusive ||
+                highInclusive != null && (int) intNode.getValue() > highInclusive) {
             throw new SingleSchemaValidationError(node.getLocation(),
                     String.format("must be between %d and %d inclusive!", lowInclusive, highInclusive));
         }
@@ -35,6 +35,6 @@ public class IntRangeChecker extends NodeChecker {
 
     @Override
     public String getDescription() {
-        return String.format("from %d to %d inclusive",lowInclusive, highInclusive);
+        return String.format("from %d to %d inclusive", lowInclusive, highInclusive);
     }
 }

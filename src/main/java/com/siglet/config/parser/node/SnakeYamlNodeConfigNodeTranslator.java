@@ -23,15 +23,15 @@ public class SnakeYamlNodeConfigNodeTranslator {
             case ScalarNode scalarNode when Tag.FLOAT.equals(scalarNode.getTag()) ->  //
                     getDecimalConfigNode(scalarNode);
             case ScalarNode scalarNode when Tag.STR.equals(scalarNode.getTag()) ->
-                    new ValueNode.Text(scalarNode.getValue(), Location.of(scalarNode));
+                    new ValueNode.TextNode(scalarNode.getValue(), Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BINARY.equals(scalarNode.getTag()) ->
-                    new ValueNode.Binary(scalarNode.getValue().getBytes(StandardCharsets.UTF_8),
+                    new ValueNode.BinaryNode(scalarNode.getValue().getBytes(StandardCharsets.UTF_8),
                             Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.BOOL.equals(scalarNode.getTag()) ->
-                    new ValueNode.Boolean(Boolean.valueOf(scalarNode.getValue()),
+                    new ValueNode.BooleanNode(Boolean.valueOf(scalarNode.getValue()),
                             Location.of(scalarNode));
             case ScalarNode scalarNode when Tag.NULL.equals(scalarNode.getTag()) ->
-                    new ValueNode.Null(Location.of(scalarNode));
+                    new ValueNode.NullNode(Location.of(scalarNode));
             case MappingNode mappingNode -> {
                 List<ObjectNode.Property> properties = new ArrayList<>();
                 mappingNode.getValue().forEach(nodeTuple -> {
@@ -68,7 +68,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueNode.NumberNode getIntConfigNode(ScalarNode value) {
         try {
-            return new ValueNode.Int(Integer.parseInt(value.getValue()), Location.of(value));
+            return new ValueNode.IntNode(Integer.parseInt(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -76,7 +76,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueNode.NumberNode getLongConfigNode(ScalarNode value) {
         try {
-            return new ValueNode.Long(Long.parseLong(value.getValue()), Location.of(value));
+            return new ValueNode.LongNode(Long.parseLong(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -84,7 +84,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueNode.NumberNode getBigIntegerConfigNode(ScalarNode value) {
         try {
-            return new ValueNode.BigInteger(new BigInteger(value.getValue()), Location.of(value));
+            return new ValueNode.BigIntegerNode(new BigInteger(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -111,7 +111,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             if (f.isInfinite()) {
                 return null;
             } else {
-                return new ValueNode.Float(f, Location.of(value));
+                return new ValueNode.FloatNode(f, Location.of(value));
             }
         } catch (NumberFormatException e) {
             return null;
@@ -124,7 +124,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
             if (d.isInfinite()) {
                 return null;
             }
-            return new ValueNode.Double(d, Location.of(value));
+            return new ValueNode.DoubleNode(d, Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }
@@ -132,7 +132,7 @@ public class SnakeYamlNodeConfigNodeTranslator {
 
     protected static ValueNode.NumberNode getBigDecimalConfigNode(ScalarNode value) {
         try {
-            return new ValueNode.BigDecimal(new BigDecimal(value.getValue()), Location.of(value));
+            return new ValueNode.BigDecimalNode(new BigDecimal(value.getValue()), Location.of(value));
         } catch (NumberFormatException e) {
             return null;
         }

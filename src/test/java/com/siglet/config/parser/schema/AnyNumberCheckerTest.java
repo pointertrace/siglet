@@ -38,9 +38,9 @@ class AnyNumberCheckerTest {
         Object value = node.getValue();
 
         assertNotNull(value);
-        ValueItem<Number> anyNumber = assertInstanceOf(ValueItem.class, value);
+        Number anyNumber = assertInstanceOf(Number.class, value);
 
-        assertEquals(100, anyNumber.getValue());
+        assertEquals(100, anyNumber);
 
 
     }

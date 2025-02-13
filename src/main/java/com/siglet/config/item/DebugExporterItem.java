@@ -1,37 +1,50 @@
 package com.siglet.config.item;
 
+import com.siglet.config.located.Location;
+
 public class DebugExporterItem extends ExporterItem {
 
+    private String address;
 
-    private ValueItem<String> address;
+    private Location addressLocation;
 
-    public ValueItem<String> getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(ValueItem<String> address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
+    public Location getAddressLocation() {
+        return addressLocation;
+    }
+
+    public void setAddressLocation(Location addressLocation) {
+        this.addressLocation = addressLocation;
+    }
 
     @Override
     public String getUri() {
-        return address.getValue();
+        return address;
     }
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder();
         sb.append(getLocation().describe());
         sb.append("  DebugExporterItem");
         sb.append("\n");
 
+        sb.append(super.describe(level+1));
+
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(address.getLocation().describe());
-        sb.append("  address");
+        sb.append(addressLocation.describe());
+        sb.append("  address: ");
+        sb.append(getAddress());
         sb.append("\n");
-        sb.append(address.describe(level + 2));
 
         return sb.toString();
     }
+
 }

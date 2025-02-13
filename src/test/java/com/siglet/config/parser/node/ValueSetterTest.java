@@ -2,6 +2,9 @@ package com.siglet.config.parser.node;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Method;
+import java.util.function.BiConsumer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ValueSetterTest {

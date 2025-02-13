@@ -1,6 +1,9 @@
 package com.siglet.config.parser.node;
 
+import com.siglet.SigletError;
 import com.siglet.config.item.Item;
+import com.siglet.config.item.ValueItem;
+import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
 import java.util.*;
@@ -8,9 +11,8 @@ import java.util.*;
 public final class ObjectNode extends Node {
 
     private final Map<String, Node> children = new HashMap<>();
-    private final Map<String, Location> childrenKeyLocation = new HashMap<>();
 
-    private ValueCreator valueCreator;
+    private final Map<String, Location> childrenKeyLocation = new HashMap<>();
 
     ObjectNode(List<Property> childrenProperties, Location location) {
         super(location);
@@ -40,48 +42,34 @@ public final class ObjectNode extends Node {
         return Collections.unmodifiableMap(this.children);
     }
 
-    public ValueCreator getValueCreator() {
-        return valueCreator;
-    }
-
-    public void setValueCreator(ValueCreator valueCreator) {
-        this.valueCreator = valueCreator;
-    }
-
-    public Item getValue() {
-        Item result = getValueCreator().create();
-        result.setLocation(getLocation());
+    @Override
+    public Object getValue() {
+        Object result = getValueCreator().create();
+        Located.set(result, getLocation());
 
         for (Node prop : getProperties().values()) {
-            Item propValue = prop.getValue();
-            prop.getValueSetter().set(result, propValue);
+            Object propValue = prop.getValue();
+            if (result instanceof Located locatedPropValue && prop.getLocationSetter() != null) {
+                prop.getLocationSetter().setLocation(locatedPropValue, prop.getLocation());
+            }
+            try {
+                prop.getValueSetter().set(result, propValue);
+            } catch (Exception e) {
+                throw new SigletError("Error setting value to property in node [" + prop + "]. at " +
+                        prop.getLocation().describe() + ". " + e);
+            }
         }
 
         return result;
     }
 
-    @Override
-    protected String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
-        sb.append(getLocation().describe());
-        sb.append("  object");
-        for (Map.Entry<String, Node> property: children.entrySet()) {
-            sb.append("\n");
-            sb.append(getDescriptionPrefix(level + 1));
-            sb.append(property.getValue().getLocation().describe());
-            sb.append("  property  (");
-            sb.append(property.getKey());
-            sb.append(")");
-            sb.append("\n");
-            sb.append(property.getValue().describe(level + 2));
-        }
-        return sb.toString();
-    }
     public void adjustLocation() {
 
         for (String propName : getPropertyNames()) {
             Node propNode = get(propName);
-            propNode.getValue().setLocation(getPropertyKeyLocation(propName));
+            if (propNode.getValue() instanceof Located locatedValue) {
+                locatedValue.setLocation(getPropertyKeyLocation(propName));
+            }
         }
 
     }
@@ -127,4 +115,21 @@ public final class ObjectNode extends Node {
 
     }
 
+    @Override
+    protected String describe(int level) {
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  object");
+        for (Map.Entry<String, Node> property : children.entrySet()) {
+            sb.append("\n");
+            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(property.getValue().getLocation().describe());
+            sb.append("  property  (");
+            sb.append(property.getKey());
+            sb.append(")");
+            sb.append("\n");
+            sb.append(property.getValue().describe(level + 2));
+        }
+        return sb.toString();
+    }
 }

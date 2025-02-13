@@ -1,7 +1,7 @@
 package com.siglet.pipeline.processor.common.router;
 
 
-import com.siglet.config.item.ProcessorItem;
+import com.siglet.config.item.SigletItem;
 import com.siglet.config.parser.schema.NodeChecker;
 import com.siglet.pipeline.processor.common.ConfigDefinition;
 
@@ -12,7 +12,7 @@ public class RouterDefinition implements ConfigDefinition {
 
     @Override
     public NodeChecker getChecker() {
-        return requiredProperty(ProcessorItem::setConfig,ProcessorItem::setConfigLocation, "config",
+        return requiredProperty(SigletItem::setConfig, SigletItem::setConfigLocation, "config",
                 strictObject(RouterConfig::new,
                         requiredProperty(RouterConfig::setDefaultRoute,
                                 RouterConfig::setDefaultRouteLocation, "default", text()),

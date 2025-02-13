@@ -7,7 +7,7 @@ public class BigDecimalChecker extends NodeChecker {
 
     @Override
     public void check(Node node) throws SchemaValidationError {
-        if (!(node instanceof ValueNode.BigDecimal)) {
+        if (!(node instanceof ValueNode.BigDecimalNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a big decimal value!");
         }
     }

@@ -11,13 +11,13 @@ public class Config {
 
     private final RouteBuilder routeBuilder;
 
-    private final Map<String, String> receiversUris;
+//    private final Map<String, String> receiversUris;
 
     public Config(ConfigItem configItem) {
         this.routeBuilder = configItem.build();
-        this.receiversUris = configItem.getReceivers().stream().collect(
-                Collectors.toMap(ri -> ri.getName().getValue(), ReceiverItem::getUri)
-        );
+//        this.receiversUris = configItem.getReceivers().stream().collect(
+//                Collectors.toMap(ri -> ri.getName().getValue(), ReceiverItem::getUri)
+//        );
     }
 
     public RouteBuilder getRouteBuilder() {
@@ -25,7 +25,8 @@ public class Config {
     }
 
     public Map<String, String> getReceiversUris() {
-        return receiversUris;
+        return null;
+//        return receiversUris;
     }
 
 }

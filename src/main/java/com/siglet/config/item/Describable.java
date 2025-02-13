@@ -1,4 +1,7 @@
 package com.siglet.config.item;
 
-public class Describable {
+public interface Describable {
+
+    String describe(int level);
+
 }

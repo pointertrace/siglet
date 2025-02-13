@@ -21,7 +21,7 @@ public class ObjectChecker extends NodeChecker {
 
     private final ValueCreator valueCreator;
 
-    public <T extends Item> ObjectChecker(Supplier<T> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
+    public ObjectChecker(Supplier<?> valueCreator, boolean strict, AbstractPropertyChecker... propertiesChecks) {
         this.valueCreator = ValueCreator.of(valueCreator);
         this.strict = strict;
         this.propertiesCheck = List.of(propertiesChecks);

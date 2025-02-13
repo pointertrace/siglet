@@ -1,13 +1,11 @@
 package com.siglet.config.parser.node;
 
-import com.siglet.config.item.ValueItem;
+import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
 public abstract sealed class ValueNode<T> extends Node {
 
     private final T value;
-
-    private ValueSetter valueSetter;
 
     private ValueTransformer valueTransformer;
 
@@ -17,41 +15,32 @@ public abstract sealed class ValueNode<T> extends Node {
     }
 
 
-    public ValueItem<?> getValue() {
+    public Object getValue() {
+        Object result = value;
         if (valueTransformer != null) {
-            return valueTransformer.transform(getLocation(), value);
+            result = valueTransformer.transform(value);
         }
-        return new ValueItem<>(getLocation(), value);
-    }
+        if (result instanceof Located located) {
+            located.setLocation(getLocation());
+        }
 
-    @Override
-    public ValueSetter getValueSetter() {
-        return valueSetter;
-    }
-
-    @Override
-    public void setValueSetter(ValueSetter valueSetter) {
-        this.valueSetter = valueSetter;
+        return result;
     }
 
     public void setValueTransformer(ValueTransformer valueTransformer) {
         this.valueTransformer = valueTransformer;
     }
 
-    public void clear() {
-        setValueSetter(null);
-    }
+    public static final class TextNode extends ValueNode<String> {
 
-    public static final class Text extends ValueNode<String> {
-
-        public Text(String value, Location location) {
+        public TextNode(String value, Location location) {
             super(value, location);
         }
 
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  text (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  text (" + getValue() + ")";
         }
     }
 
@@ -62,82 +51,82 @@ public abstract sealed class ValueNode<T> extends Node {
         }
     }
 
-    public static final class Int extends NumberNode {
+    public static final class IntNode extends NumberNode {
 
-        public Int(Integer value, Location location) {
+        public IntNode(Integer value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  int (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  int (" + getValue() + ")";
         }
     }
 
-    public static final class Long extends NumberNode {
+    public static final class LongNode extends NumberNode {
 
-        public Long(java.lang.Long value, Location location) {
+        public LongNode(java.lang.Long value, Location location) {
             super(value, location);
         }
 
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  long (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  long (" + getValue() + ")";
         }
     }
 
-    public static final class BigInteger extends NumberNode {
+    public static final class BigIntegerNode extends NumberNode {
 
-        public BigInteger(java.math.BigInteger value, Location location) {
+        public BigIntegerNode(java.math.BigInteger value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  bigInteger (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  bigInteger (" + getValue() + ")";
         }
     }
 
-    public static final class Float extends NumberNode {
+    public static final class FloatNode extends NumberNode {
 
-        Float(java.lang.Float value, Location location) {
+        FloatNode(java.lang.Float value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  float (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  float (" + getValue() + ")";
         }
     }
 
-    public static final class Double extends NumberNode {
+    public static final class DoubleNode extends NumberNode {
 
-        Double(java.lang.Double value, Location location) {
+        DoubleNode(java.lang.Double value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  double (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  double (" + getValue() + ")";
         }
     }
 
-    public static final class BigDecimal extends NumberNode {
+    public static final class BigDecimalNode extends NumberNode {
 
-        public BigDecimal(java.math.BigDecimal value, Location location) {
+        public BigDecimalNode(java.math.BigDecimal value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  bigDecimal (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  bigDecimal (" + getValue() + ")";
         }
     }
 
-    public static final class Null extends ValueNode<Object> {
+    public static final class NullNode extends ValueNode<Object> {
 
-        public Null(Location location) {
+        public NullNode(Location location) {
             super(null, location);
         }
 
@@ -147,27 +136,27 @@ public abstract sealed class ValueNode<T> extends Node {
         }
     }
 
-    public static final class Boolean extends ValueNode<java.lang.Boolean> {
+    public static final class BooleanNode extends ValueNode<java.lang.Boolean> {
 
-        public Boolean(java.lang.Boolean value, Location location) {
+        public BooleanNode(java.lang.Boolean value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  boolean (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  boolean (" + getValue() + ")";
         }
     }
 
-    public static final class Binary extends ValueNode {
+    public static final class BinaryNode extends ValueNode {
 
-        public Binary(byte[] value, Location location) {
+        public BinaryNode(byte[] value, Location location) {
             super(value, location);
         }
 
         @Override
         protected String describe(int level) {
-            return getDescriptionPrefix(level) + getLocation().describe() + "  byte[] (" + getValue().getValue() + ")";
+            return getDescriptionPrefix(level) + getLocation().describe() + "  byte[] (" + getValue() + ")";
         }
     }
 }

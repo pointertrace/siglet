@@ -11,8 +11,8 @@ public class InetSocketAddressChecker extends NodeChecker {
     private final ValueTransformer inetSocketAddressTransformer = new InetSocketAddressValueTransformer();
 
     public void check(Node node) throws SchemaValidationError {
-        if (node instanceof ValueNode.Text textNode) {
-            String validationError = getValidationErrorReason((String) textNode.getValue().getValue());
+        if (node instanceof ValueNode.TextNode textNode) {
+            String validationError = getValidationErrorReason((String) textNode.getValue());
             if (validationError != null) {
                 throw new SingleSchemaValidationError(node.getLocation(), validationError);
             }

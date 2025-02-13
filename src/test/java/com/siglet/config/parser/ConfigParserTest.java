@@ -31,13 +31,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var intNode = assertInstanceOf(ValueNode.Int.class, node);
+        var intNode = assertInstanceOf(ValueNode.IntNode.class, node);
 
         assertEquals(Location.of(1, 1), intNode.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, intNode.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(1, valueItem.getValue());
+        assertEquals(1, intNode.getValue());
 
     }
 
@@ -47,13 +44,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var longNode = assertInstanceOf(ValueNode.Long.class, node);
+        var longNode = assertInstanceOf(ValueNode.LongNode.class, node);
 
         assertEquals(Location.of(1, 1), longNode.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, longNode.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(Integer.MAX_VALUE + 1L, valueItem.getValue());
+        assertEquals(Integer.MAX_VALUE + 1L, longNode.getValue());
 
     }
 
@@ -63,13 +57,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var bigInteger = assertInstanceOf(ValueNode.BigInteger.class, node);
+        var bigIntegerNode = assertInstanceOf(ValueNode.BigIntegerNode.class, node);
 
-        assertEquals(Location.of(1, 1), bigInteger.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, bigInteger.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(new BigInteger(("" + Long.MAX_VALUE) + "0"), valueItem.getValue());
+        assertEquals(Location.of(1, 1), bigIntegerNode.getLocation());
+        assertEquals(new BigInteger(("" + Long.MAX_VALUE) + "0"), bigIntegerNode.getValue());
     }
 
     @Test
@@ -78,13 +69,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var floatNode = assertInstanceOf(ValueNode.Float.class, node);
+        var floatNode = assertInstanceOf(ValueNode.FloatNode.class, node);
 
         assertEquals(Location.of(1, 1), floatNode.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, floatNode.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(1.1f, valueItem.getValue());
+        assertEquals(1.1f, floatNode.getValue());
     }
 
     @Test
@@ -93,13 +81,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var doubleNode = assertInstanceOf(ValueNode.Double.class, node);
+        var doubleNode = assertInstanceOf(ValueNode.DoubleNode.class, node);
 
         assertEquals(Location.of(1, 1), doubleNode.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, doubleNode.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(Double.parseDouble("4.4E38"), valueItem.getValue());
+        assertEquals(Double.parseDouble("4.4E38"), doubleNode.getValue());
     }
 
     @Test
@@ -108,13 +93,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var bigDecimal = assertInstanceOf(ValueNode.BigDecimal.class, node);
+        var bigDecimalNode = assertInstanceOf(ValueNode.BigDecimalNode.class, node);
 
-        assertEquals(Location.of(1, 1), bigDecimal.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, bigDecimal.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(new BigDecimal("9.9E1000"), valueItem.getValue());
+        assertEquals(Location.of(1, 1), bigDecimalNode.getLocation());
+        assertEquals(new BigDecimal("9.9E1000"), bigDecimalNode.getValue());
     }
 
     @Test
@@ -123,13 +105,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var text = assertInstanceOf(ValueNode.Text.class, node);
+        var textNode = assertInstanceOf(ValueNode.TextNode.class, node);
 
-        assertEquals(Location.of(1, 1), text.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, text.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals("text value", valueItem.getValue());
+        assertEquals(Location.of(1, 1), textNode.getLocation());
+        assertEquals("text value", textNode.getValue());
     }
 
     @Test
@@ -138,13 +117,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var bool = assertInstanceOf(ValueNode.Boolean.class, node);
+        var booleanNode = assertInstanceOf(ValueNode.BooleanNode.class, node);
 
-        assertEquals(Location.of(1, 1), bool.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, bool.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(Boolean.TRUE, valueItem.getValue());
+        assertEquals(Location.of(1, 1), booleanNode.getLocation());
+        assertEquals(Boolean.TRUE, booleanNode.getValue());
     }
 
     @Test
@@ -153,13 +129,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var bool = assertInstanceOf(ValueNode.Boolean.class, node);
+        var booleanNode = assertInstanceOf(ValueNode.BooleanNode.class, node);
 
-        assertEquals(Location.of(1, 1), bool.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, bool.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertEquals(Boolean.FALSE, valueItem.getValue());
+        assertEquals(Location.of(1, 1), booleanNode.getLocation());
+        assertEquals(Boolean.FALSE, booleanNode.getValue());
     }
 
     @Test
@@ -168,13 +141,10 @@ class ConfigParserTest {
 
         Node node = configParser.parse(config);
 
-        var nullValue = assertInstanceOf(ValueNode.Null.class, node);
+        var nullNode= assertInstanceOf(ValueNode.NullNode.class, node);
 
-        assertEquals(Location.of(1, 1), nullValue.getLocation());
-
-        var valueItem = assertInstanceOf(ValueItem.class, nullValue.getValue());
-        assertEquals(Location.of(1, 1), valueItem.getLocation());
-        assertNull(valueItem.getValue());
+        assertEquals(Location.of(1, 1), nullNode.getLocation());
+        assertNull(nullNode.getValue());
     }
 
     @Test
@@ -199,9 +169,9 @@ class ConfigParserTest {
         assertEquals(Location.of(2, 5), firstObject.getPropertyKeyLocation("prop1"));
         assertEquals(Location.of(3, 5), firstObject.getPropertyKeyLocation("prop2"));
 
-        var prop1 = assertInstanceOf(ValueNode.Text.class,firstObject.get("prop1"));
+        var prop1 = assertInstanceOf(ValueNode.TextNode.class,firstObject.get("prop1"));
         assertEquals(Location.of(2, 12), prop1.getLocation());
-        assertEquals("prop1-value",prop1.getValue().getValue());
+        assertEquals("prop1-value",prop1.getValue());
 
 
         var prop2 = assertInstanceOf(ObjectNode.class,firstObject.get("prop2"));
@@ -212,7 +182,7 @@ class ConfigParserTest {
 
         var prop21 = assertInstanceOf(ValueNode.class,prop2.get("prop2.1"));
 
-        assertEquals("prop2.1-value",prop21.getValue().getValue());
+        assertEquals("prop2.1-value",prop21.getValue());
 
     }
 
@@ -243,11 +213,11 @@ class ConfigParserTest {
 
         var item1 = assertInstanceOf(ValueNode.class,array.getItem(0));
         assertEquals(Location.of(2,7),item1.getLocation());
-        assertEquals("item1",item1.getValue().getValue());
+        assertEquals("item1",item1.getValue());
 
         var item2 = assertInstanceOf(ValueNode.class,array.getItem(1));
         assertEquals(Location.of(3,7),item2.getLocation());
-        assertEquals("item2",item2.getValue().getValue());
+        assertEquals("item2",item2.getValue());
 
         var item3 = assertInstanceOf(ObjectNode.class,array.getItem(2));
         assertEquals(Location.of(4,7),item3.getLocation());
@@ -262,15 +232,15 @@ class ConfigParserTest {
 
         var item31 = assertInstanceOf(ValueNode.class, item3Array.getItem(0));
         assertEquals(Location.of(5, 9), item31.getLocation());
-        assertEquals("item3.1", item31.getValue().getValue());
+        assertEquals("item3.1", item31.getValue());
 
         var item32 = assertInstanceOf(ValueNode.class, item3Array.getItem(1));
         assertEquals(Location.of(6, 9), item32.getLocation());
-        assertEquals("item3.2", item32.getValue().getValue());
+        assertEquals("item3.2", item32.getValue());
 
         var item33 = assertInstanceOf(ValueNode.class, item3Array.getItem(2));
         assertEquals(Location.of(7, 9), item33.getLocation());
-        assertEquals("item3.3", item33.getValue().getValue());
+        assertEquals("item3.3", item33.getValue());
 
     }
 

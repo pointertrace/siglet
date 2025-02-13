@@ -1,4 +1,38 @@
 package com.siglet.config.item;
 
-public class LocatedString {
+import com.siglet.config.located.Located;
+import com.siglet.config.located.Location;
+
+public class LocatedString implements Located {
+
+    private String value;
+
+    private Location location;
+
+    public LocatedString(){
+    }
+
+    public LocatedString(String value, Location location) {
+        this.value = value;
+        this.location = location;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public Location getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
 }

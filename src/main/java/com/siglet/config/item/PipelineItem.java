@@ -1,92 +1,147 @@
 package com.siglet.config.item;
 
-import java.util.ArrayList;
+import com.siglet.config.located.Location;
+
 import java.util.List;
 
-public class PipelineItem<T extends ProcessorItem> extends Item {
+public class PipelineItem extends Item {
 
-    private ArrayItem<T> processors;
+    private Signal signal;
 
-    private List<ValueItem<String>> from = new ArrayList<>();
+    private Location signalLocation;
 
-    private List<ValueItem<String>> start = new ArrayList<>();
+    private String from;
 
-    public ArrayItem<T> getProcessors() {
-        return processors;
+    private Location fromLocation;
+
+    private List<LocatedString> start;
+
+    private Location startLocation;
+
+    private List<SigletItem> siglets;
+
+    private Location sigletsLocation;
+
+
+    public Signal getSignal() {
+        return signal;
     }
 
-    public void setProcessors(ArrayItem<T> processors) {
-        this.processors = processors;
+    public void setSignal(Signal signal) {
+        this.signal = signal;
     }
 
-    public List<ValueItem<String>> getFrom() {
+    public Location getSignalLocation() {
+        return signalLocation;
+    }
+
+    public void setSignalLocation(Location signalLocation) {
+        this.signalLocation = signalLocation;
+    }
+
+    public String getFrom() {
         return from;
     }
 
-    public void setFrom(List<ValueItem<String>> from) {
+    public void setFrom(String from) {
         this.from = from;
     }
 
-    public void setFromSingleValue(ValueItem<String> from) {
-        this.from = List.of(from);
+    public Location getFromLocation() {
+        return fromLocation;
     }
 
-    public List<ValueItem<String>> getStart() {
+    public void setFromLocation(Location fromLocation) {
+        this.fromLocation = fromLocation;
+    }
+
+    public List<LocatedString> getStart() {
         return start;
     }
 
-    public void setStart(List<ValueItem<String>> start) {
+    // todo testar
+    public List<String> getStartNames() {
+        return start.stream().map(LocatedString::getValue).toList();
+    }
+    public void setStart(List<LocatedString> start) {
         this.start = start;
     }
 
-    public void setStartSingleValue(ValueItem<String> start) {
+    public Location getStartLocation() {
+        return startLocation;
+    }
+
+    public void setStartLocation(Location startLocation) {
+        this.startLocation = startLocation;
+    }
+
+    public void setStartSingleValue(LocatedString start) {
         this.start = List.of(start);
+    }
+
+    public List<SigletItem> getSiglets() {
+        return siglets;
+    }
+
+    public void setSiglets(List<SigletItem> siglets) {
+        this.siglets = siglets;
     }
 
     @Override
     public void afterSetValues() {
-        processors.getValue().forEach(p -> p.setPipeline(new ValueItem<>(getLocation(), getName().getValue())));
+        siglets.forEach(p -> p.setPipeline(getName()));
     }
 
     @Override
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
-        sb.append("  PipelineItem");
+        sb.append("  Pipeline:");
+        sb.append("\n");
+
+        sb.append(super.describe(level+1));
+
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(signalLocation.describe());
+        sb.append("  signal: ");
+        sb.append(signal);
         sb.append("\n");
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(getName().getLocation().describe());
-        sb.append("  name");
-        sb.append("\n");
-        sb.append(getName().describe(level + 2));
+        sb.append(fromLocation.describe());
+        sb.append("  from: ");
+        sb.append(from);
         sb.append("\n");
 
-        for (ValueItem<String> fromName : from) {
-            sb.append(getDescriptionPrefix(level + 1));
-            sb.append(fromName.getLocation().describe());
-            sb.append("  from");
-            sb.append("\n");
-            sb.append(fromName.describe(level + 2));
-            sb.append("\n");
-        }
+        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(startLocation.describe());
+        sb.append("  start:\n");
 
-        for (ValueItem<String> startName : start) {
-            sb.append(getDescriptionPrefix(level + 1));
-            sb.append(startName.getLocation().describe());
-            sb.append("  start");
-            sb.append("\n");
-            sb.append(startName.describe(level + 2));
+        for(LocatedString startLocated: start) {
+            sb.append(getDescriptionPrefix(level + 2));
+            sb.append(startLocated.getLocation().describe());
+            sb.append("  ");
+            sb.append(startLocated.getValue());
             sb.append("\n");
         }
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(processors.getLocation().describe());
-        sb.append("  processors");
+        sb.append(sigletsLocation.describe());
+        sb.append("  siglets:");
         sb.append("\n");
-        sb.append(processors.describe(level + 2));
+        for (SigletItem sigletItem : siglets) {
+            sb.append(sigletItem.describe(level + 2));
+        }
 
         return sb.toString();
+    }
+
+    public Location getSigletsLocation() {
+        return sigletsLocation;
+    }
+
+    public void setSigletsLocation(Location sigletsLocation) {
+        this.sigletsLocation = sigletsLocation;
     }
 
 }

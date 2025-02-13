@@ -15,7 +15,7 @@ public class IntChecker extends NodeChecker {
 
     @Override
     public void check(Node node) throws SchemaValidationError {
-        if (!(node instanceof ValueNode.Int intNode)) {
+        if (!(node instanceof ValueNode.IntNode intNode)) {
             throw new SingleSchemaValidationError(node.getLocation(),"is not a int value!");
         }
         for (NodeChecker additionalChecker : additionalCheckers) {

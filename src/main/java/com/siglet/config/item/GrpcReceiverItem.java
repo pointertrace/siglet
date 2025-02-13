@@ -1,61 +1,78 @@
 package com.siglet.config.item;
 
+import com.siglet.config.located.Location;
+
 import java.net.InetSocketAddress;
 
 public class GrpcReceiverItem extends ReceiverItem {
 
-    private ValueItem<InetSocketAddress> address;
+    private InetSocketAddress address;
 
-    private ValueItem<String> signalType;
+    private Location addressLocation;
 
-    public ValueItem<InetSocketAddress> getAddress() {
+    private Signal signal;
+
+    private Location signalTypeLocation;
+
+    public InetSocketAddress getAddress() {
         return address;
     }
 
-    public void setAddress(ValueItem<InetSocketAddress> address) {
+    public void setAddress(InetSocketAddress address) {
         this.address = address;
     }
 
-    public ValueItem<String> getSignalType() {
-        return signalType;
+    public Signal getSignal() {
+        return signal;
     }
 
-    public void setSignalType(ValueItem<String> signalType) {
-        this.signalType = signalType;
+    public void setSignal(Signal signal) {
+        this.signal= signal;
     }
 
     @Override
     public String getUri() {
-        return String.format("otelgrpc:%s:%d?signalType=%s", address.getValue().getHostName(),
-                address.getValue().getPort(), signalType.getValue());
+        return String.format("otelgrpc:%s:%d?signalType=%s", address.getHostName(), address.getPort(),
+                signal.name().toLowerCase());
+    }
+
+    public Location getAddressLocation() {
+        return addressLocation;
+    }
+
+    public void setAddressLocation(Location addressLocation) {
+        this.addressLocation = addressLocation;
+    }
+
+    public Location getSignalTypeLocation() {
+        return signalTypeLocation;
+    }
+
+    public void setSignalTypeLocation(Location signalTypeLocation) {
+        this.signalTypeLocation = signalTypeLocation;
     }
 
     @Override
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
-        sb.append("  GrpcReceiverItem");
+        sb.append("  GrpcReceiver");
         sb.append("\n");
-        sb.append(getName().getDescriptionPrefix(level + 1));
-        sb.append(getName().getLocation().describe());
-        sb.append("  name");
-        sb.append("\n");
-        sb.append(getName().describe(level + 2));
-        sb.append("\n");
+
+        sb.append(super.describe(level+1));
 
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(address.getLocation().describe());
-        sb.append("  address");
-        sb.append("\n");
-        sb.append(address.describe(level + 2));
+        sb.append(addressLocation.describe());
+        sb.append("  address: ");
+        sb.append(address);
         sb.append("\n");
 
-        if (signalType != null) {
+        if (signal != null) {
             sb.append(getDescriptionPrefix(level + 1));
-            sb.append(signalType.getLocation().describe());
-            sb.append("  signal-type");
+            sb.append(signalTypeLocation.describe());
+            sb.append("  signal: ");
+            sb.append(signal.name().toLowerCase());
             sb.append("\n");
-            sb.append(signalType.describe(level + 2));
         }
 
         return sb.toString();

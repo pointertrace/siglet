@@ -1,6 +1,6 @@
 package com.siglet.config.item;
 
-public enum SignalType {
+public enum Signal {
 
     TRACE,
     METRIC

@@ -1,47 +1,53 @@
 package com.siglet.config.item;
 
+import com.siglet.config.located.Location;
+
 import java.net.InetSocketAddress;
 
 public class GrpcExporterItem extends ExporterItem {
 
-    private ValueItem<InetSocketAddress> address;
+    private InetSocketAddress address;
 
-    private ValueItem<Integer> batchSizeInSignals;
+    private Location addressLocation;
 
-    private ValueItem<Integer> batchTimeoutInMillis;
+    private Integer batchSizeInSignals;
+
+    private Location batchSizeInSignalsLocation;
+
+    private Integer batchTimeoutInMillis;
+
+    private Location batchTimeoutInMillisLocation;
 
     private GrpcExporterUri grpcExporterUri;
 
-    public ValueItem<InetSocketAddress> getAddress() {
+    public InetSocketAddress getAddress() {
         return address;
     }
 
-    public void setAddress(ValueItem<InetSocketAddress> address) {
+    public void setAddress(InetSocketAddress address) {
         this.address = address;
     }
 
-    public ValueItem<Integer> getBatchSizeInSignals() {
+    public Integer getBatchSizeInSignals() {
         return batchSizeInSignals;
     }
 
-    public void setBatchSizeInSignals(ValueItem<Integer> batchSizeInSignals) {
+    public void setBatchSizeInSignals(Integer batchSizeInSignals) {
         this.batchSizeInSignals = batchSizeInSignals;
     }
 
-    public ValueItem<Integer> getBatchTimeoutInMillis() {
+    public Integer getBatchTimeoutInMillis() {
         return batchTimeoutInMillis;
     }
 
-    public void setBatchTimeoutInMillis(ValueItem<Integer> batchTimeoutInMillis) {
+    public void setBatchTimeoutInMillis(Integer batchTimeoutInMillis) {
         this.batchTimeoutInMillis = batchTimeoutInMillis;
     }
 
     @Override
     public String getUri() {
         if (grpcExporterUri == null) {
-            grpcExporterUri = GrpcExporterUri.of(address.getValue(),
-                    batchSizeInSignals != null ? batchSizeInSignals.getValue() : null,
-                    batchTimeoutInMillis != null ? batchTimeoutInMillis.getValue() : null);
+            grpcExporterUri = GrpcExporterUri.of(address, batchSizeInSignals, batchTimeoutInMillis);
         }
         return grpcExporterUri.toString();
     }
@@ -50,40 +56,57 @@ public class GrpcExporterItem extends ExporterItem {
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
         sb.append(getLocation().describe());
-        sb.append("  GrpcExporterItem");
-        sb.append("\n");
-        sb.append(getName().getDescriptionPrefix(level + 1));
-        sb.append(getName().getLocation().describe());
-        sb.append("  name");
-        sb.append("\n");
-        sb.append(getName().describe(level + 2));
+        sb.append("  GrpcExporter");
         sb.append("\n");
 
+        sb.append(super.describe(level+1));
+
         sb.append(getDescriptionPrefix(level + 1));
-        sb.append(address.getLocation().describe());
-        sb.append("  address");
-        sb.append("\n");
-        sb.append(address.describe(level + 2));
+        sb.append(addressLocation.describe());
+        sb.append("  address: ");
+        sb.append(address);
         sb.append("\n");
 
         if (batchSizeInSignals != null) {
             sb.append(getDescriptionPrefix(level + 1));
-            sb.append(batchSizeInSignals.getLocation().describe());
-            sb.append("  batch-size-in-signal");
-            sb.append("\n");
-            sb.append(batchSizeInSignals.describe(level + 2));
+            sb.append(batchSizeInSignalsLocation.describe());
+            sb.append("  batch-size-in-signal: ");
+            sb.append(batchSizeInSignals);
             sb.append("\n");
         }
 
         if (batchTimeoutInMillis != null) {
             sb.append(getDescriptionPrefix(level + 1));
-            sb.append(batchTimeoutInMillis.getLocation().describe());
-            sb.append("  batch-timeout-in-millis");
-            sb.append("\n");
-            sb.append(batchTimeoutInMillis.describe(level + 2));
+            sb.append(batchTimeoutInMillisLocation.describe());
+            sb.append("  batch-timeout-in-millis: ");
+            sb.append(batchTimeoutInMillis);
             sb.append("\n");
         }
 
         return sb.toString();
+    }
+
+    public Location getAddressLocation() {
+        return addressLocation;
+    }
+
+    public void setAddressLocation(Location addressLocation) {
+        this.addressLocation = addressLocation;
+    }
+
+    public Location getBatchSizeInSignalsLocation() {
+        return batchSizeInSignalsLocation;
+    }
+
+    public void setBatchSizeInSignalsLocation(Location batchSizeInSignalsLocation) {
+        this.batchSizeInSignalsLocation = batchSizeInSignalsLocation;
+    }
+
+    public Location getBatchTimeoutInMillisLocation() {
+        return batchTimeoutInMillisLocation;
+    }
+
+    public void setBatchTimeoutInMillisLocation(Location batchTimeoutInMillisLocation) {
+        this.batchTimeoutInMillisLocation = batchTimeoutInMillisLocation;
     }
 }

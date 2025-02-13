@@ -6,19 +6,19 @@ import com.siglet.config.item.repository.routecreator.RouteCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReceiverNode extends Node<ReceiverItem> {
+public final class ReceiverNode extends Node<ReceiverItem> {
 
-    private List<Node<?>> to = new ArrayList<>();
+    private List<PipelineNode> to = new ArrayList<>();
 
-    public ReceiverNode(String name, ReceiverItem item) {
-        super(name, item);
+    public ReceiverNode(ReceiverItem item, NodeRepository nodeRepository) {
+        super(item, nodeRepository);
     }
 
-    public List<Node<?>> getTo() {
+    public List<PipelineNode> getTo() {
         return to;
     }
 
-    public void setTo(List<Node<?>> to) {
+    public void setTo(List<PipelineNode> to) {
         this.to = to;
     }
 
@@ -33,6 +33,5 @@ public class ReceiverNode extends Node<ReceiverItem> {
         } else if (getTo().size() > 1) {
             throw new IllegalStateException("not yet implemented!");
         }
-
     }
 }

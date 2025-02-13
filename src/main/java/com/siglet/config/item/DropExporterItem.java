@@ -6,12 +6,12 @@ import com.siglet.config.located.Location;
 public class DropExporterItem extends ExporterItem {
 
     @Override
-    public ValueItem<String> getName() {
-        return new ValueItem<>(Location.of(0, 0), "drop");
+    public String getName() {
+        return "drop";
     }
 
     @Override
-    public void setName(ValueItem<String> name) {
+    public void setName(String name) {
         throw new SigletError("Drop exporter has a already defined name!");
     }
 

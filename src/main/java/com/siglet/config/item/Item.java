@@ -3,20 +3,30 @@ package com.siglet.config.item;
 import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
-public abstract class Item implements Located {
+public abstract class Item implements Located, Describable {
 
     private static final String PREFIX = "  ";
 
     private Location location;
 
-    private ValueItem<String> name;
+    private String name;
 
-    public ValueItem<String> getName() {
+    private Location nameLocation;
+
+    public String getName() {
         return name;
     }
 
-    public void setName(ValueItem<String> name) {
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public Location getNameLocation() {
+        return nameLocation;
+    }
+
+    public void setNameLocation(Location nameLocation) {
+        this.nameLocation = nameLocation;
     }
 
     public void setLocation(Location location) {
@@ -39,7 +49,13 @@ public abstract class Item implements Located {
     }
 
     public String describe(int level) {
-        return "need description for " + getClass().getName();
+        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        sb.append(getNameLocation().describe());
+        sb.append("  name: ");
+        sb.append(getName());
+        sb.append("\n");
+
+        return sb.toString();
     }
 
 
