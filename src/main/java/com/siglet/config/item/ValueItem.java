@@ -17,7 +17,7 @@ public class ValueItem<T> extends Item {
 
     @Override
     public String describe(int level) {
-        return getDescriptionPrefix(level) + getLocation().describe() + (value != null ?
+        return prefix(level) + getLocation().describe() + (value != null ?
                 "  " + value.getClass().getSimpleName() + "  (" + value + ")" :
                 "null");
     }

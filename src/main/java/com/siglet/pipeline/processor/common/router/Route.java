@@ -1,25 +1,27 @@
 package com.siglet.pipeline.processor.common.router;
 
-import com.siglet.config.item.Item;
-import com.siglet.config.item.ValueItem;
+import com.siglet.config.item.Describable;
+import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
-public class Route extends Item {
+public class Route  implements Located, Describable {
 
-    private String expression;
+    private Location location;
 
-    private Location expressionLocation;
+    private String when;
+
+    private Location whenLocation;
 
     private String to;
 
     private Location toLocation;
 
-    public String getExpression() {
-        return expression;
+    public String getWhen() {
+        return when;
     }
 
-    public void setExpression(String expression) {
-        this.expression = expression;
+    public void setWhen(String when) {
+        this.when = when;
     }
 
     public String getTo() {
@@ -30,12 +32,12 @@ public class Route extends Item {
         this.to = to;
     }
 
-    public Location getExpressionLocation() {
-        return expressionLocation;
+    public Location getWhenLocation() {
+        return whenLocation;
     }
 
-    public void setExpressionLocation(Location expressionLocation) {
-        this.expressionLocation = expressionLocation;
+    public void setWhenLocation(Location whenLocation) {
+        this.whenLocation = whenLocation;
     }
 
     public Location getToLocation() {
@@ -44,5 +46,36 @@ public class Route extends Item {
 
     public void setToLocation(Location toLocation) {
         this.toLocation = toLocation;
+    }
+
+    @Override
+    public String describe(int level) {
+        StringBuilder sb = new StringBuilder(prefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  route:");
+
+        sb.append("\n");
+        sb.append(prefix(level + 1));
+        sb.append(getWhenLocation().describe());
+        sb.append("  when: ");
+        sb.append(getWhen());
+
+        sb.append("\n");
+        sb.append(prefix(level + 1));
+        sb.append(getToLocation().describe());
+        sb.append("  to: ");
+        sb.append(getTo());
+
+        return sb.toString();
+    }
+
+    @Override
+    public Location getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

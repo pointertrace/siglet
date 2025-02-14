@@ -1,13 +1,8 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.item.Item;
 import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
-import com.siglet.config.parser.node.LocationSetter;
-import com.siglet.config.parser.node.ValueCreator;
-import com.siglet.config.parser.node.ValueSetter;
 import com.siglet.config.parser.node.ValueTransformer;
-import org.xml.sax.Locator;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -106,7 +101,7 @@ public class SchemaFactory {
         return new ObjectChecker(valueCreator, strict, propertiesChecks);
     }
 
-    public static <T extends Item> NodeChecker strictObject(Supplier<T> valueCreator, AbstractPropertyChecker... propertiesChecks) {
+    public static NodeChecker strictObject(Supplier<?> valueCreator, AbstractPropertyChecker... propertiesChecks) {
         return object(valueCreator, true, propertiesChecks);
     }
 

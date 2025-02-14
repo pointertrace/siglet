@@ -1,7 +1,10 @@
 package com.siglet.config.parser.schema;
 
 import com.siglet.config.located.Location;
-import com.siglet.config.parser.node.*;
+import com.siglet.config.parser.node.ArrayNode;
+import com.siglet.config.parser.node.Node;
+import com.siglet.config.parser.node.ValueCreator;
+import com.siglet.config.parser.node.ValueSetter;
 
 import java.util.List;
 import java.util.function.BiConsumer;

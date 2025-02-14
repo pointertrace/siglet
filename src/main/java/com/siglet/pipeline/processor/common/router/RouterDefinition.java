@@ -21,8 +21,8 @@ public class RouterDefinition implements ConfigDefinition {
                                 array(strictObject(Route::new,
                                         requiredProperty(Route::setTo, Route::setToLocation,
                                                 "to", text()),
-                                        requiredProperty(Route::setExpression,
-                                                Route::setExpressionLocation, "when",
+                                        requiredProperty(Route::setWhen,
+                                                Route::setWhenLocation, "when",
                                                 text()))))));
     }
 }

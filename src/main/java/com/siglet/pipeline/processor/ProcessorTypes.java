@@ -1,7 +1,7 @@
 package com.siglet.pipeline.processor;
 
-import com.siglet.pipeline.processor.common.filter.FilterDefinition;
 import com.siglet.pipeline.processor.common.action.ActionDefinition;
+import com.siglet.pipeline.processor.common.filter.FilterDefinition;
 import com.siglet.pipeline.processor.common.router.RouterDefinition;
 
 import java.util.Collections;

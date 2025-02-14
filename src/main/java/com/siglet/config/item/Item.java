@@ -5,8 +5,6 @@ import com.siglet.config.located.Location;
 
 public abstract class Item implements Located, Describable {
 
-    private static final String PREFIX = "  ";
-
     private Location location;
 
     private String name;
@@ -40,16 +38,12 @@ public abstract class Item implements Located, Describable {
     public void afterSetValues() {
     }
 
-    protected String getDescriptionPrefix(int level) {
-        return PREFIX.repeat(level);
-    }
-
     public String describe() {
         return describe(0);
     }
 
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getNameLocation().describe());
         sb.append("  name: ");
         sb.append(getName());

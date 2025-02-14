@@ -4,4 +4,7 @@ public interface Describable {
 
     String describe(int level);
 
+    default String prefix(int level) {
+        return "  ".repeat(level);
+    }
 }

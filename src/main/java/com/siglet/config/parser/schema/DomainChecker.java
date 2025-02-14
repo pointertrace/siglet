@@ -1,6 +1,5 @@
 package com.siglet.config.parser.schema;
 
-import com.siglet.config.item.ValueItem;
 import com.siglet.config.parser.node.Node;
 
 import java.util.Collection;

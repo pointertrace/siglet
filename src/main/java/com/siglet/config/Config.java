@@ -1,11 +1,9 @@
 package com.siglet.config;
 
 import com.siglet.config.item.ConfigItem;
-import com.siglet.config.item.ReceiverItem;
 import org.apache.camel.builder.RouteBuilder;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Config {
 

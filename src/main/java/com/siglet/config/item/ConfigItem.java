@@ -50,6 +50,7 @@ public class ConfigItem extends Item {
         this.pipelines = pipelines;
     }
 
+    // todo chamar
     protected void validateUniqueNames() {
         String notUniqueNames = Stream.of(
                         getReceivers().stream()
@@ -113,12 +114,12 @@ public class ConfigItem extends Item {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
         sb.append("  config:");
         sb.append("\n");
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(receiversLocation.describe());
         sb.append("  receivers:");
         sb.append("\n");
@@ -126,7 +127,7 @@ public class ConfigItem extends Item {
             sb.append(receiver.describe(level + 2));
         }
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(exportersLocation.describe());
         sb.append("  exporters:");
         sb.append("\n");
@@ -134,7 +135,7 @@ public class ConfigItem extends Item {
             sb.append(exporter.describe(level + 2));
         }
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(pipelinesLocation.describe());
         sb.append("  pipelines:");
         sb.append("\n");

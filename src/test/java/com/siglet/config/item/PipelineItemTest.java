@@ -61,7 +61,7 @@ class PipelineItemTest {
                         (8:7)  second exporter
                       (9:9)  type: groovy-action
                       (10:3) config:
-                        (10:3)  processorConfig
+                        (10:3)  actionConfig:
                           (11:13)  action: thisSignal.name = thisSignal.name +"-suffix" """;
 
         assertEquals(expected, pipeline.describe());
@@ -220,7 +220,7 @@ class PipelineItemTest {
                         (10:7)  second-exporter
                       (11:9)  type: groovy-action
                       (12:3) config:
-                        (12:3)  processorConfig
+                        (12:3)  actionConfig:
                           (13:13)  action: thisSignal.name = thisSignal.name +"-suffix" """;
 
         assertEquals(expected, pipeline.describe());

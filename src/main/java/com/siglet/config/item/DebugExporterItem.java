@@ -38,7 +38,7 @@ public class DebugExporterItem extends ExporterItem {
 
         sb.append(super.describe(level+1));
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(getAddress());

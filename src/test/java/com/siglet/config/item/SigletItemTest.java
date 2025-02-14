@@ -55,7 +55,7 @@ class SigletItemTest {
             (5:3)  second exporter
           (6:7)  type: groovy-action
           (7:1) config:
-            (7:1)  processorConfig
+            (7:1)  actionConfig:
               (8:11)  action: thisSignal.name = thisSignal.name +"-suffix" """;
 
         assertEquals(expected, siglet.describe());
@@ -141,7 +141,7 @@ class SigletItemTest {
             (3:5)  exporter
           (4:7)  type: groovy-action
           (5:1) config:
-            (5:1)  processorConfig
+            (5:1)  actionConfig:
               (6:11)  action: thisSignal.name = thisSignal.name +"-suffix" """;
 
         assertEquals(expected, siglet.describe());

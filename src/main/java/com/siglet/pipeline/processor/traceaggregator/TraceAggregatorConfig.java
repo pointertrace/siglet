@@ -1,10 +1,12 @@
 package com.siglet.pipeline.processor.traceaggregator;
 
-import com.siglet.config.item.Item;
-import com.siglet.config.item.ValueItem;
+import com.siglet.config.item.Describable;
+import com.siglet.config.located.Located;
 import com.siglet.config.located.Location;
 
-public class TraceAggregatorConfig extends Item {
+public class TraceAggregatorConfig implements Located, Describable {
+
+    private Location location;
 
     private Long timeoutMillis;
 
@@ -49,6 +51,7 @@ public class TraceAggregatorConfig extends Item {
     public void setInactiveTimeoutMillisLocation(Location inactiveTimeoutMillisLocation) {
         this.inactiveTimeoutMillisLocation = inactiveTimeoutMillisLocation;
     }
+
     public String getCompletionExpression() {
         return completionExpression;
     }
@@ -65,5 +68,42 @@ public class TraceAggregatorConfig extends Item {
         this.completionExpressionLocation = completionExpressionLocation;
     }
 
+    @Override
+    public Location getLocation() {
+        return location;
+    }
 
+    @Override
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    @Override
+    public String describe(int level) {
+
+        StringBuilder sb = new StringBuilder(prefix(level));
+        sb.append(getLocation().describe());
+        sb.append("  traceAggregationConfig: ");
+        sb.append(getTimeoutMillis());
+        sb.append("\n");
+
+        sb.append(prefix(level + 1));
+        sb.append(getTimeoutMillisLocation().describe());
+        sb.append("  timeout-millis: ");
+        sb.append(getTimeoutMillis());
+        sb.append("\n");
+
+        sb.append(prefix(level + 1));
+        sb.append(getInactiveTimeoutMillisLocation().describe());
+        sb.append("  inactive-timeout-millis: ");
+        sb.append(getInactiveTimeoutMillis());
+        sb.append("\n");
+
+        sb.append(prefix(level + 1));
+        sb.append(getCompletionExpressionLocation().describe());
+        sb.append("  completion-expression: ");
+        sb.append(getCompletionExpression());
+
+        return sb.toString();
+    }
 }

@@ -54,21 +54,21 @@ public class GrpcReceiverItem extends ReceiverItem {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
         sb.append("  GrpcReceiver");
         sb.append("\n");
 
         sb.append(super.describe(level+1));
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(address);
         sb.append("\n");
 
         if (signal != null) {
-            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(prefix(level + 1));
             sb.append(signalTypeLocation.describe());
             sb.append("  signal: ");
             sb.append(signal.name().toLowerCase());

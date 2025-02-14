@@ -94,38 +94,38 @@ public class PipelineItem extends Item {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
         sb.append("  Pipeline:");
         sb.append("\n");
 
         sb.append(super.describe(level+1));
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(signalLocation.describe());
         sb.append("  signal: ");
         sb.append(signal);
         sb.append("\n");
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(fromLocation.describe());
         sb.append("  from: ");
         sb.append(from);
         sb.append("\n");
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(startLocation.describe());
         sb.append("  start:\n");
 
         for(LocatedString startLocated: start) {
-            sb.append(getDescriptionPrefix(level + 2));
+            sb.append(prefix(level + 2));
             sb.append(startLocated.getLocation().describe());
             sb.append("  ");
             sb.append(startLocated.getValue());
             sb.append("\n");
         }
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(sigletsLocation.describe());
         sb.append("  siglets:");
         sb.append("\n");

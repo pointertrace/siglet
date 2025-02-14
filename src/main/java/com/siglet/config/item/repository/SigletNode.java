@@ -87,7 +87,7 @@ public final class SigletNode extends Node<SigletItem> {
                 RouteCreator choice = routeCreator.startChoice();
                 for (Route route : routerConfig.getRoutes()) {
                     getNodeRepository().getNodeByName(route.getTo()).createRoute(choice.addChoice(
-                            new GroovyPredicate(route.getExpression())));
+                            new GroovyPredicate(route.getWhen())));
                 }
                 getNodeRepository().getNodeByName(routerConfig.getDefaultRoute()).createRoute(choice.endChoice());
                 break;

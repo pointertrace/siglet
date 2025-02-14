@@ -1,7 +1,7 @@
 package com.siglet.config.parser.node;
 
-import java.util.function.BiConsumer;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @FunctionalInterface
 public interface ValueSetter {

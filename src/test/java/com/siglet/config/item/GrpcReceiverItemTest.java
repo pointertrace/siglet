@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
 
-import static com.siglet.config.ConfigCheckFactory.debugReceiverChecker;
 import static com.siglet.config.ConfigCheckFactory.grpcReceiverChecker;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,11 +41,11 @@ class GrpcReceiverItemTest {
         assertNotNull(item);
 
         String expected = """
-        (1:1)  GrpcReceiver
-          (1:7)  name: first
-          (2:10)  address: localhost/<unresolved>:8080
-          (3:9)  signal: metric
-        """;
+                (1:1)  GrpcReceiver
+                  (1:7)  name: first
+                  (2:10)  address: localhost/<unresolved>:8080
+                  (3:9)  signal: metric
+                """;
 
         assertEquals(expected, item.describe());
     }
@@ -70,14 +69,15 @@ class GrpcReceiverItemTest {
         GrpcReceiverItem item = assertInstanceOf(GrpcReceiverItem.class, value);
 
         assertNotNull(item);
-        assertEquals(Location.of(1,1), item.getLocation());
+        assertEquals(Location.of(1, 1), item.getLocation());
 
         assertEquals("first", item.getName());
-        assertEquals(Location.of(1,7), item.getNameLocation());
+        assertEquals(Location.of(1, 7), item.getNameLocation());
 
-        assertEquals(InetSocketAddress.createUnresolved("localhost",8080),item.getAddress());
-        assertEquals(Location.of(2,10), item.getAddressLocation());
+        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), item.getAddress());
+        assertEquals(Location.of(2, 10), item.getAddressLocation());
 
-        assertEquals(Signal.METRIC,item.getSignal());
-        assertEquals(Location.of(3,9), item.getSignalTypeLocation());
-    }}
+        assertEquals(Signal.METRIC, item.getSignal());
+        assertEquals(Location.of(3, 9), item.getSignalTypeLocation());
+    }
+}

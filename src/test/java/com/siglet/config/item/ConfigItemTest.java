@@ -154,7 +154,7 @@ class ConfigItemTest {
                     (19:9)  first exporter
                   (20:11)  type: groovy-action
                   (21:5) config:
-                    (21:5)  processorConfig
+                    (21:5)  actionConfig:
                       (22:15)  action: action-value""";
 
         assertEquals(expected, config.describe());

@@ -1,7 +1,10 @@
 package com.siglet.config.parser.node;
 
 import com.siglet.config.located.Location;
-import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
+import org.yaml.snakeyaml.nodes.Tag;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -54,21 +54,21 @@ public class GrpcExporterItem extends ExporterItem {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
         sb.append("  GrpcExporter");
         sb.append("\n");
 
         sb.append(super.describe(level+1));
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(address);
         sb.append("\n");
 
         if (batchSizeInSignals != null) {
-            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(prefix(level + 1));
             sb.append(batchSizeInSignalsLocation.describe());
             sb.append("  batch-size-in-signal: ");
             sb.append(batchSizeInSignals);
@@ -76,7 +76,7 @@ public class GrpcExporterItem extends ExporterItem {
         }
 
         if (batchTimeoutInMillis != null) {
-            sb.append(getDescriptionPrefix(level + 1));
+            sb.append(prefix(level + 1));
             sb.append(batchTimeoutInMillisLocation.describe());
             sb.append("  batch-timeout-in-millis: ");
             sb.append(batchTimeoutInMillis);

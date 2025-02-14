@@ -20,7 +20,7 @@ public class SigletItem extends Item {
 
     private Location typeLocation;
 
-    private Object config;
+    private Describable config;
 
     private Location configLocation;
 
@@ -87,7 +87,7 @@ public class SigletItem extends Item {
         return config;
     }
 
-    public void setConfig(Object config) {
+    public void setConfig(Describable config) {
         this.config = config;
     }
 
@@ -109,47 +109,44 @@ public class SigletItem extends Item {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(getDescriptionPrefix(level));
+        StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
         sb.append("  siglet:\n");
 
 
         sb.append(super.describe(level + 1));
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(kindLocation.describe());
         sb.append("  kind: ");
         sb.append(getKind());
         sb.append("\n");
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(toLocation.describe());
         sb.append("  to:\n");
         for (LocatedString toName : getTo()) {
-            sb.append(getDescriptionPrefix(level + 2));
+            sb.append(prefix(level + 2));
             sb.append(toName.getLocation().describe());
             sb.append("  ");
             sb.append(toName.getValue());
             sb.append("\n");
         }
 
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(getTypeLocation().describe());
         sb.append("  type: ");
         sb.append(getType());
 
         sb.append("\n");
-        sb.append(getDescriptionPrefix(level + 1));
+        sb.append(prefix(level + 1));
         sb.append(getConfigLocation().describe());
+
         if (getConfig() == null) {
             sb.append("  config: null");
         } else {
-            if (getConfig() instanceof Describable describable) {
-                sb.append(" config:\n");
-                sb.append(describable.describe(level + 2));
-            } else {
-                sb.append(" config: [cannot generate description]\n");
-            }
+            sb.append(" config:\n");
+            sb.append(config.describe(level + 2));
         }
         return sb.toString();
     }
