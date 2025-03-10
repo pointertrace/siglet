@@ -6,12 +6,14 @@ exporters:
   - grpc: exporter
     address: localhost:4317
 pipelines:
-  - trace: pipeline
+  - name: pipeline
+    signal: trace
     from: receiver
     start: spanlet
-    pipeline:
-      - spanlet: spanlet
+    siglets:
+      - name: spanlet
+        kind: spanlet
         to: exporter
-        type: processor
+        type: groovy-action
         config:
           action: span.name = span.name +"-suffix"

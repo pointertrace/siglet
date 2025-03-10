@@ -10,20 +10,22 @@ public class SimpleSpanProcessor {
         var config = """
                 receivers:
                 - grpc: trace-receiver
-                  address: localhost:8081
+                  address: localhost:8080
                   signal: trace
                 exporters:
                 - grpc: exporter
-                  address: localhost:50051
+                  address: localhost:4317
                   batch-size-in-signals: 4
                 pipelines:
-                - trace: trace-pipeline
+                - name: trace-pipeline
+                  signal: trace
                   from: trace-receiver
                   start: imprime span
-                  pipeline:
-                  - spanlet: imprime span
+                  siglets:
+                  - name: imprime span
+                    kind: spanlet
                     to: exporter
-                    type: processor
+                    type: groovy-action
                     config:
                       action: |
                         println "spanId=" + thisSignal.spanIdEx

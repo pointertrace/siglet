@@ -3,4 +3,5 @@ ARG VERSION
 RUN addgroup -S siglet && adduser -S siglet -G siglet
 USER siglet:siglet
 COPY target/siglet-${VERSION}.jar /opt/siglet.jar
-ENTRYPOINT ["java","-jar","/opt/siglet.jar"]
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["default"]
