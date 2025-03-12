@@ -10,7 +10,12 @@ import org.apache.camel.impl.DefaultCamelContext;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Siglet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SigleletStarter.class);
 
     private final String configTxt;
 
@@ -19,6 +24,8 @@ public class Siglet {
     }
 
     public void start() {
+
+        LOGGER.info("Starting Siglet");
 
         ConfigFactory configFactory = new ConfigFactory();
         Config config = configFactory.create(configTxt);
@@ -30,14 +37,19 @@ public class Siglet {
             camelContext.addComponent("drop", new DropComponent());
             camelContext.addRoutes(config.getRouteBuilder());
             camelContext.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                LOGGER.info("Siglet stopping");
+                countDownLatch.countDown();
+            }));
+            LOGGER.info("Siglet started");
             countDownLatch.await();
             camelContext.stop();
+            LOGGER.info("Siglet stopped");
         } catch (InterruptedException e) {
            Thread.currentThread().interrupt();
-           throw new SigletError("Error starting siglet! "+e,e);
+           throw new SigletError("Error starting siglet",e);
         } catch (Exception e) {
-            throw new SigletError("Error starting siglet! "+e,e);
+            throw new SigletError("Error starting siglet",e);
         }
     }
 }

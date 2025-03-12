@@ -1,7 +1,6 @@
-FROM  eclipse-temurin:21.0.4_7-jdk-alpine
-ARG VERSION
+FROM  eclipse-temurin:21.0.6_7-jdk-alpine-3.21
+COPY target/siglet-*.jar /opt/siglet.jar
 RUN addgroup -S siglet && adduser -S siglet -G siglet
+RUN chown -R siglet:siglet /opt
 USER siglet:siglet
-COPY target/siglet-${VERSION}.jar /opt/siglet.jar
-ENTRYPOINT ["./entrypoint.sh"]
-CMD ["default"]
+ENTRYPOINT ["java","-jar","/opt/siglet.jar"]

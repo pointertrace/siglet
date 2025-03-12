@@ -10,12 +10,12 @@ public class SimpleSpanProcessor {
         var config = """
                 receivers:
                 - grpc: trace-receiver
-                  address: localhost:8080
+                  address: localhost:8081
                   signal: trace
                 exporters:
                 - grpc: exporter
-                  address: localhost:4317
-                  batch-size-in-signals: 4
+                  address: localhost:4318
+                  batch-size-in-signals: 1
                 pipelines:
                 - name: trace-pipeline
                   signal: trace
