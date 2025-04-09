@@ -30,8 +30,8 @@ public class OtelGrpcTraceServiceImpl extends TraceServiceGrpc.TraceServiceImplB
             for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
-                    System.out.println("span received traceIdHigh" + AdapterUtils.traceIdEx(span.getTraceId())
-                            + " spanId" + AdapterUtils.spanIdEx(span.getSpanId()));
+                    System.out.println("span received trace:" + AdapterUtils.traceIdEx(span.getTraceId())
+                            + " spanId:" + AdapterUtils.spanIdEx(span.getSpanId()));
                     Exchange exchange = new DefaultExchange(sigletConsumer.getEndpoint(), ExchangePattern.InOnly);
                     // TODO verifica se precisa de resource e scope builder/
                     exchange.getIn().setBody(new ProtoSpanAdapter(span, resource.toBuilder().build(), instrumentationScope.toBuilder().build(), true));
