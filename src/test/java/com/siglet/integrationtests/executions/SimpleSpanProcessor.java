@@ -9,26 +9,26 @@ public class SimpleSpanProcessor {
 
         var config = """
                 receivers:
-                - grpc: trace-receiver
-                  address: localhost:8080
-                  signal: trace
+                  - grpc: trace-receiver
+                    address: 0.0.0.0:8080
+                    signal: trace
                 exporters:
-                - grpc: exporter
-                  address: localhost:4317
-                  batch-size-in-signals: 1
+                  - grpc: exporter
+                    address: 0.0.0.0:4317
+                    batch-size-in-signals: 1
                 pipelines:
-                - name: trace-pipeline
-                  signal: trace
-                  from: trace-receiver
-                  start: imprime span
-                  siglets:
-                  - name: imprime span
-                    kind: spanlet
-                    to: exporter
-                    type: groovy-action
-                    config:
-                      action: |
-                        println "spanId=" + thisSignal.spanIdEx
+                  - name: trace-pipeline
+                    signal: trace
+                    from: trace-receiver
+                    start: imprime flatSpan
+                    siglets:
+                      - name: imprime flatSpan
+                        kind: spanlet
+                        to: exporter
+                        type: groovy-action
+                        config:
+                          action: |
+                            println "spanId=" + thisSignal.spanIdEx
                 """;
 
         Siglet siglet = new Siglet(config);
