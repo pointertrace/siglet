@@ -1,0 +1,55 @@
+package com.siglet.container.engine.pipeline.processor;
+
+import com.siglet.SigletError;
+import com.siglet.api.parser.Node;
+import com.siglet.api.parser.NodeChecker;
+import com.siglet.api.parser.SchemaValidationError;
+import com.siglet.container.config.raw.ProcessorKind;
+import com.siglet.parser.node.ObjectNode;
+import com.siglet.parser.schema.DynamicCheckerDiscriminator;
+import com.siglet.parser.schema.SingleSchemaValidationError;
+
+public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminator {
+
+    private final ProcessorTypes processorTypes;
+
+    public ProcessorCheckerDiscriminator(ProcessorTypes processorTypes) {
+        this.processorTypes = processorTypes;
+    }
+
+    @Override
+    public NodeChecker getChecker(Node node) throws SchemaValidationError {
+        if (!(node instanceof ObjectNode objectNode)) {
+            throw new SingleSchemaValidationError(node.getLocation(), "must be an object!");
+        }
+        Node kind = objectNode.get("kind");
+        if (kind == null) {
+            throw new SingleSchemaValidationError(node.getLocation(), "must have a kind property!");
+        }
+        if (kind.getValue() instanceof ProcessorKind kindValue) {
+            if (kindValue == ProcessorKind.TRACE_AGGREGATOR) {
+                throw new IllegalStateException("Not implemented yet!");
+            } else {
+                Node type = objectNode.get("type");
+                if (type == null) {
+                    throw new SingleSchemaValidationError(node.getLocation(), "must have a type property!");
+                }
+                if (type.getValue() instanceof String typeValue) {
+                    ProcessorType processorType = processorTypes.get(typeValue);
+                    if (processorType == null) {
+                        throw new SingleSchemaValidationError(node.getLocation(),
+                                String.format("could not find [%s] as processor type", typeValue));
+                    }
+                    return processorType.getConfigDefinition().getChecker();
+                } else {
+                    throw new SingleSchemaValidationError(node.getLocation(),
+                            String.format("processor type is a %s but should be a string",
+                                    type.getValue().getClass().getName()));
+                }
+            }
+        } else {
+            throw new SigletError("Processor kind must be a String");
+        }
+    }
+
+}

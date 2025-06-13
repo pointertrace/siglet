@@ -1,6 +1,6 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.cli.Siglet;
+import com.siglet.container.Siglet;
 
 public class ComplexProcessor {
 
@@ -26,7 +26,7 @@ public class ComplexProcessor {
                     to:
                     - trace aggregator
                     - exporter
-                    type: processor
+                    type: baseEventloopProcessor
                     config:
                       action: |
                         when { thisSignal.attributes.containsKey("br.gov.bcb.trace.wicket.page") } then {
@@ -42,7 +42,7 @@ public class ComplexProcessor {
                       inactive-timeout-millis: 15000
                   - tracelet: imprime
                     to: drop
-                    type: processor
+                    type: baseEventloopProcessor
                     config:
                       action: |
                         println ""

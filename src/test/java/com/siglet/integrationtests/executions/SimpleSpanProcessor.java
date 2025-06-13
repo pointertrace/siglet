@@ -1,6 +1,6 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.cli.Siglet;
+import com.siglet.container.Siglet;
 
 public class SimpleSpanProcessor {
 

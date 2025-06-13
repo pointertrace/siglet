@@ -27,7 +27,7 @@
     <version>1.0.0-SNAPSTHOT</version>
     <packaging>jar</packaging>
     <name>Siglet - "servlets" for opentelemetry signals</name>
-    <description>A container that implments the idea of java servlet but for opentelemetry singals</description>
+    <description>A container that implements the idea of java servlet but for opentelemetry singals</description>
 
     <properties>
 
@@ -35,42 +35,61 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jdk.version>21</jdk.version>
+        <jdk.version>24</jdk.version>
 
-        <camel.version>4.3.0</camel.version>
+        <!--        <camel.version>4.3.0</camel.version>-->
         <log4j2-version>2.21.1</log4j2-version>
         <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/pointer-trace/siglet.git</connection>
-        <developerConnection>scm:git:git@github.com:pointer-trace/siglet.git</developerConnection>
-        <url>https://github.com/pointer-trace/siglet</url>
+        <connection>scm:git:https://github.com/pointer-trace/sigletConfig.git</connection>
+        <developerConnection>scm:git:git@github.com:pointer-trace/sigletConfig.git</developerConnection>
+        <url>https://github.com/pointer-trace/sigletConfig</url>
     </scm>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-main</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-        <!-- we use these 2 camel components in this example -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-bean</artifactId>
-            <version>${camel.version}</version>
+            <groupId>org.siglet</groupId>
+            <artifactId>siglet-api</artifactId>
+            <version>1.0.0-SNAPSTHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-timer</artifactId>
-            <version>${camel.version}</version>
+            <groupId>org.siglet</groupId>
+            <artifactId>siglet-parser</artifactId>
+            <version>1.0.0-SNAPSTHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-groovy</artifactId>
-            <version>${camel.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-loader-tools</artifactId>
+            <version>3.4.4</version> <!-- Certifique-se de usar a versão correta -->
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-loader</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-main</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash; we use these 2 camel components in this example &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-bean</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-timer</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.camel</groupId>-->
+        <!--            <artifactId>camel-groovy</artifactId>-->
+        <!--            <version>${camel.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
@@ -101,7 +120,11 @@
             <artifactId>grpc-protobuf</artifactId>
             <version>1.71.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.49.0</version>
+        </dependency>
         <!-- logging -->
         <!--        <dependency>-->
         <!--            <groupId>org.slf4j</groupId>-->
@@ -128,12 +151,22 @@
         </dependency>
 
         <!-- for testing -->
+
+        <!-- JUnit Jupiter API e Engine -->
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test-main-junit5</artifactId>
-            <version>${camel.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version> <!-- Verifique se há uma versão mais recente -->
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version> <!-- ou a versão mais recente disponível -->
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-core -->
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -145,6 +178,11 @@
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.26</version>
         </dependency>
     </dependencies>
 
@@ -166,7 +204,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.siglet.cli.Main</mainClass>
+                            <mainClass>com.siglet.container.cli.Main</mainClass>
                             <includeSystemScope>true</includeSystemScope>
                         </configuration>
                     </execution>
@@ -177,15 +215,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin-version}</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>24</source>
+                    <target>24</target>
+                    <release>${jdk.version}</release>
                     <maxmem>512M</maxmem>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>4.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -215,5 +255,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

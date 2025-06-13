@@ -1,23 +1,13 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.camel.component.otelgrpc.SigletComponent;
-import com.siglet.config.item.ConfigItem;
-import com.siglet.config.parser.ConfigParser;
-import com.siglet.config.parser.node.Node;
-import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
-
-import java.util.concurrent.CountDownLatch;
-
-import static com.siglet.config.ConfigCheckFactory.globalConfigChecker;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import com.siglet.container.Siglet;
+import com.siglet.parser.YamlParser;
 
 public class ForkSpanletProcessor {
 
     public static void main(String[] args) throws Exception {
 
-    ConfigParser configParser= new ConfigParser();
+    YamlParser configParser= new YamlParser();
 
 
         var configFile = """
@@ -47,31 +37,15 @@ public class ForkSpanletProcessor {
                     type: router
                     config:
                       default: first-exporter
-                      routes:
+                      routeConfigs:
                       - when: trace[0].spanId % 2 == 0
                         to: second-exporter
                 """;
 
 
-        Node node = configParser.parse(configFile);
+        Siglet siglet = new Siglet(configFile);
 
-
-        globalConfigChecker().check(node);
-
-        Object conf = node.getValue();
-
-        var globalConfig = assertInstanceOf(ConfigItem.class, conf);
-
-        RouteBuilder b = globalConfig.build();
-
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        try (CamelContext camelContext = new DefaultCamelContext()) {
-            camelContext.addComponent("otelgrpc", new SigletComponent());
-            camelContext.addRoutes(b);
-            camelContext.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(countDownLatch::countDown));
-            countDownLatch.await();
-        }
+        siglet.start();
 
 
     }

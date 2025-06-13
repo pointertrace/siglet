@@ -1,6 +1,6 @@
 package com.siglet.integrationtests.executions;
 
-import com.siglet.cli.Siglet;
+import com.siglet.container.Siglet;
 
 public class TraceToMetricProcessor {
 
@@ -25,7 +25,7 @@ public class TraceToMetricProcessor {
                   pipeline:
                   - spanlet: spanlet
                     to: exporter
-                    type: processor
+                    type: baseEventloopProcessor
                     config:
                       action: |
                         println "span spanId=" + thisSignal.getSpanId()
@@ -42,7 +42,7 @@ public class TraceToMetricProcessor {
                   pipeline:
                   - metriclet: metriclet
                     to: exporter
-                    type: processor
+                    type: baseEventloopProcessor
                     config:
                       action: |
                         println "metric name=" + thisSignal.getName()

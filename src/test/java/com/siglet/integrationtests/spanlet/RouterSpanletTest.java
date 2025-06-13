@@ -1,44 +1,38 @@
 package com.siglet.integrationtests.spanlet;
 
-import com.siglet.cli.SigletContext;
-import com.siglet.config.Config;
-import com.siglet.config.ConfigFactory;
-import com.siglet.data.adapter.trace.ProtoSpanAdapter;
+import com.siglet.container.Siglet;
+import com.siglet.container.adapter.AdapterUtils;
+import com.siglet.container.adapter.trace.ProtoSpanAdapter;
+import com.siglet.container.engine.exporter.debug.DebugExporters;
+import com.siglet.container.engine.receiver.debug.DebugReceivers;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-class RouterSpanletTest extends CamelTestSupport {
+class RouterSpanletTest {
 
     @Test
-    void test() throws Exception {
+    void test() {
 
 
-        String yaml = """
+        String config = """
                 receivers:
                 - debug: receiver
-                  address: direct:start
                 exporters:
                 - debug: first-exporter
-                  address: mock:first-output
                 - debug: second-exporter
-                  address: mock:second-output
                 - debug: third-exporter
-                  address: mock:third-output
                 pipelines:
                 - name: pipeline
                   signal: trace
                   from: receiver
                   start: spanlet
-                  siglets:
+                  processors:
                   - name: spanlet
                     kind: spanlet
                     to:
@@ -49,58 +43,56 @@ class RouterSpanletTest extends CamelTestSupport {
                     config:
                       default: third-exporter
                       routes:
-                      - when: thisSignal.name == "first"
+                      - when: signal.name == "first"
                         to: first-exporter
-                      - when: thisSignal.name == "second"
+                      - when: signal.name == "second"
                         to: second-exporter
                 """;
 
-        SigletContext.init(()-> context, Map.of());
-        ConfigFactory configFactory = new ConfigFactory();
+        Siglet siglet = new Siglet(config);
 
-        Config config = configFactory.create(yaml);
+        siglet.start();
 
-        context.addRoutes(config.getRouteBuilder());
-
-
-        Span firstSpan = Span.newBuilder().setName("first").build();
+        Span firstSpan = Span.newBuilder()
+                .setTraceId(AdapterUtils.traceId(0, 1))
+                .setSpanId(AdapterUtils.spanId(1))
+                .setName("first")
+                .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
-        template.sendBody("direct:start", protoSpanAdapter);
+        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
 
-        Span secondSpan = Span.newBuilder().setName("second").build();
-        protoSpanAdapter = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
-        template.sendBody("direct:start", protoSpanAdapter);
+        Span secondSpan = Span.newBuilder()
+                .setTraceId(AdapterUtils.traceId(0, 1))
+                .setSpanId(AdapterUtils.spanId(2))
+                .setName("second")
+                .build();
+        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
 
-        Span thirdSpan = Span.newBuilder().setName("third").build();
-        protoSpanAdapter = new ProtoSpanAdapter(thirdSpan, resource, instrumentationScope, true);
-        template.sendBody("direct:start", protoSpanAdapter);
+        Span thirdSpan = Span.newBuilder()
+                .setTraceId(AdapterUtils.traceId(0, 1))
+                .setSpanId(AdapterUtils.spanId(3))
+                .setName("third")
+                .build();
+        ProtoSpanAdapter thirdSpanAdapter = new ProtoSpanAdapter(thirdSpan, resource, instrumentationScope, true);
+        DebugReceivers.INSTANCE.get("receiver").send(thirdSpanAdapter);
+
+        siglet.stop();
 
 
-        MockEndpoint mock = getMockEndpoint("mock:first-output");
+        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporter", ProtoSpanAdapter.class);
+        assertEquals(1, firstExporter.size());
+        assertEquals("first", firstExporter.getFirst().getName());
 
-        mock.expectedMessageCount(1);
+        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("second-exporter", ProtoSpanAdapter.class);
+        assertEquals(1, secondExporter.size());
+        assertEquals("second", secondExporter.getFirst().getName());
 
-        assertEquals(1, mock.getExchanges().size());
-        var spanAdapter = assertInstanceOf(ProtoSpanAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
-        assertEquals("first", spanAdapter.getName());
-
-        mock = getMockEndpoint("mock:second-output");
-
-        mock.expectedMessageCount(1);
-
-        assertEquals(1, mock.getExchanges().size());
-        spanAdapter = assertInstanceOf(ProtoSpanAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
-        assertEquals("second", spanAdapter.getName());
-
-        mock = getMockEndpoint("mock:third-output");
-
-        mock.expectedMessageCount(1);
-
-        assertEquals(1, mock.getExchanges().size());
-        spanAdapter = assertInstanceOf(ProtoSpanAdapter.class, mock.getExchanges().getFirst().getIn().getBody());
-        assertEquals("third", spanAdapter.getName());
+        List<ProtoSpanAdapter> thirdExporter = DebugExporters.INSTANCE.get("third-exporter", ProtoSpanAdapter.class);
+        assertEquals(1, thirdExporter.size());
+        assertEquals("third", thirdExporter.getFirst().getName());
     }
 
 }

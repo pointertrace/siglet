@@ -1,0 +1,33 @@
+package com.siglet.container.config.graph;
+
+import com.siglet.container.config.raw.BaseConfig;
+import com.siglet.container.config.raw.ReceiverConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class ReceiverNode extends BaseNode {
+
+    private List<PipelineNode> to = new ArrayList<>();
+
+    public ReceiverNode(ReceiverConfig item) {
+        super(item);
+    }
+
+    public List<PipelineNode> getTo() {
+        return to;
+    }
+
+    public void setTo(List<PipelineNode> to) {
+        this.to = to;
+    }
+
+    List<ProcessorNode> getSigletsTo() {
+        return to.stream().flatMap(t -> t.getStart().stream()).toList();
+    }
+
+    @Override
+    public ReceiverConfig getConfig() {
+        return (ReceiverConfig) super.getConfig();
+    }
+}
