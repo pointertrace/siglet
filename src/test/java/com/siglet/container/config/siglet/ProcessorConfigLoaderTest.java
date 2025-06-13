@@ -1,4 +1,4 @@
-package com.siglet.pipeline.processor.siglet;
+package com.siglet.container.config.siglet;
 
 import com.siglet.api.Processor;
 import com.siglet.api.parser.NodeChecker;
