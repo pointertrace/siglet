@@ -43,7 +43,7 @@ class GrpcExporterConfigTest {
         String expected = """
                 (1:1)  GrpcExporterConfig
                   (1:7)  name: first
-                  (2:10)  address: localhost/<unresolved>:8080
+                  (2:10)  address: localhost/127.0.0.1:8080
                   (3:24)  batch-size-in-signal: 1
                   (4:26)  batch-timeout-in-millis: 2
                 """;
@@ -73,7 +73,7 @@ class GrpcExporterConfigTest {
         assertEquals("first",grpcExporterConfig.getName());
         assertEquals(Location.of(1,7), grpcExporterConfig.getNameLocation());
 
-        assertEquals(InetSocketAddress.createUnresolved("localhost",8080),grpcExporterConfig.getAddress());
+        assertEquals(new InetSocketAddress("localhost",8080),grpcExporterConfig.getAddress());
         assertEquals(Location.of(2,10),grpcExporterConfig.getAddressLocation());
 
         assertEquals(1,grpcExporterConfig.getBatchSizeInSignals());
