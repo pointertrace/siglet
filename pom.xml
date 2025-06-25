@@ -103,22 +103,22 @@
         <dependency>
             <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>1.5.0-alpha</version>
+            <version>1.7.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty</artifactId>
-            <version>1.71.0</version>
+            <version>1.73.0</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>1.71.0</version>
+            <version>1.73.0</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>1.71.0</version>
+            <version>1.73.0</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>

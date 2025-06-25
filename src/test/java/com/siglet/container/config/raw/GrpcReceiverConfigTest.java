@@ -43,7 +43,7 @@ class GrpcReceiverConfigTest {
         String expected = """
                 (1:1)  GrpcReceiverConfig
                   (1:7)  name: first
-                  (2:10)  address: localhost/<unresolved>:8080
+                  (2:10)  address: localhost/127.0.0.1:8080
                   (3:9)  signal: metric
                 """;
 
@@ -74,7 +74,7 @@ class GrpcReceiverConfigTest {
         assertEquals("first", grpcReceiverConfig.getName());
         assertEquals(Location.of(1, 7), grpcReceiverConfig.getNameLocation());
 
-        assertEquals(InetSocketAddress.createUnresolved("localhost", 8080), grpcReceiverConfig.getAddress());
+        assertEquals(new InetSocketAddress("localhost", 8080), grpcReceiverConfig.getAddress());
         assertEquals(Location.of(2, 10), grpcReceiverConfig.getAddressLocation());
 
         assertEquals(Signal.METRIC, grpcReceiverConfig.getSignal());

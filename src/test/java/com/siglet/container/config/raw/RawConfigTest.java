@@ -127,17 +127,17 @@ class RawConfigTest {
           (1:1)  receivers:
             (2:3)  GrpcReceiverConfig
               (2:9)  name: first receiver
-              (3:12)  address: localhost/<unresolved>:8080
+              (3:12)  address: localhost/127.0.0.1:8080
             (4:3)  GrpcReceiverConfig
               (4:9)  name: second receiver
-              (5:12)  address: localhost/<unresolved>:8081
+              (5:12)  address: localhost/127.0.0.1:8081
           (6:1)  exporters:
             (7:3)  GrpcExporterConfig
               (7:9)  name: first exporter
-              (8:12)  address: localhost/<unresolved>:8080
+              (8:12)  address: localhost/127.0.0.1:8080
             (9:3)  GrpcExporterConfig
               (9:9)  name: second exporter
-              (10:12)  address: localhost/<unresolved>:8081
+              (10:12)  address: localhost/127.0.0.1:8081
           (11:1)  pipelines:
             (12:3)  PipelineConfig:
               (12:9)  name: pipeline name

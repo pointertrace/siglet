@@ -37,8 +37,8 @@ class SigletConfigParserTest {
 
         String config = """
                 name: mock spanlet
-                siglet-class: com.siglet.pipeline.processor.siglet.SigletConfigParserTest$SpanletMock
-                checker-factory-class: com.siglet.pipeline.processor.siglet.SigletConfigParserTest$ConfigFactoryMock
+                siglet-class: com.siglet.container.config.siglet.SigletConfigParserTest$SpanletMock
+                checker-factory-class: com.siglet.container.config.siglet.SigletConfigParserTest$ConfigFactoryMock
                 description: mock spanlet description
                 """;
 

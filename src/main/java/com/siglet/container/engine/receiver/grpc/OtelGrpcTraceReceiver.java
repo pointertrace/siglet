@@ -30,6 +30,7 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
     private final List<SignalDestination<Signal>> spanDestinations = new ArrayList<>();
 
     public OtelGrpcTraceReceiver(GrpcServer server, ReceiverNode node) {
+        server.addService(this);
         this.server = server;
         this.node = node;
     }
@@ -88,6 +89,6 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
 
     @Override
     public ReceiverNode getNode() {
-        return null;
+        return node;
     }
 }

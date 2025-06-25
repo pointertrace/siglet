@@ -1,13 +1,26 @@
 package com.siglet.container.engine.exporter.grpc;
 
+import com.siglet.SigletError;
 import com.siglet.api.Signal;
+import com.siglet.container.adapter.metric.ProtoMetricAdapter;
+import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
+import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
+import com.siglet.container.engine.pipeline.accumulator.AccumulatedMetrics;
+import com.siglet.container.engine.pipeline.accumulator.AccumulatedSpans;
+import com.siglet.container.engine.pipeline.accumulator.MetricAccumulator;
+import com.siglet.container.engine.pipeline.accumulator.SpanAccumulator;
+import com.siglet.container.eventloop.accumulator.TimeoutAccumulatorEventLoop;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 public class GrpcExporter implements Exporter {
 
@@ -16,13 +29,59 @@ public class GrpcExporter implements Exporter {
 
     private final ExporterNode node;
 
+    private final TimeoutAccumulatorEventLoop<Signal, Signal> spanAccumulator;
+
+    private final TimeoutAccumulatorEventLoop<Signal, Signal> metricAccumulator;
+
+    private State state = State.RUNNING;
+
     public GrpcExporter(ExporterNode node) {
         this.node = node;
+        GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
+        spanAccumulator = new TimeoutAccumulatorEventLoop<>(
+                node.getName() + "-span",
+                1_000,
+                config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
+                config.getBatchSizeInSignals() == null ? 1 : config.getBatchSizeInSignals(),
+                SpanAccumulator::accumulateSpans);
+        spanAccumulator.connect(new SignalDestination<Signal>() {
+            @Override
+            public String getName() {
+                return "aggregated-spans";
+            }
+
+            @Override
+            public boolean send(Signal signal) {
+                System.out.println("Sending span: " + signal);
+                traceServiceStub.export(((AccumulatedSpans) signal).getRequest());
+                return true;
+            }
+
+            @Override
+            public Class<Signal> getType() {
+                return Signal.class;
+            }
+        });
+
+        metricAccumulator = new TimeoutAccumulatorEventLoop<>(
+                node.getName() + "-metric",
+                1_000,
+                config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
+                config.getBatchSizeInSignals() == null ? 1 : config.getBatchSizeInSignals(),
+                MetricAccumulator::accumulate);
     }
+
 
     @Override
     public boolean send(Signal signal) {
-        throw new IllegalStateException("to be implemented!");
+        switch (signal) {
+            case ProtoSpanAdapter protoSpanAdapter -> spanAccumulator.send(protoSpanAdapter);
+            case ProtoMetricAdapter protoMetricAdapter -> metricAccumulator.send(protoMetricAdapter);
+            default -> throw new SigletError(String.format("Can only export signals of types %s or %s and not %s.",
+                    AccumulatedSpans.class.getName(), AccumulatedMetrics.class.getName(),
+                    signal.getClass().getName()));
+        }
+        return true;
     }
 
     @Override
@@ -31,23 +90,30 @@ public class GrpcExporter implements Exporter {
     }
 
     @Override
-    public void start() {
-        var builder = NettyChannelBuilder
-                .forAddress((getConfig().getAddress()))
+    public synchronized void start() {
+        state = State.STARTING;
+        NettyChannelBuilder builder = NettyChannelBuilder
+                .forAddress(getConfig().getAddress())
                 .usePlaintext();
-
         traceServiceStub = TraceServiceGrpc.newBlockingStub(builder.build());
         metricServicesStub = MetricsServiceGrpc.newBlockingStub(builder.build());
+
+        spanAccumulator.start();
+        metricAccumulator.start();
+        state = State.RUNNING;
     }
 
     @Override
-    public void stop() {
-
+    public synchronized void stop() {
+        state = State.STOPPING;
+        spanAccumulator.stop();
+        metricAccumulator.stop();
+        state = State.STOPPED;
     }
 
     @Override
-    public State getState() {
-        return State.RUNNING;
+    public synchronized State getState() {
+        return state;
     }
 
     @Override

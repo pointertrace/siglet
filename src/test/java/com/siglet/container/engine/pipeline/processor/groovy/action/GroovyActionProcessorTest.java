@@ -1,9 +1,8 @@
-package com.siglet.container.eventloop.groovy.siglet.action;
+package com.siglet.container.engine.pipeline.processor.groovy.action;
 
 import com.siglet.api.Signal;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionProcessor;
 import com.siglet.container.eventloop.MapSignalDestination;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GroovyActionProcessorEventLoopTest {
+class GroovyActionProcessorTest {
 
     @Test
     void process() {

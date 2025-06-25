@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 @Disabled
-class SignalsAggregatorTest {
+class SignalsAccumulatorTest {
 
     private Resource resource1;
 

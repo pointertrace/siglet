@@ -2,6 +2,8 @@ package com.siglet.integrationtests.executions;
 
 import com.siglet.container.Siglet;
 
+import java.util.concurrent.CountDownLatch;
+
 public class SimpleSpanProcessor {
 
     public static void main(String[] args) throws Exception {
@@ -9,31 +11,40 @@ public class SimpleSpanProcessor {
 
         var config = """
                 receivers:
-                  - grpc: trace-receiver
-                    address: 0.0.0.0:8080
+                  - grpc: receiver
+                    address: localhost:8080
                     signal: trace
                 exporters:
                   - grpc: exporter
-                    address: 0.0.0.0:4317
+                    address: localhost:4317
                     batch-size-in-signals: 1
                 pipelines:
                   - name: trace-pipeline
                     signal: trace
-                    from: trace-receiver
-                    start: imprime flatSpan
-                    siglets:
-                      - name: imprime flatSpan
+                    from: receiver
+                    start: print spanId
+                    processors:
+                      - name: print spanId
                         kind: spanlet
                         to: exporter
                         type: groovy-action
                         config:
                           action: |
-                            println "spanId=" + thisSignal.spanIdEx
+                            println "spanId=" + signal.spanIdEx
+                            signal.name = "prefix-" + signal.name
                 """;
 
         Siglet siglet = new Siglet(config);
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         siglet.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
+
+        latch.await();
+
+        siglet.stop();
 
     }
 }

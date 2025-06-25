@@ -3,7 +3,9 @@ package com.siglet.container.engine.exporter;
 import com.siglet.SigletError;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.DebugExporterConfig;
+import com.siglet.container.config.raw.GrpcExporterConfig;
 import com.siglet.container.engine.exporter.debug.DebugExporter;
+import com.siglet.container.engine.exporter.grpc.GrpcExporter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +23,10 @@ public class Exporters {
         if (exporters.containsKey(name)) {
             throw new SigletError("Receiver with name " + name+ " already exists");
         }
-        if (node.getConfig() instanceof DebugExporterConfig debugExporterItem) {
+        if (node.getConfig() instanceof DebugExporterConfig) {
             return exporters.put(name, new DebugExporter(node));
+        } else if (node.getConfig() instanceof GrpcExporterConfig) {
+            return exporters.put(name, new GrpcExporter(node));
         } else {
             throw new SigletError(String.format("Cannot create receiver type %s",node.getConfig().getClass().getName()));
         }

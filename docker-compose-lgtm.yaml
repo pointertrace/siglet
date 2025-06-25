@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    otel-lgtm:
+      image: grafana/otel-lgtm:latest
+      ports:
+        - "3000:3000"  # Porta para acessar a interface do Grafana
+        - "3200:3200"  # Porta para acessar a api rest do Tempo
+        - "4317:4317"  # Porta para gRPC do OpenTelemetry Collector
+      environment:
+        - ENABLE_LOGS_ALL=true  # Habilita logs para todos os componentes
+      volumes:
+        - otel-lgtm-data:/data  # Persistência de dados
+
+
+volumes:
+  otel-lgtm-data:

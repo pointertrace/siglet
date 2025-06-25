@@ -43,7 +43,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
     private final CountDownLatch startLatch = new CountDownLatch(1);
 
 
-    public TimeoutAccumulatorEventLoop(String name, long timeoutInMillis, int queueCapacity, int maxSize,
+    public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
                                        Function<List<IN>, OUT> accumulatorFunction) {
         this.name = name;
         this.timeoutInMillis = timeoutInMillis;
