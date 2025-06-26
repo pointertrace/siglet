@@ -11,8 +11,8 @@ public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogr
 
     private ProtoExponentialHistogramDataPointsAdapter protoExponentialHistogramDataPointsAdapter;
 
-    public ProtoExponentialHistogramAdapter(ExponentialHistogram protoHistogram, boolean updatable) {
-        super(protoHistogram, ExponentialHistogram::toBuilder, ExponentialHistogram.Builder::build, updatable);
+    public ProtoExponentialHistogramAdapter(ExponentialHistogram protoHistogram) {
+        super(protoHistogram, ExponentialHistogram::toBuilder, ExponentialHistogram.Builder::build);
     }
 
     public ProtoExponentialHistogramAdapter(ExponentialHistogram.Builder histogramBuilder) {
@@ -30,7 +30,7 @@ public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogr
     public ProtoExponentialHistogramDataPointsAdapter getDataPoints() {
         if (protoExponentialHistogramDataPointsAdapter == null) {
             protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter(
-                    getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList), isUpdatable());
+                    getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList));
         }
         return protoExponentialHistogramDataPointsAdapter;
     }

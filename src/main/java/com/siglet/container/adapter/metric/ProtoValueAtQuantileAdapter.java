@@ -8,9 +8,9 @@ public class ProtoValueAtQuantileAdapter extends Adapter<SummaryDataPoint.ValueA
         SummaryDataPoint.ValueAtQuantile.Builder>
         implements ModifiableValueAtQuantile {
 
-    public ProtoValueAtQuantileAdapter(SummaryDataPoint.ValueAtQuantile message, boolean updatable) {
+    public ProtoValueAtQuantileAdapter(SummaryDataPoint.ValueAtQuantile message) {
         super(message, SummaryDataPoint.ValueAtQuantile::toBuilder,
-        SummaryDataPoint.ValueAtQuantile.Builder::build,updatable);
+        SummaryDataPoint.ValueAtQuantile.Builder::build);
     }
 
     public ProtoValueAtQuantileAdapter(SummaryDataPoint.ValueAtQuantile.Builder builder) {

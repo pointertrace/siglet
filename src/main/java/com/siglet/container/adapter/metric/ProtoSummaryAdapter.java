@@ -8,8 +8,8 @@ public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> imple
 
     private ProtoSummaryDataPointsAdapter protoSummaryDataPointsAdapter;
 
-    public ProtoSummaryAdapter(Summary protoSummary, boolean updatable) {
-        super(protoSummary,Summary::toBuilder,Summary.Builder::build,updatable);
+    public ProtoSummaryAdapter(Summary protoSummary) {
+        super(protoSummary,Summary::toBuilder,Summary.Builder::build);
     }
 
     public ProtoSummaryAdapter(Summary.Builder summaryBuilder) {
@@ -20,7 +20,7 @@ public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> imple
     public ProtoSummaryDataPointsAdapter getDataPoints() {
         if (protoSummaryDataPointsAdapter == null) {
             protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(
-                    getValue(Summary::getDataPointsList,Summary.Builder::getDataPointsList),isUpdatable());
+                    getValue(Summary::getDataPointsList,Summary.Builder::getDataPointsList));
         }
         return protoSummaryDataPointsAdapter;
     }

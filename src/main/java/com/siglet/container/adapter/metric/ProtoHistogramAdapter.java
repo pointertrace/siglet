@@ -10,8 +10,8 @@ public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder>
 
     private ProtoHistogramDataPointsAdapter protoHistogramDataPointsAdapter;
 
-    public ProtoHistogramAdapter(Histogram protoHistogram, boolean updatable) {
-        super(protoHistogram, Histogram::toBuilder, Histogram.Builder::build, updatable);
+    public ProtoHistogramAdapter(Histogram protoHistogram) {
+        super(protoHistogram, Histogram::toBuilder, Histogram.Builder::build);
     }
 
     public ProtoHistogramAdapter(Histogram.Builder histogramBuilder) {
@@ -27,7 +27,7 @@ public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder>
     public ProtoHistogramDataPointsAdapter getDataPoints() {
         if (protoHistogramDataPointsAdapter == null) {
             protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(
-                    getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList), isUpdatable());
+                    getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
         }
         return protoHistogramDataPointsAdapter;
     }

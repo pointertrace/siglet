@@ -11,9 +11,9 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
         ExponentialHistogramDataPoint.Buckets.Builder> implements ModifiableBuckets {
 
 
-    public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets protoExemplar, boolean updatable) {
+    public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets protoExemplar) {
         super(protoExemplar, ExponentialHistogramDataPoint.Buckets::toBuilder,
-                ExponentialHistogramDataPoint.Buckets.Builder::build, updatable);
+                ExponentialHistogramDataPoint.Buckets.Builder::build);
     }
 
     public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets.Builder bucketsBuilder) {
@@ -29,14 +29,14 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
 
     @Override
     public ModifiableBuckets addBucketCount(long bucketCount) {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         getBuilder().addBucketCounts(bucketCount);
         return this;
     }
 
     @Override
     public ModifiableBuckets clearBucketCounts() {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         getBuilder().clearBucketCounts();
         return this;
     }

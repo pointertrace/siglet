@@ -37,7 +37,7 @@ class ProtoLinksAdapterTest {
                         .build()
         );
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks, true);
+        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
     }
 
     @Test
@@ -118,22 +118,9 @@ class ProtoLinksAdapterTest {
 
 
     @Test
-    void changeNonUpdatable() {
-
-        protoLinksAdapter = new ProtoLinksAdapter(Collections.emptyList(), false);
-
-        assertThrowsExactly(SigletError.class, () ->
-                protoLinksAdapter.add(0, 0, 0, "state", Collections.emptyMap()));
-
-        assertThrowsExactly(SigletError.class, () ->
-                protoLinksAdapter.remove(0, 0, 0));
-
-    }
-
-    @Test
     void getUpdated_notUpdatable() {
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks, false);
+        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
 
         assertSame(protoLinks, protoLinksAdapter.getUpdated());
 
@@ -143,7 +130,7 @@ class ProtoLinksAdapterTest {
     @Test
     void getUpdated_notingUpdated() {
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks, true);
+        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
 
         assertSame(protoLinks, protoLinksAdapter.getUpdated());
 

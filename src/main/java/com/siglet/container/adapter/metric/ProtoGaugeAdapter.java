@@ -8,8 +8,8 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
 
     private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
 
-    public ProtoGaugeAdapter(Gauge protoGauge, boolean updatable) {
-        super(protoGauge,Gauge::toBuilder,Gauge.Builder::build,updatable);
+    public ProtoGaugeAdapter(Gauge protoGauge) {
+        super(protoGauge,Gauge::toBuilder,Gauge.Builder::build);
     }
 
     public ProtoGaugeAdapter() {
@@ -20,7 +20,7 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
     public ProtoNumberDataPointsAdapter getDataPoints() {
         if (protoNumberDataPointsAdapter == null) {
             protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(
-                    getValue(Gauge::getDataPointsList,Gauge.Builder::getDataPointsList),isUpdatable());
+                    getValue(Gauge::getDataPointsList,Gauge.Builder::getDataPointsList));
         }
         return protoNumberDataPointsAdapter;
     }

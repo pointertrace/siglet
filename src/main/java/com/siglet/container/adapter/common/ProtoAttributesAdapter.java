@@ -13,8 +13,8 @@ import java.util.Map;
 public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Builder,
         ProtoAttributesAdapter.KeyValueAdapter> implements ModifiableAttributes {
 
-    public ProtoAttributesAdapter(List<KeyValue> attributes, boolean updatable) {
-        super(attributes, updatable);
+    public ProtoAttributesAdapter(List<KeyValue> attributes) {
+        super(attributes);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
 
     @Override
     protected KeyValueAdapter createAdapter(int i) {
-        return new KeyValueAdapter(getMessage(i), isUpdatable());
+        return new KeyValueAdapter(getMessage(i));
     }
 
 
@@ -202,8 +202,8 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
     }
 
     static class KeyValueAdapter extends Adapter<KeyValue, KeyValue.Builder> {
-        public KeyValueAdapter(KeyValue message, boolean updatable) {
-            super(message, KeyValue::toBuilder, KeyValue.Builder::build, updatable);
+        public KeyValueAdapter(KeyValue message) {
+            super(message, KeyValue::toBuilder, KeyValue.Builder::build);
         }
 
         public KeyValueAdapter(KeyValue.Builder builder) {

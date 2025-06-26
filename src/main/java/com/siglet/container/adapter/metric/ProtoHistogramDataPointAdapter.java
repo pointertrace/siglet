@@ -15,8 +15,8 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     private ProtoExemplarsAdapter protoExemplarsAdapter;
 
-    public ProtoHistogramDataPointAdapter(HistogramDataPoint protoHistogramDataPoint, boolean updatable) {
-        super(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build, updatable);
+    public ProtoHistogramDataPointAdapter(HistogramDataPoint protoHistogramDataPoint) {
+        super(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build);
     }
 
 
@@ -27,7 +27,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -82,7 +82,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
     @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList(), isUpdatable());
+            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList());
 
         }
         return protoExemplarsAdapter;
@@ -132,7 +132,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     @Override
     public ModifiableHistogramDataPoint clearBucketCounts() {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         getBuilder().clearBucketCounts();
         return this;
     }
@@ -151,7 +151,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     @Override
     public ModifiableHistogramDataPoint clearExplicitBounds() {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         getBuilder().clearExplicitBounds();
         return this;
     }

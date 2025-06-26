@@ -98,7 +98,7 @@ class AttributesGroovyTest {
 
         spanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
 
-        metricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope, true);
+        metricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope);
 
         compiler = new Compiler(AttributesBaseScript.class);
         AttributesBaseScript.spanAdapter = spanAdapter;

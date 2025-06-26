@@ -11,8 +11,8 @@ public class ProtoExponentialHistogramDataPointsAdapter extends AdapterList<Expo
         implements ModifiableExponentialHistogramDataPoints {
 
     public ProtoExponentialHistogramDataPointsAdapter(
-            List<ExponentialHistogramDataPoint> protoExponentialHistogramDataPoints, boolean updatable) {
-        super(protoExponentialHistogramDataPoints, updatable);
+            List<ExponentialHistogramDataPoint> protoExponentialHistogramDataPoints) {
+        super(protoExponentialHistogramDataPoints);
     }
 
     @Override
@@ -37,6 +37,6 @@ public class ProtoExponentialHistogramDataPointsAdapter extends AdapterList<Expo
 
     @Override
     protected ProtoExponentialHistogramDataPointAdapter createAdapter(int i) {
-        return new ProtoExponentialHistogramDataPointAdapter(getMessage(i), isUpdatable());
+        return new ProtoExponentialHistogramDataPointAdapter(getMessage(i));
     }
 }

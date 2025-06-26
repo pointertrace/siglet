@@ -31,7 +31,7 @@ class ProtoSummaryAdapterTest {
                 .build();
 
 
-        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary, true);
+        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary);
 
     }
 
@@ -79,7 +79,7 @@ class ProtoSummaryAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary, false);
+        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary);
 
 
         protoSummaryAdapter.getDataPoints().getAt(0);
@@ -89,15 +89,5 @@ class ProtoSummaryAdapterTest {
 
     }
 
-    @Test
-    void change_notUpdatable() {
-
-        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary, false);
-
-
-        assertThrowsExactly(SigletError.class, () -> protoSummaryAdapter.getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoSummaryAdapter.getDataPoints().add());
-
-    }
 
 }

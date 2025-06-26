@@ -14,8 +14,8 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoLinkAdapter(Span.Link protoLink, boolean updatable) {
-        super(protoLink, Span.Link::toBuilder, Span.Link.Builder::build, updatable);
+    public ProtoLinkAdapter(Span.Link protoLink) {
+        super(protoLink, Span.Link::toBuilder, Span.Link.Builder::build);
     }
 
     public ProtoLinkAdapter(Span.Link.Builder protoLinkBuilder) {
@@ -92,9 +92,9 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
         if (protoAttributesAdapter == null) {
             Span.Link message = getMessage();
             if (message != null) {
-                protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+                protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
             } else {
-                protoAttributesAdapter = new ProtoAttributesAdapter(new ArrayList<>(), isUpdatable());
+                protoAttributesAdapter = new ProtoAttributesAdapter(new ArrayList<>());
             }
         }
         return protoAttributesAdapter;

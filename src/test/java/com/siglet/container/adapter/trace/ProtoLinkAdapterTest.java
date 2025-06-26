@@ -38,7 +38,7 @@ class ProtoLinkAdapterTest {
                         .build())
                 .build();
 
-        protoLinkAdapter = new ProtoLinkAdapter(protoLink, true);
+        protoLinkAdapter = new ProtoLinkAdapter(protoLink);
 
     }
 
@@ -105,41 +105,10 @@ class ProtoLinkAdapterTest {
 
 
     @Test
-    void changeNonUpdatable() {
-
-        protoLinkAdapter = new ProtoLinkAdapter(Span.Link.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setTraceId(3, 4);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setSpanId(5);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setFlags(2);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setTraceState("new-trace-state");
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.setDroppedAttributesCount(3);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoLinkAdapter.getAttributes().remove("str-key");
-        });
-    }
-
-
-    @Test
     void getUpdate_notUpdatable() {
 
         Span.Link actualProtoLink = Span.Link.newBuilder().build();
-        protoLinkAdapter = new ProtoLinkAdapter(actualProtoLink, false);
+        protoLinkAdapter = new ProtoLinkAdapter(actualProtoLink);
 
         assertSame(actualProtoLink, protoLinkAdapter.getUpdated());
 

@@ -54,7 +54,7 @@ class ProtoSummaryDataPointAdapterTest {
                 .addAllAttributes(attributes)
                 .build();
 
-        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint, true);
+        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint);
     }
 
     @Test
@@ -134,7 +134,7 @@ class ProtoSummaryDataPointAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint, false);
+        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint);
 
         assertSame(summaryDataPoint, protoSummaryDataPointAdapter.getUpdated());
 

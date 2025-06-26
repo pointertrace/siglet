@@ -33,8 +33,8 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
 
     public ProtoMetricAdapter(Metric protoMetric, Resource protoResource,
-                              InstrumentationScope protoInstrumentationScope, boolean updatable) {
-        super(protoMetric, Metric::toBuilder, Metric.Builder::build, updatable);
+                              InstrumentationScope protoInstrumentationScope) {
+        super(protoMetric, Metric::toBuilder, Metric.Builder::build);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
     }
@@ -96,28 +96,28 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     public ModifiableData getData() {
         if (hasGauge()) {
             if (protoGaugeAdapter == null) {
-                protoGaugeAdapter = new ProtoGaugeAdapter(getMessage().getGauge(), isUpdatable());
+                protoGaugeAdapter = new ProtoGaugeAdapter(getMessage().getGauge());
             }
             return protoGaugeAdapter;
         } else if (hasSum()) {
             if (protoSumAdapter == null) {
-                protoSumAdapter = new ProtoSumAdapter(getMessage().getSum(), isUpdatable());
+                protoSumAdapter = new ProtoSumAdapter(getMessage().getSum());
             }
             return protoSumAdapter;
         } else if (hasHistogram()) {
             if (protoHistogramAdapter == null) {
-                protoHistogramAdapter = new ProtoHistogramAdapter(getMessage().getHistogram(), isUpdatable());
+                protoHistogramAdapter = new ProtoHistogramAdapter(getMessage().getHistogram());
             }
             return protoHistogramAdapter;
         } else if (hasExponentialHistogram()) {
             if (protoExponentialHistogramAdapter == null) {
                 protoExponentialHistogramAdapter =
-                        new ProtoExponentialHistogramAdapter(getMessage().getExponentialHistogram(), isUpdatable());
+                        new ProtoExponentialHistogramAdapter(getMessage().getExponentialHistogram());
             }
             return protoExponentialHistogramAdapter;
         } else if (hasSummary()) {
             if (protoSummaryAdapter == null) {
-                protoSummaryAdapter = new ProtoSummaryAdapter(getMessage().getSummary(), isUpdatable());
+                protoSummaryAdapter = new ProtoSummaryAdapter(getMessage().getSummary());
             }
             return protoSummaryAdapter;
         }
@@ -188,23 +188,20 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
     public ProtoResourceAdapter getProtoResourceAdapter() {
         if (protoResourceAdapter != null) {
-            protoResourceAdapter = new ProtoResourceAdapter(protoResource, isUpdatable());
+            protoResourceAdapter = new ProtoResourceAdapter(protoResource);
         }
         return protoResourceAdapter;
     }
 
     public ProtoInstrumentationScopeAdapter getProtoInstrumentationScopeAdapter() {
         if (protoInstrumentationScopeAdapter != null) {
-            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope,
-                    isUpdatable());
+            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope);
         }
         return protoInstrumentationScopeAdapter;
     }
 
     public Resource getUpdatedResource() {
-        if (!isUpdatable()) {
-            return protoResource;
-        } else if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
+        if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
             return protoResource;
         } else {
             return protoResourceAdapter.getUpdated();
@@ -212,9 +209,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public InstrumentationScope getUpdatedInstrumentationScope() {
-        if (!isUpdatable()) {
-            return protoInstrumentationScope;
-        } else if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
+        if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
             return protoInstrumentationScope;
         } else {
             return protoInstrumentationScopeAdapter.getUpdated();

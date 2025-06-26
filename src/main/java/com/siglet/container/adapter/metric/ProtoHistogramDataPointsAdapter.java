@@ -9,8 +9,8 @@ import java.util.List;
 public class ProtoHistogramDataPointsAdapter extends AdapterList<HistogramDataPoint, HistogramDataPoint.Builder,
         ProtoHistogramDataPointAdapter> implements ModifiableHistogramDataPoints {
 
-    public ProtoHistogramDataPointsAdapter(List<HistogramDataPoint> protoHistogramDataPoints, boolean updatable) {
-        super(protoHistogramDataPoints, updatable);
+    public ProtoHistogramDataPointsAdapter(List<HistogramDataPoint> protoHistogramDataPoints) {
+        super(protoHistogramDataPoints);
     }
 
     @Override
@@ -35,6 +35,6 @@ public class ProtoHistogramDataPointsAdapter extends AdapterList<HistogramDataPo
 
     @Override
     protected ProtoHistogramDataPointAdapter createAdapter(int i) {
-        return new ProtoHistogramDataPointAdapter(getMessage(i), isUpdatable());
+        return new ProtoHistogramDataPointAdapter(getMessage(i));
     }
 }

@@ -64,7 +64,7 @@ class ProtoAttributesAdapterTest {
                 .setValue(AdapterUtils.objectToAnyValue(new byte[]{0, 1, 2}))
                 .build());
 
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, true);
+        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes);
     }
 
 
@@ -263,48 +263,11 @@ class ProtoAttributesAdapterTest {
                 .build()));
     }
 
-    @Test
-    void changeNonUpdatable() {
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("string-key", "other-value");
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("bool-key", false);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("long-key", 20L);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("double-key", 2.3);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("array-key", new Object[]{"3", "4"});
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("key-value-list-key", List.of(
-                    new AbstractMap.SimpleImmutableEntry<>("key2", "new-value2"),
-                    new AbstractMap.SimpleImmutableEntry<>("key3", "value3")));
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoAttributesAdapter.set("byte-array-key", new byte[]{3, 4});
-        });
-
-        assertFalse(protoAttributesAdapter.isUpdated());
-
-    }
 
     @Test
     void getUpdated_notUpdatable() {
 
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, false);
+        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes);
 
         assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
 

@@ -1,7 +1,6 @@
 package com.siglet.container.adapter.trace;
 
 import com.siglet.SigletError;
-import com.siglet.api.CloneableAdapter;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.modifiable.trace.ModifiableTrace;
 
@@ -13,7 +12,7 @@ import java.util.function.Consumer;
 
 
 // TODO extender o trace
-public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter>, CloneableAdapter<ProtoTrace> {
+public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter> {
 
     private final boolean updatable;
 
@@ -100,13 +99,6 @@ public class ProtoTrace implements ModifiableTrace<ProtoSpanAdapter>, CloneableA
         if (!updatable) {
             throw new SigletError("trying to change a non updatable trace");
         }
-    }
-
-    @Override
-    public ProtoTrace cloneAdapter() {
-        ProtoTrace result = new ProtoTrace(firstSpan, updatable);
-        spansBySpanId.values().forEach(result::add);
-        return result;
     }
 
     public void forEachSpan(Consumer<ModifiableSpan> spanConsumer) {

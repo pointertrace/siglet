@@ -8,8 +8,8 @@ import io.opentelemetry.proto.trace.v1.Status;
 
 public class ProtoStatusAdapter extends Adapter<Status, Status.Builder> implements ModifiableStatus {
 
-    public ProtoStatusAdapter(Status protoStatus, boolean updatable) {
-        super(protoStatus, Status::toBuilder, Status.Builder::build, updatable);
+    public ProtoStatusAdapter(Status protoStatus) {
+        super(protoStatus, Status::toBuilder, Status.Builder::build);
     }
 
     public ProtoStatusAdapter() {

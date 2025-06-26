@@ -33,7 +33,7 @@ class ProtoEventsAdapterTest {
                         .build()
         );
 
-        protoEventsAdapter = new ProtoEventsAdapter(protoEvents, true);
+        protoEventsAdapter = new ProtoEventsAdapter(protoEvents);
     }
 
     @Test
@@ -57,22 +57,6 @@ class ProtoEventsAdapterTest {
 
         assertFalse(protoEventsAdapter.isUpdated());
 
-    }
-
-    @Test
-    void changeNonUpdatable() {
-        protoEventsAdapter = new ProtoEventsAdapter(List.of(Span.Event.newBuilder().build()), false);
-
-
-        assertThrowsExactly(SigletError.class, () ->
-                protoEventsAdapter.add());
-
-
-        assertThrowsExactly(SigletError.class, () -> protoEventsAdapter.remove(0));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventsAdapter.get(0).setName("new-name"));
-
-        assertFalse(protoEventsAdapter.isUpdated());
     }
 
     @Test
@@ -133,7 +117,7 @@ class ProtoEventsAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoEventsAdapter = new ProtoEventsAdapter(protoEvents, false);
+        protoEventsAdapter = new ProtoEventsAdapter(protoEvents);
 
         assertSame(protoEvents, protoEventsAdapter.getUpdated());
 

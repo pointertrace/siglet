@@ -12,8 +12,8 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
 
     private ProtoValueAtQuantilesAdapter protoValueAtQuantilesAdapter;
 
-    public ProtoSummaryDataPointAdapter(SummaryDataPoint protoSummaryDataPoint, boolean updatable) {
-        super(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build, updatable);
+    public ProtoSummaryDataPointAdapter(SummaryDataPoint protoSummaryDataPoint) {
+        super(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build);
     }
 
     public ProtoSummaryDataPointAdapter(SummaryDataPoint.Builder protoSummaryDataPointBuilder) {
@@ -23,7 +23,7 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -31,8 +31,7 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
     @Override
     public ProtoValueAtQuantilesAdapter getQuantileValues() {
         if (protoValueAtQuantilesAdapter == null) {
-            protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(getMessage().getQuantileValuesList(),
-                    isUpdatable());
+            protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(getMessage().getQuantileValuesList());
         }
         return protoValueAtQuantilesAdapter;
     }

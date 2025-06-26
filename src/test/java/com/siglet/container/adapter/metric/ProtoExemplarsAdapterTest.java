@@ -44,7 +44,7 @@ class ProtoExemplarsAdapterTest {
 
         protoExemplars.add(secondProtoExemplar);
 
-        protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, true);
+        protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars);
     }
 
     @Test
@@ -101,20 +101,12 @@ class ProtoExemplarsAdapterTest {
 
     @Test
     void get_notUpdatable() {
-        protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
+        protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars);
 
         assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
         assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));
 
     }
 
-    @Test
-    void update_notUpdatable() {
-        protoExemplarsAdapter = new ProtoExemplarsAdapter(protoExemplars, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.add());
-        assertThrowsExactly(SigletError.class, () -> protoExemplarsAdapter.remove(0));
-
-    }
 
 }

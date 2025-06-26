@@ -8,8 +8,8 @@ public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> i
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoEventAdapter(Span.Event protoEvent, boolean updatable) {
-        super(protoEvent, Span.Event::toBuilder, Span.Event.Builder::build, updatable);
+    public ProtoEventAdapter(Span.Event protoEvent) {
+        super(protoEvent, Span.Event::toBuilder, Span.Event.Builder::build);
     }
 
     public ProtoEventAdapter(Span.Event.Builder protoEventBuilder) {
@@ -59,7 +59,7 @@ public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> i
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
             protoAttributesAdapter = new ProtoAttributesAdapter(
-                    getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList), isUpdatable());
+                    getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
 
         }
         return protoAttributesAdapter;

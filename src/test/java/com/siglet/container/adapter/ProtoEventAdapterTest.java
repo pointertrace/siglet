@@ -34,7 +34,7 @@ class ProtoEventAdapterTest {
                         .build())
                 .build();
 
-        protoEventAdapter = new ProtoEventAdapter(protoEvent, true);
+        protoEventAdapter = new ProtoEventAdapter(protoEvent);
 
     }
 
@@ -61,27 +61,6 @@ class ProtoEventAdapterTest {
         assertTrue(protoEventAdapter.isUpdated());
     }
 
-    @Test
-    void changeNonUpdatable() {
-        protoEventAdapter = new ProtoEventAdapter(Span.Event.newBuilder().build(), false);
-
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setName("new-event-name"));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setTimeUnixNano(2));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.setDroppedAttributesCount(3));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().set("any", "any-value"));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().remove("any"));
-
-        assertThrowsExactly(SigletError.class, () -> protoEventAdapter.getAttributes().remove("any"));
-
-        assertFalse(protoEventAdapter.isUpdated());
-    }
 
     @Test
     void attributesGet() {
@@ -117,7 +96,7 @@ class ProtoEventAdapterTest {
     void getUpdate_notUpdatable() {
 
         Span.Event actualProtoEvent = Span.Event.newBuilder().build();
-        protoEventAdapter = new ProtoEventAdapter(actualProtoEvent, false);
+        protoEventAdapter = new ProtoEventAdapter(actualProtoEvent);
 
         assertSame(actualProtoEvent, protoEventAdapter.getUpdated());
 

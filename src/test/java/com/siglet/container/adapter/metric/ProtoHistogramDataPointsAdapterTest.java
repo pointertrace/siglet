@@ -44,10 +44,10 @@ class ProtoHistogramDataPointsAdapterTest {
                 .build();
 
         protoHistogramDataPoints = List.of(firstHistogramDataPoint, secondHistogramDataPoint);
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints, true);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints);
 
         protoThirdNumberDataPointAdapter =
-                new ProtoHistogramDataPointAdapter(thirdHistogramDataPoint, true);
+                new ProtoHistogramDataPointAdapter(thirdHistogramDataPoint);
     }
 
     @Test
@@ -90,22 +90,12 @@ class ProtoHistogramDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints, false);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints);
 
         assertEquals(2, protoHistogramDataPointsAdapter.getSize());
 
         assertSame(firstHistogramDataPoint, protoHistogramDataPointsAdapter.getUpdated().get(0));
         assertSame(secondHistogramDataPoint, protoHistogramDataPointsAdapter.getUpdated().get(1));
-
-    }
-
-    @Test
-    void update_notUpdatable() {
-
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoHistogramDataPointsAdapter.add());
-        assertThrowsExactly(SigletError.class, () -> protoHistogramDataPointsAdapter.remove(0));
 
     }
 

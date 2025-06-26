@@ -21,7 +21,7 @@ class ProtoBucketsAdapterTest {
                 .addBucketCounts(10)
                 .build();
 
-        protoBucketsAdapter = new ProtoBucketsAdapter(protoBuckets, true);
+        protoBucketsAdapter = new ProtoBucketsAdapter(protoBuckets);
     }
 
     @Test
@@ -49,22 +49,4 @@ class ProtoBucketsAdapterTest {
 
     }
 
-    @Test
-    void changeNonUpdatable() {
-
-        protoBucketsAdapter = new ProtoBucketsAdapter(protoBuckets, false);
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoBucketsAdapter.setOffset(1);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoBucketsAdapter.addBucketCount(10);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoBucketsAdapter.clearBucketCounts();
-        });
-
-    }
 }

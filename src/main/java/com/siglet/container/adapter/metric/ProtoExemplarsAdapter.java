@@ -9,8 +9,8 @@ import java.util.List;
 public class ProtoExemplarsAdapter extends AdapterList<Exemplar, Exemplar.Builder, ProtoExemplarAdapter>
         implements ModifiableExemplars {
 
-    public ProtoExemplarsAdapter(List<Exemplar> exemplars, boolean updatable) {
-        super(exemplars, updatable);
+    public ProtoExemplarsAdapter(List<Exemplar> exemplars) {
+        super(exemplars);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class ProtoExemplarsAdapter extends AdapterList<Exemplar, Exemplar.Builde
 
     @Override
     protected ProtoExemplarAdapter createAdapter(int i) {
-        return new ProtoExemplarAdapter(getMessage(i),isUpdatable());
+        return new ProtoExemplarAdapter(getMessage(i));
     }
 }

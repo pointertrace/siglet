@@ -52,7 +52,7 @@ class MetricletTest {
         Resource resource = Resource.newBuilder() .build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
 
-        ProtoMetricAdapter protoMetricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope, true);
+        ProtoMetricAdapter protoMetricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoMetricAdapter);
 //
 //

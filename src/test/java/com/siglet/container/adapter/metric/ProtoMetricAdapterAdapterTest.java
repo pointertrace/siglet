@@ -127,11 +127,11 @@ class ProtoMetricAdapterAdapterTest {
                         .build())
                 .build();
 
-        protoGaugeMetricAdapter = new ProtoMetricAdapter(protoGaugeMetric, protoResource, protoInstrumentationScope, true);
-        protoSumMetricAdapter = new ProtoMetricAdapter(protoSumMetric, protoResource, protoInstrumentationScope, true);
-        protoHistogramMetricAdapter = new ProtoMetricAdapter(protoHistogramMetric, protoResource, protoInstrumentationScope, true);
-        protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter(protoExponentialHistogramMetric, protoResource, protoInstrumentationScope, true);
-        protoSummaryMetricAdapter = new ProtoMetricAdapter(protoSummaryMetric, protoResource, protoInstrumentationScope, true);
+        protoGaugeMetricAdapter = new ProtoMetricAdapter(protoGaugeMetric, protoResource, protoInstrumentationScope);
+        protoSumMetricAdapter = new ProtoMetricAdapter(protoSumMetric, protoResource, protoInstrumentationScope);
+        protoHistogramMetricAdapter = new ProtoMetricAdapter(protoHistogramMetric, protoResource, protoInstrumentationScope);
+        protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter(protoExponentialHistogramMetric, protoResource, protoInstrumentationScope);
+        protoSummaryMetricAdapter = new ProtoMetricAdapter(protoSummaryMetric, protoResource, protoInstrumentationScope);
 
     }
 
@@ -363,86 +363,5 @@ class ProtoMetricAdapterAdapterTest {
 
     }
 
-    @Test
-    void setNonUpdatable_gaugeMetric() {
-        protoGaugeMetricAdapter = new ProtoMetricAdapter(protoGaugeMetric, Resource.newBuilder().build(),
-                InstrumentationScope.newBuilder().build(), false);
 
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.setName("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.setDescription("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.setUnit("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.getGauge().getDataPoints().add());
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.getGauge().getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoGaugeMetricAdapter.getGauge().getDataPoints().getAt(0)
-                .setAsLong(0));
-
-        assertFalse(protoGaugeMetricAdapter.isUpdated());
-    }
-
-    @Test
-    void setNonUpdatable_sumMetric() {
-        protoSumMetricAdapter = new ProtoMetricAdapter(protoSumMetric, Resource.newBuilder().build(),
-                InstrumentationScope.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.setName("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.setDescription("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.setUnit("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.getSum().getDataPoints().add());
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.getSum().getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoSumMetricAdapter.getSum().getDataPoints().getAt(0)
-                .setAsLong(0));
-
-        assertFalse(protoSumMetricAdapter.isUpdated());
-    }
-
-    @Test
-    void setNonUpdatable_histogramMetric() {
-        protoHistogramMetricAdapter = new ProtoMetricAdapter(protoHistogramMetric, Resource.newBuilder().build(),
-                InstrumentationScope.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.setName("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.setDescription("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.setUnit("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.getHistogram().getDataPoints().add());
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.getHistogram().getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoHistogramMetricAdapter.getHistogram().getDataPoints().getAt(0)
-                .setSum(0));
-
-        assertFalse(protoHistogramMetricAdapter.isUpdated());
-    }
-
-    @Test
-    void setNonUpdatable_exponentialHistogramMetric() {
-        protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter(protoExponentialHistogramMetric,
-                Resource.newBuilder().build(), InstrumentationScope.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.setName("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.setDescription("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.setUnit("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.getExponentialHistogram()
-                .getDataPoints().add());
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.getExponentialHistogram()
-                .getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoExponentialHistogramMetricAdapter.getExponentialHistogram()
-                .getDataPoints().getAt(0)
-                .setSum(0));
-
-        assertFalse(protoExponentialHistogramMetricAdapter.isUpdated());
-    }
-
-    @Test
-    void setNonUpdatable_summaryMetric() {
-        protoSummaryMetricAdapter = new ProtoMetricAdapter(protoSummaryMetric,
-                Resource.newBuilder().build(), InstrumentationScope.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.setName("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.setDescription("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.setUnit("new-value"));
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.getSummary().getDataPoints().add());
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.getSummary().getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoSummaryMetricAdapter.getSummary().getDataPoints().getAt(0)
-                .setSum(0));
-
-        assertFalse(protoSummaryMetricAdapter.isUpdated());
-    }
 }

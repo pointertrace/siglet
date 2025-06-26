@@ -11,8 +11,8 @@ public class ProtoSummaryDataPointsAdapter extends AdapterList<SummaryDataPoint,
         implements ModifiableSummaryDataPoints {
 
     public ProtoSummaryDataPointsAdapter(
-            List<SummaryDataPoint> protoSummaryDataPoints, boolean updatable) {
-        super(protoSummaryDataPoints, updatable);
+            List<SummaryDataPoint> protoSummaryDataPoints) {
+        super(protoSummaryDataPoints);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class ProtoSummaryDataPointsAdapter extends AdapterList<SummaryDataPoint,
 
     @Override
     protected ProtoSummaryDataPointAdapter createAdapter(int i) {
-        return new ProtoSummaryDataPointAdapter(getMessage(i), isUpdatable());
+        return new ProtoSummaryDataPointAdapter(getMessage(i));
     }
 }

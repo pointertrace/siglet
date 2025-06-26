@@ -9,8 +9,8 @@ import java.util.List;
 public class ProtoEventsAdapter extends AdapterList<Span.Event, Span.Event.Builder, ProtoEventAdapter>
         implements ModifiableEvents {
 
-    public ProtoEventsAdapter(List<Span.Event> events, boolean updatable) {
-        super(events, updatable);
+    public ProtoEventsAdapter(List<Span.Event> events) {
+        super(events);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ProtoEventsAdapter extends AdapterList<Span.Event, Span.Event.Build
 
     @Override
     protected ProtoEventAdapter createAdapter(int i) {
-        return new ProtoEventAdapter(getMessage(i), isUpdatable());
+        return new ProtoEventAdapter(getMessage(i));
     }
 
 

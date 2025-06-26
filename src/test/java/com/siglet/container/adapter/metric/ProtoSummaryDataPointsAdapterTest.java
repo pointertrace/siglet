@@ -42,7 +42,7 @@ class ProtoSummaryDataPointsAdapterTest {
                 .build();
 
         protoSummaryDataPoints = List.of(firstSummaryDataPoint, secondSummaryDataPoint);
-        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints, true);
+        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints);
 
     }
 
@@ -86,7 +86,7 @@ class ProtoSummaryDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints, false);
+        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints);
 
         assertEquals(2, protoSummaryDataPointsAdapter.getSize());
 
@@ -95,14 +95,5 @@ class ProtoSummaryDataPointsAdapterTest {
 
     }
 
-    @Test
-    void update_notUpdatable() {
-
-        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoSummaryDataPointsAdapter.add());
-        assertThrowsExactly(SigletError.class, () -> protoSummaryDataPointsAdapter.remove(0));
-
-    }
 
 }

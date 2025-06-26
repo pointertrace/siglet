@@ -56,7 +56,7 @@ class ProtoAttributesAdapterGroovyTest {
                 .setValue(AdapterUtils.objectToAnyValue(new byte[]{0, 1, 2}))
                 .build())
 
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes, true)
+        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes)
     }
 
 

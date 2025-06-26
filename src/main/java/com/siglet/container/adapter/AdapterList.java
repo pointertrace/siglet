@@ -1,7 +1,6 @@
 package com.siglet.container.adapter;
 
 import com.google.protobuf.Message;
-import com.siglet.SigletError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +13,14 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     private List<A> adapters;
 
-    private final boolean updatable;
-
     private boolean updated;
 
-    protected AdapterList(List<M> messages, boolean updatable) {
+    protected AdapterList(List<M> messages) {
         this.messages = messages;
-        this.updatable = updatable;
     }
 
     public List<M> getUpdated() {
-        if (!updatable) {
-            return messages;
-        } else if (!isUpdated()) {
+        if (!isUpdated()) {
             return messages;
         } else {
             List<M> updatedList = new ArrayList<>();
@@ -49,12 +43,8 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
         return updated || (adapters != null && adapters.stream().filter(Objects::nonNull).anyMatch(Adapter::isUpdated));
     }
 
-    public boolean isUpdatable() {
-        return updatable;
-    }
-
     public A add() {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         A newAdapter = createNewAdapter();
         adapters.add(newAdapter);
         messages.add(null);
@@ -62,13 +52,13 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
     }
 
     protected void remove(int i) {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         adapters.remove(i);
         messages.remove(i);
     }
 
     protected boolean remove(Predicate<M> messagePredicate, Predicate<B> builderPredicate) {
-        checkAndPrepareUpdate();
+        prepareUpdate();
         int i = findIndex(messagePredicate, builderPredicate);
         if (i >= 0) {
             remove(i);
@@ -134,14 +124,10 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     protected abstract A createAdapter(int i);
 
-    private void checkAndPrepareUpdate() {
-        if (!updatable) {
-            throw new SigletError("list is not updatable!");
-        } else {
-            messages = new ArrayList<>(messages);
-            initAdaptersIfNeeded();
-            updated = true;
-        }
+    private void prepareUpdate() {
+        messages = new ArrayList<>(messages);
+        initAdaptersIfNeeded();
+        updated = true;
     }
 
     private void initAdaptersIfNeeded() {

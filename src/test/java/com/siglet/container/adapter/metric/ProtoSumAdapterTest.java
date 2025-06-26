@@ -34,7 +34,7 @@ class ProtoSumAdapterTest {
                 .build();
 
 
-        protoSumAdapter = new ProtoSumAdapter(protoSum, true);
+        protoSumAdapter = new ProtoSumAdapter(protoSum);
 
     }
 
@@ -59,7 +59,7 @@ class ProtoSumAdapterTest {
                 .setAsDouble(30.21)
                 .build();
 
-        new ProtoNumberDataPointAdapter(protoExtraNumberDataPoint, true);
+        new ProtoNumberDataPointAdapter(protoExtraNumberDataPoint);
 
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertEquals(protoExtraNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(1));
@@ -70,24 +70,13 @@ class ProtoSumAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoSumAdapter = new ProtoSumAdapter(protoSum, false);
+        protoSumAdapter = new ProtoSumAdapter(protoSum);
 
 
         protoSumAdapter.getDataPoints().getAt(0);
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertSame(protoSum, protoSumAdapter.getUpdated());
         assertFalse(protoSumAdapter.isUpdated());
-
-    }
-
-    @Test
-    void change_notUpdatable() {
-
-        protoSumAdapter = new ProtoSumAdapter(protoSum, false);
-
-
-        assertThrowsExactly(SigletError.class, () -> protoSumAdapter.getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoSumAdapter.getDataPoints().add());
 
     }
 

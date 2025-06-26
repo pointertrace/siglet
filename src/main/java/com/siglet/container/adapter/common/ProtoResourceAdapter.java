@@ -8,13 +8,13 @@ public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> im
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoResourceAdapter(Resource protoResource, boolean updatable) {
-        super(protoResource, Resource::toBuilder, Resource.Builder::build, updatable);
+    public ProtoResourceAdapter(Resource protoResource) {
+        super(protoResource, Resource::toBuilder, Resource.Builder::build);
     }
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }

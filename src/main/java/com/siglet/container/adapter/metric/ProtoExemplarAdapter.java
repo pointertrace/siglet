@@ -12,8 +12,8 @@ public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> im
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoExemplarAdapter(Exemplar protoExemplar, boolean updatable) {
-        super(protoExemplar, Exemplar::toBuilder, Exemplar.Builder::build, updatable);
+    public ProtoExemplarAdapter(Exemplar protoExemplar) {
+        super(protoExemplar, Exemplar::toBuilder, Exemplar.Builder::build);
     }
 
     public ProtoExemplarAdapter(Exemplar.Builder protoExamplarBuilder) {
@@ -26,7 +26,7 @@ public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> im
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
             protoAttributesAdapter = new ProtoAttributesAdapter(getValue(Exemplar::getFilteredAttributesList,
-                    Exemplar.Builder::getFilteredAttributesList), isUpdatable());
+                    Exemplar.Builder::getFilteredAttributesList));
         }
 
         return protoAttributesAdapter;

@@ -10,8 +10,8 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements Modifi
 
     private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
 
-    public ProtoSumAdapter(Sum protoSum, boolean updatable) {
-        super(protoSum, Sum::toBuilder, Sum.Builder::build, updatable);
+    public ProtoSumAdapter(Sum protoSum) {
+        super(protoSum, Sum::toBuilder, Sum.Builder::build);
     }
 
     public ProtoSumAdapter() {
@@ -27,7 +27,7 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements Modifi
     public ProtoNumberDataPointsAdapter getDataPoints() {
         if (protoNumberDataPointsAdapter == null) {
             protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(
-                    getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList), isUpdatable());
+                    getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList));
         }
         return protoNumberDataPointsAdapter;
     }

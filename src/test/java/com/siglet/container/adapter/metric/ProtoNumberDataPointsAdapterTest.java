@@ -47,10 +47,10 @@ class ProtoNumberDataPointsAdapterTest {
                 .build();
 
         protoNumberDataPoints = List.of(firstNumberDataPoint, secondNumberDataPoint);
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, true);
+        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints);
 
         protoThirdNumberDataPointAdapter =
-                new ProtoNumberDataPointAdapter(thirdNumberDataPoint, true);
+                new ProtoNumberDataPointAdapter(thirdNumberDataPoint);
     }
 
     @Test
@@ -94,22 +94,12 @@ class ProtoNumberDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
+        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints);
 
         assertEquals(2, protoNumberDataPointsAdapter.getSize());
 
         assertSame(firstNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(0));
         assertSame(secondNumberDataPoint, protoNumberDataPointsAdapter.getUpdated().get(1));
-
-    }
-
-    @Test
-    void update_notUpdatable() {
-
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(protoNumberDataPoints, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoNumberDataPointsAdapter.add());
-        assertThrowsExactly(SigletError.class, () -> protoNumberDataPointsAdapter.remove(0));
 
     }
 

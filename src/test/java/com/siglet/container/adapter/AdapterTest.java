@@ -21,7 +21,7 @@ class AdapterTest {
                 .setValue(AnyValue.newBuilder().setStringValue("value").build())
                 .build();
 
-        adapter = new Adapter<>(keyValue, KeyValue::toBuilder, KeyValue.Builder::build, true);
+        adapter = new Adapter<>(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
     }
 
 
@@ -126,7 +126,7 @@ class AdapterTest {
    public static class AdapterWithBuilderEnrich extends Adapter<KeyValue, KeyValue.Builder> {
 
        public AdapterWithBuilderEnrich(KeyValue message) {
-           super(message, KeyValue::toBuilder, KeyValue.Builder::build, true);
+           super(message, KeyValue::toBuilder, KeyValue.Builder::build);
        }
 
        @Override

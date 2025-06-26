@@ -13,8 +13,8 @@ public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder,
         implements ModifiableLinks {
 
 
-    public ProtoLinksAdapter(List<Span.Link> protolinks, boolean updatable) {
-        super(protolinks, updatable);
+    public ProtoLinksAdapter(List<Span.Link> protolinks) {
+        super(protolinks);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder,
 
     @Override
     protected ProtoLinkAdapter createAdapter(int i) {
-        return new ProtoLinkAdapter(getMessage(i), isUpdatable());
+        return new ProtoLinkAdapter(getMessage(i));
     }
 
     public boolean has(long traceIdHigh, long traceIdLow, long spanId) {

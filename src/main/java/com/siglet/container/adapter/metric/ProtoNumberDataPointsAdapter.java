@@ -11,8 +11,8 @@ public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, N
 
 
 
-    public ProtoNumberDataPointsAdapter(List<NumberDataPoint> protoNumberDataPoints, boolean updatable) {
-        super(protoNumberDataPoints, updatable);
+    public ProtoNumberDataPointsAdapter(List<NumberDataPoint> protoNumberDataPoints) {
+        super(protoNumberDataPoints);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, N
 
     @Override
     protected ProtoNumberDataPointAdapter createAdapter(int i) {
-        return new ProtoNumberDataPointAdapter(getMessage(i), isUpdatable());
+        return new ProtoNumberDataPointAdapter(getMessage(i));
     }
 }

@@ -33,7 +33,7 @@ class ProtoHistogramAdapterTest {
                 .build();
 
 
-        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram, true);
+        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram);
 
     }
 
@@ -56,7 +56,7 @@ class ProtoHistogramAdapterTest {
                 .setStartTimeUnixNano(20)
                 .build();
 
-        new ProtoHistogramDataPointAdapter(protoExtraNumberDataPoint, true);
+        new ProtoHistogramDataPointAdapter(protoExtraNumberDataPoint);
 
         assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
         assertEquals(protoExtraNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(1));
@@ -67,7 +67,7 @@ class ProtoHistogramAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram, false);
+        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram);
 
 
         protoHistogramAdapter.getDataPoints().getAt(0);
@@ -77,15 +77,5 @@ class ProtoHistogramAdapterTest {
 
     }
 
-    @Test
-    void change_notUpdatable() {
-
-        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram, false);
-
-
-        assertThrowsExactly(SigletError.class, () -> protoHistogramAdapter.getDataPoints().remove(0));
-        assertThrowsExactly(SigletError.class, () -> protoHistogramAdapter.getDataPoints().add());
-
-    }
 
 }

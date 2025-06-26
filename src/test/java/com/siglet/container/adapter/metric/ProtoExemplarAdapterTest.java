@@ -31,7 +31,7 @@ class ProtoExemplarAdapterTest {
                         .build()))
                 .build();
 
-        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar, true);
+        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar);
     }
 
 
@@ -78,24 +78,9 @@ class ProtoExemplarAdapterTest {
 
 
     @Test
-    void setNotUpdatable() {
-        protoExemplarAdapter = new ProtoExemplarAdapter(Exemplar.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setTimeUnixNanos(1));
-        assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setSpanId(1));
-        assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setTraceId(1, 2));
-        assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setAsLong(1));
-        assertThrowsExactly(SigletError.class, () -> protoExemplarAdapter.setAsDouble(1.1));
-        assertThrowsExactly(SigletError.class, () -> {
-            protoExemplarAdapter.getAttributes().remove("any-key");
-        });
-
-    }
-
-    @Test
     void getUpdatedExemplar_notUpdatable() {
 
-        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar, false);
+        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar);
 
         assertSame(protoExemplar, protoExemplarAdapter.getUpdated());
 

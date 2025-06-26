@@ -16,10 +16,9 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
 
     private ProtoBucketsAdapter protoNegativeBucketAdapter;
 
-    public ProtoExponentialHistogramDataPointAdapter(ExponentialHistogramDataPoint protoExponentialHistogramDataPoint,
-                                                     boolean updatable) {
+    public ProtoExponentialHistogramDataPointAdapter(ExponentialHistogramDataPoint protoExponentialHistogramDataPoint) {
         super(protoExponentialHistogramDataPoint, ExponentialHistogramDataPoint::toBuilder,
-                ExponentialHistogramDataPoint.Builder::build, updatable);
+                ExponentialHistogramDataPoint.Builder::build);
     }
 
 
@@ -30,7 +29,7 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -93,7 +92,7 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     @Override
     public ProtoBucketsAdapter getPositive() {
         if (protoPositiveBucketAdapter == null) {
-            protoPositiveBucketAdapter = new ProtoBucketsAdapter(getMessage().getPositive(), isUpdatable());
+            protoPositiveBucketAdapter = new ProtoBucketsAdapter(getMessage().getPositive());
         }
         return protoPositiveBucketAdapter;
     }
@@ -101,7 +100,7 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     @Override
     public ProtoBucketsAdapter getNegative() {
         if (protoNegativeBucketAdapter == null) {
-            protoNegativeBucketAdapter = new ProtoBucketsAdapter(getMessage().getNegative(), isUpdatable());
+            protoNegativeBucketAdapter = new ProtoBucketsAdapter(getMessage().getNegative());
         }
         return protoNegativeBucketAdapter;
     }
@@ -109,7 +108,7 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList(), isUpdatable());
+            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList());
 
         }
         return protoExemplarsAdapter;

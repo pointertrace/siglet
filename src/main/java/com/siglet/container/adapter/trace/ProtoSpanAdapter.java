@@ -1,7 +1,6 @@
 package com.siglet.container.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.api.CloneableAdapter;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.trace.SpanKind;
 import com.siglet.container.adapter.Adapter;
@@ -20,7 +19,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
-        implements ModifiableSpan, CloneableAdapter<ProtoSpanAdapter> {
+        implements ModifiableSpan {
 
     private Resource protoResource;
 
@@ -40,7 +39,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
 
     public ProtoSpanAdapter(Span protoSpan, Resource protoResource, InstrumentationScope protoInstrumentationScope,
                             boolean updatable) {
-        super(protoSpan, Span::toBuilder, Span.Builder::build, updatable);
+        super(protoSpan, Span::toBuilder, Span.Builder::build);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
     }
@@ -186,14 +185,14 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
 
     public ProtoStatusAdapter getStatus() {
         if (protoStatusAdapter == null) {
-            protoStatusAdapter = new ProtoStatusAdapter(getMessage().getStatus(), isUpdatable());
+            protoStatusAdapter = new ProtoStatusAdapter(getMessage().getStatus());
         }
         return protoStatusAdapter;
     }
@@ -201,7 +200,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoResourceAdapter getResource() {
         if (protoResourceAdapter == null) {
-            protoResourceAdapter = new ProtoResourceAdapter(protoResource, isUpdatable());
+            protoResourceAdapter = new ProtoResourceAdapter(protoResource);
         }
         return protoResourceAdapter;
     }
@@ -209,7 +208,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoInstrumentationScopeAdapter getInstrumentationScope() {
         if (protoInstrumentationScopeAdapter == null) {
-            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, isUpdatable());
+            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope);
         }
         return protoInstrumentationScopeAdapter;
     }
@@ -217,7 +216,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoLinksAdapter getLinks() {
         if (protoLinksAdapter == null) {
-            protoLinksAdapter = new ProtoLinksAdapter(getMessage().getLinksList(), isUpdatable());
+            protoLinksAdapter = new ProtoLinksAdapter(getMessage().getLinksList());
         }
         return protoLinksAdapter;
     }
@@ -225,7 +224,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoEventsAdapter getEvents() {
         if (protoEventsAdapter == null) {
-            protoEventsAdapter = new ProtoEventsAdapter(getMessage().getEventsList(), isUpdatable());
+            protoEventsAdapter = new ProtoEventsAdapter(getMessage().getEventsList());
         }
         return protoEventsAdapter;
     }
@@ -337,9 +336,7 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     }
 
     public Resource getUpdatedResource() {
-        if (!isUpdatable()) {
-            return protoResource;
-        } else if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
+        if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
             return protoResource;
         } else {
             return protoResourceAdapter.getUpdated();
@@ -347,20 +344,13 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     }
 
     public InstrumentationScope getUpdatedInstrumentationScope() {
-        if (!isUpdatable()) {
-            return protoInstrumentationScope;
-        } else if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
+        if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
             return protoInstrumentationScope;
         } else {
             return protoInstrumentationScopeAdapter.getUpdated();
         }
     }
 
-
-    @Override
-    public ProtoSpanAdapter cloneAdapter() {
-        return new ProtoSpanAdapter(getUpdated(), getUpdatedResource(), getUpdatedInstrumentationScope(), isUpdatable());
-    }
 
     @Override
     public String getId() {

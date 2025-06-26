@@ -16,8 +16,8 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
 
     private ProtoExemplarsAdapter protoExemplarsAdapter;
 
-    public ProtoNumberDataPointAdapter(NumberDataPoint protoNumberDataPoint, boolean updatable) {
-        super(protoNumberDataPoint, NumberDataPoint::toBuilder, NumberDataPoint.Builder::build, updatable);
+    public ProtoNumberDataPointAdapter(NumberDataPoint protoNumberDataPoint) {
+        super(protoNumberDataPoint, NumberDataPoint::toBuilder, NumberDataPoint.Builder::build);
     }
 
 
@@ -36,7 +36,7 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
             } else {
                 attributes = getMessage().getAttributesList();
             }
-            protoAttributesAdapter = new ProtoAttributesAdapter(attributes, isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(attributes);
         }
         return protoAttributesAdapter;
     }
@@ -81,7 +81,7 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList(), isUpdatable());
+            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList());
 
         }
         return protoExemplarsAdapter;

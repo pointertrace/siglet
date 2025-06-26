@@ -35,7 +35,7 @@ class ProtoInstrumentationScopeAdapterTest {
                         .build())
                 .build();
 
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope, true);
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope);
 
     }
 
@@ -95,32 +95,10 @@ class ProtoInstrumentationScopeAdapterTest {
 
 
     @Test
-    void changeNotUpdatable() {
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(
-                InstrumentationScope.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoInstrumentationScopeAdapter.setName("new-name-value");
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoInstrumentationScopeAdapter.setVersion("new-version-value");
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoInstrumentationScopeAdapter.setDroppedAttributesCount(3);
-        });
-
-        assertThrowsExactly(SigletError.class, () -> {
-            protoInstrumentationScopeAdapter.getAttributes().remove("key");
-        });
-    }
-
-    @Test
     void getUpdate_notUpdatable() {
 
         InstrumentationScope actualProtoInstAdapt = InstrumentationScope.newBuilder().build();
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(actualProtoInstAdapt, false);
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(actualProtoInstAdapt);
 
         assertSame(actualProtoInstAdapt, protoInstrumentationScopeAdapter.getUpdated());
 

@@ -9,9 +9,8 @@ public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationSco
 
     private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoInstrumentationScopeAdapter(InstrumentationScope protoInstrumentationScope, boolean updatable) {
-        super(protoInstrumentationScope, InstrumentationScope::toBuilder,
-                InstrumentationScope.Builder::build, updatable);
+    public ProtoInstrumentationScopeAdapter(InstrumentationScope protoInstrumentationScope) {
+        super(protoInstrumentationScope, InstrumentationScope::toBuilder, InstrumentationScope.Builder::build);
     }
 
 
@@ -47,7 +46,7 @@ public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationSco
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList(), isUpdatable());
+            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }

@@ -35,7 +35,7 @@ class AdapterListTest {
 
         keyValueList = List.of(first, second);
 
-        keyValues = new KeyValues(keyValueList, true);
+        keyValues = new KeyValues(keyValueList);
 
     }
 
@@ -51,7 +51,6 @@ class AdapterListTest {
         assertSame(first, keyValues.getAdapter(0).getUpdated());
 
         assertFalse(keyValues.isUpdated());
-        assertTrue(keyValues.isUpdatable());
     }
 
     @Test
@@ -125,8 +124,8 @@ class AdapterListTest {
 
     static class KeyValues extends AdapterList<KeyValue, KeyValue.Builder, KeyValueAdapter> {
 
-        public KeyValues(List<KeyValue> messages, boolean updatable) {
-            super(messages, updatable);
+        public KeyValues(List<KeyValue> messages) {
+            super(messages);
         }
 
         @Override
@@ -136,7 +135,7 @@ class AdapterListTest {
 
         @Override
         protected KeyValueAdapter createAdapter(int i) {
-            return new KeyValueAdapter(getMessage(i), isUpdatable());
+            return new KeyValueAdapter(getMessage(i));
         }
 
     }
@@ -164,7 +163,7 @@ class AdapterListTest {
     @Test
     void getUpdated_notUpdated() {
 
-        keyValues = new KeyValues(keyValueList, false);
+        keyValues = new KeyValues(keyValueList);
 
         List<KeyValue> actual = keyValues.getUpdated();
 
@@ -215,23 +214,9 @@ class AdapterListTest {
 
     }
 
-    @Test
-    void notUpdatable() {
-
-        keyValues = new KeyValues(keyValueList, false);
-
-        assertFalse(keyValues.isUpdatable());
-        assertThrowsExactly(SigletError.class, () -> keyValues.add());
-        assertThrowsExactly(SigletError.class, () -> keyValues.remove(0));
-        assertThrowsExactly(SigletError.class, () -> keyValues.remove(kv -> "second".equals(kv.getKey()), kvb -> "second".equals(kvb.getKey())));
-        assertThrowsExactly(SigletError.class, () -> keyValues.getAdapter(0).setKey("new-key"));
-
-    }
-
-
     static class KeyValueAdapter extends Adapter<KeyValue, KeyValue.Builder> {
-        public KeyValueAdapter(KeyValue message, boolean updatable) {
-            super(message, KeyValue::toBuilder, KeyValue.Builder::build, updatable);
+        public KeyValueAdapter(KeyValue message) {
+            super(message, KeyValue::toBuilder, KeyValue.Builder::build);
         }
 
         public KeyValueAdapter(KeyValue.Builder builder) {

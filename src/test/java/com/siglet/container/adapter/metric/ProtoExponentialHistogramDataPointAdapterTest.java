@@ -83,7 +83,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
                 .addAllExemplars(exemplars)
                 .build();
 
-        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(exponentialHistogramDataPoint, true);
+        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(exponentialHistogramDataPoint);
     }
 
     @Test
@@ -247,7 +247,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     void getUpdated_notUpdatable() {
 
         protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(
-                exponentialHistogramDataPoint, false);
+                exponentialHistogramDataPoint);
 
         ExponentialHistogramDataPoint histogramDataPoint = protoExponentialHistogramDataPointAdapter.getUpdated();
 

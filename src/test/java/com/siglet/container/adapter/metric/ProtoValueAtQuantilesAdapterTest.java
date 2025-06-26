@@ -36,7 +36,7 @@ class ProtoValueAtQuantilesAdapterTest {
 
 
         protoValueAtQuantile = List.of(firstValueAtQuantile, secondValueAtQuantile);
-        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile, true);
+        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile);
 
     }
 
@@ -83,22 +83,12 @@ class ProtoValueAtQuantilesAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile, false);
+        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile);
 
         assertEquals(2, protoValueAtQuantilesAdapter.getSize());
 
         assertSame(firstValueAtQuantile, protoValueAtQuantilesAdapter.getUpdated().get(0));
         assertSame(secondValueAtQuantile, protoValueAtQuantilesAdapter.getUpdated().get(1));
-
-    }
-
-    @Test
-    void update_notUpdatable() {
-
-        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoValueAtQuantilesAdapter.add());
-        assertThrowsExactly(SigletError.class, () -> protoValueAtQuantilesAdapter.remove(0));
 
     }
 

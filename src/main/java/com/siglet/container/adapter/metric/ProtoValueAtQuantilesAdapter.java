@@ -11,8 +11,8 @@ public class ProtoValueAtQuantilesAdapter extends AdapterList<SummaryDataPoint.V
         implements ModifiableValueAtQuantiles {
 
     public ProtoValueAtQuantilesAdapter(
-            List<SummaryDataPoint.ValueAtQuantile> protoValueAtQuantiles, boolean updatable) {
-        super(protoValueAtQuantiles, updatable);
+            List<SummaryDataPoint.ValueAtQuantile> protoValueAtQuantiles) {
+        super(protoValueAtQuantiles);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class ProtoValueAtQuantilesAdapter extends AdapterList<SummaryDataPoint.V
 
     @Override
     protected ProtoValueAtQuantileAdapter createAdapter(int i) {
-        return new ProtoValueAtQuantileAdapter(getMessage(i), isUpdatable());
+        return new ProtoValueAtQuantileAdapter(getMessage(i));
     }
 }

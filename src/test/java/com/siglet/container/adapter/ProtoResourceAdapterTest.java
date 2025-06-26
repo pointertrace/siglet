@@ -33,7 +33,7 @@ class ProtoResourceAdapterTest {
                         .build())
                 .build();
 
-        protoResourceAdapter = new ProtoResourceAdapter(protoResource, true);
+        protoResourceAdapter = new ProtoResourceAdapter(protoResource);
 
     }
 
@@ -89,22 +89,10 @@ class ProtoResourceAdapterTest {
     }
 
     @Test
-    void changeNonUpdatable() {
-
-        protoResourceAdapter = new ProtoResourceAdapter(Resource.newBuilder().build(), false);
-
-        assertThrowsExactly(SigletError.class, () -> protoResourceAdapter.setDroppedAttributesCount(0));
-
-        assertThrowsExactly(SigletError.class, () ->
-                protoResourceAdapter.getAttributes().remove("str-key"));
-
-    }
-
-    @Test
     void getUpdated_notUpdatable() {
 
         Resource actualProtoResource = Resource.newBuilder().build();
-        protoResourceAdapter = new ProtoResourceAdapter(actualProtoResource, false);
+        protoResourceAdapter = new ProtoResourceAdapter(actualProtoResource);
 
         assertSame(actualProtoResource, protoResourceAdapter.getUpdated());
 

@@ -21,7 +21,7 @@ class ProtoValueAtQuantileAdapterTest {
                 .setQuantile(3.4)
                 .build();
 
-        protoValueAtQuantileAdapter =  new ProtoValueAtQuantileAdapter(protoValueAtQuantile, true);
+        protoValueAtQuantileAdapter =  new ProtoValueAtQuantileAdapter(protoValueAtQuantile);
 
     }
 
@@ -43,17 +43,6 @@ class ProtoValueAtQuantileAdapterTest {
         assertEquals(7.8, protoValueAtQuantileAdapter.getValue());
         assertTrue(protoValueAtQuantileAdapter.isUpdated());
 
-    }
-
-    @Test
-    void changeNotUpdated(){
-
-        protoValueAtQuantileAdapter = new ProtoValueAtQuantileAdapter(protoValueAtQuantile, false);
-
-        assertThrowsExactly(SigletError.class, () -> protoValueAtQuantileAdapter.setQuantile(0));
-
-        assertThrowsExactly(SigletError.class, () -> protoValueAtQuantileAdapter.setValue(0));
-        
     }
 
 }
