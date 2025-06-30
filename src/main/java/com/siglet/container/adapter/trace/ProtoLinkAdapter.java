@@ -89,12 +89,20 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
     }
 
     public ProtoAttributesAdapter getAttributes() {
+        // TODO entender pq é assim... e conferir com os outros getAttributes()
         if (protoAttributesAdapter == null) {
             Span.Link message = getMessage();
             if (message != null) {
-                protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
+                protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
             } else {
-                protoAttributesAdapter = new ProtoAttributesAdapter(new ArrayList<>());
+                protoAttributesAdapter = new ProtoAttributesAdapter().recycle(new ArrayList<>());
+            }
+        } else if (! protoAttributesAdapter.isReady()){
+            Span.Link message = getMessage();
+            if (message != null) {
+                protoAttributesAdapter.recycle(getMessage().getAttributesList());
+            } else {
+                protoAttributesAdapter.recycle(new ArrayList<>());
             }
         }
         return protoAttributesAdapter;

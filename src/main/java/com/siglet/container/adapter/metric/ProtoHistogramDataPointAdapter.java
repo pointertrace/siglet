@@ -15,19 +15,28 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
 
     private ProtoExemplarsAdapter protoExemplarsAdapter;
 
+    public ProtoHistogramDataPointAdapter() {
+    }
+
     public ProtoHistogramDataPointAdapter(HistogramDataPoint protoHistogramDataPoint) {
         super(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build);
     }
-
 
     public ProtoHistogramDataPointAdapter(HistogramDataPoint.Builder protoHistogramDataPointBuilder) {
         super(protoHistogramDataPointBuilder, HistogramDataPoint.Builder::build);
     }
 
+    public ProtoHistogramDataPointAdapter recycle(HistogramDataPoint protoHistogramDataPoint) {
+        super.recycle(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build);
+        return this;
+    }
+
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -82,8 +91,9 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
     @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList());
-
+            protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(getMessage().getExemplarsList());
+        } else if (!protoExemplarsAdapter.isReady()) {
+            protoExemplarsAdapter.recycle(getMessage().getExemplarsList());
         }
         return protoExemplarsAdapter;
     }

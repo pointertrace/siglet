@@ -10,9 +10,17 @@ public class ProtoSummaryDataPointsAdapter extends AdapterList<SummaryDataPoint,
         SummaryDataPoint.Builder, ProtoSummaryDataPointAdapter>
         implements ModifiableSummaryDataPoints {
 
-    public ProtoSummaryDataPointsAdapter(
-            List<SummaryDataPoint> protoSummaryDataPoints) {
+    public ProtoSummaryDataPointsAdapter() {
+    }
+
+    public ProtoSummaryDataPointsAdapter(List<SummaryDataPoint> protoSummaryDataPoints) {
         super(protoSummaryDataPoints);
+    }
+
+    public ProtoSummaryDataPointsAdapter recycle(List<SummaryDataPoint> protoSummaryDataPoints) {
+
+        super.recycle(protoSummaryDataPoints);
+        return this;
     }
 
     @Override

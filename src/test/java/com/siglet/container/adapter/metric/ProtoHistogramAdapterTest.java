@@ -33,7 +33,7 @@ class ProtoHistogramAdapterTest {
                 .build();
 
 
-        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram);
+        protoHistogramAdapter = new ProtoHistogramAdapter().recycle(protoHistogram);
 
     }
 
@@ -67,7 +67,7 @@ class ProtoHistogramAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoHistogramAdapter = new ProtoHistogramAdapter(protoHistogram);
+        protoHistogramAdapter = new ProtoHistogramAdapter().recycle(protoHistogram);
 
 
         protoHistogramAdapter.getDataPoints().getAt(0);

@@ -29,8 +29,12 @@ public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogr
     @Override
     public ProtoExponentialHistogramDataPointsAdapter getDataPoints() {
         if (protoExponentialHistogramDataPointsAdapter == null) {
-            protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter(
+            protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter().recycle(
                     getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList));
+        }
+        else if (!protoExponentialHistogramDataPointsAdapter.isReady()) {
+            protoExponentialHistogramDataPointsAdapter
+                    .recycle(getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList));
         }
         return protoExponentialHistogramDataPointsAdapter;
     }

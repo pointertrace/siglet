@@ -42,7 +42,7 @@ class ProtoSummaryDataPointsAdapterTest {
                 .build();
 
         protoSummaryDataPoints = List.of(firstSummaryDataPoint, secondSummaryDataPoint);
-        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints);
+        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter().recycle(protoSummaryDataPoints);
 
     }
 
@@ -86,7 +86,7 @@ class ProtoSummaryDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(protoSummaryDataPoints);
+        protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter().recycle(protoSummaryDataPoints);
 
         assertEquals(2, protoSummaryDataPointsAdapter.getSize());
 

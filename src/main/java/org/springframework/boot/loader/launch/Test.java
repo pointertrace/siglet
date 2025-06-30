@@ -42,7 +42,8 @@ public class Test {
 
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter();
+        protoSpanAdapter.recycle(span, resource, instrumentationScope);
 
         Method method = instance.getClass().getMethod("span", ModifiableSpan.class, Void.class);
 

@@ -1,6 +1,7 @@
 package com.siglet.container.adapter;
 
 import com.google.protobuf.Message;
+import com.siglet.SigletError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,31 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     private boolean updated;
 
+    private boolean ready;
+
+    // TODO remover
     protected AdapterList(List<M> messages) {
         this.messages = messages;
     }
 
+    protected AdapterList() {
+    }
+
+    public AdapterList recycle(List<M> messages) {
+        this.messages = messages;
+        ready = true;
+        return this;
+    }
+
+    public void clear() {
+        messages = null;
+        adapters = null;
+        updated = false;
+        ready = false;
+    }
+
     public List<M> getUpdated() {
+        checkReady();
         if (!isUpdated()) {
             return messages;
         } else {
@@ -36,11 +57,17 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
     }
 
     public int getSize() {
+        checkReady();
         return messages.size();
     }
 
     public boolean isUpdated() {
+        checkReady();
         return updated || (adapters != null && adapters.stream().filter(Objects::nonNull).anyMatch(Adapter::isUpdated));
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 
     public A add() {
@@ -70,6 +97,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
 
     protected A find(Predicate<M> messagePredicate, Predicate<B> builderPredicate) {
+        checkReady();
         int idx = findIndex(messagePredicate, builderPredicate);
         if (idx >= 0) {
             return getAdapter(idx);
@@ -80,6 +108,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
 
     protected int findIndex(Predicate<M> messagePredicate, Predicate<B> builderPredicate) {
+        checkReady();
         for (int i = 0; i < messages.size(); i++) {
             if (hasAdapter(i)) {
                 A adapter = adapters.get(i);
@@ -103,6 +132,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
     }
 
     protected A getAdapter(int i) {
+        checkReady();
         initAdaptersIfNeeded();
         A adapter = adapters.get(i);
         if (adapter == null) {
@@ -113,10 +143,12 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
     }
 
     protected boolean hasAdapter(int i) {
+        checkReady();
         return (adapters != null && adapters.get(i) != null);
     }
 
     protected M getMessage(int i) {
+        checkReady();
         return messages.get(i);
     }
 
@@ -125,6 +157,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
     protected abstract A createAdapter(int i);
 
     private void prepareUpdate() {
+        checkReady();
         messages = new ArrayList<>(messages);
         initAdaptersIfNeeded();
         updated = true;
@@ -136,6 +169,12 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
             for (int i = 0; i < messages.size(); i++) {
                 adapters.add(null);
             }
+        }
+    }
+
+    private void checkReady() {
+        if (!ready) {
+            throw new SigletError("Cannot use a not ready adapter");
         }
     }
 

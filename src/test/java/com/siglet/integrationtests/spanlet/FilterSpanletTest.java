@@ -54,7 +54,7 @@ class FilterSpanletTest {
                         .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
         assertTrue(DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter));
 
         Span secondSpan = Span.newBuilder()
@@ -62,9 +62,7 @@ class FilterSpanletTest {
                 .setTraceId(AdapterUtils.traceId(0,1))
                 .setSpanId(AdapterUtils.spanId(2))
                 .build();
-        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter(secondSpan, resource,
-                instrumentationScope,
-                true);
+        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
         assertTrue(DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter));
 
         siglet.stop();
@@ -111,13 +109,11 @@ class FilterSpanletTest {
         Span firstSpan = Span.newBuilder().setName("prefix-span-name").build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter(firstSpan, resource,
-                instrumentationScope,
-                true);
+        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
         DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder().setName("span-name").build();
-        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
         DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
 
         siglet.stop();

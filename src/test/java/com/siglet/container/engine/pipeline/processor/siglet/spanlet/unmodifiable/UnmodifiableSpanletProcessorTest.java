@@ -32,7 +32,7 @@ class UnmodifiableSpanletProcessorTest {
         spanletEventLoop.start();
 
         Span span = Span.newBuilder().setName("span-name").build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, null, null, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, null, null);
 
 
         assertTrue(spanletEventLoop.send(protoSpanAdapter));

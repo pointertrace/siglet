@@ -31,7 +31,7 @@ class ProtoGaugeAdapterTest {
                 .build();
 
 
-        protoGaugeAdapter = new ProtoGaugeAdapter(protoGauge);
+        protoGaugeAdapter = new ProtoGaugeAdapter().recycle(protoGauge);
 
     }
 

@@ -101,7 +101,7 @@ class MetricletTest {
         Span span = Span.newBuilder().setName("span-name").build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoSpanAdapter);
 //
 //

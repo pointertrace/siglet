@@ -72,7 +72,7 @@ class SpanletTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
         DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
 
         siglet.stop();

@@ -55,7 +55,7 @@ class TraceAggregatorTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoSpanAdapter1);
 
         Span secondSpan = Span.newBuilder()
@@ -63,7 +63,7 @@ class TraceAggregatorTest {
                 .setSpanId(AdapterUtils.spanId(2))
                 .setName("second-span")
                 .build();
-        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoSpanAdapter2);
 //
 //        MockEndpoint mock = getMockEndpoint("mock:output");
@@ -123,7 +123,7 @@ class TraceAggregatorTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoSpanAdapter1);
 
         Span secondSpan = Span.newBuilder()
@@ -131,7 +131,7 @@ class TraceAggregatorTest {
                 .setSpanId(AdapterUtils.spanId(2))
                 .setName("second-span")
                 .build();
-        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
 //        template.sendBody("direct:start", protoSpanAdapter2);
 
 

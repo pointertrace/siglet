@@ -9,18 +9,30 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
     private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
 
     public ProtoGaugeAdapter(Gauge protoGauge) {
-        super(protoGauge,Gauge::toBuilder,Gauge.Builder::build);
+        super(protoGauge, Gauge::toBuilder, Gauge.Builder::build);
     }
 
     public ProtoGaugeAdapter() {
-        super(Gauge.newBuilder(), Gauge.Builder::build);
+    }
+
+    public ProtoGaugeAdapter recycle(Gauge protoGauge) {
+        super.recycle(protoGauge, Gauge::toBuilder, Gauge.Builder::build);
+        return this;
+    }
+
+    public ProtoGaugeAdapter recycle(Gauge.Builder protoGaugeBuilder) {
+        super.recycle(protoGaugeBuilder, Gauge.Builder::build);
+        return this;
     }
 
     @Override
     public ProtoNumberDataPointsAdapter getDataPoints() {
         if (protoNumberDataPointsAdapter == null) {
-            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(
-                    getValue(Gauge::getDataPointsList,Gauge.Builder::getDataPointsList));
+            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter()
+                    .recycle(getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList));
+        } else if (!protoNumberDataPointsAdapter.isReady()) {
+            protoNumberDataPointsAdapter
+                    .recycle(getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList));
         }
         return protoNumberDataPointsAdapter;
     }

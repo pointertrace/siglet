@@ -10,6 +10,13 @@ public class ProtoNumberDataPointsAdapter extends AdapterList<NumberDataPoint, N
     ProtoNumberDataPointAdapter> implements ModifiableNumberDataPoints {
 
 
+    public ProtoNumberDataPointsAdapter() {
+    }
+
+    public ProtoNumberDataPointsAdapter recycle(List<NumberDataPoint> protoNumberDataPoints) {
+        super.recycle(protoNumberDataPoints);
+        return this;
+    }
 
     public ProtoNumberDataPointsAdapter(List<NumberDataPoint> protoNumberDataPoints) {
         super(protoNumberDataPoints);

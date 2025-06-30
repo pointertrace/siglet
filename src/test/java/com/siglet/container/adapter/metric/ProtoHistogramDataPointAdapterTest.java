@@ -64,7 +64,7 @@ class ProtoHistogramDataPointAdapterTest {
                 .addAllExemplars(exemplars)
                 .build();
 
-        protoHistogramDataPointAdapter = new ProtoHistogramDataPointAdapter(protoHistogramDataPoint);
+        protoHistogramDataPointAdapter = new ProtoHistogramDataPointAdapter().recycle(protoHistogramDataPoint);
     }
 
     @Test

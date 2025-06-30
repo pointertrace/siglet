@@ -10,9 +10,13 @@ public class ProtoExponentialHistogramDataPointsAdapter extends AdapterList<Expo
         ExponentialHistogramDataPoint.Builder, ProtoExponentialHistogramDataPointAdapter>
         implements ModifiableExponentialHistogramDataPoints {
 
-    public ProtoExponentialHistogramDataPointsAdapter(
+    public ProtoExponentialHistogramDataPointsAdapter recycle(
             List<ExponentialHistogramDataPoint> protoExponentialHistogramDataPoints) {
-        super(protoExponentialHistogramDataPoints);
+        super.recycle(protoExponentialHistogramDataPoints);
+        return this;
+    }
+
+    public ProtoExponentialHistogramDataPointsAdapter() {
     }
 
     @Override

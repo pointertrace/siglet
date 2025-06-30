@@ -34,7 +34,7 @@ class ProtoSumAdapterTest {
                 .build();
 
 
-        protoSumAdapter = new ProtoSumAdapter(protoSum);
+        protoSumAdapter = new ProtoSumAdapter().recycle(protoSum);
 
     }
 

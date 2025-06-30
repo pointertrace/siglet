@@ -13,9 +13,19 @@ public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder,
         implements ModifiableLinks {
 
 
+    // TODO remover
     public ProtoLinksAdapter(List<Span.Link> protolinks) {
         super(protolinks);
     }
+
+    public ProtoLinksAdapter() {
+    }
+
+    public ProtoLinksAdapter recycle(List<Span.Link> links) {
+        super.recycle(links);
+        return this;
+    }
+
 
     @Override
     protected ProtoLinkAdapter createNewAdapter() {

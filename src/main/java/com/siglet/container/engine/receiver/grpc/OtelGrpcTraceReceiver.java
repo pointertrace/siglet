@@ -45,8 +45,10 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
                     System.out.println("span received trace:" + AdapterUtils.traceIdEx(span.getTraceId())
                             + " spanId:" + AdapterUtils.spanIdEx(span.getSpanId()));
                     for (SignalDestination<Signal> destination : spanDestinations) {
-                        destination.send(new ProtoSpanAdapter(span, resource.toBuilder().build(),
-                                instrumentationScope.toBuilder().build(), true));
+                    // TODO trocar por pool
+                        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter();
+                        protoSpanAdapter.recycle(span, resource.toBuilder().build(),
+                                instrumentationScope.toBuilder().build());
 
                     }
                 }

@@ -15,7 +15,16 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements Modifi
     }
 
     public ProtoSumAdapter() {
-        super(Sum.newBuilder(), Sum.Builder::build);
+    }
+
+    public ProtoSumAdapter recycle(Sum protoSum) {
+        super.recycle(protoSum, Sum::toBuilder, Sum.Builder::build);
+        return this;
+    }
+
+    public ProtoSumAdapter recycle(Sum.Builder protoSumBuilder) {
+        super.recycle(protoSumBuilder, Sum.Builder::build);
+        return this;
     }
 
     @Override
@@ -26,8 +35,10 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements Modifi
     @Override
     public ProtoNumberDataPointsAdapter getDataPoints() {
         if (protoNumberDataPointsAdapter == null) {
-            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter(
+            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter().recycle(
                     getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList));
+        } else if (!protoNumberDataPointsAdapter.isReady()) {
+            protoNumberDataPointsAdapter.recycle(getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList));
         }
         return protoNumberDataPointsAdapter;
     }

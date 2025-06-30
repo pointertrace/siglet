@@ -31,7 +31,7 @@ class ProtoSummaryAdapterTest {
                 .build();
 
 
-        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary);
+        protoSummaryAdapter = new ProtoSummaryAdapter().recycle(protoSummary);
 
     }
 

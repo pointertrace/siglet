@@ -35,26 +35,60 @@ class AdapterListTest {
 
         keyValueList = List.of(first, second);
 
-        keyValues = new KeyValues(keyValueList);
+        keyValues = new KeyValues();
+        keyValues.recycle(keyValueList);
 
     }
 
     @Test
-    void get() {
+    void clear() {
+        keyValues.add();
+        keyValues.getAdapter(0);
+        keyValues.getMessage(0);
+        keyValues.getSize();
+        keyValues.getUpdated();
+        keyValues.find(kv -> "third".equals(kv.getKey()), kvb -> "third".equals(kvb.getKey()));
+        keyValues.findIndex(kv -> "third".equals(kv.getKey()), kvb -> "third".equals(kvb.getKey()));
+        keyValues.isUpdated();
+        keyValues.remove(0);
+
+        keyValues.clear();
+
+        assertThrowsExactly(SigletError.class, () -> keyValues.add());
+        assertThrowsExactly(SigletError.class, () -> keyValues.getAdapter(0));
+        assertThrowsExactly(SigletError.class, () -> keyValues.getMessage(0));
+        assertThrowsExactly(SigletError.class, () -> keyValues.getSize());
+        assertThrowsExactly(SigletError.class, () -> keyValues.getUpdated());
+        assertThrowsExactly(SigletError.class, () -> keyValues.find(kv -> "third".equals(kv.getKey()),
+                kvb -> "third".equals(kvb.getKey())));
+        assertThrowsExactly(SigletError.class, () -> keyValues.findIndex(kv -> "third".equals(kv.getKey()), kvb ->
+                "third".equals(kvb.getKey())));
+        assertThrowsExactly(SigletError.class, () -> keyValues.isUpdated());
+        assertThrowsExactly(SigletError.class, () -> keyValues.remove(0));
+
+        keyValues.recycle(keyValueList);
+
+        keyValues.add();
+        keyValues.getAdapter(0);
+        keyValues.getMessage(0);
+        keyValues.getSize();
+        keyValues.getUpdated();
+        keyValues.find(kv -> "third".equals(kv.getKey()), kvb -> "third".equals(kvb.getKey()));
+        keyValues.findIndex(kv -> "third".equals(kv.getKey()), kvb -> "third".equals(kvb.getKey()));
+        keyValues.isUpdated();
+        keyValues.remove(0);
+
+
+
+    }
+
+    @Test
+    void getAdapter() {
 
         KeyValueAdapter firstAdapter = keyValues.getAdapter(0);
 
         assertNotNull(firstAdapter);
         assertSame(first, firstAdapter.getUpdated());
-
-        assertSame(first, keyValues.getAdapter(0).getUpdated());
-        assertSame(first, keyValues.getAdapter(0).getUpdated());
-
-        assertFalse(keyValues.isUpdated());
-    }
-
-    @Test
-    void get_twiceAndCheck() {
 
         assertSame(first, keyValues.getAdapter(0).getUpdated());
         assertSame(first, keyValues.getAdapter(0).getUpdated());
@@ -81,6 +115,7 @@ class AdapterListTest {
 
         assertEquals(1, keyValues.getSize());
         KeyValueAdapter adapter = keyValues.getAdapter(0);
+        assertSame(second, adapter.getUpdated());
         assertEquals("second", adapter.getKey());
         assertEquals("second-value", adapter.getValue());
         assertTrue(keyValues.isUpdated());
@@ -124,9 +159,6 @@ class AdapterListTest {
 
     static class KeyValues extends AdapterList<KeyValue, KeyValue.Builder, KeyValueAdapter> {
 
-        public KeyValues(List<KeyValue> messages) {
-            super(messages);
-        }
 
         @Override
         protected KeyValueAdapter createNewAdapter() {
@@ -162,8 +194,6 @@ class AdapterListTest {
 
     @Test
     void getUpdated_notUpdated() {
-
-        keyValues = new KeyValues(keyValueList);
 
         List<KeyValue> actual = keyValues.getUpdated();
 
@@ -210,7 +240,7 @@ class AdapterListTest {
         List<KeyValue> actual = keyValues.getUpdated();
 
         assertEquals(1, actual.size());
-        assertSame(second, actual.get(0));
+        assertSame(second, actual.getFirst());
 
     }
 

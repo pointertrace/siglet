@@ -49,7 +49,7 @@ class ProcessorConfigLoaderTest {
 
         Span protoSpan = Span.newBuilder().setName("span-name").build();
 
-        ProtoSpanAdapter span = new ProtoSpanAdapter(protoSpan,null,null,true);
+        ProtoSpanAdapter span = new ProtoSpanAdapter().recycle(protoSpan,null,null);
 
         spanMethod.invoke(sigletInstance, span,null, ResultFactoryImpl.INSTANCE);
 

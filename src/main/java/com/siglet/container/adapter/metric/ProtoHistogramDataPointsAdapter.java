@@ -9,8 +9,16 @@ import java.util.List;
 public class ProtoHistogramDataPointsAdapter extends AdapterList<HistogramDataPoint, HistogramDataPoint.Builder,
         ProtoHistogramDataPointAdapter> implements ModifiableHistogramDataPoints {
 
+    public ProtoHistogramDataPointsAdapter() {
+    }
+
     public ProtoHistogramDataPointsAdapter(List<HistogramDataPoint> protoHistogramDataPoints) {
         super(protoHistogramDataPoints);
+    }
+
+    public ProtoHistogramDataPointsAdapter recycle(List<HistogramDataPoint> protoHistogramDataPoints) {
+        super.recycle(protoHistogramDataPoints);
+        return this;
     }
 
     @Override

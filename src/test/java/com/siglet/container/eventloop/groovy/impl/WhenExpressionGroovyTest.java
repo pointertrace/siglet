@@ -70,7 +70,7 @@ class WhenExpressionGroovyTest {
                 ))
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
 
         compiler = new Compiler();
     }

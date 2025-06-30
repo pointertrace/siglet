@@ -127,11 +127,16 @@ class ProtoMetricAdapterAdapterTest {
                         .build())
                 .build();
 
-        protoGaugeMetricAdapter = new ProtoMetricAdapter(protoGaugeMetric, protoResource, protoInstrumentationScope);
-        protoSumMetricAdapter = new ProtoMetricAdapter(protoSumMetric, protoResource, protoInstrumentationScope);
-        protoHistogramMetricAdapter = new ProtoMetricAdapter(protoHistogramMetric, protoResource, protoInstrumentationScope);
-        protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter(protoExponentialHistogramMetric, protoResource, protoInstrumentationScope);
-        protoSummaryMetricAdapter = new ProtoMetricAdapter(protoSummaryMetric, protoResource, protoInstrumentationScope);
+        protoGaugeMetricAdapter = new ProtoMetricAdapter()
+                .recycle(protoGaugeMetric, protoResource, protoInstrumentationScope);
+        protoSumMetricAdapter = new ProtoMetricAdapter()
+                .recycle(protoSumMetric, protoResource, protoInstrumentationScope);
+        protoHistogramMetricAdapter = new ProtoMetricAdapter()
+                .recycle(protoHistogramMetric, protoResource, protoInstrumentationScope);
+        protoExponentialHistogramMetricAdapter = new ProtoMetricAdapter()
+                .recycle(protoExponentialHistogramMetric, protoResource, protoInstrumentationScope);
+        protoSummaryMetricAdapter = new ProtoMetricAdapter()
+                .recycle(protoSummaryMetric, protoResource, protoInstrumentationScope);
 
     }
 

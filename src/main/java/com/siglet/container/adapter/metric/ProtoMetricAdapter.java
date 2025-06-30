@@ -7,7 +7,9 @@ import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.common.ProtoInstrumentationScopeAdapter;
 import com.siglet.container.adapter.common.ProtoResourceAdapter;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.metrics.v1.Gauge;
 import io.opentelemetry.proto.metrics.v1.Metric;
+import io.opentelemetry.proto.metrics.v1.Sum;
 import io.opentelemetry.proto.resource.v1.Resource;
 
 public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements ModifiableMetric {
@@ -40,13 +42,28 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public ProtoMetricAdapter() {
-        super(Metric.newBuilder(), Metric.Builder::build);
     }
 
     public ProtoMetricAdapter(Resource protoResource, InstrumentationScope protoInstrumentationScope) {
         super(Metric.newBuilder(), Metric.Builder::build);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
+    }
+
+    public ProtoMetricAdapter recycle(Metric protoMetric, Resource protoResource,
+                              InstrumentationScope protoInstrumentationScope) {
+        super.recycle(protoMetric, Metric::toBuilder, Metric.Builder::build);
+        this.protoResource = protoResource;
+        this.protoInstrumentationScope = protoInstrumentationScope;
+        return this;
+    }
+
+
+    public ProtoMetricAdapter recycle(Resource protoResource, InstrumentationScope protoInstrumentationScope) {
+        super.recycle(Metric.newBuilder(), Metric.Builder::build);
+        this.protoResource = protoResource;
+        this.protoInstrumentationScope = protoInstrumentationScope;
+        return this;
     }
 
     @Override
@@ -83,12 +100,12 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public ProtoGaugeAdapter gauge() {
-        protoGaugeAdapter = new ProtoGaugeAdapter();
+        protoGaugeAdapter = new ProtoGaugeAdapter().recycle(Gauge.newBuilder());
         return protoGaugeAdapter;
     }
 
     public ProtoSumAdapter sum() {
-        protoSumAdapter = new ProtoSumAdapter();
+        protoSumAdapter = new ProtoSumAdapter().recycle(Sum.newBuilder());
         return protoSumAdapter;
     }
 
@@ -97,16 +114,22 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         if (hasGauge()) {
             if (protoGaugeAdapter == null) {
                 protoGaugeAdapter = new ProtoGaugeAdapter(getMessage().getGauge());
+            } else if (!protoGaugeAdapter.isReady()) {
+                protoGaugeAdapter.recycle(getMessage().getGauge());
             }
             return protoGaugeAdapter;
         } else if (hasSum()) {
             if (protoSumAdapter == null) {
-                protoSumAdapter = new ProtoSumAdapter(getMessage().getSum());
+                protoSumAdapter = new ProtoSumAdapter().recycle(getMessage().getSum());
+            } else if (!protoSumAdapter.isReady()) {
+                protoSumAdapter.recycle(getMessage().getSum());
             }
             return protoSumAdapter;
         } else if (hasHistogram()) {
             if (protoHistogramAdapter == null) {
-                protoHistogramAdapter = new ProtoHistogramAdapter(getMessage().getHistogram());
+                protoHistogramAdapter = new ProtoHistogramAdapter().recycle(getMessage().getHistogram());
+            } else if (!protoHistogramAdapter.isReady()) {
+                protoHistogramAdapter.recycle(getMessage().getHistogram());
             }
             return protoHistogramAdapter;
         } else if (hasExponentialHistogram()) {

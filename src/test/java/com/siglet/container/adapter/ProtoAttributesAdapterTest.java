@@ -64,7 +64,7 @@ class ProtoAttributesAdapterTest {
                 .setValue(AdapterUtils.objectToAnyValue(new byte[]{0, 1, 2}))
                 .build());
 
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes);
+        protoAttributesAdapter = new ProtoAttributesAdapter().recycle(protoAttributes);
     }
 
 
@@ -267,7 +267,7 @@ class ProtoAttributesAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoAttributesAdapter = new ProtoAttributesAdapter(protoAttributes);
+        protoAttributesAdapter = new ProtoAttributesAdapter().recycle(protoAttributes);
 
         assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
 

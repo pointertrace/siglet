@@ -96,7 +96,7 @@ class AttributesGroovyTest {
                         .build())
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
 
         metricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope);
 

@@ -49,9 +49,9 @@ class GroovyRouterProcessorTest {
                 .setSpanId(AdapterUtils.spanId(3))
                 .build();
 
-        ProtoSpanAdapter firstProtoSpanAdapter = new ProtoSpanAdapter(firstSpan, null, null, true);
-        ProtoSpanAdapter secondProtoSpanAdapter = new ProtoSpanAdapter(secondSpan, null, null, true);
-        ProtoSpanAdapter defaultProtoSpanAdapter = new ProtoSpanAdapter(defaultSpan, null, null, true);
+        ProtoSpanAdapter firstProtoSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, null, null);
+        ProtoSpanAdapter secondProtoSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, null, null);
+        ProtoSpanAdapter defaultProtoSpanAdapter = new ProtoSpanAdapter().recycle(defaultSpan, null, null);
 
         assertTrue(groovyFilterEventLoop.send(firstProtoSpanAdapter));
         assertTrue(groovyFilterEventLoop.send(secondProtoSpanAdapter));

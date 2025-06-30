@@ -28,7 +28,7 @@ class GroovyFilterProcessorTest {
 
         Span span = Span.newBuilder().setName("span-name").build();
 
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, null, null, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, null, null);
 
         assertTrue(groovyFilterProcessorEventLoop.send(protoSpanAdapter));
 
@@ -56,7 +56,7 @@ class GroovyFilterProcessorTest {
 
         Span span = Span.newBuilder().setName("span-name").build();
 
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, null, null, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, null, null);
 
         assertTrue(groovyFilterProcessorEventLoop.send(protoSpanAdapter));
 

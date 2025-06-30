@@ -37,15 +37,28 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
 
     private ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
 
-    public ProtoSpanAdapter(Span protoSpan, Resource protoResource, InstrumentationScope protoInstrumentationScope,
-                            boolean updatable) {
-        super(protoSpan, Span::toBuilder, Span.Builder::build);
+    public ProtoSpanAdapter recycle(Span protoSpan, Resource protoResource,
+                                    InstrumentationScope protoInstrumentationScope) {
+        super.recycle(protoSpan, Span::toBuilder, Span.Builder::build);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
+        return this;
     }
 
-    public ProtoSpanAdapter() {
-        super(Span.newBuilder(), Span.Builder::build);
+    public ProtoSpanAdapter recycle() {
+        recycle(Span.newBuilder(), Span.Builder::build);
+        return this;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        if (protoAttributesAdapter != null) {
+            protoAttributesAdapter.clear();
+        }
+        if (protoLinksAdapter != null) {
+            protoLinksAdapter.clear();
+        }
     }
 
     @Override
@@ -185,7 +198,9 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -216,7 +231,9 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoLinksAdapter getLinks() {
         if (protoLinksAdapter == null) {
-            protoLinksAdapter = new ProtoLinksAdapter(getMessage().getLinksList());
+            protoLinksAdapter = new ProtoLinksAdapter().recycle(getMessage().getLinksList());
+        } else if (!protoLinksAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoLinksAdapter;
     }
@@ -224,7 +241,9 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
     @Override
     public ProtoEventsAdapter getEvents() {
         if (protoEventsAdapter == null) {
-            protoEventsAdapter = new ProtoEventsAdapter(getMessage().getEventsList());
+            protoEventsAdapter = new ProtoEventsAdapter().recycle(getMessage().getEventsList());
+        } else if (!protoEventsAdapter.isReady()) {
+            protoEventsAdapter.recycle(getMessage().getEventsList());
         }
         return protoEventsAdapter;
     }

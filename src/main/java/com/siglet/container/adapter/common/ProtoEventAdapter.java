@@ -15,6 +15,7 @@ public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> i
     public ProtoEventAdapter(Span.Event.Builder protoEventBuilder) {
         super(protoEventBuilder, Span.Event.Builder::build);
     }
+
     public long getTimeUnixNano() {
         return getValue(Span.Event::getTimeUnixNano, Span.Event.Builder::getTimeUnixNano);
     }
@@ -58,9 +59,11 @@ public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> i
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(
-                    getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
-
+            protoAttributesAdapter = new ProtoAttributesAdapter()
+                    .recycle(getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter
+                    .recycle(getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
         }
         return protoAttributesAdapter;
     }

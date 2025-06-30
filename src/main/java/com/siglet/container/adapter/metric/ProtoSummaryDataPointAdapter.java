@@ -12,6 +12,10 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
 
     private ProtoValueAtQuantilesAdapter protoValueAtQuantilesAdapter;
 
+    public ProtoSummaryDataPointAdapter() {
+        super();
+    }
+
     public ProtoSummaryDataPointAdapter(SummaryDataPoint protoSummaryDataPoint) {
         super(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build);
     }
@@ -20,10 +24,22 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
         super(protoSummaryDataPointBuilder, SummaryDataPoint.Builder::build);
     }
 
+    public ProtoSummaryDataPointAdapter recycle(SummaryDataPoint protoSummaryDataPoint) {
+        super.recycle(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build);
+        return this;
+    }
+
+    public ProtoSummaryDataPointAdapter recycle(SummaryDataPoint.Builder protoSummaryDataPointBuilder) {
+        super.recycle(protoSummaryDataPointBuilder, SummaryDataPoint.Builder::build);
+        return this;
+    }
+
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }
@@ -31,8 +47,11 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
     @Override
     public ProtoValueAtQuantilesAdapter getQuantileValues() {
         if (protoValueAtQuantilesAdapter == null) {
-            protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(getMessage().getQuantileValuesList());
+            protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter().recycle(getMessage().getQuantileValuesList());
+        } else if (!protoValueAtQuantilesAdapter.isReady()) {
+            protoValueAtQuantilesAdapter.recycle(getMessage().getQuantileValuesList());
         }
+
         return protoValueAtQuantilesAdapter;
     }
 
@@ -105,7 +124,7 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
             builder.clearAttributes();
             builder.addAllAttributes(protoAttributesAdapter.getUpdated());
         }
-        if (protoValueAtQuantilesAdapter!= null && protoValueAtQuantilesAdapter.isUpdated()) {
+        if (protoValueAtQuantilesAdapter != null && protoValueAtQuantilesAdapter.isUpdated()) {
             builder.clearQuantileValues();
             builder.addAllQuantileValues(protoValueAtQuantilesAdapter.getUpdated());
         }

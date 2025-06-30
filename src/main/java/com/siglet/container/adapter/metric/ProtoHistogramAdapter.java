@@ -10,12 +10,12 @@ public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder>
 
     private ProtoHistogramDataPointsAdapter protoHistogramDataPointsAdapter;
 
-    public ProtoHistogramAdapter(Histogram protoHistogram) {
-        super(protoHistogram, Histogram::toBuilder, Histogram.Builder::build);
+    public ProtoHistogramAdapter() {
     }
 
-    public ProtoHistogramAdapter(Histogram.Builder histogramBuilder) {
-        super(histogramBuilder, Histogram.Builder::build);
+    public ProtoHistogramAdapter recycle(Histogram protoHistogram) {
+        super.recycle(protoHistogram, Histogram::toBuilder, Histogram.Builder::build);
+        return this;
     }
 
     @Override
@@ -26,8 +26,11 @@ public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder>
     @Override
     public ProtoHistogramDataPointsAdapter getDataPoints() {
         if (protoHistogramDataPointsAdapter == null) {
-            protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(
-                    getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
+            protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter()
+                    .recycle(getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
+        } else if (!protoHistogramDataPointsAdapter.isReady()) {
+            protoHistogramDataPointsAdapter
+                    .recycle(getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
         }
         return protoHistogramDataPointsAdapter;
     }

@@ -84,9 +84,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_span_sameResource_sameInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
+        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
 
-        protoSpanAdapter2 = new ProtoSpanAdapter(span2, resource1, instrumentationScope1, true);
+        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource1, instrumentationScope1);
 
 //        signalsAggregator.add(protoSpanAdapter1);
 //        signalsAggregator.add(protoSpanAdapter2);
@@ -114,9 +114,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_span_sameResource_twoInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
+        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
 
-        protoSpanAdapter2 = new ProtoSpanAdapter(span2, resource1, instrumentationScope2, true);
+        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource1, instrumentationScope2);
 
 //        signalsAggregator.add(protoSpanAdapter1);
 //        signalsAggregator.add(protoSpanAdapter2);
@@ -146,9 +146,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_span_twoResource_twoInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter(span1, resource1, instrumentationScope1, true);
+        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
 
-        protoSpanAdapter2 = new ProtoSpanAdapter(span2, resource2, instrumentationScope2, true);
+        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource2, instrumentationScope2);
 
 //        signalsAggregator.add(protoSpanAdapter1);
 //        signalsAggregator.add(protoSpanAdapter2);

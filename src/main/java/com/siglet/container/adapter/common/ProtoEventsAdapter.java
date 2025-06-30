@@ -9,10 +9,13 @@ import java.util.List;
 public class ProtoEventsAdapter extends AdapterList<Span.Event, Span.Event.Builder, ProtoEventAdapter>
         implements ModifiableEvents {
 
-    public ProtoEventsAdapter(List<Span.Event> events) {
-        super(events);
+    public ProtoEventsAdapter() {
     }
 
+    public ProtoEventsAdapter recycle(List<Span.Event> events) {
+        super.recycle(events);
+        return this;
+    }
     @Override
     public ProtoEventAdapter get(int i) {
         return getAdapter(i);

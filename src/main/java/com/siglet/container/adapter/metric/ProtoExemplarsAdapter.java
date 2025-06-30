@@ -13,6 +13,14 @@ public class ProtoExemplarsAdapter extends AdapterList<Exemplar, Exemplar.Builde
         super(exemplars);
     }
 
+    public ProtoExemplarsAdapter() {
+    }
+
+    public ProtoExemplarsAdapter recycle(List<Exemplar> exemplars) {
+        super.recycle(exemplars);
+        return this;
+    }
+
     @Override
     public ProtoExemplarAdapter get(int i) {
         return super.getAdapter(i);

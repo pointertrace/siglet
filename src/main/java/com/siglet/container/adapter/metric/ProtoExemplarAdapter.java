@@ -25,8 +25,11 @@ public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> im
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getValue(Exemplar::getFilteredAttributesList,
-                    Exemplar.Builder::getFilteredAttributesList));
+            protoAttributesAdapter = new ProtoAttributesAdapter().
+                    recycle(getValue(Exemplar::getFilteredAttributesList, Exemplar.Builder::getFilteredAttributesList));
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter
+                    .recycle(getValue(Exemplar::getFilteredAttributesList, Exemplar.Builder::getFilteredAttributesList));
         }
 
         return protoAttributesAdapter;

@@ -11,6 +11,9 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
         ExponentialHistogramDataPoint.Buckets.Builder> implements ModifiableBuckets {
 
 
+    public ProtoBucketsAdapter() {
+    }
+
     public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets protoExemplar) {
         super(protoExemplar, ExponentialHistogramDataPoint.Buckets::toBuilder,
                 ExponentialHistogramDataPoint.Buckets.Builder::build);
@@ -19,6 +22,17 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
     public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets.Builder bucketsBuilder) {
         super(bucketsBuilder, ExponentialHistogramDataPoint.Buckets.Builder::build);
 
+    }
+
+    public ProtoBucketsAdapter recycle(ExponentialHistogramDataPoint.Buckets protoExemplar) {
+        super.recycle(protoExemplar, ExponentialHistogramDataPoint.Buckets::toBuilder,
+                ExponentialHistogramDataPoint.Buckets.Builder::build);
+        return this;
+    }
+
+    public ProtoBucketsAdapter recycle(ExponentialHistogramDataPoint.Buckets.Builder bucketsBuilder) {
+        super.recycle(bucketsBuilder, ExponentialHistogramDataPoint.Buckets.Builder::build);
+        return this;
     }
 
     @Override

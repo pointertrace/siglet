@@ -14,7 +14,9 @@ public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> im
 
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter(getMessage().getAttributesList());
+            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoAttributesAdapter;
     }

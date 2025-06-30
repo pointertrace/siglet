@@ -12,6 +12,14 @@ public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> imple
         super(protoSummary,Summary::toBuilder,Summary.Builder::build);
     }
 
+    public ProtoSummaryAdapter() {
+    }
+
+    public ProtoSummaryAdapter recycle(Summary protoSummary) {
+        super.recycle(protoSummary,Summary::toBuilder,Summary.Builder::build);
+        return this;
+    }
+
     public ProtoSummaryAdapter(Summary.Builder summaryBuilder) {
         super(summaryBuilder, Summary.Builder::build);
     }
@@ -19,8 +27,11 @@ public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> imple
     @Override
     public ProtoSummaryDataPointsAdapter getDataPoints() {
         if (protoSummaryDataPointsAdapter == null) {
-            protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter(
-                    getValue(Summary::getDataPointsList,Summary.Builder::getDataPointsList));
+            protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter()
+                    .recycle(getValue(Summary::getDataPointsList,Summary.Builder::getDataPointsList));
+        } else if (!protoSummaryDataPointsAdapter.isReady()) {
+            protoSummaryDataPointsAdapter
+                    .recycle(getValue(Summary::getDataPointsList, Summary.Builder::getDataPointsList));
         }
         return protoSummaryDataPointsAdapter;
     }

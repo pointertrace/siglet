@@ -53,7 +53,7 @@ class BaseEventloopProcessorEventloopTraceletTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(3, 4))
@@ -61,7 +61,7 @@ class BaseEventloopProcessorEventloopTraceletTest {
                 .setName("second-span")
                 .build();
 
-        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
 
         ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);
@@ -124,7 +124,7 @@ class BaseEventloopProcessorEventloopTraceletTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter(firstSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter1 = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(3, 4))
@@ -132,7 +132,7 @@ class BaseEventloopProcessorEventloopTraceletTest {
                 .setName("second-span")
                 .build();
 
-        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter(secondSpan, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter2 = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
 
         ProtoTrace protoTraceAdapter = new ProtoTrace(protoSpanAdapter1, true);
         protoTraceAdapter.add(protoSpanAdapter2);

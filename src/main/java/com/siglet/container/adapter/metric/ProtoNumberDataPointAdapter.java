@@ -28,17 +28,22 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     @Override
     public ProtoAttributesAdapter getAttributes() {
         if (protoAttributesAdapter == null) {
-            List<KeyValue> attributes;
-            if (getMessage() == null) {
-                attributes = new ArrayList<>();
-            } else if (getMessage().getAttributesList() == null) {
-                attributes = new ArrayList<>();
-            } else {
-                attributes = getMessage().getAttributesList();
-            }
-            protoAttributesAdapter = new ProtoAttributesAdapter(attributes);
+            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getAttributeList());
+        } else if (!protoAttributesAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getAttributeList());
         }
         return protoAttributesAdapter;
+    }
+
+    private List<KeyValue> getAttributeList() {
+        List<KeyValue> attributes;
+        if (getMessage() == null) {
+            return new ArrayList<>();
+        } else if (getMessage().getAttributesList() == null) {
+            return new ArrayList<>();
+        } else {
+            return getMessage().getAttributesList();
+        }
     }
 
     @Override
@@ -81,8 +86,9 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
     @Override
     public ProtoExemplarsAdapter getExemplars() {
         if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter(getMessage().getExemplarsList());
-
+            protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(getMessage().getExemplarsList());
+        } else if (!protoExemplarsAdapter.isReady()) {
+            protoAttributesAdapter.recycle(getMessage().getAttributesList());
         }
         return protoExemplarsAdapter;
     }

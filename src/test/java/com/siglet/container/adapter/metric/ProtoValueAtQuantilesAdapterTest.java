@@ -36,7 +36,7 @@ class ProtoValueAtQuantilesAdapterTest {
 
 
         protoValueAtQuantile = List.of(firstValueAtQuantile, secondValueAtQuantile);
-        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile);
+        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter().recycle(protoValueAtQuantile);
 
     }
 
@@ -83,7 +83,7 @@ class ProtoValueAtQuantilesAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter(protoValueAtQuantile);
+        protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter().recycle(protoValueAtQuantile);
 
         assertEquals(2, protoValueAtQuantilesAdapter.getSize());
 

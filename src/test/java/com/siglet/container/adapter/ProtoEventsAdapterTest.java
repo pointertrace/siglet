@@ -33,7 +33,7 @@ class ProtoEventsAdapterTest {
                         .build()
         );
 
-        protoEventsAdapter = new ProtoEventsAdapter(protoEvents);
+        protoEventsAdapter = new ProtoEventsAdapter().recycle(protoEvents);
     }
 
     @Test
@@ -117,7 +117,7 @@ class ProtoEventsAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoEventsAdapter = new ProtoEventsAdapter(protoEvents);
+        protoEventsAdapter = new ProtoEventsAdapter().recycle(protoEvents);
 
         assertSame(protoEvents, protoEventsAdapter.getUpdated());
 

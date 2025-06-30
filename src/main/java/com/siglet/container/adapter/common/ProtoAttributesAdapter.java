@@ -13,10 +13,13 @@ import java.util.Map;
 public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Builder,
         ProtoAttributesAdapter.KeyValueAdapter> implements ModifiableAttributes {
 
-    public ProtoAttributesAdapter(List<KeyValue> attributes) {
-        super(attributes);
+    public ProtoAttributesAdapter() {
     }
 
+    public ProtoAttributesAdapter recycle(List<KeyValue> attributes) {
+        super.recycle(attributes);
+        return this;
+    }
     @Override
     public boolean containsKey(String key) {
         return getAt(key) != null;

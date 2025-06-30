@@ -37,7 +37,7 @@ class ProtoLinksAdapterTest {
                         .build()
         );
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
+        protoLinksAdapter = new ProtoLinksAdapter().recycle(protoLinks);
     }
 
     @Test
@@ -120,7 +120,7 @@ class ProtoLinksAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
+        protoLinksAdapter = new ProtoLinksAdapter().recycle(protoLinks);
 
         assertSame(protoLinks, protoLinksAdapter.getUpdated());
 
@@ -130,7 +130,7 @@ class ProtoLinksAdapterTest {
     @Test
     void getUpdated_notingUpdated() {
 
-        protoLinksAdapter = new ProtoLinksAdapter(protoLinks);
+        protoLinksAdapter = new ProtoLinksAdapter().recycle(protoLinks);
 
         assertSame(protoLinks, protoLinksAdapter.getUpdated());
 

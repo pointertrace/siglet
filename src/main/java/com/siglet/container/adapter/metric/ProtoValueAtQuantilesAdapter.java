@@ -15,6 +15,14 @@ public class ProtoValueAtQuantilesAdapter extends AdapterList<SummaryDataPoint.V
         super(protoValueAtQuantiles);
     }
 
+    public ProtoValueAtQuantilesAdapter() {
+    }
+
+    public ProtoValueAtQuantilesAdapter recycle(List<SummaryDataPoint.ValueAtQuantile> protoValueAtQuantiles) {
+        super.recycle(protoValueAtQuantiles);
+        return this;
+    }
+
     @Override
     public ProtoValueAtQuantileAdapter getAt(int i) {
         return super.getAdapter(i);

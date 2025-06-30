@@ -54,7 +54,7 @@ class ProtoSummaryDataPointAdapterTest {
                 .addAllAttributes(attributes)
                 .build();
 
-        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint);
+        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter().recycle(summaryDataPoint);
     }
 
     @Test

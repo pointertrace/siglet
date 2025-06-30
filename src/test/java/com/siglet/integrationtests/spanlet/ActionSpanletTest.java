@@ -54,7 +54,7 @@ class ActionSpanletTest {
 
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
 
         assertTrue(DebugReceivers.INSTANCE.get("receiver").send(protoSpanAdapter));
 
@@ -103,7 +103,7 @@ class ActionSpanletTest {
                 .setName("span-name").build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter(span, resource, instrumentationScope, true);
+        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
         assertTrue(DebugReceivers.INSTANCE.get("receiver").send(protoSpanAdapter));
 
         siglet.stop();

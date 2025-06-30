@@ -21,10 +21,8 @@ class ProtoHistogramDataPointsAdapterTest {
 
     private ProtoHistogramDataPointsAdapter protoHistogramDataPointsAdapter;
 
-    private ProtoHistogramDataPointAdapter protoThirdNumberDataPointAdapter;
-
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
 
         firstHistogramDataPoint = HistogramDataPoint.newBuilder()
@@ -44,10 +42,8 @@ class ProtoHistogramDataPointsAdapterTest {
                 .build();
 
         protoHistogramDataPoints = List.of(firstHistogramDataPoint, secondHistogramDataPoint);
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter().recycle(protoHistogramDataPoints);
 
-        protoThirdNumberDataPointAdapter =
-                new ProtoHistogramDataPointAdapter(thirdHistogramDataPoint);
     }
 
     @Test
@@ -90,7 +86,7 @@ class ProtoHistogramDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter(protoHistogramDataPoints);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter().recycle(protoHistogramDataPoints);
 
         assertEquals(2, protoHistogramDataPointsAdapter.getSize());
 
