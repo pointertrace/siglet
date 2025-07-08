@@ -3,23 +3,25 @@ package com.siglet.container.adapter.trace;
 import com.google.protobuf.ByteString;
 import com.siglet.api.modifiable.trace.ModifiableLink;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> implements ModifiableLink {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    public ProtoLinkAdapter(Span.Link protoLink) {
-        super(protoLink, Span.Link::toBuilder, Span.Link.Builder::build);
-    }
-
-    public ProtoLinkAdapter(Span.Link.Builder protoLinkBuilder) {
-        super(protoLinkBuilder,Span.Link.Builder::build);
+    public ProtoLinkAdapter() {
+        super(AdapterConfig.LINK_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
     }
 
     public long getTraceIdHigh() {
@@ -88,36 +90,13 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
         return this;
     }
 
+    protected List<KeyValue> getAttributeList() {
+        return getValue(Span.Link::getAttributesList, Span.Link.Builder::getAttributesList);
+    }
+
     public ProtoAttributesAdapter getAttributes() {
-        // TODO entender pq é assim... e conferir com os outros getAttributes()
-        if (protoAttributesAdapter == null) {
-            Span.Link message = getMessage();
-            if (message != null) {
-                protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-            } else {
-                protoAttributesAdapter = new ProtoAttributesAdapter().recycle(new ArrayList<>());
-            }
-        } else if (! protoAttributesAdapter.isReady()){
-            Span.Link message = getMessage();
-            if (message != null) {
-                protoAttributesAdapter.recycle(getMessage().getAttributesList());
-            } else {
-                protoAttributesAdapter.recycle(new ArrayList<>());
-            }
-        }
-        return protoAttributesAdapter;
+        return (ProtoAttributesAdapter) getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                this::getAttributeList);
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(Span.Link.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-    }
 }

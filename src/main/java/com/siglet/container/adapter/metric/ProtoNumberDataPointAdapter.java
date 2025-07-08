@@ -2,48 +2,38 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableNumberDataPoint;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.metrics.v1.Exemplar;
 import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, NumberDataPoint.Builder>
         implements ModifiableNumberDataPoint {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    private ProtoExemplarsAdapter protoExemplarsAdapter;
-
-    public ProtoNumberDataPointAdapter(NumberDataPoint protoNumberDataPoint) {
-        super(protoNumberDataPoint, NumberDataPoint::toBuilder, NumberDataPoint.Builder::build);
-    }
-
 
     public ProtoNumberDataPointAdapter() {
-        super(NumberDataPoint.newBuilder(), NumberDataPoint.Builder::build);
+        super(AdapterConfig.NUMBER_DATA_POINT_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
+        addEnricher(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG, exemplars ->{
+            getBuilder().clearExemplars();
+            getBuilder().addAllExemplars((Iterable<Exemplar>) exemplars);
+        });
+    }
+
+    protected List<KeyValue> getAttributeList() {
+        return getValue(NumberDataPoint::getAttributesList, NumberDataPoint.Builder::getAttributesList);
     }
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getAttributeList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getAttributeList());
-        }
-        return protoAttributesAdapter;
-    }
-
-    private List<KeyValue> getAttributeList() {
-        List<KeyValue> attributes;
-        if (getMessage() == null) {
-            return new ArrayList<>();
-        } else if (getMessage().getAttributesList() == null) {
-            return new ArrayList<>();
-        } else {
-            return getMessage().getAttributesList();
-        }
+        return  getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,this::getAttributeList);
     }
 
     @Override
@@ -83,14 +73,13 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
         return getValue(NumberDataPoint::hasAsInt, NumberDataPoint.Builder::hasAsInt);
     }
 
+    protected List<Exemplar> getExemplarsList() {
+        return getValue(NumberDataPoint::getExemplarsList, NumberDataPoint.Builder::getExemplarsList);
+    }
+
     @Override
     public ProtoExemplarsAdapter getExemplars() {
-        if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(getMessage().getExemplarsList());
-        } else if (!protoExemplarsAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoExemplarsAdapter;
+        return  getAdapterList(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG, this::getExemplarsList);
     }
 
     @Override
@@ -132,21 +121,4 @@ public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, Number
         return this;
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ||
-                (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(NumberDataPoint.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-        if (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated()) {
-            builder.clearExemplars();
-            builder.addAllExemplars(protoExemplarsAdapter.getUpdated());
-        }
-    }
 }

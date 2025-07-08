@@ -3,44 +3,33 @@ package com.siglet.container.adapter.metric;
 import com.siglet.api.modifiable.metric.ModifiableHistogram;
 import com.siglet.api.unmodifiable.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.metrics.v1.Histogram;
+import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
+
+import java.util.List;
 
 public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder> implements ModifiableHistogram {
 
-    private ProtoHistogramDataPointsAdapter protoHistogramDataPointsAdapter;
 
     public ProtoHistogramAdapter() {
-    }
-
-    public ProtoHistogramAdapter recycle(Histogram protoHistogram) {
-        super.recycle(protoHistogram, Histogram::toBuilder, Histogram.Builder::build);
-        return this;
-    }
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoHistogramDataPointsAdapter != null && protoHistogramDataPointsAdapter.isUpdated());
+        super(AdapterConfig.HISTOGRAM_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.NUMBER_DATA_POINTS_ADAPTER_CONFIG, dataPoints -> {
+            getBuilder().clearDataPoints();
+            getBuilder().addAllDataPoints((Iterable<HistogramDataPoint>) dataPoints);
+        });
     }
 
     @Override
     public ProtoHistogramDataPointsAdapter getDataPoints() {
-        if (protoHistogramDataPointsAdapter == null) {
-            protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter()
-                    .recycle(getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
-        } else if (!protoHistogramDataPointsAdapter.isReady()) {
-            protoHistogramDataPointsAdapter
-                    .recycle(getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList));
-        }
-        return protoHistogramDataPointsAdapter;
+        return getAdapterList(AdapterListConfig.HISTOGRAM_DATA_POINTS_ADAPTER_CONFIG,
+                this::getDataPointsList);
     }
 
-    @Override
-    protected void enrich(Histogram.Builder builder) {
-        if (protoHistogramDataPointsAdapter != null && protoHistogramDataPointsAdapter.isUpdated()) {
-            builder.clearDataPoints();
-            builder.addAllDataPoints(protoHistogramDataPointsAdapter.getUpdated());
-        }
+    public List<HistogramDataPoint> getDataPointsList() {
+        return getValue(Histogram::getDataPointsList, Histogram.Builder::getDataPointsList);
     }
 
     @Override

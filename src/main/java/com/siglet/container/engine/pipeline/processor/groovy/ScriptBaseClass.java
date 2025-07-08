@@ -21,7 +21,7 @@ public abstract class ScriptBaseClass extends Script {
 
     public ProtoMetricAdapter newGauge(Closure<Void> closure) {
 
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter(getResource(), getInstrumentationScope());
+        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(getResource(), getInstrumentationScope());
         newMetric.gauge();
         GaugeProxy gaugeProxy = new GaugeProxy((Signal) getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(gaugeProxy);
@@ -40,7 +40,7 @@ public abstract class ScriptBaseClass extends Script {
 
     public ProtoMetricAdapter newCounter(Closure<Void> closure) {
 
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter(getResource(), getInstrumentationScope());
+        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(getResource(), getInstrumentationScope());
         newMetric.sum();
         CounterProxy counterProxy = new CounterProxy((Signal) getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(counterProxy);

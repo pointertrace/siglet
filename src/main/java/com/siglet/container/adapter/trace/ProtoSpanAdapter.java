@@ -4,6 +4,8 @@ import com.google.protobuf.ByteString;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.trace.SpanKind;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.common.ProtoEventsAdapter;
@@ -12,53 +14,63 @@ import com.siglet.container.adapter.common.ProtoResourceAdapter;
 import io.opentelemetry.api.trace.SpanId;
 import io.opentelemetry.api.trace.TraceId;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
+import io.opentelemetry.proto.trace.v1.Status;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.List;
 
 public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
         implements ModifiableSpan {
 
     private Resource protoResource;
 
-    private InstrumentationScope protoInstrumentationScope;
-
-    private ProtoStatusAdapter protoStatusAdapter;
-
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
     private ProtoResourceAdapter protoResourceAdapter;
 
-    private ProtoLinksAdapter protoLinksAdapter;
-
-    private ProtoEventsAdapter protoEventsAdapter;
+    private InstrumentationScope protoInstrumentationScope;
 
     private ProtoInstrumentationScopeAdapter protoInstrumentationScopeAdapter;
 
+    public ProtoSpanAdapter() {
+        super(AdapterConfig.SPAN_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
+        addEnricher(AdapterListConfig.LINKS_ADAPTER_CONFIG, links -> {
+            getBuilder().clearLinks();
+            getBuilder().addAllLinks((Iterable<Span.Link>) links);
+        });
+        addEnricher(AdapterListConfig.EVENTS_ADAPTER_CONFIG, events -> {
+            getBuilder().clearEvents();
+            getBuilder().addAllEvents((Iterable<Span.Event>) events);
+        });
+        addEnricher(AdapterConfig.STATUS_ADAPTER_CONFIG, status -> {
+            getBuilder().setStatus((Status) status);
+        });
+
+    }
+
     public ProtoSpanAdapter recycle(Span protoSpan, Resource protoResource,
                                     InstrumentationScope protoInstrumentationScope) {
-        super.recycle(protoSpan, Span::toBuilder, Span.Builder::build);
+        super.recycle(protoSpan);
         this.protoResource = protoResource;
+        if (protoResourceAdapter != null) {
+            protoResourceAdapter.recycle(protoResource);
+        }
         this.protoInstrumentationScope = protoInstrumentationScope;
+        if (protoInstrumentationScopeAdapter != null) {
+            protoInstrumentationScopeAdapter.recycle(protoInstrumentationScope);
+        }
         return this;
     }
 
     public ProtoSpanAdapter recycle() {
-        recycle(Span.newBuilder(), Span.Builder::build);
+        recycle(Span.newBuilder());
         return this;
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        if (protoAttributesAdapter != null) {
-            protoAttributesAdapter.clear();
-        }
-        if (protoLinksAdapter != null) {
-            protoLinksAdapter.clear();
-        }
     }
 
     @Override
@@ -195,57 +207,65 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
         return this;
     }
 
+    protected List<KeyValue> getAttributeList() {
+        return getValue(Span::getAttributesList, Span.Builder::getAttributesList);
+    }
+
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                this::getAttributeList);
+    }
+
+    protected Status getStatusValue() {
+        return getValue(Span::getStatus, Span.Builder::getStatus);
     }
 
     public ProtoStatusAdapter getStatus() {
-        if (protoStatusAdapter == null) {
-            protoStatusAdapter = new ProtoStatusAdapter(getMessage().getStatus());
-        }
-        return protoStatusAdapter;
+        return (ProtoStatusAdapter) getAdapter(AdapterConfig.STATUS_ADAPTER_CONFIG, this::getStatusValue);
     }
 
     @Override
     public ProtoResourceAdapter getResource() {
         if (protoResourceAdapter == null) {
-            protoResourceAdapter = new ProtoResourceAdapter(protoResource);
+            protoResourceAdapter = new ProtoResourceAdapter();
+            protoResourceAdapter.recycle(protoResource);
+        } else if (!protoResourceAdapter.isReady()) {
+            protoResourceAdapter.recycle(protoResource);
         }
+
         return protoResourceAdapter;
     }
 
     @Override
     public ProtoInstrumentationScopeAdapter getInstrumentationScope() {
         if (protoInstrumentationScopeAdapter == null) {
-            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope);
+            protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter();
+            protoInstrumentationScopeAdapter.recycle(protoInstrumentationScope);
+        } else if (!protoInstrumentationScopeAdapter.isReady()) {
+            protoInstrumentationScopeAdapter.recycle(protoInstrumentationScope);
         }
+
         return protoInstrumentationScopeAdapter;
+    }
+
+
+    protected List<Span.Link> getLinkList() {
+        return getValue(Span::getLinksList, Span.Builder::getLinksList);
     }
 
     @Override
     public ProtoLinksAdapter getLinks() {
-        if (protoLinksAdapter == null) {
-            protoLinksAdapter = new ProtoLinksAdapter().recycle(getMessage().getLinksList());
-        } else if (!protoLinksAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoLinksAdapter;
+        return (ProtoLinksAdapter) getAdapterList(AdapterListConfig.LINKS_ADAPTER_CONFIG, this::getLinkList);
+    }
+
+    protected List<Span.Event> getEventList() {
+        return getValue(Span::getEventsList, Span.Builder::getEventsList);
     }
 
     @Override
     public ProtoEventsAdapter getEvents() {
-        if (protoEventsAdapter == null) {
-            protoEventsAdapter = new ProtoEventsAdapter().recycle(getMessage().getEventsList());
-        } else if (!protoEventsAdapter.isReady()) {
-            protoEventsAdapter.recycle(getMessage().getEventsList());
-        }
-        return protoEventsAdapter;
+        return (ProtoEventsAdapter) getAdapterList(AdapterListConfig.EVENTS_ADAPTER_CONFIG, this::getEventList);
     }
 
     public Span getProtoSpan() {
@@ -316,57 +336,19 @@ public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
         return this;
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || attributesUpdated() || linksUpdated() ||
-                eventsUpdated();
-    }
-
-    @Override
-    protected void enrich(Span.Builder builder) {
-        if (attributesUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-        if (linksUpdated()) {
-            builder.clearLinks();
-            builder.addAllLinks(protoLinksAdapter.getUpdated());
-        }
-        if (eventsUpdated()) {
-            builder.clearEvents();
-            builder.addAllEvents(protoEventsAdapter.getUpdated());
-        }
-    }
-
-    private boolean attributesUpdated() {
-        return protoAttributesAdapter != null && protoAttributesAdapter.isUpdated();
-    }
-
-    private boolean linksUpdated() {
-        return protoLinksAdapter != null && protoLinksAdapter.isUpdated();
-    }
-
-    private boolean eventsUpdated() {
-        return protoEventsAdapter != null && protoEventsAdapter.isUpdated();
-    }
-
-    public boolean instrumentationScopeUpdated() {
-        return protoInstrumentationScopeAdapter != null && protoInstrumentationScopeAdapter.isUpdated();
-    }
-
     public Resource getUpdatedResource() {
-        if (protoResourceAdapter == null || !protoResourceAdapter.isUpdated()) {
-            return protoResource;
-        } else {
+        if (protoResourceAdapter != null) {
             return protoResourceAdapter.getUpdated();
+        } else {
+            return protoResource;
         }
     }
 
     public InstrumentationScope getUpdatedInstrumentationScope() {
-        if (protoInstrumentationScopeAdapter == null || !protoInstrumentationScopeAdapter.isUpdated()) {
-            return protoInstrumentationScope;
-        } else {
+        if (protoInstrumentationScopeAdapter != null) {
             return protoInstrumentationScopeAdapter.getUpdated();
+        } else {
+            return protoInstrumentationScope;
         }
     }
 

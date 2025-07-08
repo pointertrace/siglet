@@ -31,13 +31,14 @@ class ProtoSummaryAdapterTest {
                 .build();
 
 
-        protoSummaryAdapter = new ProtoSummaryAdapter().recycle(protoSummary);
+        protoSummaryAdapter = new ProtoSummaryAdapter();
+        protoSummaryAdapter.recycle(protoSummary);
 
     }
 
     @Test
     void get() {
-        protoSummaryAdapter.getDataPoints().getAt(0);
+        protoSummaryAdapter.getDataPoints().get(0);
         assertSame(protoSummaryDataPoint, protoSummaryAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoSummaryAdapter.isUpdated());
     }
@@ -79,10 +80,11 @@ class ProtoSummaryAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoSummaryAdapter = new ProtoSummaryAdapter(protoSummary);
+        protoSummaryAdapter = new ProtoSummaryAdapter();
+        protoSummaryAdapter.recycle(protoSummary);
 
 
-        protoSummaryAdapter.getDataPoints().getAt(0);
+        protoSummaryAdapter.getDataPoints().get(0);
         assertSame(protoSummaryDataPoint, protoSummaryAdapter.getDataPoints().getUpdated().get(0));
         assertSame(protoSummary, protoSummaryAdapter.getUpdated());
         assertFalse(protoSummaryAdapter.isUpdated());

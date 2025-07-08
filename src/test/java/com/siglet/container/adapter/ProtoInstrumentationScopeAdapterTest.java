@@ -1,6 +1,5 @@
 package com.siglet.container.adapter;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.common.ProtoInstrumentationScopeAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -35,7 +34,8 @@ class ProtoInstrumentationScopeAdapterTest {
                         .build())
                 .build();
 
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(protoInstrumentationScope);
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter();
+        protoInstrumentationScopeAdapter.recycle(protoInstrumentationScope);
 
     }
 
@@ -98,7 +98,8 @@ class ProtoInstrumentationScopeAdapterTest {
     void getUpdate_notUpdatable() {
 
         InstrumentationScope actualProtoInstAdapt = InstrumentationScope.newBuilder().build();
-        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter(actualProtoInstAdapt);
+        protoInstrumentationScopeAdapter = new ProtoInstrumentationScopeAdapter();
+        protoInstrumentationScopeAdapter.recycle(actualProtoInstAdapt);
 
         assertSame(actualProtoInstAdapt, protoInstrumentationScopeAdapter.getUpdated());
 

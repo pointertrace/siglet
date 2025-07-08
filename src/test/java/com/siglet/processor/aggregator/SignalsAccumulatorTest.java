@@ -186,9 +186,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_metric_sameResource_sameInstrumentation() {
 
-        protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1);
+        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
 
-        protoMetricAdapter2 = new ProtoMetricAdapter(metric2, resource1, instrumentationScope1);
+        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource1, instrumentationScope1);
 
 //        signalsAggregator.add(protoMetricAdapter1);
 //        signalsAggregator.add(protoMetricAdapter2);
@@ -216,9 +216,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_metric_sameResource_twoInstrumentation() {
 
-        protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1);
+        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
 
-        protoMetricAdapter2 = new ProtoMetricAdapter(metric2, resource1, instrumentationScope2);
+        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource1, instrumentationScope2);
 
 //        signalsAggregator.add(protoMetricAdapter2);
 //        signalsAggregator.add(protoMetricAdapter2);
@@ -248,9 +248,9 @@ class SignalsAccumulatorTest {
     @Test
     void add_metric_twoResource_twoInstrumentation() {
 
-        protoMetricAdapter1 = new ProtoMetricAdapter(metric1, resource1, instrumentationScope1);
+        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
 
-        protoMetricAdapter2 = new ProtoMetricAdapter(metric2, resource2, instrumentationScope2);
+        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource2, instrumentationScope2);
 
 //        signalsAggregator.add(protoMetricAdapter1);
 //        signalsAggregator.add(protoMetricAdapter2);

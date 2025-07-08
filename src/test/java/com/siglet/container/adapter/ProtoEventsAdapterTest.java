@@ -1,6 +1,5 @@
 package com.siglet.container.adapter;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.common.ProtoEventAdapter;
 import com.siglet.container.adapter.common.ProtoEventsAdapter;
@@ -33,7 +32,8 @@ class ProtoEventsAdapterTest {
                         .build()
         );
 
-        protoEventsAdapter = new ProtoEventsAdapter().recycle(protoEvents);
+        protoEventsAdapter = new ProtoEventsAdapter();
+        protoEventsAdapter.recycle(protoEvents);
     }
 
     @Test
@@ -117,7 +117,8 @@ class ProtoEventsAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoEventsAdapter = new ProtoEventsAdapter().recycle(protoEvents);
+        protoEventsAdapter = new ProtoEventsAdapter();
+        protoEventsAdapter.recycle(protoEvents);
 
         assertSame(protoEvents, protoEventsAdapter.getUpdated());
 

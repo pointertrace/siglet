@@ -54,7 +54,8 @@ class ProtoSummaryDataPointAdapterTest {
                 .addAllAttributes(attributes)
                 .build();
 
-        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter().recycle(summaryDataPoint);
+        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter();
+        protoSummaryDataPointAdapter.recycle(summaryDataPoint);
     }
 
     @Test
@@ -72,10 +73,10 @@ class ProtoSummaryDataPointAdapterTest {
         ProtoValueAtQuantilesAdapter valueAtQuantilesAdapter = protoSummaryDataPointAdapter.getQuantileValues();
 
         assertEquals(2, valueAtQuantilesAdapter.getSize());
-        assertEquals(1.2, valueAtQuantilesAdapter.getAt(0).getValue());
-        assertEquals(3.4, valueAtQuantilesAdapter.getAt(0).getQuantile());
-        assertEquals(5.6, valueAtQuantilesAdapter.getAt(1).getValue());
-        assertEquals(7.8, valueAtQuantilesAdapter.getAt(1).getQuantile());
+        assertEquals(1.2, valueAtQuantilesAdapter.get(0).getValue());
+        assertEquals(3.4, valueAtQuantilesAdapter.get(0).getQuantile());
+        assertEquals(5.6, valueAtQuantilesAdapter.get(1).getValue());
+        assertEquals(7.8, valueAtQuantilesAdapter.get(1).getQuantile());
 
         assertFalse(protoSummaryDataPointAdapter.isUpdated());
 
@@ -125,7 +126,7 @@ class ProtoSummaryDataPointAdapterTest {
 
         ProtoValueAtQuantilesAdapter valueAtQuantilesAdapter = protoSummaryDataPointAdapter.getQuantileValues();
 
-        ProtoValueAtQuantileAdapter valueAtQuantileAdapter = valueAtQuantilesAdapter.getAt(0);
+        ProtoValueAtQuantileAdapter valueAtQuantileAdapter = valueAtQuantilesAdapter.get(0);
 
         assertTrue(protoSummaryDataPointAdapter.isUpdated());
 
@@ -134,7 +135,8 @@ class ProtoSummaryDataPointAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter(summaryDataPoint);
+        protoSummaryDataPointAdapter = new ProtoSummaryDataPointAdapter();
+        protoSummaryDataPointAdapter.recycle(summaryDataPoint);
 
         assertSame(summaryDataPoint, protoSummaryDataPointAdapter.getUpdated());
 
@@ -193,7 +195,7 @@ class ProtoSummaryDataPointAdapterTest {
         ProtoValueAtQuantilesAdapter quantileValues = protoSummaryDataPointAdapter.getQuantileValues();
 
         quantileValues.remove(0);
-        quantileValues.getAt(0).setValue(9.10).setQuantile(11.12);
+        quantileValues.get(0).setValue(9.10).setQuantile(11.12);
         quantileValues.add().setValue(13.14).setQuantile(15.16);
 
         SummaryDataPoint actual = protoSummaryDataPointAdapter.getUpdated();

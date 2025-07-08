@@ -43,7 +43,7 @@ class AdapterListTest {
     @Test
     void clear() {
         keyValues.add();
-        keyValues.getAdapter(0);
+        keyValues.get(0);
         keyValues.getMessage(0);
         keyValues.getSize();
         keyValues.getUpdated();
@@ -55,7 +55,7 @@ class AdapterListTest {
         keyValues.clear();
 
         assertThrowsExactly(SigletError.class, () -> keyValues.add());
-        assertThrowsExactly(SigletError.class, () -> keyValues.getAdapter(0));
+        assertThrowsExactly(SigletError.class, () -> keyValues.get(0));
         assertThrowsExactly(SigletError.class, () -> keyValues.getMessage(0));
         assertThrowsExactly(SigletError.class, () -> keyValues.getSize());
         assertThrowsExactly(SigletError.class, () -> keyValues.getUpdated());
@@ -69,7 +69,7 @@ class AdapterListTest {
         keyValues.recycle(keyValueList);
 
         keyValues.add();
-        keyValues.getAdapter(0);
+        keyValues.get(0);
         keyValues.getMessage(0);
         keyValues.getSize();
         keyValues.getUpdated();
@@ -79,19 +79,18 @@ class AdapterListTest {
         keyValues.remove(0);
 
 
-
     }
 
     @Test
-    void getAdapter() {
+    void get() {
 
-        KeyValueAdapter firstAdapter = keyValues.getAdapter(0);
+        KeyValueAdapter firstAdapter = keyValues.get(0);
 
         assertNotNull(firstAdapter);
         assertSame(first, firstAdapter.getUpdated());
 
-        assertSame(first, keyValues.getAdapter(0).getUpdated());
-        assertSame(first, keyValues.getAdapter(0).getUpdated());
+        assertSame(first, keyValues.get(0).getUpdated());
+        assertSame(first, keyValues.get(0).getUpdated());
 
         assertFalse(keyValues.isUpdated());
     }
@@ -101,7 +100,7 @@ class AdapterListTest {
 
         keyValues.add().setKey("new-key").setValue("new-value");
         assertEquals(3, keyValues.getSize());
-        KeyValueAdapter addedAdapter = keyValues.getAdapter(2);
+        KeyValueAdapter addedAdapter = keyValues.get(2);
         assertEquals("new-key", addedAdapter.getKey());
         assertEquals("new-value", addedAdapter.getValue());
         assertTrue(keyValues.isUpdated());
@@ -114,7 +113,7 @@ class AdapterListTest {
         keyValues.remove(0);
 
         assertEquals(1, keyValues.getSize());
-        KeyValueAdapter adapter = keyValues.getAdapter(0);
+        KeyValueAdapter adapter = keyValues.get(0);
         assertSame(second, adapter.getUpdated());
         assertEquals("second", adapter.getKey());
         assertEquals("second-value", adapter.getValue());
@@ -129,7 +128,7 @@ class AdapterListTest {
         assertTrue(keyValues.remove(kv -> "second".equals(kv.getKey()), kvb -> "second".equals(kvb.getKey())));
 
         assertEquals(1, keyValues.getSize());
-        KeyValueAdapter adapter = keyValues.getAdapter(0);
+        KeyValueAdapter adapter = keyValues.get(0);
         assertEquals("first", adapter.getKey());
         assertEquals("first-value", adapter.getValue());
         assertTrue(keyValues.isUpdated());
@@ -159,17 +158,13 @@ class AdapterListTest {
 
     static class KeyValues extends AdapterList<KeyValue, KeyValue.Builder, KeyValueAdapter> {
 
-
-        @Override
-        protected KeyValueAdapter createNewAdapter() {
-            return new KeyValueAdapter(KeyValue.newBuilder());
+        protected KeyValues() {
+            super(new AdapterListConfig<>(
+                    KeyValues::new,
+                    KeyValueAdapter::new,
+                    KeyValue::newBuilder
+            ));
         }
-
-        @Override
-        protected KeyValueAdapter createAdapter(int i) {
-            return new KeyValueAdapter(getMessage(i));
-        }
-
     }
 
     @Test
@@ -179,16 +174,16 @@ class AdapterListTest {
     }
 
     @Test
-    void isUpdated_getAdapter() {
+    void isUpdated_get() {
 
-        keyValues.getAdapter(0);
+        keyValues.get(0);
         assertFalse(keyValues.isUpdated());
     }
 
     @Test
     void isUpdated_onlyAdapterChanged() {
 
-        keyValues.getAdapter(0).setKey("new-key");
+        keyValues.get(0).setKey("new-key");
         assertTrue(keyValues.isUpdated());
     }
 
@@ -215,7 +210,7 @@ class AdapterListTest {
 
         keyValues.add().setKey("new-key").setValue("new-value");
         assertNull(keyValues.getMessage(2));
-        KeyValueAdapter newAdapter = keyValues.getAdapter(2);
+        KeyValueAdapter newAdapter = keyValues.get(2);
         assertNotNull(newAdapter);
         assertEquals("new-key", newAdapter.getKey());
         assertEquals("new-value", newAdapter.getValue());
@@ -245,12 +240,8 @@ class AdapterListTest {
     }
 
     static class KeyValueAdapter extends Adapter<KeyValue, KeyValue.Builder> {
-        public KeyValueAdapter(KeyValue message) {
-            super(message, KeyValue::toBuilder, KeyValue.Builder::build);
-        }
-
-        public KeyValueAdapter(KeyValue.Builder builder) {
-            super(builder, KeyValue.Builder::build);
+        public KeyValueAdapter() {
+            super(AdapterConfig.KEY_VALUE_ADAPTER_CONFIG);
         }
 
         public KeyValueAdapter setKey(String key) {

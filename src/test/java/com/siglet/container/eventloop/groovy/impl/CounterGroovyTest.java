@@ -25,7 +25,7 @@ class CounterGroovyTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         resource = Resource.newBuilder()
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("resource attribute key")
@@ -87,7 +87,7 @@ class CounterGroovyTest {
         assertEquals("counter unit", newCounter.getUnit());
 
         assertEquals(1, newCounter.getSum().getDataPoints().getSize());
-        ProtoNumberDataPointAdapter numberDataPoint = newCounter.getSum().getDataPoints().getAt(0);
+        ProtoNumberDataPointAdapter numberDataPoint = newCounter.getSum().getDataPoints().get(0);
         assertNotNull(numberDataPoint);
         assertEquals(50,numberDataPoint.getAsLong());
         assertEquals(5,numberDataPoint.getFlags());

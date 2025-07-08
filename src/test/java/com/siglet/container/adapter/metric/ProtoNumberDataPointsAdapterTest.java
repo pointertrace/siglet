@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +46,11 @@ class ProtoNumberDataPointsAdapterTest {
                 .build();
 
         protoNumberDataPoints = List.of(firstNumberDataPoint, secondNumberDataPoint);
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter().recycle(protoNumberDataPoints);
+        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter();
+        protoNumberDataPointsAdapter.recycle(protoNumberDataPoints);
 
-        protoThirdNumberDataPointAdapter =
-                new ProtoNumberDataPointAdapter(thirdNumberDataPoint);
+        protoThirdNumberDataPointAdapter = new ProtoNumberDataPointAdapter();
+        protoThirdNumberDataPointAdapter.recycle(thirdNumberDataPoint);
     }
 
     @Test
@@ -94,7 +94,8 @@ class ProtoNumberDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter().recycle(protoNumberDataPoints);
+        protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter();
+        protoNumberDataPointsAdapter.recycle(protoNumberDataPoints);
 
         assertEquals(2, protoNumberDataPointsAdapter.getSize());
 

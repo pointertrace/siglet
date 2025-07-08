@@ -2,6 +2,7 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableBuckets;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
 
 import java.util.ArrayList;
@@ -12,27 +13,7 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
 
 
     public ProtoBucketsAdapter() {
-    }
-
-    public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets protoExemplar) {
-        super(protoExemplar, ExponentialHistogramDataPoint.Buckets::toBuilder,
-                ExponentialHistogramDataPoint.Buckets.Builder::build);
-    }
-
-    public ProtoBucketsAdapter(ExponentialHistogramDataPoint.Buckets.Builder bucketsBuilder) {
-        super(bucketsBuilder, ExponentialHistogramDataPoint.Buckets.Builder::build);
-
-    }
-
-    public ProtoBucketsAdapter recycle(ExponentialHistogramDataPoint.Buckets protoExemplar) {
-        super.recycle(protoExemplar, ExponentialHistogramDataPoint.Buckets::toBuilder,
-                ExponentialHistogramDataPoint.Buckets.Builder::build);
-        return this;
-    }
-
-    public ProtoBucketsAdapter recycle(ExponentialHistogramDataPoint.Buckets.Builder bucketsBuilder) {
-        super.recycle(bucketsBuilder, ExponentialHistogramDataPoint.Buckets.Builder::build);
-        return this;
+        super(AdapterConfig.BUCKETS_ADAPTER_CONFIG);
     }
 
     @Override
@@ -63,7 +44,7 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
 
     @Override
     public List<Long> getBucketCounts() {
-        return new ArrayList(getValue(ExponentialHistogramDataPoint.Buckets::getBucketCountsList,
+        return new ArrayList<>(getValue(ExponentialHistogramDataPoint.Buckets::getBucketCountsList,
                 ExponentialHistogramDataPoint.Buckets.Builder::getBucketCountsList));
     }
 }

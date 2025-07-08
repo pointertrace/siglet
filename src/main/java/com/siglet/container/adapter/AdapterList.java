@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class AdapterList<M extends Message, B extends Message.Builder, A extends Adapter<M, B>> {
+public class AdapterList<M extends Message, B extends Message.Builder, A extends Adapter<M, B>> {
 
     private List<M> messages;
 
@@ -18,18 +18,15 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     private boolean ready;
 
-    // TODO remover
-    protected AdapterList(List<M> messages) {
-        this.messages = messages;
+    private final AdapterListConfig<M,B,A,?> config;
+
+    protected AdapterList(AdapterListConfig<M,B,A,?> config) {
+        this.config = config;
     }
 
-    protected AdapterList() {
-    }
-
-    public AdapterList recycle(List<M> messages) {
+    public void recycle(List<M> messages) {
         this.messages = messages;
         ready = true;
-        return this;
     }
 
     public void clear() {
@@ -72,13 +69,13 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
 
     public A add() {
         prepareUpdate();
-        A newAdapter = createNewAdapter();
+        A newAdapter =  createNewAdapter();
         adapters.add(newAdapter);
         messages.add(null);
         return newAdapter;
     }
 
-    protected void remove(int i) {
+    public void remove(int i) {
         prepareUpdate();
         adapters.remove(i);
         messages.remove(i);
@@ -100,7 +97,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
         checkReady();
         int idx = findIndex(messagePredicate, builderPredicate);
         if (idx >= 0) {
-            return getAdapter(idx);
+            return get(idx);
         } else {
             return null;
         }
@@ -131,7 +128,7 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
         return -1;
     }
 
-    protected A getAdapter(int i) {
+    public A get(int i) {
         checkReady();
         initAdaptersIfNeeded();
         A adapter = adapters.get(i);
@@ -152,9 +149,17 @@ public abstract class AdapterList<M extends Message, B extends Message.Builder, 
         return messages.get(i);
     }
 
-    protected abstract A createNewAdapter();
+    protected A createNewAdapter() {
+        A adapter = config.adapterCreator().get();
+        adapter.recycle(config.builderCreator().get());
+        return adapter;
+    }
 
-    protected abstract A createAdapter(int i);
+    protected A createAdapter(int i) {
+        A adapter = config.adapterCreator().get();
+        adapter.recycle(getMessage(i));
+        return adapter;
+    }
 
     private void prepareUpdate() {
         checkReady();

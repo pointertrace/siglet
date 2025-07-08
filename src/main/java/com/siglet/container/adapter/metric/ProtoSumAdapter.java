@@ -3,52 +3,31 @@ package com.siglet.container.adapter.metric;
 import com.siglet.api.modifiable.metric.ModifiableSum;
 import com.siglet.api.unmodifiable.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
+import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import io.opentelemetry.proto.metrics.v1.Sum;
+
+import java.util.List;
 
 public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements ModifiableSum {
 
-    private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
-
-    public ProtoSumAdapter(Sum protoSum) {
-        super(protoSum, Sum::toBuilder, Sum.Builder::build);
-    }
-
     public ProtoSumAdapter() {
+        super(AdapterConfig.SUM_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.NUMBER_DATA_POINTS_ADAPTER_CONFIG, dataPoints -> {
+            getBuilder().clearDataPoints();
+            getBuilder().addAllDataPoints((Iterable<NumberDataPoint>) dataPoints);
+        });
     }
 
-    public ProtoSumAdapter recycle(Sum protoSum) {
-        super.recycle(protoSum, Sum::toBuilder, Sum.Builder::build);
-        return this;
-    }
-
-    public ProtoSumAdapter recycle(Sum.Builder protoSumBuilder) {
-        super.recycle(protoSumBuilder, Sum.Builder::build);
-        return this;
-    }
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated());
+    protected List<NumberDataPoint> getDataPointsList() {
+        return getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList);
     }
 
     @Override
     public ProtoNumberDataPointsAdapter getDataPoints() {
-        if (protoNumberDataPointsAdapter == null) {
-            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter().recycle(
-                    getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList));
-        } else if (!protoNumberDataPointsAdapter.isReady()) {
-            protoNumberDataPointsAdapter.recycle(getValue(Sum::getDataPointsList, Sum.Builder::getDataPointsList));
-        }
-        return protoNumberDataPointsAdapter;
-    }
-
-    @Override
-    protected void enrich(Sum.Builder builder) {
-        if (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated()) {
-            builder.clearDataPoints();
-            builder.addAllDataPoints(protoNumberDataPointsAdapter.getUpdated());
-        }
+        return  getAdapterList(AdapterListConfig.NUMBER_DATA_POINTS_ADAPTER_CONFIG, this::getDataPointsList);
     }
 
     @Override

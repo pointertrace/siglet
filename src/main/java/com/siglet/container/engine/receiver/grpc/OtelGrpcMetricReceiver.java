@@ -45,7 +45,9 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
                         System.out.println("metric received:" + metric);
                         // TODO verifica se precisa de resource e scope builder/
                         for (SignalDestination<Signal> destination : metricDestinations) {
-                            destination.send(new ProtoMetricAdapter(metric, resource, instrumentationScope));
+                            ProtoMetricAdapter protoMetricAdapter = new ProtoMetricAdapter()
+                                    .recycle(metric, resource, instrumentationScope);
+                            destination.send(protoMetricAdapter);
                         }
                     }
                 }

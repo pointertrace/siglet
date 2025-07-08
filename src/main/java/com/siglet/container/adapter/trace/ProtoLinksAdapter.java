@@ -2,41 +2,22 @@ package com.siglet.container.adapter.trace;
 
 import com.siglet.api.modifiable.trace.ModifiableLinks;
 import com.siglet.container.adapter.AdapterList;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.trace.v1.Span;
 
-import java.util.List;
 import java.util.Map;
 
 public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder, ProtoLinkAdapter>
         implements ModifiableLinks {
 
 
-    // TODO remover
-    public ProtoLinksAdapter(List<Span.Link> protolinks) {
-        super(protolinks);
-    }
-
     public ProtoLinksAdapter() {
+        super(AdapterListConfig.LINKS_ADAPTER_CONFIG);
     }
 
-    public ProtoLinksAdapter recycle(List<Span.Link> links) {
-        super.recycle(links);
-        return this;
-    }
-
-
-    @Override
-    protected ProtoLinkAdapter createNewAdapter() {
-        return new ProtoLinkAdapter(Span.Link.newBuilder());
-    }
-
-    @Override
-    protected ProtoLinkAdapter createAdapter(int i) {
-        return new ProtoLinkAdapter(getMessage(i));
-    }
-
+    // TODO simplificar
     public boolean has(long traceIdHigh, long traceIdLow, long spanId) {
         return findIndex(m -> traceIdHigh == AdapterUtils.traceIdHigh(m.getTraceId().toByteArray()) &&
                         traceIdLow == AdapterUtils.traceIdLow(m.getTraceId().toByteArray()) &&
@@ -54,7 +35,7 @@ public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder,
                         traceIdLow == AdapterUtils.traceIdLow(b.getTraceId().toByteArray()) &&
                         spanId == AdapterUtils.spanId(b.getSpanId().toByteArray()));
         if (idx >= 0) {
-            return getAdapter(idx);
+            return get(idx);
         } else {
             return null;
         }

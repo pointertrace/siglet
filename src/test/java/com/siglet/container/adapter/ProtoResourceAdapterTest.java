@@ -1,6 +1,5 @@
 package com.siglet.container.adapter;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.common.ProtoResourceAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -33,7 +32,8 @@ class ProtoResourceAdapterTest {
                         .build())
                 .build();
 
-        protoResourceAdapter = new ProtoResourceAdapter(protoResource);
+        protoResourceAdapter = new ProtoResourceAdapter();
+        protoResourceAdapter.recycle(protoResource);
 
     }
 
@@ -92,7 +92,8 @@ class ProtoResourceAdapterTest {
     void getUpdated_notUpdatable() {
 
         Resource actualProtoResource = Resource.newBuilder().build();
-        protoResourceAdapter = new ProtoResourceAdapter(actualProtoResource);
+        protoResourceAdapter = new ProtoResourceAdapter();
+        protoResourceAdapter.recycle(actualProtoResource);
 
         assertSame(actualProtoResource, protoResourceAdapter.getUpdated());
 

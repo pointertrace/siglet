@@ -25,7 +25,7 @@ class GaugeGroovyTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         resource = Resource.newBuilder()
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("resource attribute key")
@@ -94,7 +94,7 @@ class GaugeGroovyTest {
         assertEquals(2, newGauge.getGauge().getDataPoints().getSize());
 
         // first data point
-        ProtoNumberDataPointAdapter numberDataPoint = newGauge.getGauge().getDataPoints().getAt(0);
+        ProtoNumberDataPointAdapter numberDataPoint = newGauge.getGauge().getDataPoints().get(0);
         assertNotNull(numberDataPoint);
         assertEquals(100, numberDataPoint.getAsLong());
         assertEquals(1, numberDataPoint.getFlags());
@@ -111,7 +111,7 @@ class GaugeGroovyTest {
 
 
         // second datapoint
-        numberDataPoint = newGauge.getGauge().getDataPoints().getAt(1);
+        numberDataPoint = newGauge.getGauge().getDataPoints().get(1);
         assertNotNull(numberDataPoint);
         assertEquals(200.20, numberDataPoint.getAsDouble());
         assertEquals(2, numberDataPoint.getFlags());

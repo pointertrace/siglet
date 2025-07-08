@@ -98,7 +98,7 @@ class AttributesGroovyTest {
 
         spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
 
-        metricAdapter = new ProtoMetricAdapter(metric, resource, instrumentationScope);
+        metricAdapter = new ProtoMetricAdapter().recycle(metric, resource, instrumentationScope);
 
         compiler = new Compiler(AttributesBaseScript.class);
         AttributesBaseScript.spanAdapter = spanAdapter;
@@ -145,7 +145,7 @@ class AttributesGroovyTest {
         compiler.prepareScript(script, spanAdapter);
         script.run();
 
-        ProtoAttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().getAt(0).getAttributes();
+        ProtoAttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().get(0).getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(4, attributesAdapter.getSize());
         assertEquals("metric name", attributesAdapter.getAsString("attribute from metric"));
@@ -167,7 +167,7 @@ class AttributesGroovyTest {
 
         public void metricAttributes(Closure<Void> closure) {
             closure.setDelegate(new NumberDataPointAttributesProxy(
-                    new SignalMock(), metricAdapter, metricAdapter.getGauge().getDataPoints().getAt(0)));
+                    new SignalMock(), metricAdapter, metricAdapter.getGauge().getDataPoints().get(0)));
             closure.setResolveStrategy(Closure.DELEGATE_FIRST);
             closure.call();
         }

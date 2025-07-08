@@ -2,17 +2,23 @@ package com.siglet.container.adapter.common;
 
 import com.siglet.api.modifiable.ModifiableInstrumentationScope;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.common.v1.KeyValue;
 
 public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationScope, InstrumentationScope.Builder>
         implements ModifiableInstrumentationScope {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
 
-    public ProtoInstrumentationScopeAdapter(InstrumentationScope protoInstrumentationScope) {
-        super(protoInstrumentationScope, InstrumentationScope::toBuilder, InstrumentationScope.Builder::build);
+    public ProtoInstrumentationScopeAdapter(){
+        super(AdapterConfig.SCOPE_ADAPTER_CONFIG);
+
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
     }
-
 
     public String getName() {
         return getValue(InstrumentationScope::getName, InstrumentationScope.Builder::getName);
@@ -45,26 +51,9 @@ public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationSco
     }
 
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                getMessage()::getAttributesList);
     }
 
-    @Override
-    protected void enrich(InstrumentationScope.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-    }
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
-
-    }
 
 }

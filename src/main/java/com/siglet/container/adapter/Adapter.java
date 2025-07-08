@@ -3,9 +3,10 @@ package com.siglet.container.adapter;
 import com.google.protobuf.Message;
 import com.siglet.SigletError;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.*;
 
 public class Adapter<M extends Message, B extends Message.Builder> {
 
@@ -13,43 +14,92 @@ public class Adapter<M extends Message, B extends Message.Builder> {
 
     private B builder;
 
-    private Function<M, B> messageToBuilder;
-
-    private Function<B, M> builderToMessage;
+    private final AdapterConfig<M, B> config;
 
     private boolean updated;
 
     private boolean ready = false;
 
-    public Adapter() {
+    private final Map<AdapterConfig<?, ?>, Adapter<?, ?>> childrenAdapter = new HashMap<>();
+
+    private final Map<AdapterListConfig<?, ?, ?, ?>, AdapterList<?, ?, ?>> childrenListAdapter = new HashMap<>();
+
+    private final Map<AdapterListConfig<?, ?, ?, ?>, Consumer<List<?>>> listEnrichers = new HashMap<>();
+
+    private final Map<AdapterConfig<?, ?>, Consumer<Message>> enrichers = new HashMap<>();
+
+
+    protected Adapter(AdapterConfig<M, B> config, AdapterConfig<?, ?>... childrenConfig) {
+        this.config = config;
+        for (AdapterConfig<?, ?> childConfig : childrenConfig) {
+            childrenAdapter.put(childConfig, null);
+        }
     }
 
-    // TODO remover construtor
-    public Adapter (M message, Function<M, B> messageToBuilder, Function<B, M> builderToMessage) {
+    protected Adapter(AdapterConfig<M, B> config, List<AdapterConfig<?, ?>> childrenConfig,
+                      List<AdapterListConfig<?, ?, ?,?>> childrenListConfig) {
+        this.config = config;
+        for (AdapterConfig<?, ?> childConfig : childrenConfig) {
+            childrenAdapter.put(childConfig, null);
+        }
+        for (AdapterListConfig<?, ?, ?,?> childListConfig : childrenListConfig) {
+            childrenListAdapter.put(childListConfig, null);
+        }
+    }
+
+    protected void addEnricher(AdapterListConfig<?, ?, ?,?> adapterListConfig, Consumer<List<?>> enricherFunction) {
+        listEnrichers.put(adapterListConfig, enricherFunction);
+    }
+
+    protected void addEnricher(AdapterConfig<?, ?> adapterConfig, Consumer<Message> enricherFunction) {
+        enrichers.put(adapterConfig, enricherFunction);
+    }
+
+    protected <CM extends Message, CB extends Message.Builder, CA extends Adapter<CM, CB>,
+            CAL extends AdapterList<CM, CB, CA>> CAL getAdapterList(
+            AdapterListConfig<CM, CB, CA, CAL> config, Supplier<List<CM>> childMessageListGetter) {
+
+        CAL  childList = (CAL) childrenListAdapter.computeIfAbsent(config,
+                cfg -> {
+            AdapterList<CM, CB, CA> cld = (AdapterList<CM, CB, CA>) cfg.adapterListCreator().get();
+            cld.recycle(childMessageListGetter.get());
+            return cld;
+        });
+
+        if (!childList.isReady()) {
+            childList.recycle(childMessageListGetter.get());
+        }
+
+        return childList;
+    }
+
+    protected <CM extends Message, CB extends Message.Builder,CA extends Adapter<CM, CB>> CA getAdapter(
+            AdapterConfig<CM, CB> config, Supplier<CM> childMessageGetter) {
+
+        Adapter<CM, CB> child = (Adapter<CM, CB>) childrenAdapter.computeIfAbsent(config, cfg -> {
+            Adapter<CM, CB> cd = (Adapter<CM, CB>) cfg.adapterCreator().get();
+            cd.recycle(childMessageGetter.get());
+            return cd;
+        });
+
+        if (!child.isReady()) {
+            child.recycle(childMessageGetter.get());
+        }
+
+        return (CA) child;
+    }
+
+    protected boolean hasAdapter(AdapterConfig<?, ?> config) {
+        return childrenAdapter.containsKey(config);
+    }
+
+    public void recycle(M message) {
         this.message = message;
-        this.messageToBuilder = messageToBuilder;
-        this.builderToMessage = builderToMessage;
         this.ready = true;
     }
 
-    // TODO remover construtor
-    public Adapter(B builder, Function<B, M> builderToMessage) {
+    public void recycle(B builder) {
         this.builder = builder;
-        this.builderToMessage = builderToMessage;
-        this.updated = true;
-        this.ready = true;
-    }
-
-    protected void recycle(M message, Function<M, B> messageToBuilder, Function<B, M> builderToMessage) {
-        this.message = message;
-        this.messageToBuilder = messageToBuilder;
-        this.builderToMessage = builderToMessage;
-        this.ready = true;
-    }
-
-    public void recycle(B builder, Function<B, M> builderToMessage) {
-        this.builder = builder;
-        this.builderToMessage = builderToMessage;
         this.updated = true;
         this.ready = true;
     }
@@ -57,10 +107,20 @@ public class Adapter<M extends Message, B extends Message.Builder> {
     public void clear() {
         this.message = null;
         this.builder = null;
-        this.messageToBuilder = null;
-        this.builderToMessage = null;
         this.updated = false;
         this.ready = false;
+        for (Map.Entry<AdapterListConfig<?, ?, ?, ?>, Consumer<List<?>>> enricher : listEnrichers.entrySet()) {
+            AdapterList<?, ?, ?> adapterList = childrenListAdapter.get(enricher.getKey());
+            if (adapterList != null) {
+                adapterList.clear();
+            }
+        }
+        for (Map.Entry<AdapterConfig<?, ?>, Consumer<Message>> enricher : enrichers.entrySet()) {
+            Adapter<?, ?> adapter = childrenAdapter.get(enricher.getKey());
+            if (adapter != null) {
+                adapter.clear();
+            }
+        }
     }
 
     protected <T> T getValue(Function<M, T> messageGetter, Function<B, T> builderGetter) {
@@ -77,16 +137,17 @@ public class Adapter<M extends Message, B extends Message.Builder> {
         setter.accept(builder, value);
     }
 
+
     public M getUpdated() {
         checkReady();
         if (!isUpdated()) {
             return message;
         } else {
             if (builder == null) {
-                builder = messageToBuilder.apply(message);
+                builder = config.messageToBuilder().apply(message);
             }
-            enrich(builder);
-            return builderToMessage.apply(builder);
+            enrich();
+            return config.builderToMessage().apply(builder);
         }
     }
 
@@ -104,17 +165,43 @@ public class Adapter<M extends Message, B extends Message.Builder> {
         return message;
     }
 
+
     protected B getBuilder() {
         checkReady();
         return builder;
     }
 
-    protected void enrich(B builder) {
+    protected void enrich() {
+        for (Map.Entry<AdapterListConfig<?, ?, ?, ?>, Consumer<List<?>>> enricher : listEnrichers.entrySet()) {
+            AdapterList<?, ?, ?> adapterList = childrenListAdapter.get(enricher.getKey());
+            if (adapterList != null && adapterList.isUpdated()) {
+                enricher.getValue().accept(adapterList.getUpdated());
+            }
+        }
+        for (Map.Entry<AdapterConfig<?, ?>, Consumer<Message>> enricher : enrichers.entrySet()) {
+            Adapter<?, ?> adapter = childrenAdapter.get(enricher.getKey());
+            if (adapter != null && adapter.isUpdated()) {
+                enricher.getValue().accept(adapter.getUpdated());
+            }
+        }
     }
 
     public boolean isUpdated() {
         checkReady();
-        return updated;
+        if (updated) {
+            return true;
+        }
+        for (Adapter<?, ?> child : childrenAdapter.values()) {
+            if (child != null && child.isUpdated()) {
+                return true;
+            }
+        }
+        for (AdapterList<?, ?, ?> childList : childrenListAdapter.values()) {
+            if (childList != null && childList.isUpdated()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isReady() {
@@ -124,7 +211,7 @@ public class Adapter<M extends Message, B extends Message.Builder> {
     protected void prepareUpdate() {
         checkReady();
         if (builder == null) {
-            builder = messageToBuilder.apply(message);
+            builder = config.messageToBuilder().apply(message);
         }
         if (!updated) {
             updated = true;
@@ -138,3 +225,5 @@ public class Adapter<M extends Message, B extends Message.Builder> {
     }
 
 }
+
+

@@ -3,36 +3,29 @@ package com.siglet.container.adapter.metric;
 import com.google.protobuf.ByteString;
 import com.siglet.api.modifiable.metric.ModifiableExemplar;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 
 public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements ModifiableExemplar {
 
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    public ProtoExemplarAdapter(Exemplar protoExemplar) {
-        super(protoExemplar, Exemplar::toBuilder, Exemplar.Builder::build);
-    }
-
-    public ProtoExemplarAdapter(Exemplar.Builder protoExamplarBuilder) {
-        super(protoExamplarBuilder, Exemplar.Builder::build);
-
+    public ProtoExemplarAdapter() {
+        super(AdapterConfig.EXEMPLAR_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,attributes -> {
+            getBuilder().clearFilteredAttributes();
+            getBuilder().addAllFilteredAttributes((Iterable<KeyValue>) attributes);
+        });
     }
 
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().
-                    recycle(getValue(Exemplar::getFilteredAttributesList, Exemplar.Builder::getFilteredAttributesList));
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter
-                    .recycle(getValue(Exemplar::getFilteredAttributesList, Exemplar.Builder::getFilteredAttributesList));
-        }
-
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                getMessage()::getFilteredAttributesList);
     }
 
     @Override
@@ -104,19 +97,6 @@ public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> im
     public ProtoExemplarAdapter setTraceId(byte[] traceId) {
         setValue(Exemplar.Builder::setSpanId, ByteString.copyFrom(traceId));
         return this;
-    }
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(Exemplar.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearFilteredAttributes();
-            builder.addAllFilteredAttributes(protoAttributesAdapter.getUpdated());
-        }
     }
 
 }

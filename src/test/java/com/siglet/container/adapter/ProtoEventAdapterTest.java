@@ -1,6 +1,5 @@
 package com.siglet.container.adapter;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.common.ProtoEventAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -34,7 +33,8 @@ class ProtoEventAdapterTest {
                         .build())
                 .build();
 
-        protoEventAdapter = new ProtoEventAdapter(protoEvent);
+        protoEventAdapter = new ProtoEventAdapter();
+        protoEventAdapter.recycle(protoEvent);
 
     }
 
@@ -96,7 +96,8 @@ class ProtoEventAdapterTest {
     void getUpdate_notUpdatable() {
 
         Span.Event actualProtoEvent = Span.Event.newBuilder().build();
-        protoEventAdapter = new ProtoEventAdapter(actualProtoEvent);
+        protoEventAdapter = new ProtoEventAdapter();
+        protoEventAdapter.recycle(actualProtoEvent);
 
         assertSame(actualProtoEvent, protoEventAdapter.getUpdated());
 

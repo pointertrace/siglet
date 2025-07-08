@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class ProtoExponentialHistogramDataPointsAdapterTest {
 
@@ -45,8 +45,8 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
         protoExponentialHistogramDataPoints = List.of(firstExponentialHistogramDataPoint,
                 secondExponentialHistogramDataPoint);
 
-        protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter()
-                .recycle(protoExponentialHistogramDataPoints);
+        protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter();
+        protoExponentialHistogramDataPointsAdapter.recycle(protoExponentialHistogramDataPoints);
 
     }
 
@@ -91,8 +91,8 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter()
-                .recycle(protoExponentialHistogramDataPoints);
+        protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter();
+        protoExponentialHistogramDataPointsAdapter.recycle(protoExponentialHistogramDataPoints);
 
         assertEquals(2, protoExponentialHistogramDataPointsAdapter.getSize());
 

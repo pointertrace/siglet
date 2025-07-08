@@ -42,7 +42,8 @@ class ProtoHistogramDataPointsAdapterTest {
                 .build();
 
         protoHistogramDataPoints = List.of(firstHistogramDataPoint, secondHistogramDataPoint);
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter().recycle(protoHistogramDataPoints);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter();
+        protoHistogramDataPointsAdapter.recycle(protoHistogramDataPoints);
 
     }
 
@@ -86,7 +87,8 @@ class ProtoHistogramDataPointsAdapterTest {
     @Test
     void get_At_notUpdatable() {
 
-        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter().recycle(protoHistogramDataPoints);
+        protoHistogramDataPointsAdapter = new ProtoHistogramDataPointsAdapter();
+        protoHistogramDataPointsAdapter.recycle(protoHistogramDataPoints);
 
         assertEquals(2, protoHistogramDataPointsAdapter.getSize());
 

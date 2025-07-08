@@ -33,13 +33,14 @@ class ProtoHistogramAdapterTest {
                 .build();
 
 
-        protoHistogramAdapter = new ProtoHistogramAdapter().recycle(protoHistogram);
+        protoHistogramAdapter = new ProtoHistogramAdapter();
+        protoHistogramAdapter.recycle(protoHistogram);
 
     }
 
     @Test
     void get() {
-        protoHistogramAdapter.getDataPoints().getAt(0);
+        protoHistogramAdapter.getDataPoints().get(0);
         assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoHistogramAdapter.isUpdated());
     }
@@ -56,7 +57,7 @@ class ProtoHistogramAdapterTest {
                 .setStartTimeUnixNano(20)
                 .build();
 
-        new ProtoHistogramDataPointAdapter(protoExtraNumberDataPoint);
+        new ProtoHistogramDataPointAdapter().recycle(protoExtraNumberDataPoint);
 
         assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
         assertEquals(protoExtraNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(1));
@@ -67,10 +68,11 @@ class ProtoHistogramAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoHistogramAdapter = new ProtoHistogramAdapter().recycle(protoHistogram);
+        protoHistogramAdapter = new ProtoHistogramAdapter();
+        protoHistogramAdapter.recycle(protoHistogram);
 
 
-        protoHistogramAdapter.getDataPoints().getAt(0);
+        protoHistogramAdapter.getDataPoints().get(0);
         assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
         assertSame(protoHistogram, protoHistogramAdapter.getUpdated());
         assertFalse(protoHistogramAdapter.isUpdated());

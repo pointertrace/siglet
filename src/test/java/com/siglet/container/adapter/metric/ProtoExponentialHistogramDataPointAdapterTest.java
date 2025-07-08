@@ -83,7 +83,8 @@ class ProtoExponentialHistogramDataPointAdapterTest {
                 .addAllExemplars(exemplars)
                 .build();
 
-        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(exponentialHistogramDataPoint);
+        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter();
+        protoExponentialHistogramDataPointAdapter.recycle(exponentialHistogramDataPoint);
     }
 
     @Test
@@ -246,8 +247,8 @@ class ProtoExponentialHistogramDataPointAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter(
-                exponentialHistogramDataPoint);
+        protoExponentialHistogramDataPointAdapter = new ProtoExponentialHistogramDataPointAdapter();
+        protoExponentialHistogramDataPointAdapter.recycle(exponentialHistogramDataPoint);
 
         ExponentialHistogramDataPoint histogramDataPoint = protoExponentialHistogramDataPointAdapter.getUpdated();
 
@@ -297,7 +298,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
         exemplars.remove(0);
         exemplars.add()
                 .setSpanId(600)
-                .setTraceId(700,800)
+                .setTraceId(700, 800)
                 .setAsLong(900)
                 .setTimeUnixNanos(1000);
 
@@ -308,15 +309,15 @@ class ProtoExponentialHistogramDataPointAdapterTest {
 
         assertEquals(2, actualExemplars.size());
 
-        assertEquals(AdapterUtils.spanId(60),actualExemplars.get(0).getSpanId());
-        assertEquals(AdapterUtils.traceId(70,80),actualExemplars.get(0).getTraceId());
-        assertEquals(90,actualExemplars.get(0).getAsInt());
-        assertEquals(100,actualExemplars.get(0).getTimeUnixNano());
+        assertEquals(AdapterUtils.spanId(60), actualExemplars.get(0).getSpanId());
+        assertEquals(AdapterUtils.traceId(70, 80), actualExemplars.get(0).getTraceId());
+        assertEquals(90, actualExemplars.get(0).getAsInt());
+        assertEquals(100, actualExemplars.get(0).getTimeUnixNano());
 
 
-        assertEquals(AdapterUtils.spanId(600),actualExemplars.get(1).getSpanId());
-        assertEquals(AdapterUtils.traceId(700,800),actualExemplars.get(1).getTraceId());
-        assertEquals(900,actualExemplars.get(1).getAsInt());
-        assertEquals(1000,actualExemplars.get(1).getTimeUnixNano());
+        assertEquals(AdapterUtils.spanId(600), actualExemplars.get(1).getSpanId());
+        assertEquals(AdapterUtils.traceId(700, 800), actualExemplars.get(1).getTraceId());
+        assertEquals(900, actualExemplars.get(1).getAsInt());
+        assertEquals(1000, actualExemplars.get(1).getTimeUnixNano());
     }
 }

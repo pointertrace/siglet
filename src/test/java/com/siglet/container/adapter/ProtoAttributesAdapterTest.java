@@ -1,7 +1,6 @@
 package com.siglet.container.adapter;
 
 import com.google.protobuf.ByteString;
-import com.siglet.SigletError;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
@@ -64,7 +63,8 @@ class ProtoAttributesAdapterTest {
                 .setValue(AdapterUtils.objectToAnyValue(new byte[]{0, 1, 2}))
                 .build());
 
-        protoAttributesAdapter = new ProtoAttributesAdapter().recycle(protoAttributes);
+        protoAttributesAdapter = new ProtoAttributesAdapter();
+        protoAttributesAdapter.recycle(protoAttributes);
     }
 
 
@@ -267,7 +267,8 @@ class ProtoAttributesAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoAttributesAdapter = new ProtoAttributesAdapter().recycle(protoAttributes);
+        protoAttributesAdapter = new ProtoAttributesAdapter();
+        protoAttributesAdapter.recycle(protoAttributes);
 
         assertSame(protoAttributes, protoAttributesAdapter.getUpdated());
 

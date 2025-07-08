@@ -2,49 +2,46 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableExponentialHistogramDataPoint;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
+import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.metrics.v1.Exemplar;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
+
+import java.util.List;
 
 public class ProtoExponentialHistogramDataPointAdapter extends Adapter<ExponentialHistogramDataPoint,
         ExponentialHistogramDataPoint.Builder> implements ModifiableExponentialHistogramDataPoint {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    private ProtoExemplarsAdapter protoExemplarsAdapter;
-
-    private ProtoBucketsAdapter protoPositiveBucketAdapter;
-
-    private ProtoBucketsAdapter protoNegativeBucketAdapter;
-
-    public ProtoExponentialHistogramDataPointAdapter(ExponentialHistogramDataPoint protoExponentialHistogramDataPoint) {
-        super(protoExponentialHistogramDataPoint, ExponentialHistogramDataPoint::toBuilder,
-                ExponentialHistogramDataPoint.Builder::build);
+    public ProtoExponentialHistogramDataPointAdapter() {
+        super(AdapterConfig.EXPONENTIAL_HISTOGRAM_DATAPOINT_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
+        addEnricher(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG, exemplars -> {
+            getBuilder().clearExemplars();
+            getBuilder().addAllExemplars((Iterable<Exemplar>) exemplars);
+        });
+        addEnricher(AdapterConfig.POSITIVE_BUCKETS_ADAPTER_CONFIG, buckets ->
+                getBuilder().setPositive((ExponentialHistogramDataPoint.Buckets) buckets)
+        );
+        addEnricher(AdapterConfig.NEGATIVE_BUCKETS_ADAPTER_CONFIG, buckets ->
+                getBuilder().setNegative((ExponentialHistogramDataPoint.Buckets) buckets)
+        );
     }
 
 
-    public ProtoExponentialHistogramDataPointAdapter(ExponentialHistogramDataPoint.Builder protoExponentialHistogramDataPointBuilder) {
-        super(protoExponentialHistogramDataPointBuilder, ExponentialHistogramDataPoint.Builder::build);
-    }
-
-    public ProtoExponentialHistogramDataPointAdapter recycle(ExponentialHistogramDataPoint protoExponentialHistogramDataPoint) {
-        super.recycle(protoExponentialHistogramDataPoint, ExponentialHistogramDataPoint::toBuilder,
-                ExponentialHistogramDataPoint.Builder::build);
-        return this;
-    }
-
-    public ProtoExponentialHistogramDataPointAdapter recycle(ExponentialHistogramDataPoint.Builder protoExponentialHistogramDataPointBuilder) {
-        super.recycle(protoExponentialHistogramDataPointBuilder, ExponentialHistogramDataPoint.Builder::build);
-        return this;
+    protected List<KeyValue> getAttributeList() {
+        return getValue(ExponentialHistogramDataPoint::getAttributesList,
+                ExponentialHistogramDataPoint.Builder::getAttributesList);
     }
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                this::getAttributeList);
     }
 
     @Override
@@ -102,35 +99,36 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
                 ExponentialHistogramDataPoint.Builder::getZeroThreshold);
     }
 
+    protected ExponentialHistogramDataPoint.Buckets getPositiveBuckets() {
+        return getValue(ExponentialHistogramDataPoint::getPositive,
+                ExponentialHistogramDataPoint.Builder::getPositive);
+    }
+
     @Override
     public ProtoBucketsAdapter getPositive() {
-        if (protoPositiveBucketAdapter == null) {
-            protoPositiveBucketAdapter = new ProtoBucketsAdapter().recycle(getMessage().getPositive());
-        } else if (!protoPositiveBucketAdapter.isReady()) {
-            protoPositiveBucketAdapter.recycle(getMessage().getPositive());
-        }
-        return protoPositiveBucketAdapter;
+        return getAdapter(AdapterConfig.POSITIVE_BUCKETS_ADAPTER_CONFIG, this::getPositiveBuckets);
+    }
+
+    protected ExponentialHistogramDataPoint.Buckets getNegativeBuckets() {
+        return getValue(ExponentialHistogramDataPoint::getNegative,
+                ExponentialHistogramDataPoint.Builder::getNegative);
     }
 
     @Override
     public ProtoBucketsAdapter getNegative() {
-        if (protoNegativeBucketAdapter == null) {
-            protoNegativeBucketAdapter = new ProtoBucketsAdapter().recycle(getMessage().getNegative());
-        } else if (!protoNegativeBucketAdapter.isReady()) {
-            protoNegativeBucketAdapter.recycle(getMessage().getNegative());
-        }
-        return protoNegativeBucketAdapter;
+        return getAdapter(AdapterConfig.NEGATIVE_BUCKETS_ADAPTER_CONFIG,
+                this::getNegativeBuckets);
+    }
+
+    protected List<Exemplar> getExemplarsList() {
+        return getValue(ExponentialHistogramDataPoint::getExemplarsList,
+                ExponentialHistogramDataPoint.Builder::getExemplarsList);
     }
 
     @Override
     public ProtoExemplarsAdapter getExemplars() {
-        if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(getMessage().getExemplarsList());
-        } else if (!protoExemplarsAdapter.isReady()) {
-            protoExemplarsAdapter.recycle(getMessage().getExemplarsList());
-
-        }
-        return protoExemplarsAdapter;
+        return getAdapterList(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG,
+                this::getExemplarsList);
     }
 
     @Override
@@ -193,30 +191,4 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
         return this;
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() ||
-                (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ||
-                (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated()) ||
-                (protoPositiveBucketAdapter != null && protoPositiveBucketAdapter.isUpdated()) ||
-                (protoNegativeBucketAdapter != null && protoNegativeBucketAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(ExponentialHistogramDataPoint.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-        if (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated()) {
-            builder.clearExemplars();
-            builder.addAllExemplars(protoExemplarsAdapter.getUpdated());
-        }
-        if (protoPositiveBucketAdapter != null && protoPositiveBucketAdapter.isUpdated()) {
-            builder.setPositive(protoPositiveBucketAdapter.getUpdated());
-        }
-        if (protoNegativeBucketAdapter != null && protoNegativeBucketAdapter.isUpdated()) {
-            builder.setNegative(protoNegativeBucketAdapter.getUpdated());
-        }
-    }
 }

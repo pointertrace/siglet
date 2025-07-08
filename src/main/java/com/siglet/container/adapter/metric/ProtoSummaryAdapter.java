@@ -2,50 +2,30 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableSummary;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.metrics.v1.Summary;
+import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
+
+import java.util.List;
 
 public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> implements ModifiableSummary {
 
-    private ProtoSummaryDataPointsAdapter protoSummaryDataPointsAdapter;
-
-    public ProtoSummaryAdapter(Summary protoSummary) {
-        super(protoSummary,Summary::toBuilder,Summary.Builder::build);
-    }
-
     public ProtoSummaryAdapter() {
+        super(AdapterConfig.SUMMARY_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.SUMMARY_DATA_POINTS_ADAPTER_CONFIG, dataPoints -> {
+            getBuilder().clearDataPoints();
+            getBuilder().addAllDataPoints((Iterable<SummaryDataPoint>) dataPoints);
+        });
     }
 
-    public ProtoSummaryAdapter recycle(Summary protoSummary) {
-        super.recycle(protoSummary,Summary::toBuilder,Summary.Builder::build);
-        return this;
-    }
-
-    public ProtoSummaryAdapter(Summary.Builder summaryBuilder) {
-        super(summaryBuilder, Summary.Builder::build);
+    public List<SummaryDataPoint> getDataPointsList() {
+        return getValue(Summary::getDataPointsList, Summary.Builder::getDataPointsList);
     }
 
     @Override
     public ProtoSummaryDataPointsAdapter getDataPoints() {
-        if (protoSummaryDataPointsAdapter == null) {
-            protoSummaryDataPointsAdapter = new ProtoSummaryDataPointsAdapter()
-                    .recycle(getValue(Summary::getDataPointsList,Summary.Builder::getDataPointsList));
-        } else if (!protoSummaryDataPointsAdapter.isReady()) {
-            protoSummaryDataPointsAdapter
-                    .recycle(getValue(Summary::getDataPointsList, Summary.Builder::getDataPointsList));
-        }
-        return protoSummaryDataPointsAdapter;
+        return getAdapterList(AdapterListConfig.SUMMARY_DATA_POINTS_ADAPTER_CONFIG, this::getDataPointsList);
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoSummaryDataPointsAdapter != null && protoSummaryDataPointsAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(Summary.Builder builder) {
-        if (protoSummaryDataPointsAdapter != null && protoSummaryDataPointsAdapter.isUpdated()) {
-            builder.clearDataPoints();
-            builder.addAllDataPoints(protoSummaryDataPointsAdapter.getUpdated());
-        }
-    }
 }

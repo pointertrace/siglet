@@ -22,14 +22,14 @@ class AdapterTest {
                 .setValue(AnyValue.newBuilder().setStringValue("value").build())
                 .build();
 
-        adapter = new Adapter<>();
+        adapter = new Adapter<>(AdapterConfig.KEY_VALUE_ADAPTER_CONFIG);
     }
 
 
     @Test
     void getValue_message() {
 
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         assertEquals("key", adapter.getValue(KeyValue::getKey, KeyValue.Builder::getKey));
         assertFalse(adapter.isUpdated());
@@ -40,7 +40,7 @@ class AdapterTest {
     void getValue_builder() {
 
         KeyValue.Builder builder = KeyValue.newBuilder().setKey("other-key");
-        adapter.recycle(builder, KeyValue.Builder::build);
+        adapter.recycle(builder);
 
         assertEquals("other-key", adapter.getValue(KeyValue::getKey, KeyValue.Builder::getKey));
         assertTrue(adapter.isUpdated());
@@ -49,7 +49,7 @@ class AdapterTest {
     @Test
     void setAndGetValue_message() {
 
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         adapter.setValue(KeyValue.Builder::setKey, "new-value");
         assertEquals("new-value", adapter.getValue(KeyValue::getKey, KeyValue.Builder::getKey));
@@ -61,7 +61,7 @@ class AdapterTest {
 
         KeyValue.Builder builder = KeyValue.newBuilder().setKey("other-key");
 
-        adapter.recycle(builder, KeyValue.Builder::build);
+        adapter.recycle(builder);
 
         adapter.setValue(KeyValue.Builder::setKey, "new-value");
 
@@ -73,7 +73,7 @@ class AdapterTest {
     @Test
     void getUpdated_messageNoChange() {
 
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         assertSame(keyValue, adapter.getUpdated());
 
@@ -86,7 +86,7 @@ class AdapterTest {
                 .setKey("key")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build());
 
-        adapter.recycle(builder, KeyValue.Builder::build);
+        adapter.recycle(builder);
 
 
         assertEquals(KeyValue.newBuilder()
@@ -104,7 +104,7 @@ class AdapterTest {
                 .setKey("key")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build());
 
-        adapter.recycle(builder, KeyValue.Builder::build);
+        adapter.recycle(builder);
         adapter.setValue(KeyValue.Builder::setKey, "new-key");
 
 
@@ -121,7 +121,7 @@ class AdapterTest {
 
 
         AdapterUpdatedWithoutBuilderChange adapter = new AdapterUpdatedWithoutBuilderChange();
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
         adapter.updated = true;
 
 
@@ -141,7 +141,7 @@ class AdapterTest {
                 .setKey("key")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build());
 
-        adapter.recycle(builder, KeyValue.Builder::build);
+        adapter.recycle(builder);
 
         assertTrue(adapter.test(KeyValue::getKey, KeyValue.Builder::getKey, "key"::equals));
         assertFalse(adapter.test(KeyValue::getKey, KeyValue.Builder::getKey, "other-key"::equals));
@@ -152,7 +152,7 @@ class AdapterTest {
     void test_messagePredicate() {
 
 
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         assertTrue(adapter.test(KeyValue::getKey, KeyValue.Builder::getKey, "key"::equals));
         assertFalse(adapter.test(KeyValue::getKey, KeyValue.Builder::getKey, "other-key"::equals));
@@ -172,7 +172,7 @@ class AdapterTest {
 
     @Test
     void checkAfterClear() {
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         adapter.getValue(KeyValue::getKey, KeyValue.Builder::getValue);
         adapter.setValue(KeyValue.Builder::setKey, "new-value");
@@ -195,7 +195,7 @@ class AdapterTest {
     void enrich() {
 
         AdapterWithBuilderEnrich adapter = new AdapterWithBuilderEnrich();
-        adapter.recycle(keyValue, KeyValue::toBuilder, KeyValue.Builder::build);
+        adapter.recycle(keyValue);
 
         adapter.setValue(KeyValue.Builder::setKey, "new-value");
 
@@ -212,11 +212,12 @@ class AdapterTest {
 
 
         public AdapterWithBuilderEnrich() {
+            super(AdapterConfig.KEY_VALUE_ADAPTER_CONFIG);
         }
 
         @Override
-        protected void enrich(Builder builder) {
-            builder.setKey(builder.getKey() + ".suffix");
+        protected void enrich() {
+            getBuilder().setKey(getBuilder().getKey() + ".suffix");
         }
 
     }
@@ -226,6 +227,7 @@ class AdapterTest {
         private boolean updated;
 
         public AdapterUpdatedWithoutBuilderChange() {
+            super(AdapterConfig.KEY_VALUE_ADAPTER_CONFIG);
         }
 
         @Override

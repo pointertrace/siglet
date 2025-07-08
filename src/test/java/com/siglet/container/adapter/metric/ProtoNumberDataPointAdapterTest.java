@@ -59,7 +59,8 @@ class ProtoNumberDataPointAdapterTest {
                 .addAllExemplars(exemplars)
                 .build();
 
-        protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter(protoNumberDataPoint);
+        protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter();
+        protoNumberDataPointAdapter.recycle(protoNumberDataPoint);
     }
 
     @Test
@@ -158,7 +159,8 @@ class ProtoNumberDataPointAdapterTest {
     @Test
     void getUpdated_notUpdatable() {
 
-        protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter(protoNumberDataPoint);
+        protoNumberDataPointAdapter = new ProtoNumberDataPointAdapter();
+        protoNumberDataPointAdapter.recycle(protoNumberDataPoint);
 
         NumberDataPoint numberDataPoint = protoNumberDataPointAdapter.getUpdated();
 

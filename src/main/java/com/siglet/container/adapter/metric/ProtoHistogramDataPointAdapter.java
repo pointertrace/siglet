@@ -2,7 +2,11 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableHistogramDataPoint;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
+import io.opentelemetry.proto.common.v1.KeyValue;
+import io.opentelemetry.proto.metrics.v1.Exemplar;
 import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
 
 import java.util.ArrayList;
@@ -11,34 +15,25 @@ import java.util.List;
 public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, HistogramDataPoint.Builder>
         implements ModifiableHistogramDataPoint {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    private ProtoExemplarsAdapter protoExemplarsAdapter;
-
     public ProtoHistogramDataPointAdapter() {
+        super(AdapterConfig.HISTOGRAM_DATA_POINT_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
+        addEnricher(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG, exemplars -> {
+            getBuilder().clearExemplars();
+            getBuilder().addAllExemplars((Iterable<Exemplar>) exemplars);
+        });
     }
 
-    public ProtoHistogramDataPointAdapter(HistogramDataPoint protoHistogramDataPoint) {
-        super(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build);
-    }
-
-    public ProtoHistogramDataPointAdapter(HistogramDataPoint.Builder protoHistogramDataPointBuilder) {
-        super(protoHistogramDataPointBuilder, HistogramDataPoint.Builder::build);
-    }
-
-    public ProtoHistogramDataPointAdapter recycle(HistogramDataPoint protoHistogramDataPoint) {
-        super.recycle(protoHistogramDataPoint, HistogramDataPoint::toBuilder, HistogramDataPoint.Builder::build);
-        return this;
+    public List<KeyValue> getAttributeList() {
+       return getValue(HistogramDataPoint::getAttributesList, HistogramDataPoint.Builder::getAttributesList);
     }
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,this::getAttributeList);
     }
 
     @Override
@@ -88,14 +83,13 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
         return getValue(HistogramDataPoint::getMax, HistogramDataPoint.Builder::getMax);
     }
 
+    protected List<Exemplar> getExemplarsList() {
+        return getValue(HistogramDataPoint::getExemplarsList,HistogramDataPoint.Builder::getExemplarsList);
+    }
+
     @Override
     public ProtoExemplarsAdapter getExemplars() {
-        if (protoExemplarsAdapter == null) {
-            protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(getMessage().getExemplarsList());
-        } else if (!protoExemplarsAdapter.isReady()) {
-            protoExemplarsAdapter.recycle(getMessage().getExemplarsList());
-        }
-        return protoExemplarsAdapter;
+        return  getAdapterList(AdapterListConfig.EXEMPLARS_ADAPTER_CONFIG,this::getExemplarsList);
     }
 
     @Override
@@ -178,21 +172,4 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
         return this;
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ||
-                (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(HistogramDataPoint.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-        if (protoExemplarsAdapter != null && protoExemplarsAdapter.isUpdated()) {
-            builder.clearExemplars();
-            builder.addAllExemplars(protoExemplarsAdapter.getUpdated());
-        }
-    }
 }

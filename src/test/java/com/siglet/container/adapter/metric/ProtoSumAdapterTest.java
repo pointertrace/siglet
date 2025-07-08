@@ -34,13 +34,14 @@ class ProtoSumAdapterTest {
                 .build();
 
 
-        protoSumAdapter = new ProtoSumAdapter().recycle(protoSum);
+        protoSumAdapter = new ProtoSumAdapter();
+        protoSumAdapter.recycle(protoSum);
 
     }
 
     @Test
     void get() {
-        protoSumAdapter.getDataPoints().getAt(0);
+        protoSumAdapter.getDataPoints().get(0);
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertFalse(protoSumAdapter.isUpdated());
     }
@@ -59,7 +60,7 @@ class ProtoSumAdapterTest {
                 .setAsDouble(30.21)
                 .build();
 
-        new ProtoNumberDataPointAdapter(protoExtraNumberDataPoint);
+        new ProtoNumberDataPointAdapter().recycle(protoExtraNumberDataPoint);
 
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertEquals(protoExtraNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(1));
@@ -70,10 +71,11 @@ class ProtoSumAdapterTest {
     @Test
     void get_updatableNotUpdated() {
 
-        protoSumAdapter = new ProtoSumAdapter(protoSum);
+        protoSumAdapter = new ProtoSumAdapter();
+        protoSumAdapter.recycle(protoSum);
 
 
-        protoSumAdapter.getDataPoints().getAt(0);
+        protoSumAdapter.getDataPoints().get(0);
         assertSame(protoNumberDataPoint, protoSumAdapter.getDataPoints().getUpdated().get(0));
         assertSame(protoSum, protoSumAdapter.getUpdated());
         assertFalse(protoSumAdapter.isUpdated());

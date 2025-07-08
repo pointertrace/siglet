@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -152,7 +151,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoGaugeMetricAdapter.getGauge().getDataPoints());
         assertEquals(1, protoGaugeMetricAdapter.getGauge().getDataPoints().getSize());
         ProtoNumberDataPointAdapter protoNumberDataPointAdapter = protoGaugeMetricAdapter.getGauge()
-                .getDataPoints().getAt(0);
+                .getDataPoints().get(0);
 
         assertEquals(1, protoNumberDataPointAdapter.getTimeUnixNano());
         assertEquals(2, protoNumberDataPointAdapter.getStartTimeUnixNano());
@@ -172,7 +171,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoSumMetricAdapter.getSum().getDataPoints());
         assertEquals(1, protoSumMetricAdapter.getSum().getDataPoints().getSize());
         ProtoNumberDataPointAdapter protoNumberDataPointAdapter = protoSumMetricAdapter.getSum()
-                .getDataPoints().getAt(0);
+                .getDataPoints().get(0);
 
         assertEquals(10, protoNumberDataPointAdapter.getTimeUnixNano());
         assertEquals(20, protoNumberDataPointAdapter.getStartTimeUnixNano());
@@ -192,7 +191,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoHistogramMetricAdapter.getHistogram().getDataPoints());
         assertEquals(1, protoHistogramMetricAdapter.getHistogram().getDataPoints().getSize());
         ProtoHistogramDataPointAdapter protoHistogramDataPointAdapter = protoHistogramMetricAdapter.getHistogram()
-                .getDataPoints().getAt(0);
+                .getDataPoints().get(0);
 
         assertEquals(100, protoHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(200, protoHistogramDataPointAdapter.getStartTimeUnixNano());
@@ -214,7 +213,7 @@ class ProtoMetricAdapterAdapterTest {
         assertEquals(1, protoExponentialHistogramMetricAdapter.getExponentialHistogram().getDataPoints().getSize());
         ProtoExponentialHistogramDataPointAdapter protoExponentialHistogramDataPointAdapter =
                 protoExponentialHistogramMetricAdapter.getExponentialHistogram()
-                        .getDataPoints().getAt(0);
+                        .getDataPoints().get(0);
 
         assertEquals(1000, protoExponentialHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(2000, protoExponentialHistogramDataPointAdapter.getStartTimeUnixNano());
@@ -234,7 +233,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoSummaryMetricAdapter.getSummary().getDataPoints());
         assertEquals(1, protoSummaryMetricAdapter.getSummary().getDataPoints().getSize());
         ProtoSummaryDataPointAdapter protoSummaryDataPointAdapter =
-                protoSummaryMetricAdapter.getSummary().getDataPoints().getAt(0);
+                protoSummaryMetricAdapter.getSummary().getDataPoints().get(0);
 
         assertEquals(1000, protoSummaryDataPointAdapter.getTimeUnixNano());
         assertEquals(2000, protoSummaryDataPointAdapter.getStartTimeUnixNano());
@@ -249,7 +248,7 @@ class ProtoMetricAdapterAdapterTest {
                 .setName("new-name")
                 .setDescription("new-description")
                 .setUnit("new-unit")
-                .getGauge().getDataPoints().getAt(0)
+                .getGauge().getDataPoints().get(0)
                 .setTimeUnixNano(50)
                 .setStartTimeUnixNano(60)
                 .setAsLong(70)
@@ -265,7 +264,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoGaugeMetricAdapter.getGauge().getDataPoints());
         assertEquals(1, protoGaugeMetricAdapter.getGauge().getDataPoints().getSize());
         ProtoNumberDataPointAdapter protoNumberDataPointAdapter = protoGaugeMetricAdapter.getGauge()
-                .getDataPoints().getAt(0);
+                .getDataPoints().get(0);
 
         assertEquals(50, protoNumberDataPointAdapter.getTimeUnixNano());
         assertEquals(60, protoNumberDataPointAdapter.getStartTimeUnixNano());
@@ -280,7 +279,7 @@ class ProtoMetricAdapterAdapterTest {
                 .setName("new-name")
                 .setDescription("new-description")
                 .setUnit("new-unit")
-                .getSum().getDataPoints().getAt(0)
+                .getSum().getDataPoints().get(0)
                 .setTimeUnixNano(50)
                 .setStartTimeUnixNano(60)
                 .setAsLong(70)
@@ -296,7 +295,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoSumMetricAdapter.getSum().getDataPoints());
         assertEquals(1, protoSumMetricAdapter.getSum().getDataPoints().getSize());
         ProtoNumberDataPointAdapter protoNumberDataPointAdapter = protoSumMetricAdapter.getSum()
-                .getDataPoints().getAt(0);
+                .getDataPoints().get(0);
 
         assertEquals(50, protoNumberDataPointAdapter.getTimeUnixNano());
         assertEquals(60, protoNumberDataPointAdapter.getStartTimeUnixNano());
@@ -311,7 +310,7 @@ class ProtoMetricAdapterAdapterTest {
                 .setName("new-name")
                 .setDescription("new-description")
                 .setUnit("new-unit")
-                .getExponentialHistogram().getDataPoints().getAt(0)
+                .getExponentialHistogram().getDataPoints().get(0)
                 .setTimeUnixNano(50)
                 .setStartTimeUnixNano(60)
                 .setSum(70.70)
@@ -328,7 +327,7 @@ class ProtoMetricAdapterAdapterTest {
         assertEquals(1, protoExponentialHistogramMetricAdapter.getExponentialHistogram().getDataPoints().getSize());
         ProtoExponentialHistogramDataPointAdapter protoExponentialHistogramDataPointAdapter =
                 protoExponentialHistogramMetricAdapter.getExponentialHistogram()
-                        .getDataPoints().getAt(0);
+                        .getDataPoints().get(0);
 
         assertEquals(50, protoExponentialHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(60, protoExponentialHistogramDataPointAdapter.getStartTimeUnixNano());
@@ -343,7 +342,7 @@ class ProtoMetricAdapterAdapterTest {
                 .setName("new-name")
                 .setDescription("new-description")
                 .setUnit("new-unit")
-                .getSummary().getDataPoints().getAt(0)
+                .getSummary().getDataPoints().get(0)
                 .setTimeUnixNano(50)
                 .setStartTimeUnixNano(60)
                 .setSum(70.70)
@@ -359,7 +358,7 @@ class ProtoMetricAdapterAdapterTest {
         assertNotNull(protoSummaryMetricAdapter.getSummary().getDataPoints());
         assertEquals(1, protoSummaryMetricAdapter.getSummary().getDataPoints().getSize());
         ProtoSummaryDataPointAdapter protoSummaryDataPointAdapter =
-                protoSummaryMetricAdapter.getSummary().getDataPoints().getAt(0);
+                protoSummaryMetricAdapter.getSummary().getDataPoints().get(0);
 
         assertEquals(50, protoSummaryDataPointAdapter.getTimeUnixNano());
         assertEquals(60, protoSummaryDataPointAdapter.getStartTimeUnixNano());
@@ -368,5 +367,40 @@ class ProtoMetricAdapterAdapterTest {
 
     }
 
+    @Test
+    void recycle() {
+
+        assertEquals("gauge-metric-name", protoGaugeMetricAdapter.getName());
+        assertEquals("gauge-metric-description", protoGaugeMetricAdapter.getDescription());
+        assertEquals("gauge-metric-unit", protoGaugeMetricAdapter.getUnit());
+        assertTrue(protoGaugeMetricAdapter.hasGauge());
+
+        assertNotNull(protoGaugeMetricAdapter.getGauge());
+        assertNotNull(protoGaugeMetricAdapter.getGauge().getDataPoints());
+        assertEquals(1, protoGaugeMetricAdapter.getGauge().getDataPoints().getSize());
+        ProtoNumberDataPointAdapter protoNumberDataPointAdapter = protoGaugeMetricAdapter.getGauge()
+                .getDataPoints().get(0);
+
+        assertEquals(1, protoNumberDataPointAdapter.getTimeUnixNano());
+        assertEquals(2, protoNumberDataPointAdapter.getStartTimeUnixNano());
+        assertEquals(10, protoNumberDataPointAdapter.getAsLong());
+
+        protoGaugeMetricAdapter.recycle(protoSumMetric, protoResource, protoInstrumentationScope);
+
+        assertEquals("sum-metric-name", protoGaugeMetricAdapter.getName());
+        assertEquals("sum-metric-description", protoGaugeMetricAdapter.getDescription());
+        assertEquals("sum-metric-unit", protoGaugeMetricAdapter.getUnit());
+        assertTrue(protoGaugeMetricAdapter.hasSum());
+
+        assertNotNull(protoGaugeMetricAdapter.getSum());
+        assertNotNull(protoGaugeMetricAdapter.getSum().getDataPoints());
+        assertEquals(1, protoGaugeMetricAdapter.getSum().getDataPoints().getSize());
+        protoNumberDataPointAdapter = protoGaugeMetricAdapter.getSum()
+                .getDataPoints().get(0);
+
+        assertEquals(10, protoNumberDataPointAdapter.getTimeUnixNano());
+        assertEquals(20, protoNumberDataPointAdapter.getStartTimeUnixNano());
+        assertEquals(10.10, protoNumberDataPointAdapter.getAsDouble());
+    }
 
 }

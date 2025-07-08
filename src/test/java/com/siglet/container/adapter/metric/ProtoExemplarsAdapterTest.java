@@ -44,7 +44,8 @@ class ProtoExemplarsAdapterTest {
 
         protoExemplars.add(secondProtoExemplar);
 
-        protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(protoExemplars);
+        protoExemplarsAdapter = new ProtoExemplarsAdapter();
+        protoExemplarsAdapter.recycle(protoExemplars);
     }
 
     @Test
@@ -101,7 +102,8 @@ class ProtoExemplarsAdapterTest {
 
     @Test
     void get_notUpdatable() {
-        protoExemplarsAdapter = new ProtoExemplarsAdapter().recycle(protoExemplars);
+        protoExemplarsAdapter = new ProtoExemplarsAdapter();
+        protoExemplarsAdapter.recycle(protoExemplars);
 
         assertSame(firstProtoExemplar, protoExemplarsAdapter.getUpdated().get(0));
         assertSame(secondProtoExemplar, protoExemplarsAdapter.getUpdated().get(1));

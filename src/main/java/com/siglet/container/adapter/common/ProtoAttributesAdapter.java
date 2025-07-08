@@ -2,9 +2,7 @@ package com.siglet.container.adapter.common;
 
 import com.siglet.SigletError;
 import com.siglet.api.modifiable.ModifiableAttributes;
-import com.siglet.container.adapter.Adapter;
-import com.siglet.container.adapter.AdapterList;
-import com.siglet.container.adapter.AdapterUtils;
+import com.siglet.container.adapter.*;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
 import java.util.List;
@@ -14,12 +12,9 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
         ProtoAttributesAdapter.KeyValueAdapter> implements ModifiableAttributes {
 
     public ProtoAttributesAdapter() {
+        super(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG);
     }
 
-    public ProtoAttributesAdapter recycle(List<KeyValue> attributes) {
-        super.recycle(attributes);
-        return this;
-    }
     @Override
     public boolean containsKey(String key) {
         return getAt(key) != null;
@@ -154,7 +149,7 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
         if (idx < 0) {
             add().setKey(key).setValue(value);
         } else {
-            KeyValueAdapter adapter = getAdapter(idx);
+            KeyValueAdapter adapter = get(idx);
             adapter.setValue(value);
         }
     }
@@ -164,20 +159,9 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
         if (idx < 0) {
             return null;
         } else {
-            return getAdapter(idx).getValue();
+            return get(idx).getValue();
         }
     }
-
-    @Override
-    protected KeyValueAdapter createNewAdapter() {
-        return new KeyValueAdapter(KeyValue.newBuilder());
-    }
-
-    @Override
-    protected KeyValueAdapter createAdapter(int i) {
-        return new KeyValueAdapter(getMessage(i));
-    }
-
 
     private int findKey(String key) {
         return findIndex(m -> key.equals(m.getKey()), b -> key.equals(b.getKey()));
@@ -204,13 +188,9 @@ public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Build
         return (T) value;
     }
 
-    static class KeyValueAdapter extends Adapter<KeyValue, KeyValue.Builder> {
-        public KeyValueAdapter(KeyValue message) {
-            super(message, KeyValue::toBuilder, KeyValue.Builder::build);
-        }
-
-        public KeyValueAdapter(KeyValue.Builder builder) {
-            super(builder, KeyValue.Builder::build);
+    public static class KeyValueAdapter extends Adapter<KeyValue, KeyValue.Builder> {
+        public KeyValueAdapter() {
+            super(AdapterConfig.KEY_VALUE_ADAPTER_CONFIG);
         }
 
         public String getKey() {

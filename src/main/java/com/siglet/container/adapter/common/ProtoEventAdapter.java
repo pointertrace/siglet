@@ -2,19 +2,27 @@ package com.siglet.container.adapter.common;
 
 import com.siglet.api.modifiable.ModifiableEvent;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
+
+import java.util.List;
 
 public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> implements ModifiableEvent {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
+    public ProtoEventAdapter() {
+        super(AdapterConfig.EVENT_ADAPTER_CONFIG,
+                List.of(),
+                List.of(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG));
 
-    public ProtoEventAdapter(Span.Event protoEvent) {
-        super(protoEvent, Span.Event::toBuilder, Span.Event.Builder::build);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
     }
 
-    public ProtoEventAdapter(Span.Event.Builder protoEventBuilder) {
-        super(protoEventBuilder, Span.Event.Builder::build);
-    }
+
 
     public long getTimeUnixNano() {
         return getValue(Span.Event::getTimeUnixNano, Span.Event.Builder::getTimeUnixNano);
@@ -43,29 +51,14 @@ public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> i
         return this;
     }
 
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated());
+    protected List<KeyValue> getAttributeList() {
+        return getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList);
     }
 
-    @Override
-    protected void enrich(Span.Event.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-    }
 
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter()
-                    .recycle(getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter
-                    .recycle(getValue(Span.Event::getAttributesList, Span.Event.Builder::getAttributesList));
-        }
-        return protoAttributesAdapter;
+        return getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG,
+                this::getAttributeList);
     }
 
 }

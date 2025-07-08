@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -31,7 +30,8 @@ class ProtoExemplarAdapterTest {
                         .build()))
                 .build();
 
-        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar);
+        protoExemplarAdapter = new ProtoExemplarAdapter();
+        protoExemplarAdapter.recycle(protoExemplar);
     }
 
 
@@ -80,7 +80,8 @@ class ProtoExemplarAdapterTest {
     @Test
     void getUpdatedExemplar_notUpdatable() {
 
-        protoExemplarAdapter = new ProtoExemplarAdapter(protoExemplar);
+        protoExemplarAdapter = new ProtoExemplarAdapter();
+        protoExemplarAdapter.recycle(protoExemplar);
 
         assertSame(protoExemplar, protoExemplarAdapter.getUpdated());
 

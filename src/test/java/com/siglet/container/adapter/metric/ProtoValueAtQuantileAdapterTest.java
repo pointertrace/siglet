@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,8 @@ class ProtoValueAtQuantileAdapterTest {
                 .setQuantile(3.4)
                 .build();
 
-        protoValueAtQuantileAdapter =  new ProtoValueAtQuantileAdapter(protoValueAtQuantile);
+        protoValueAtQuantileAdapter =  new ProtoValueAtQuantileAdapter();
+        protoValueAtQuantileAdapter.recycle(protoValueAtQuantile);
 
     }
 

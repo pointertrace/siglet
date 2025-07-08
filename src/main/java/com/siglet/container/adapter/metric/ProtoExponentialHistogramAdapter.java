@@ -3,48 +3,37 @@ package com.siglet.container.adapter.metric;
 import com.siglet.api.modifiable.metric.ModifiableExponentialHistogram;
 import com.siglet.api.unmodifiable.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogram;
+import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
+
+import java.util.List;
 
 public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogram, ExponentialHistogram.Builder>
         implements ModifiableExponentialHistogram {
 
-    private ProtoExponentialHistogramDataPointsAdapter protoExponentialHistogramDataPointsAdapter;
-
-    public ProtoExponentialHistogramAdapter(ExponentialHistogram protoHistogram) {
-        super(protoHistogram, ExponentialHistogram::toBuilder, ExponentialHistogram.Builder::build);
+    public ProtoExponentialHistogramAdapter() {
+        super(AdapterConfig.EXPONENTIAL_HISTOGRAM_ADAPTER_CONFIG,
+                List.of(),
+                List.of(AdapterListConfig.EXPONENTIAL_HISTOGRAM_DATA_POINTS_ADAPTER_CONFIG));
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, dataPoints -> {
+            getBuilder().clearDataPoints();
+            getBuilder().addAllDataPoints((Iterable<? extends ExponentialHistogramDataPoint>) dataPoints);
+        });
     }
 
-    public ProtoExponentialHistogramAdapter(ExponentialHistogram.Builder histogramBuilder) {
-        super(histogramBuilder, ExponentialHistogram.Builder::build);
-    }
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() ||
-                (protoExponentialHistogramDataPointsAdapter != null &&
-                        protoExponentialHistogramDataPointsAdapter.isUpdated());
-    }
 
     @Override
     public ProtoExponentialHistogramDataPointsAdapter getDataPoints() {
-        if (protoExponentialHistogramDataPointsAdapter == null) {
-            protoExponentialHistogramDataPointsAdapter = new ProtoExponentialHistogramDataPointsAdapter().recycle(
-                    getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList));
-        }
-        else if (!protoExponentialHistogramDataPointsAdapter.isReady()) {
-            protoExponentialHistogramDataPointsAdapter
-                    .recycle(getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList));
-        }
-        return protoExponentialHistogramDataPointsAdapter;
+        return getAdapterList(
+                AdapterListConfig.EXPONENTIAL_HISTOGRAM_DATA_POINTS_ADAPTER_CONFIG,
+                this::getDataPointsList);
     }
 
-    @Override
-    protected void enrich(ExponentialHistogram.Builder builder) {
-        if (protoExponentialHistogramDataPointsAdapter != null && protoExponentialHistogramDataPointsAdapter.isUpdated()) {
-            builder.clearDataPoints();
-            builder.addAllDataPoints(protoExponentialHistogramDataPointsAdapter.getUpdated());
-        }
+    protected List<ExponentialHistogramDataPoint> getDataPointsList() {
+        return getValue(ExponentialHistogram::getDataPointsList, ExponentialHistogram.Builder::getDataPointsList);
     }
 
     @Override

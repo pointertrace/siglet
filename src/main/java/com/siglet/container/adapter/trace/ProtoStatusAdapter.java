@@ -3,17 +3,15 @@ package com.siglet.container.adapter.trace;
 import com.siglet.api.modifiable.trace.ModifiableStatus;
 import com.siglet.api.trace.StatusCode;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.trace.v1.Status;
 
 public class ProtoStatusAdapter extends Adapter<Status, Status.Builder> implements ModifiableStatus {
 
-    public ProtoStatusAdapter(Status protoStatus) {
-        super(protoStatus, Status::toBuilder, Status.Builder::build);
-    }
 
     public ProtoStatusAdapter() {
-        super(Status.newBuilder(), Status.Builder::build);
+        super(AdapterConfig.STATUS_ADAPTER_CONFIG);
     }
 
     @Override

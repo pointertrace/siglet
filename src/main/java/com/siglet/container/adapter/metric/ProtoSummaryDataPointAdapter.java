@@ -2,57 +2,46 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableSummaryDataPoint;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
+
+import java.util.List;
 
 public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, SummaryDataPoint.Builder>
         implements ModifiableSummaryDataPoint {
 
-    private ProtoAttributesAdapter protoAttributesAdapter;
-
-    private ProtoValueAtQuantilesAdapter protoValueAtQuantilesAdapter;
-
     public ProtoSummaryDataPointAdapter() {
-        super();
+        super(AdapterConfig.SUMMARY_DATA_POINT_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, attributes -> {
+            getBuilder().clearAttributes();
+            getBuilder().addAllAttributes((Iterable<KeyValue>) attributes);
+        });
+        addEnricher(AdapterListConfig.VALUE_AT_QUANTILE_ADAPTER_CONFIG, valueAtQuantiles -> {
+            getBuilder().clearQuantileValues();
+            getBuilder().addAllQuantileValues((Iterable<SummaryDataPoint.ValueAtQuantile>) valueAtQuantiles);
+        });
     }
 
-    public ProtoSummaryDataPointAdapter(SummaryDataPoint protoSummaryDataPoint) {
-        super(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build);
-    }
-
-    public ProtoSummaryDataPointAdapter(SummaryDataPoint.Builder protoSummaryDataPointBuilder) {
-        super(protoSummaryDataPointBuilder, SummaryDataPoint.Builder::build);
-    }
-
-    public ProtoSummaryDataPointAdapter recycle(SummaryDataPoint protoSummaryDataPoint) {
-        super.recycle(protoSummaryDataPoint, SummaryDataPoint::toBuilder, SummaryDataPoint.Builder::build);
-        return this;
-    }
-
-    public ProtoSummaryDataPointAdapter recycle(SummaryDataPoint.Builder protoSummaryDataPointBuilder) {
-        super.recycle(protoSummaryDataPointBuilder, SummaryDataPoint.Builder::build);
-        return this;
+    protected List<KeyValue> getAttributeList() {
+        return getValue(SummaryDataPoint::getAttributesList, SummaryDataPoint.Builder::getAttributesList);
     }
 
     @Override
     public ProtoAttributesAdapter getAttributes() {
-        if (protoAttributesAdapter == null) {
-            protoAttributesAdapter = new ProtoAttributesAdapter().recycle(getMessage().getAttributesList());
-        } else if (!protoAttributesAdapter.isReady()) {
-            protoAttributesAdapter.recycle(getMessage().getAttributesList());
-        }
-        return protoAttributesAdapter;
+        return  getAdapterList(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG, this::getAttributeList);
+    }
+
+    public List<SummaryDataPoint.ValueAtQuantile> getQuantileValuesList() {
+        return getValue(SummaryDataPoint::getQuantileValuesList, SummaryDataPoint.Builder::getQuantileValuesList);
     }
 
     @Override
     public ProtoValueAtQuantilesAdapter getQuantileValues() {
-        if (protoValueAtQuantilesAdapter == null) {
-            protoValueAtQuantilesAdapter = new ProtoValueAtQuantilesAdapter().recycle(getMessage().getQuantileValuesList());
-        } else if (!protoValueAtQuantilesAdapter.isReady()) {
-            protoValueAtQuantilesAdapter.recycle(getMessage().getQuantileValuesList());
-        }
-
-        return protoValueAtQuantilesAdapter;
+        return  getAdapterList(AdapterListConfig.VALUE_AT_QUANTILE_ADAPTER_CONFIG,
+                this::getQuantileValuesList);
     }
 
     @Override
@@ -110,23 +99,4 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
         return this;
     }
 
-
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() ||
-                (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) ||
-                (protoValueAtQuantilesAdapter != null && protoValueAtQuantilesAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(SummaryDataPoint.Builder builder) {
-        if (protoAttributesAdapter != null && protoAttributesAdapter.isUpdated()) {
-            builder.clearAttributes();
-            builder.addAllAttributes(protoAttributesAdapter.getUpdated());
-        }
-        if (protoValueAtQuantilesAdapter != null && protoValueAtQuantilesAdapter.isUpdated()) {
-            builder.clearQuantileValues();
-            builder.addAllQuantileValues(protoValueAtQuantilesAdapter.getUpdated());
-        }
-    }
 }

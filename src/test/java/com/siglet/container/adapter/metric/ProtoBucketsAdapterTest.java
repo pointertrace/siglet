@@ -21,7 +21,8 @@ class ProtoBucketsAdapterTest {
                 .addBucketCounts(10)
                 .build();
 
-        protoBucketsAdapter = new ProtoBucketsAdapter(protoBuckets);
+        protoBucketsAdapter = new ProtoBucketsAdapter();
+        protoBucketsAdapter.recycle(protoBuckets);
     }
 
     @Test

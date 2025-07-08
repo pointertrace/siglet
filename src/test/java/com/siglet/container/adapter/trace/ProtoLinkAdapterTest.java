@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -38,7 +37,8 @@ class ProtoLinkAdapterTest {
                         .build())
                 .build();
 
-        protoLinkAdapter = new ProtoLinkAdapter(protoLink);
+        protoLinkAdapter = new ProtoLinkAdapter();
+        protoLinkAdapter.recycle(protoLink);
 
     }
 
@@ -108,7 +108,8 @@ class ProtoLinkAdapterTest {
     void getUpdate_notUpdatable() {
 
         Span.Link actualProtoLink = Span.Link.newBuilder().build();
-        protoLinkAdapter = new ProtoLinkAdapter(actualProtoLink);
+        protoLinkAdapter = new ProtoLinkAdapter();
+        protoLinkAdapter.recycle(actualProtoLink);
 
         assertSame(actualProtoLink, protoLinkAdapter.getUpdated());
 

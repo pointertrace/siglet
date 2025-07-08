@@ -2,51 +2,32 @@ package com.siglet.container.adapter.metric;
 
 import com.siglet.api.modifiable.metric.ModifiableGauge;
 import com.siglet.container.adapter.Adapter;
+import com.siglet.container.adapter.AdapterConfig;
+import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.metrics.v1.Gauge;
+import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
+
+import java.util.List;
 
 public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements ModifiableGauge {
 
-    private ProtoNumberDataPointsAdapter protoNumberDataPointsAdapter;
-
-    public ProtoGaugeAdapter(Gauge protoGauge) {
-        super(protoGauge, Gauge::toBuilder, Gauge.Builder::build);
-    }
 
     public ProtoGaugeAdapter() {
+        super(AdapterConfig.GAUGE_ADAPTER_CONFIG);
+        addEnricher(AdapterListConfig.NUMBER_DATA_POINTS_ADAPTER_CONFIG, dataPoints -> {
+            getBuilder().clearDataPoints();
+            getBuilder().addAllDataPoints((Iterable<NumberDataPoint>) dataPoints);
+        });
     }
 
-    public ProtoGaugeAdapter recycle(Gauge protoGauge) {
-        super.recycle(protoGauge, Gauge::toBuilder, Gauge.Builder::build);
-        return this;
-    }
-
-    public ProtoGaugeAdapter recycle(Gauge.Builder protoGaugeBuilder) {
-        super.recycle(protoGaugeBuilder, Gauge.Builder::build);
-        return this;
+    public List<NumberDataPoint> getDataPointsList() {
+        return getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList);
     }
 
     @Override
     public ProtoNumberDataPointsAdapter getDataPoints() {
-        if (protoNumberDataPointsAdapter == null) {
-            protoNumberDataPointsAdapter = new ProtoNumberDataPointsAdapter()
-                    .recycle(getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList));
-        } else if (!protoNumberDataPointsAdapter.isReady()) {
-            protoNumberDataPointsAdapter
-                    .recycle(getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList));
-        }
-        return protoNumberDataPointsAdapter;
+        return getAdapterList(AdapterListConfig.NUMBER_DATA_POINTS_ADAPTER_CONFIG,
+                this::getDataPointsList);
     }
 
-    @Override
-    public boolean isUpdated() {
-        return super.isUpdated() || (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated());
-    }
-
-    @Override
-    protected void enrich(Gauge.Builder builder) {
-        if (protoNumberDataPointsAdapter != null && protoNumberDataPointsAdapter.isUpdated()) {
-            builder.clearDataPoints();
-            builder.addAllDataPoints(protoNumberDataPointsAdapter.getUpdated());
-        }
-    }
 }
