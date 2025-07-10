@@ -66,8 +66,8 @@ class CounterGroovyTest {
                         value 50
                         flags 5
                         attributes {
-                          "first attribute key" "first attribute value"
-                          "second attribute key" "second attribute value"
+                            "first attribute key" "first attribute value"
+                            "second attribute key" "second attribute value"
                         }
                     }
                 }

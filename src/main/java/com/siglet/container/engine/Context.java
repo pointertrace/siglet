@@ -3,8 +3,10 @@ package com.siglet.container.engine;
 import com.siglet.container.config.Config;
 import com.siglet.container.config.ConfigFactory;
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.siglet.SigletConfig;
+import com.siglet.container.engine.pipeline.processor.Processor;
 
 import java.util.List;
 
@@ -31,4 +33,7 @@ public class Context {
         return globalEventLoopConfig.chain(EventLoopConfig.of(specificConfig));
     }
 
+    public Processor createProcessor(ProcessorNode processorNode) {
+        return config.getProcessorTypes().create(this,processorNode);
+    }
 }

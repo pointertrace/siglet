@@ -2,6 +2,7 @@ package com.siglet.container.engine;
 
 import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.ProcessorConfig;
+import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
 import com.siglet.parser.Node;
 import com.siglet.parser.YamlParser;
 import org.junit.jupiter.api.Test;
@@ -135,7 +136,7 @@ class ContextTest {
                 """;
 
         Node node = new YamlParser().parse(processorYaml);
-        processorChecker().check(node);
+        processorChecker(new ProcessorTypes()).check(node);
 
         ProcessorConfig processorConfig = (ProcessorConfig) node.getValue();
 

@@ -17,7 +17,7 @@ public class Processors {
     public Processor create(Context context, ProcessorNode processorNode) {
         ProcessorConfig sigletConfig = processorNode.getConfig();
         if (sigletConfig.getKind() == ProcessorKind.SPANLET) {
-            return processors.put(processorNode.getName(),ProcessorTypes.getInstance().create(context, processorNode));
+            return processors.put(processorNode.getName(), context.createProcessor(processorNode));
         } else {
             throw new SigletError("Cannot create a processor for a non-spanlet item");
         }

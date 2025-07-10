@@ -1,5 +1,6 @@
 package com.siglet.container.config.raw;
 
+import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
 import com.siglet.parser.Node;
 import com.siglet.parser.located.Location;
 import com.siglet.parser.YamlParser;
@@ -57,7 +58,7 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        rawConfigChecker().check(node);
+        rawConfigChecker(new ProcessorTypes()).check(node);
 
         Object conf = node.getValue();
 
@@ -137,7 +138,7 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        rawConfigChecker().check(node);
+        rawConfigChecker(new ProcessorTypes()).check(node);
 
         Object conf = node.getValue();
 

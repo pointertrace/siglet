@@ -16,20 +16,22 @@ public class ConfigFactory {
         return create(yaml, List.of());
     }
 
-    public Config create(String yaml, List<SigletConfig> extraSigletConfigs) {
+    public Config create(String yaml, List<SigletConfig> sigletsConfigs) {
 
-        extraSigletConfigs.forEach(ProcessorTypes.getInstance()::add);
+        ProcessorTypes processorTypes = new ProcessorTypes();
+
+        sigletsConfigs.forEach(processorTypes::add);
 
         YamlParser yamlParser = new YamlParser();
 
         Node node = yamlParser.parse(yaml);
 
-        rawConfigChecker().check(node);
+        rawConfigChecker(processorTypes).check(node);
 
         RawConfig rawConfig = node.getValue(RawConfig.class);
         rawConfig.afterSetValues();
 
-        return new Config(rawConfig);
+        return new Config(rawConfig,sigletsConfigs, processorTypes);
 
     }
 }

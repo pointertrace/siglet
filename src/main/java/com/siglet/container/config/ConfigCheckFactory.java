@@ -124,7 +124,7 @@ public class ConfigCheckFactory {
         );
     }
 
-    public static NodeChecker processorChecker() {
+    public static NodeChecker processorChecker(ProcessorTypes processorTypes) {
         return strictObject(ProcessorConfig::new,
                 requiredProperty(ProcessorConfig::setName, ProcessorConfig::setNameLocation,
                         NAME_PROP, text()),
@@ -138,7 +138,7 @@ public class ConfigCheckFactory {
                 requiredProperty(ProcessorConfig::setType, ProcessorConfig::setTypeLocation,
                         TYPE_PROP, text()),
                 requiredDynamicProperty(CONFIG_PROP, ProcessorConfig::setConfigLocation,
-                        new ProcessorCheckerDiscriminator(ProcessorTypes.getInstance())),
+                        new ProcessorCheckerDiscriminator(processorTypes)),
                 optionalProperty(ProcessorConfig::setQueueSize, ProcessorConfig::setQueueSizeLocation,
                         QUEUE_SIZE_PROP, numberInt()),
                 optionalProperty(ProcessorConfig::setThreadPoolSize, ProcessorConfig::setThreadPoolSizeLocation,
@@ -146,11 +146,11 @@ public class ConfigCheckFactory {
     }
 
 
-    public static NodeChecker pipelinesChecker() {
-        return array(pipelineChecker());
+    public static NodeChecker pipelinesChecker(ProcessorTypes processorTypes) {
+        return array(pipelineChecker(processorTypes));
     }
 
-    public static NodeChecker pipelineChecker() {
+    public static NodeChecker pipelineChecker(ProcessorTypes processorTypes) {
         return strictObject(PipelineConfig::new,
                 requiredProperty(PipelineConfig::setName, PipelineConfig::setNameLocation,
                         NAME_PROP, text()),
@@ -165,12 +165,12 @@ public class ConfigCheckFactory {
                                 START_PROP, text(new LocatedStringTransformer()))
                 ),
                 requiredProperty(PipelineConfig::setProcessors, PipelineConfig::setSigletsLocation,
-                        PROCESSORS_PROP, array(processorChecker())
+                        PROCESSORS_PROP, array(processorChecker(processorTypes))
                 )
         );
     }
 
-    public static NodeChecker rawConfigChecker() {
+    public static NodeChecker rawConfigChecker(ProcessorTypes processorTypes) {
         return strictObject(RawConfig::new,
                 optionalProperty(RawConfig::setGlobalConfig, RawConfig::setGlobalConfigLocation, GLOBAL_CONFIG_PROP,
                         globalConfigChecker()),
@@ -179,6 +179,6 @@ public class ConfigCheckFactory {
                 requiredProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,
                         grpcExportersChecker()),
                 requiredProperty(RawConfig::setPipelines, RawConfig::setPipelinesLocation, PIPELINES_PROP,
-                        pipelinesChecker()));
+                        pipelinesChecker(processorTypes)));
     }
 }
