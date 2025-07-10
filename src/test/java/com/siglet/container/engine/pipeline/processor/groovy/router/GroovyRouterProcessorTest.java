@@ -22,7 +22,7 @@ class GroovyRouterProcessorTest {
                 new Route("signal.name == 'second-span-name'", "second")
         );
 
-        GroovyRouterProcessor groovyFilterEventLoop = new GroovyRouterProcessor("groovy-router","default",routes,1, 3);
+        GroovyRouterProcessor groovyFilterEventLoop = new GroovyRouterProcessor("groovy-router","default",routes,3, 1);
 
         MapSignalDestination<Signal> firstDestination = new MapSignalDestination<>("first", Signal.class);
         MapSignalDestination<Signal> secondDestination = new MapSignalDestination<>("second",Signal.class);

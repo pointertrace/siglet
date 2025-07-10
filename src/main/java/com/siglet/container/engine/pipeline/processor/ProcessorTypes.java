@@ -6,6 +6,7 @@ import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
 import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.config.raw.ProcessorKind;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionConfig;
 import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionDefinition;
 import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionProcessor;
@@ -34,28 +35,25 @@ public class ProcessorTypes {
     private final Map<String, ProcessorType> definitions = new HashMap<>();
 
     private ProcessorTypes() {
-        add(new ProcessorType("groovy-action", new GroovyActionDefinition(), node -> {
-            if (node.getConfig().getConfig() instanceof GroovyActionConfig groovyActionConfig) {
-                return new GroovyActionProcessor(node);
+        add(new ProcessorType("groovy-action", new GroovyActionDefinition(), (context, node) -> {
+            if (node.getConfig().getConfig() instanceof GroovyActionConfig) {
+                return new GroovyActionProcessor(context, node);
             } else {
                 throw new SigletError(String.format("for groovy action type config must be a %s",
                         node.getConfig().getClass().getName()));
             }
         }));
-        add(new ProcessorType("groovy-filter", new GroovyFilterDefinition(), node -> {
-            if (node.getConfig().getConfig() instanceof GroovyFilterConfig groovyFilterConfig) {
-                return new GroovyFilterProcessor(node);
+        add(new ProcessorType("groovy-filter", new GroovyFilterDefinition(), (context, node) -> {
+            if (node.getConfig().getConfig() instanceof GroovyFilterConfig) {
+                return new GroovyFilterProcessor(context, node);
             } else {
                 throw new SigletError(String.format("for groovy action type config must be a %s",
                         node.getConfig().getConfig().getClass().getName()));
             }
         }));
-        add(new ProcessorType("groovy-router", new GroovyRouterDefinition(), node -> {
+        add(new ProcessorType("groovy-router", new GroovyRouterDefinition(), (context, node) -> {
             if (node.getConfig().getConfig() instanceof GroovyRouterConfig groovyRouterConfig) {
-                List<Route> routes = groovyRouterConfig.getRoutes().stream()
-                        .map(r -> new Route(r.getWhen(), r.getTo()))
-                        .toList();
-                return new GroovyRouterProcessor(node);
+                return new GroovyRouterProcessor(context, node);
             } else {
                 throw new SigletError(String.format("for groovy action type config must be a %s",
                         node.getConfig().getConfig().getClass().getName()));
@@ -81,13 +79,13 @@ public class ProcessorTypes {
                 sigletConfig.name(),
                 new ProcessorType(sigletConfig.name(), createConfigDefinition(sigletConfig), new ProcessorCreator() {
                     @Override
-                    public Processor create(ProcessorNode node) {
-                        if (node.getConfig().getKind()== ProcessorKind.SPANLET) {
+                    public Processor create(Context context, ProcessorNode node) {
+                        if (node.getConfig().getKind() == ProcessorKind.SPANLET) {
                             com.siglet.api.Processor instance = sigletConfig.createSigletInstance();
                             if (instance instanceof ModifiableSpanlet modifiableSpanlet) {
-                                return new ModifiableSpanletProcessor(node, modifiableSpanlet);
+                                return new ModifiableSpanletProcessor(context, node, modifiableSpanlet);
                             } else if (instance instanceof UnmodifiableSpanlet unmodifiableSpanlet) {
-                                return new UnmodifiableSpanletProcessor(node, unmodifiableSpanlet);
+                                return new UnmodifiableSpanletProcessor(context, node, unmodifiableSpanlet);
                             }
                         }
                         throw new SigletError(String.format("Cannot create siglet type %s", node.getName()));
@@ -105,12 +103,12 @@ public class ProcessorTypes {
     }
 
 
-    public Processor create(ProcessorNode node) {
+    public Processor create(Context context, ProcessorNode node) {
         ProcessorType processorType = definitions.get(node.getConfig().getType());
         if (processorType == null) {
             throw new SigletError("Processor type " + node.getConfig().getType() + " not found");
         }
-        return processorType.getProcessorCreator().create(node);
+        return processorType.getProcessorCreator().create(context, node);
     }
 
 

@@ -1,6 +1,6 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.api.parser.ValueTransformerException;
+import com.siglet.parser.ValueTransformerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

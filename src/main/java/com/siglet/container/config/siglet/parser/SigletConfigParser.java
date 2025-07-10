@@ -1,7 +1,7 @@
 package com.siglet.container.config.siglet.parser;
 
 
-import com.siglet.api.parser.Node;
+import com.siglet.parser.Node;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.parser.YamlParser;
 

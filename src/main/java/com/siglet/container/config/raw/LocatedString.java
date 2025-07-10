@@ -1,8 +1,8 @@
 package com.siglet.container.config.raw;
 
 
-import com.siglet.api.parser.located.Located;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.located.Located;
+import com.siglet.parser.located.Location;
 
 public class LocatedString implements Located {
 

@@ -1,14 +1,14 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.api.parser.Node;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.Node;
+import com.siglet.parser.located.Location;
 import com.siglet.parser.YamlParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.siglet.container.config.ConfigCheckFactory.globalConfigChecker;
+import static com.siglet.container.config.ConfigCheckFactory.rawConfigChecker;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RawConfigTest {
@@ -21,10 +21,15 @@ class RawConfigTest {
     }
 
     @Test
-    void validateUniqueNames() throws Exception {
+    void getValue() throws Exception {
 
 
         var yaml = """
+                global:
+                  queue-size: 1
+                  thread-pool-size: 2
+                  span-object-pool-size: 3
+                  metric-object-pool-size: 4
                 receivers:
                 - grpc: first receiver
                   address: localhost:8080
@@ -52,17 +57,29 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        globalConfigChecker().check(node);
+        rawConfigChecker().check(node);
 
         Object conf = node.getValue();
 
         assertNotNull(conf);
         RawConfig rawConfig = assertInstanceOf(RawConfig.class, conf);
 
+        assertNotNull(rawConfig.getGlobalConfig());
+        GlobalConfig globalConfig = rawConfig.getGlobalConfig();
+        assertEquals(Location.of(1, 1), globalConfig.getLocation());
+        assertEquals(1, globalConfig.getQueueSize());
+        assertEquals(Location.of(2, 15), globalConfig.getQueueSizeLocation());
+        assertEquals(2, globalConfig.getThreadPoolSize());
+        assertEquals(Location.of(3, 21), globalConfig.getThreadPoolSizeLocation());
+        assertEquals(3, globalConfig.getSpanObjectPoolSize());
+        assertEquals(Location.of(4, 26), globalConfig.getSpanObjectPoolSizeLocation());
+        assertEquals(4, globalConfig.getMetricObjectPoolSize());
+        assertEquals(Location.of(5, 28), globalConfig.getMetricObjectPoolSizeLocation());
+
         List<ReceiverConfig> receivers = rawConfig.getReceivers();
         assertNotNull(receivers);
         assertEquals(2, receivers.size());
-        assertEquals(Location.of(1,1), rawConfig.getReceiversLocation());
+        assertEquals(Location.of(6,1), rawConfig.getReceiversLocation());
 
         assertEquals("first receiver", receivers.getFirst().getName());
         assertEquals("second receiver", receivers.get(1).getName());
@@ -70,7 +87,7 @@ class RawConfigTest {
         List<ExporterConfig> exporters = rawConfig.getExporters();
         assertNotNull(exporters);
         assertEquals(2, exporters.size());
-        assertEquals(Location.of(6,1), rawConfig.getExportersLocation());
+        assertEquals(Location.of(11,1), rawConfig.getExportersLocation());
 
         assertEquals("first exporter", exporters.getFirst().getName());
         assertEquals("second exporter", exporters.get(1).getName());
@@ -78,17 +95,22 @@ class RawConfigTest {
         List<PipelineConfig> pipelines = rawConfig.getPipelines();
         assertNotNull(pipelines);
         assertEquals(1, pipelines.size());
-        assertEquals(Location.of(11,1), rawConfig.getPipelinesLocation());
+        assertEquals(Location.of(16,1), rawConfig.getPipelinesLocation());
 
         assertEquals("pipeline name",pipelines.getFirst().getName());
 
     }
 
     @Test
-    void explain() throws Exception {
+    void describe() throws Exception {
 
 
         var yaml = """
+                global:
+                  queue-size: 1
+                  thread-pool-size: 2
+                  span-object-pool-size: 3
+                  metric-object-pool-size: 4
                 receivers:
                 - grpc: first receiver
                   address: localhost:8080
@@ -115,7 +137,7 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        globalConfigChecker().check(node);
+        rawConfigChecker().check(node);
 
         Object conf = node.getValue();
 
@@ -123,38 +145,43 @@ class RawConfigTest {
         RawConfig rawConfig = assertInstanceOf(RawConfig.class, conf);
 
         String expected = """
-        (1:1)  config:
-          (1:1)  receivers:
-            (2:3)  GrpcReceiverConfig
-              (2:9)  name: first receiver
-              (3:12)  address: localhost/127.0.0.1:8080
-            (4:3)  GrpcReceiverConfig
-              (4:9)  name: second receiver
-              (5:12)  address: localhost/127.0.0.1:8081
-          (6:1)  exporters:
-            (7:3)  GrpcExporterConfig
-              (7:9)  name: first exporter
-              (8:12)  address: localhost/127.0.0.1:8080
-            (9:3)  GrpcExporterConfig
-              (9:9)  name: second exporter
-              (10:12)  address: localhost/127.0.0.1:8081
-          (11:1)  pipelines:
-            (12:3)  PipelineConfig:
-              (12:9)  name: pipeline name
-              (13:11)  signal: TRACE
-              (14:9)  from: first receiver
-              (15:10)  start:
-                (15:10)  spanlet name
-              (16:3)  processors:
-                (17:5)  processorConfig:
-                  (17:11)  name: spanlet name
-                  (18:11)  kind: SPANLET
-                  (19:9)  to:
-                    (19:9)  first exporter
-                  (20:11)  type: groovy-action
-                  (21:5) config:
-                    (21:5)  groovyActionConfig:
-                      (22:15)  action: action-value""";
+                (1:1)  RawConfig:
+                  (1:1)  GlobalConfig
+                    (2:15)  queue-size: 1
+                    (3:21)  thread-pool-size: 2
+                    (4:26)  span-object-pool-size: 3
+                    (5:28)  metric-object-pool-size: 4
+                  (6:1)  receivers:
+                    (7:3)  GrpcReceiverConfig
+                      (7:9)  name: first receiver
+                      (8:12)  address: localhost/127.0.0.1:8080
+                    (9:3)  GrpcReceiverConfig
+                      (9:9)  name: second receiver
+                      (10:12)  address: localhost/127.0.0.1:8081
+                  (11:1)  exporters:
+                    (12:3)  GrpcExporterConfig
+                      (12:9)  name: first exporter
+                      (13:12)  address: localhost/127.0.0.1:8080
+                    (14:3)  GrpcExporterConfig
+                      (14:9)  name: second exporter
+                      (15:12)  address: localhost/127.0.0.1:8081
+                  (16:1)  pipelines:
+                    (17:3)  PipelineConfig:
+                      (17:9)  name: pipeline name
+                      (18:11)  signal: TRACE
+                      (19:9)  from: first receiver
+                      (20:10)  start:
+                        (20:10)  spanlet name
+                      (21:3)  processors:
+                        (22:5)  processorConfig:
+                          (22:11)  name: spanlet name
+                          (23:11)  kind: SPANLET
+                          (24:9)  to:
+                            (24:9)  first exporter
+                          (25:11)  type: groovy-action
+                          (26:5) config:
+                            (26:5)  groovyActionConfig:
+                              (27:15)  action: action-value""";
 
         assertEquals(expected, rawConfig.describe());
 

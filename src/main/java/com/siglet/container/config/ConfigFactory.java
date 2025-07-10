@@ -1,6 +1,6 @@
 package com.siglet.container.config;
 
-import com.siglet.api.parser.Node;
+import com.siglet.parser.Node;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
@@ -8,7 +8,7 @@ import com.siglet.parser.YamlParser;
 
 import java.util.List;
 
-import static com.siglet.container.config.ConfigCheckFactory.globalConfigChecker;
+import static com.siglet.container.config.ConfigCheckFactory.rawConfigChecker;
 
 public class ConfigFactory {
 
@@ -24,7 +24,7 @@ public class ConfigFactory {
 
         Node node = yamlParser.parse(yaml);
 
-        globalConfigChecker().check(node);
+        rawConfigChecker().check(node);
 
         RawConfig rawConfig = node.getValue(RawConfig.class);
         rawConfig.afterSetValues();

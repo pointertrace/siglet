@@ -45,7 +45,8 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
 
 
     public ProcessorEventloop(String name, ProcessorFactory<CTX> processorFactory,
-                              ProcessorContext<CTX> processorContext, Class<IN> type, int threadPoolSize, int queueCapacity) {
+                              ProcessorContext<CTX> processorContext, Class<IN> type, int queueSize,
+                              int threadPoolSize) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name can't be null or empty");
         }
@@ -58,7 +59,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         this.processorContext = processorContext;
         this.threadPoolSize = threadPoolSize;
         this.threads = new ArrayList<>(threadPoolSize);
-        this.queue = new ArrayBlockingQueue<>(queueCapacity);
+        this.queue = new ArrayBlockingQueue<>(queueSize);
         this.type = type;
     }
 

@@ -1,7 +1,7 @@
 package com.siglet.container.config.raw;
 
 import com.siglet.SigletError;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.located.Location;
 
 public class DropExporterConfig extends ExporterConfig {
 

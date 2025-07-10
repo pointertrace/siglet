@@ -1,8 +1,9 @@
 package com.siglet.container.engine.pipeline.processor.groovy.filter;
 
-import com.siglet.api.parser.Describable;
-import com.siglet.api.parser.located.Located;
-import com.siglet.api.parser.located.Location;
+import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.parser.Describable;
+import com.siglet.parser.located.Located;
+import com.siglet.parser.located.Location;
 
 public class GroovyFilterConfig implements Located, Describable {
 
@@ -53,4 +54,5 @@ public class GroovyFilterConfig implements Located, Describable {
         this.location = location;
 
     }
+
 }

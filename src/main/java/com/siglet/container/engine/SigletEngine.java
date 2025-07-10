@@ -18,18 +18,20 @@ public class SigletEngine implements EngineElement {
 
     private final Pipelines pipelines = new Pipelines();
 
-    public SigletEngine(Graph graph) {
+    public SigletEngine(Context context) {
+
+        Graph graph = context.getGraph();
 
         // TODO move to a factory
         graph.getNodes().stream()
                 .filter(ExporterNode.class::isInstance)
                 .map(ExporterNode.class::cast)
-                .forEach(exporterNode -> exporters.create(exporterNode));
+                .forEach(exporters::create);
 
         graph.getNodes().stream()
                 .filter(PipelineNode.class::isInstance)
                 .map(PipelineNode.class::cast)
-                .forEach(pipelineNode -> pipelines.create(pipelineNode));
+                .forEach(pipelines::create);
 
         graph.getNodes().stream()
                 .filter(ProcessorNode.class::isInstance)
@@ -40,7 +42,7 @@ public class SigletEngine implements EngineElement {
                     if (pipeline == null) {
                         throw new SigletError(String.format("Could not find pipeline named %s", pipelineName));
                     }
-                    pipeline.getProcessors().create(sigletNode);
+                    pipeline.getProcessors().create(context, sigletNode);
                 });
 
         graph.getNodes().stream()

@@ -1,13 +1,12 @@
 package com.siglet.container.engine.pipeline.processor.groovy.filter;
 
 
-import com.siglet.api.parser.NodeChecker;
+import com.siglet.parser.NodeChecker;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.engine.pipeline.processor.ConfigDefinition;
 import com.siglet.parser.schema.SchemaFactory;
 
-import static com.siglet.parser.schema.SchemaFactory.requiredProperty;
-import static com.siglet.parser.schema.SchemaFactory.text;
+import static com.siglet.parser.schema.SchemaFactory.*;
 
 public class GroovyFilterDefinition implements ConfigDefinition {
 
@@ -17,7 +16,6 @@ public class GroovyFilterDefinition implements ConfigDefinition {
         return SchemaFactory.requiredProperty(ProcessorConfig::setConfig, ProcessorConfig::setConfigLocation, "config",
                 SchemaFactory.strictObject(GroovyFilterConfig::new,
                         requiredProperty(GroovyFilterConfig::setExpression,
-                                GroovyFilterConfig::setExpressionLocation,
-                                "expression", text())));
+                                GroovyFilterConfig::setExpressionLocation, "expression", text())));
     }
 }

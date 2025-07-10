@@ -1,8 +1,8 @@
 package com.siglet.container.engine.pipeline.processor.groovy.action;
 
-import com.siglet.api.parser.Node;
-import com.siglet.api.parser.NodeChecker;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.Node;
+import com.siglet.parser.NodeChecker;
+import com.siglet.parser.located.Location;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.parser.YamlParser;
 import com.siglet.parser.schema.PropertyChecker;
@@ -16,9 +16,8 @@ class GroovyActionConfigTest {
     private YamlParser parser;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         parser = new YamlParser();
-
     }
 
 
@@ -51,7 +50,6 @@ class GroovyActionConfigTest {
         assertEquals(expected, groovyActionConfig.describe(0));
 
     }
-
 
     @Test
     void getValue() {

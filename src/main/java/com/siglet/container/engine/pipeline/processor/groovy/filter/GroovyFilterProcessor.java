@@ -5,7 +5,9 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
+import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.ProcessorConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.pipeline.processor.Processor;
@@ -16,24 +18,25 @@ import com.siglet.container.eventloop.processor.ProcessorFactory;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 import groovy.lang.Script;
 
-public class GroovyFilterProcessor  implements Processor {
+public class GroovyFilterProcessor implements Processor {
 
     private ProcessorNode node;
 
     private final ProcessorEventloop<Signal, Void> processorEventLoop;
 
-    public GroovyFilterProcessor(ProcessorNode node) {
+    public GroovyFilterProcessor(Context context, ProcessorNode node) {
         this.node = node;
         GroovyFilterConfig conf = (GroovyFilterConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
+        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(conf.getExpression()), ctx,
-                Signal.class, 1, 1_000);
+                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
     }
 
-    public GroovyFilterProcessor(String name, String expression, int threadPoolSize, int queueCapacity) {
+    public GroovyFilterProcessor(String name, String expression, int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(expression), ctx, Signal.class,
-                threadPoolSize, queueCapacity);
+                queueCapacity, threadPoolSize);
     }
 
 
@@ -104,12 +107,9 @@ public class GroovyFilterProcessor  implements Processor {
         protected Result process(Signal signal, ProcessorContext<T> context, ResultFactory resultFactory) {
             getCompiler().prepareScript(predicateScript, signal, context);
             Object predicate = predicateScript.run();
-            System.out.println("antes de verificar signal:" + signal.getId() + ", predicate:" + predicate);
             if (predicate != null && predicate instanceof Boolean boolPredicate && Boolean.TRUE.equals(boolPredicate)) {
-                System.out.println("depois proceed");
                 return resultFactory.proceed();
             } else {
-                System.out.println("depois drop");
                 return resultFactory.drop();
             }
         }

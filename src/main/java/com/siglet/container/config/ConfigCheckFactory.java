@@ -1,6 +1,6 @@
 package com.siglet.container.config;
 
-import com.siglet.api.parser.NodeChecker;
+import com.siglet.parser.NodeChecker;
 import com.siglet.container.config.raw.*;
 import com.siglet.container.engine.pipeline.processor.ProcessorCheckerDiscriminator;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
@@ -12,6 +12,16 @@ public class ConfigCheckFactory {
 
     private ConfigCheckFactory() {
     }
+
+    public static final String GLOBAL_CONFIG_PROP = "global";
+
+    public static final String QUEUE_SIZE_PROP = "queue-size";
+
+    public static final String THREAD_POOL_SIZE_PROP = "thread-pool-size";
+
+    public static final String SPAN_OBJECT_POOL_SIZE_PROP = "span-object-pool-size";
+
+    public static final String METRIC_OBJECT_POOL_SIZE_PROP = "metric-object-pool-size";
 
     public static final String GRPC_PROP = "grpc";
 
@@ -93,6 +103,20 @@ public class ConfigCheckFactory {
                         BATCH_TIMEOUT_IN_MILLIS_PROP, numberInt()));
     }
 
+    public static NodeChecker globalConfigChecker() {
+        return strictObject(GlobalConfig::new,
+                optionalProperty(GlobalConfig::setQueueSize, GlobalConfig::setQueueSizeLocation,
+                        QUEUE_SIZE_PROP, numberInt()),
+                optionalProperty(GlobalConfig::setThreadPoolSize, GlobalConfig::setThreadPoolSizeLocation,
+                        THREAD_POOL_SIZE_PROP, numberInt()),
+                optionalProperty(GlobalConfig::setSpanObjectPoolSize,
+                        GlobalConfig::setSpanObjectPoolSizeLocation, SPAN_OBJECT_POOL_SIZE_PROP,
+                        numberInt()),
+                optionalProperty(GlobalConfig::setMetricObjectPoolSize,
+                        GlobalConfig::setMetricObjectPoolSizeLocation, METRIC_OBJECT_POOL_SIZE_PROP,
+                        numberInt()));
+    }
+
     public static NodeChecker debugExporterChecker() {
         return strictObject(DebugExporterConfig::new,
                 requiredProperty(DebugExporterConfig::setName, DebugExporterConfig::setNameLocation,
@@ -100,7 +124,7 @@ public class ConfigCheckFactory {
         );
     }
 
-    public static NodeChecker sigletChecker() {
+    public static NodeChecker processorChecker() {
         return strictObject(ProcessorConfig::new,
                 requiredProperty(ProcessorConfig::setName, ProcessorConfig::setNameLocation,
                         NAME_PROP, text()),
@@ -114,7 +138,11 @@ public class ConfigCheckFactory {
                 requiredProperty(ProcessorConfig::setType, ProcessorConfig::setTypeLocation,
                         TYPE_PROP, text()),
                 requiredDynamicProperty(CONFIG_PROP, ProcessorConfig::setConfigLocation,
-                        new ProcessorCheckerDiscriminator(ProcessorTypes.getInstance())));
+                        new ProcessorCheckerDiscriminator(ProcessorTypes.getInstance())),
+                optionalProperty(ProcessorConfig::setQueueSize, ProcessorConfig::setQueueSizeLocation,
+                        QUEUE_SIZE_PROP, numberInt()),
+                optionalProperty(ProcessorConfig::setThreadPoolSize, ProcessorConfig::setThreadPoolSizeLocation,
+                        THREAD_POOL_SIZE_PROP, numberInt()));
     }
 
 
@@ -137,13 +165,15 @@ public class ConfigCheckFactory {
                                 START_PROP, text(new LocatedStringTransformer()))
                 ),
                 requiredProperty(PipelineConfig::setProcessors, PipelineConfig::setSigletsLocation,
-                        PROCESSORS_PROP, array(sigletChecker())
+                        PROCESSORS_PROP, array(processorChecker())
                 )
         );
     }
 
-    public static NodeChecker globalConfigChecker() {
+    public static NodeChecker rawConfigChecker() {
         return strictObject(RawConfig::new,
+                optionalProperty(RawConfig::setGlobalConfig, RawConfig::setGlobalConfigLocation, GLOBAL_CONFIG_PROP,
+                        globalConfigChecker()),
                 requiredProperty(RawConfig::setReceivers, RawConfig::setReceiversLocation, RECEIVERS_PROP,
                         receiversChecker()),
                 requiredProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,

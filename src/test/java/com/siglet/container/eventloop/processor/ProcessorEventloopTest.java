@@ -23,7 +23,7 @@ class ProcessorEventloopTest {
         ProcessorContext<MultiplyConfig> processorContext = new ProcessorContextImpl<>(new MultiplyConfig(2, "final"));
 
         ProcessorEventloop<ValueSignal, MultiplyConfig> eventLoop = new ProcessorEventloop<>("event-loop", processorFactory,
-                processorContext, ValueSignal.class, 5, 3);
+                processorContext, ValueSignal.class, 3, 5);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
@@ -69,12 +69,12 @@ class ProcessorEventloopTest {
         ProcessorContext<MultiplyConfig> processorContextFirst = new ProcessorContextImpl<>(new MultiplyConfig(2, "second"));
 
         ProcessorEventloop<ValueSignal, MultiplyConfig> first = new ProcessorEventloop<>("first", processorFactory,
-                processorContextFirst, ValueSignal.class, 5, 3);
+                processorContextFirst, ValueSignal.class, 3, 5);
 
         ProcessorContext<MultiplyConfig> processorContextSecond = new ProcessorContextImpl<>(new MultiplyConfig(5, "final"));
 
         ProcessorEventloop<ValueSignal, MultiplyConfig> second = new ProcessorEventloop<>("second", processorFactory,
-                processorContextSecond, ValueSignal.class, 5, 3);
+                processorContextSecond, ValueSignal.class, 3, 5);
 
         MapSignalDestination<ValueSignal> finalDestination = new MapSignalDestination<ValueSignal>("final", ValueSignal.class);
 
@@ -121,7 +121,7 @@ class ProcessorEventloopTest {
         ProcessorContext<MultiplyConfig> processorContext = new ProcessorContextImpl<>(new MultiplyConfig(10, "final"));
 
         ProcessorEventloop<ValueSignal, MultiplyConfig> eventLoop = new ProcessorEventloop<>("test", processorFactory,
-                processorContext, ValueSignal.class, 5, 100_000);
+                processorContext, ValueSignal.class, 100_000, 5);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
@@ -160,7 +160,7 @@ class ProcessorEventloopTest {
         ProcessorFactory<Void> processorFactory = ThrowExceptionBaseEventloopProcessor::new;
 
         ProcessorEventloop<ValueSignal, Void> eventLoop = new ProcessorEventloop<ValueSignal,
-                Void>("test", processorFactory, processorContext, ValueSignal.class, 5, 10);
+                Void>("test", processorFactory, processorContext, ValueSignal.class, 10,5);
 
         eventLoop.start();
 

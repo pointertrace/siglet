@@ -1,7 +1,7 @@
 package com.siglet.container.config.raw;
 
 import com.siglet.SigletError;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.located.Location;
 import com.siglet.container.config.graph.Graph;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RawConfig extends BaseConfig {
+
+    private GlobalConfig globalConfig;
+
+    private Location globalConfigLocation;
 
     private List<ReceiverConfig> receivers;
 
@@ -108,15 +112,15 @@ public class RawConfig extends BaseConfig {
     @Override
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(prefix(level));
-        sb.append(getLocation().describe());
-        sb.append("  config:");
-        sb.append("\n");
+        sb.append(getLocation().describe()); sb.append("  RawConfig:"); if (globalConfig != null) { sb.append("\n"); sb.append(globalConfig.describe(level + 1));
+        }
 
+        sb.append("\n");
         sb.append(prefix(level + 1));
         sb.append(receiversLocation.describe());
         sb.append("  receivers:");
         sb.append("\n");
-        for(ReceiverConfig receiver: receivers) {
+        for (ReceiverConfig receiver : receivers) {
             sb.append(receiver.describe(level + 2));
         }
 
@@ -124,7 +128,7 @@ public class RawConfig extends BaseConfig {
         sb.append(exportersLocation.describe());
         sb.append("  exporters:");
         sb.append("\n");
-        for(ExporterConfig exporter: exporters) {
+        for (ExporterConfig exporter : exporters) {
             sb.append(exporter.describe(level + 2));
         }
 
@@ -132,7 +136,7 @@ public class RawConfig extends BaseConfig {
         sb.append(pipelinesLocation.describe());
         sb.append("  pipelines:");
         sb.append("\n");
-        for(PipelineConfig pipeline:pipelines) {
+        for (PipelineConfig pipeline : pipelines) {
             sb.append(pipeline.describe(level + 2));
         }
 
@@ -161,5 +165,21 @@ public class RawConfig extends BaseConfig {
 
     public void setPipelinesLocation(Location pipelinesLocation) {
         this.pipelinesLocation = pipelinesLocation;
+    }
+
+    public GlobalConfig getGlobalConfig() {
+        return globalConfig;
+    }
+
+    public void setGlobalConfig(GlobalConfig globalConfig) {
+        this.globalConfig = globalConfig;
+    }
+
+    public Location getGlobalConfigLocation() {
+        return globalConfigLocation;
+    }
+
+    public void setGlobalConfigLocation(Location globalConfigLocation) {
+        this.globalConfigLocation = globalConfigLocation;
     }
 }

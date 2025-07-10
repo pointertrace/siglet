@@ -1,6 +1,6 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.located.Location;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

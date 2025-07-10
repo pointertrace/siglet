@@ -4,6 +4,8 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Signal;
 import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
 import com.siglet.container.config.graph.ProcessorNode;
+import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.pipeline.processor.Processor;
@@ -17,22 +19,23 @@ public class UnmodifiableSpanletProcessor implements Processor {
 
     private final ProcessorEventloop<Signal, Object> processorEventLoop;
 
-    public UnmodifiableSpanletProcessor(ProcessorNode node, UnmodifiableSpanlet<Object> spanlet) {
+    public UnmodifiableSpanletProcessor(Context context, ProcessorNode node, UnmodifiableSpanlet<Object> spanlet) {
         this.node = node;
         Object config = node.getConfig().getConfig();
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
+
+        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx, Signal.class,
-                10, 1_000);
+                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
     public UnmodifiableSpanletProcessor(String name, UnmodifiableSpanlet spanlet, Object config,
-                                        int threadPoolSize,
-                                        int queueCapacity) {
+                                        int queueCapacity, int threadPoolSize) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                Signal.class, threadPoolSize, queueCapacity);
+                Signal.class, queueCapacity, threadPoolSize);
     }
 
 

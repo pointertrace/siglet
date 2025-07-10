@@ -6,6 +6,7 @@ import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
@@ -52,7 +53,6 @@ public class GrpcExporter implements Exporter {
 
             @Override
             public boolean send(Signal signal) {
-                System.out.println("Sending span: " + signal);
                 traceServiceStub.export(((AccumulatedSpans) signal).getRequest());
                 return true;
             }

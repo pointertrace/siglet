@@ -139,7 +139,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
     @Override
     public boolean hasGauge() {
-        return getMessage().getDataCase().equals(Metric.DataCase.GAUGE);
+        return getDataCase().equals(Metric.DataCase.GAUGE);
     }
 
     @Override
@@ -151,8 +151,9 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         }
     }
 
+
     public boolean hasSum() {
-        return getMessage().getDataCase().equals(Metric.DataCase.SUM);
+        return getDataCase().equals(Metric.DataCase.SUM);
     }
 
     public ProtoSumAdapter getSum() {
@@ -164,7 +165,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public boolean hasHistogram() {
-        return getMessage().getDataCase().equals(Metric.DataCase.HISTOGRAM);
+        return getDataCase().equals(Metric.DataCase.HISTOGRAM);
     }
 
     public ProtoHistogramAdapter getHistogram() {
@@ -176,7 +177,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public boolean hasExponentialHistogram() {
-        return getMessage().getDataCase().equals(Metric.DataCase.EXPONENTIAL_HISTOGRAM);
+        return getDataCase().equals(Metric.DataCase.EXPONENTIAL_HISTOGRAM);
     }
 
     public ProtoExponentialHistogramAdapter getExponentialHistogram() {
@@ -188,7 +189,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     public boolean hasSummary() {
-        return getMessage().getDataCase().equals(Metric.DataCase.SUMMARY);
+        return getDataCase().equals(Metric.DataCase.SUMMARY);
     }
 
     public ProtoSummaryAdapter getSummary() {
@@ -197,6 +198,11 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         } else {
             return (ProtoSummaryAdapter) getData();
         }
+    }
+
+    public Metric.DataCase getDataCase() {
+        return getValue(Metric::getDataCase, Metric.Builder::getDataCase);
+
     }
 
     public ProtoResourceAdapter getProtoResourceAdapter() {

@@ -4,6 +4,7 @@ import com.siglet.container.config.Config;
 import com.siglet.container.config.ConfigFactory;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.config.siglet.SigletConfigLoader;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SigletEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,8 @@ public class Siglet {
 
     public void start() {
 
-        ConfigFactory configFactory = new ConfigFactory();
-        Config config = configFactory.create(configTxt, sigletsConfigs);
-        sigletEngine = new SigletEngine(config.getGraph());
+        Context context = new Context(configTxt, sigletsConfigs);
+        sigletEngine = new SigletEngine(context);
 
         sigletEngine.start();
 

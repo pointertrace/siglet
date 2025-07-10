@@ -13,6 +13,9 @@ import com.siglet.container.eventloop.processor.result.ResultImpl;
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.metrics.v1.Gauge;
+import io.opentelemetry.proto.metrics.v1.Metric;
+import io.opentelemetry.proto.metrics.v1.Sum;
 import io.opentelemetry.proto.resource.v1.Resource;
 
 public abstract class ScriptBaseClass extends Script {
@@ -21,8 +24,11 @@ public abstract class ScriptBaseClass extends Script {
 
     public ProtoMetricAdapter newGauge(Closure<Void> closure) {
 
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(getResource(), getInstrumentationScope());
-        newMetric.gauge();
+        Metric gauge = Metric.newBuilder()
+                .setGauge(Gauge.newBuilder())
+                .build();
+        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(gauge, getResource(),
+                getInstrumentationScope());
         GaugeProxy gaugeProxy = new GaugeProxy((Signal) getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(gaugeProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
@@ -40,7 +46,10 @@ public abstract class ScriptBaseClass extends Script {
 
     public ProtoMetricAdapter newCounter(Closure<Void> closure) {
 
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(getResource(), getInstrumentationScope());
+        Metric sum = Metric.newBuilder()
+                .setSum(Sum.newBuilder())
+                .build();
+        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(sum, getResource(), getInstrumentationScope());
         newMetric.sum();
         CounterProxy counterProxy = new CounterProxy((Signal) getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME), newMetric);
         closure.setDelegate(counterProxy);
@@ -61,10 +70,10 @@ public abstract class ScriptBaseClass extends Script {
     public void span(Closure<Void> closure) {
 
         if (!getBinding().hasVariable(SIGNAL_INTRINSIC_VAR_NAME)) {
-            throw new SigletError(String.format("Could not find %s property!",SIGNAL_INTRINSIC_VAR_NAME));
+            throw new SigletError(String.format("Could not find %s property!", SIGNAL_INTRINSIC_VAR_NAME));
         }
         if (!(getBinding().getProperty(SIGNAL_INTRINSIC_VAR_NAME) instanceof ProtoSpanAdapter spanAdapter)) {
-            throw new SigletError(String.format("Property %s is not a span!",SIGNAL_INTRINSIC_VAR_NAME));
+            throw new SigletError(String.format("Property %s is not a span!", SIGNAL_INTRINSIC_VAR_NAME));
         }
         SpanProxy spanProxy = new SpanProxy(spanAdapter, spanAdapter);
         closure.setDelegate(spanProxy);

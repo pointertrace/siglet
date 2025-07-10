@@ -5,6 +5,8 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
+import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.pipeline.processor.Processor;
@@ -20,21 +22,22 @@ public class GroovyActionProcessor implements Processor {
 
     private ProcessorNode node;
 
-    private final ProcessorEventloop<Signal,Void> processorEventloop;
+    private final ProcessorEventloop<Signal, Void> processorEventloop;
 
-    public GroovyActionProcessor(ProcessorNode node) {
+    public GroovyActionProcessor(Context context, ProcessorNode node) {
         this.node = node;
         GroovyActionConfig groovyActionConfig = (GroovyActionConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
+        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventloop = new ProcessorEventloop<>(node.getName(),
-                createProcessorFactory(groovyActionConfig.getAction()), ctx, Signal.class, 10,1_000);
+                createProcessorFactory(groovyActionConfig.getAction()), ctx, Signal.class,
+                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
     }
 
-    public GroovyActionProcessor(String name, String action, int threadPoolSize, int queueCapacity) {
+    public GroovyActionProcessor(String name, String action,int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(action), ctx,
-                Signal.class,
-                threadPoolSize,queueCapacity);
+                Signal.class, queueCapacity, threadPoolSize);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(String action) {

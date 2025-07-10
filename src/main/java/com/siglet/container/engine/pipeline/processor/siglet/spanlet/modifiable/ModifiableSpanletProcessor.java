@@ -4,6 +4,8 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Signal;
 import com.siglet.api.modifiable.trace.ModifiableSpanlet;
 import com.siglet.container.config.graph.ProcessorNode;
+import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.pipeline.processor.Processor;
@@ -18,21 +20,24 @@ public class ModifiableSpanletProcessor implements Processor {
 
     private final ProcessorEventloop<Signal, Object> processorEventloop;
 
-    public ModifiableSpanletProcessor(ProcessorNode node, ModifiableSpanlet<Object> spanlet) {
+    public ModifiableSpanletProcessor(Context context, ProcessorNode node, ModifiableSpanlet<Object> spanlet) {
         this.node = node;
         Object config = node.getConfig().getConfig();
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
-        processorEventloop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx, Signal.class, 10, 1_000);
+
+        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
+
+        processorEventloop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx,
+                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
     public ModifiableSpanletProcessor(String name, ModifiableSpanlet spanlet, Object config,
-                                      int threadPoolSize,
-                                      int queueCapacity) {
+                                      int queueCapacity, int threadPoolSize) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                Signal.class, threadPoolSize, queueCapacity);
+                Signal.class, queueCapacity, threadPoolSize);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(com.siglet.api.modifiable.trace.ModifiableSpanlet<T> spanlet) {

@@ -5,6 +5,8 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
+import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.pipeline.processor.Processor;
@@ -23,23 +25,24 @@ public class GroovyRouterProcessor implements Processor {
 
     private final ProcessorEventloop<Signal, Void> processorEventloop;
 
-    public GroovyRouterProcessor(ProcessorNode node) {
+    public GroovyRouterProcessor(Context context, ProcessorNode node) {
         this.node = node;
         GroovyRouterConfig config = (GroovyRouterConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         List<Route> routes = config.getRoutes().stream()
                 .map(routeConfig -> new Route(routeConfig.getWhen(), routeConfig.getTo()))
                 .toList();
+        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         this.processorEventloop = new ProcessorEventloop<>(node.getName(),
-                createProcessorFactory(config.getDefaultRoute(), routes), ctx, Signal.class, 1, 1_000);
+                createProcessorFactory(config.getDefaultRoute(), routes), ctx, Signal.class,
+                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
     }
 
-    public GroovyRouterProcessor(String name, String defaultRoute, List<Route> routes,
-                                 int threadPoolSize,
-                                 int queueCapacity) {
+    public GroovyRouterProcessor(String name, String defaultRoute, List<Route> routes , int queueCapacity,
+                                 int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         this.processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(defaultRoute, routes),
-                ctx, Signal.class, threadPoolSize,queueCapacity);
+                ctx, Signal.class, queueCapacity,threadPoolSize);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(String defaultDestination, List<Route> routes) {

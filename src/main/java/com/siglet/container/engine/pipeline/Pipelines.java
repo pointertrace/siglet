@@ -3,6 +3,7 @@ package com.siglet.container.engine.pipeline;
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.PipelineNode;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 
 import java.util.HashMap;

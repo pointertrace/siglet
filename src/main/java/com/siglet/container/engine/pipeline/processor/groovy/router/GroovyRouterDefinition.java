@@ -1,7 +1,7 @@
 package com.siglet.container.engine.pipeline.processor.groovy.router;
 
 
-import com.siglet.api.parser.NodeChecker;
+import com.siglet.parser.NodeChecker;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.engine.pipeline.processor.ConfigDefinition;
 

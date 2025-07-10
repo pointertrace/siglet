@@ -1,11 +1,9 @@
 package com.siglet.container.config.siglet;
 
 import com.siglet.api.Processor;
-import com.siglet.api.parser.NodeChecker;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.siglet.SigletConfig;
-import com.siglet.container.config.siglet.SigletConfigLoader;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
+import com.siglet.parser.NodeChecker;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

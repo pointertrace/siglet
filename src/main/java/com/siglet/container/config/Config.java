@@ -1,6 +1,7 @@
 package com.siglet.container.config;
 
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.config.raw.GlobalConfig;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
 
@@ -13,6 +14,7 @@ public class Config {
 
     private final Map<String, SigletConfig> sigletConfigs;
     private final RawConfig rawConfig;
+    private final GlobalConfig globalConfig;
 
     public Config(RawConfig rawConfig) {
         this(rawConfig, List.of());
@@ -22,6 +24,7 @@ public class Config {
         this.rawConfig = rawConfig;
         this.sigletConfigs = extraSigletConfigs.stream()
                 .collect(Collectors.toMap(SigletConfig::name, Function.identity()));
+        this.globalConfig = rawConfig.getGlobalConfig() == null ? new GlobalConfig() : rawConfig.getGlobalConfig();
     }
 
     public SigletConfig getSigletConfig(String name) {
@@ -30,5 +33,9 @@ public class Config {
 
     public Graph getGraph() {
         return  rawConfig.createGraph();
+    }
+
+    public GlobalConfig getGlobalConfig() {
+        return globalConfig;
     }
 }

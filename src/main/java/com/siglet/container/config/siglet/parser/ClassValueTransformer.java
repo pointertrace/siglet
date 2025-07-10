@@ -1,7 +1,7 @@
 package com.siglet.container.config.siglet.parser;
 
-import com.siglet.api.parser.ValueTransformer;
-import com.siglet.api.parser.ValueTransformerException;
+import com.siglet.parser.ValueTransformer;
+import com.siglet.parser.ValueTransformerException;
 
 public class ClassValueTransformer implements ValueTransformer {
 

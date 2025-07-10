@@ -1,14 +1,14 @@
 package com.siglet.container.config.raw;
 
 
-import com.siglet.api.parser.Describable;
-import com.siglet.api.parser.located.Location;
+import com.siglet.parser.Describable;
+import com.siglet.parser.located.Location;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProcessorConfig extends BaseConfig {
+public class ProcessorConfig extends BaseConfig implements EventLoopConfig {
 
     private ProcessorKind kind;
 
@@ -27,6 +27,14 @@ public class ProcessorConfig extends BaseConfig {
     private Location configLocation;
 
     private String pipeline;
+
+    private Integer queueSize;
+
+    private Location queueSizeLocation;
+
+    private Integer threadPoolSize;
+
+    private Location threadPoolSizeLocation;
 
     public ProcessorKind getKind() {
         return kind;
@@ -140,6 +148,21 @@ public class ProcessorConfig extends BaseConfig {
         sb.append("  type: ");
         sb.append(getType());
 
+        if (queueSize != null) {
+            sb.append("\n");
+            sb.append(prefix(level + 1));
+            sb.append(getQueueSizeLocation().describe());
+            sb.append("  queueSize: ");
+            sb.append(getQueueSize());
+        }
+
+        if (threadPoolSize != null) {
+            sb.append("\n");
+            sb.append(prefix(level + 1));
+            sb.append(getThreadPoolSizeLocation().describe());
+            sb.append("  threadPoolSize: ");
+            sb.append(getThreadPoolSize());
+        }
         sb.append("\n");
         sb.append(prefix(level + 1));
         sb.append(getConfigLocation().describe());
@@ -155,5 +178,37 @@ public class ProcessorConfig extends BaseConfig {
             }
         }
         return sb.toString();
+    }
+
+    public Integer getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(Integer queueSize) {
+        this.queueSize = queueSize;
+    }
+
+    public Integer getThreadPoolSize() {
+        return threadPoolSize;
+    }
+
+    public void setThreadPoolSize(Integer threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
+    }
+
+    public Location getQueueSizeLocation() {
+        return queueSizeLocation;
+    }
+
+    public void setQueueSizeLocation(Location queueSizeLocation) {
+        this.queueSizeLocation = queueSizeLocation;
+    }
+
+    public Location getThreadPoolSizeLocation() {
+        return threadPoolSizeLocation;
+    }
+
+    public void setThreadPoolSizeLocation(Location threadPoolSizeLocation) {
+        this.threadPoolSizeLocation = threadPoolSizeLocation;
     }
 }

@@ -1,7 +1,7 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.api.parser.ValueTransformer;
-import com.siglet.api.parser.ValueTransformerException;
+import com.siglet.parser.ValueTransformer;
+import com.siglet.parser.ValueTransformerException;
 
 public class LocatedStringTransformer implements ValueTransformer {
 
