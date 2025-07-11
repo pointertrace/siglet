@@ -10,19 +10,9 @@ import java.util.stream.Collectors;
 
 public class SignalRoute<T extends Signal> {
 
-    private static final Signal PROCESS_SIGNAL = new Signal() {
-        @Override
-        public String getId() {
-            return "process-signal";
-        }
-    };
+    private static final Signal PROCESS_SIGNAL = () -> "process-signal";
 
-    private static final Signal DROP_SIGNAL = new Signal() {
-        @Override
-        public String getId() {
-            return "drop-signal";
-        }
-    };
+    private static final Signal DROP_SIGNAL = () -> "drop-signal";
 
     private static final String ANY_DESTINATION = "*";
 

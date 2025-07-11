@@ -28,27 +28,31 @@ public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminato
         }
         if (kind.getValue() instanceof ProcessorKind kindValue) {
             if (kindValue == ProcessorKind.TRACE_AGGREGATOR) {
-                throw new IllegalStateException("Not implemented yet!");
+                throw new SigletError("Not implemented yet!");
             } else {
                 Node type = objectNode.get("type");
                 if (type == null) {
                     throw new SingleSchemaValidationError(node.getLocation(), "must have a type property!");
                 }
-                if (type.getValue() instanceof String typeValue) {
-                    ProcessorType processorType = processorTypeRegistry.get(typeValue);
-                    if (processorType == null) {
-                        throw new SingleSchemaValidationError(node.getLocation(),
-                                String.format("could not find [%s] as processor type", typeValue));
-                    }
-                    return processorType.getConfigDefinition().getChecker();
-                } else {
-                    throw new SingleSchemaValidationError(node.getLocation(),
-                            String.format("processor type is a %s but should be a string",
-                                    type.getValue().getClass().getName()));
-                }
+                return getNodeChecker(node, type);
             }
         } else {
             throw new SigletError("Processor kind must be a String");
+        }
+    }
+
+    private NodeChecker getNodeChecker(Node node, Node type) {
+        if (type.getValue() instanceof String typeValue) {
+            ProcessorType processorType = processorTypeRegistry.get(typeValue);
+            if (processorType == null) {
+                throw new SingleSchemaValidationError(node.getLocation(),
+                        String.format("could not find [%s] as processor type", typeValue));
+            }
+            return processorType.getConfigDefinition().getChecker();
+        } else {
+            throw new SingleSchemaValidationError(node.getLocation(),
+                    String.format("processor type is a %s but should be a string",
+                            type.getValue().getClass().getName()));
         }
     }
 
