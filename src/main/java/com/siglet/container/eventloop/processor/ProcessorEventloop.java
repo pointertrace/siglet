@@ -11,9 +11,7 @@ import com.siglet.container.eventloop.processor.result.ResultImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -37,16 +35,23 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
 
     private final List<Thread> threads;
 
+    private final Map<String, String> destinationMappings = new HashMap<>();
+
     private CountDownLatch stopLatch;
 
     private List<SignalDestination<IN>> next = new ArrayList<>();
 
     private final Class<IN> type;
 
-
     public ProcessorEventloop(String name, ProcessorFactory<CTX> processorFactory,
                               ProcessorContext<CTX> processorContext, Class<IN> type, int queueSize,
                               int threadPoolSize) {
+        this(name, processorFactory, processorContext, type, queueSize, threadPoolSize, Map.of());
+    }
+
+    public ProcessorEventloop(String name, ProcessorFactory<CTX> processorFactory,
+                              ProcessorContext<CTX> processorContext, Class<IN> type, int queueSize,
+                              int threadPoolSize, Map<String, String> destinationMappings) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name can't be null or empty");
         }
@@ -61,6 +66,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         this.threads = new ArrayList<>(threadPoolSize);
         this.queue = new ArrayBlockingQueue<>(queueSize);
         this.type = type;
+        this.destinationMappings.putAll(destinationMappings);
     }
 
     public String getName() {
@@ -105,7 +111,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
                         if (state.get() == State.RUNNING) {
                             signal = queue.take();
                             // TODO ajustr
-                            LOGGER.trace("state {} got signal from take and it is {}",state.get(), signal.getId());
+                            LOGGER.trace("state {} got signal from take and it is {}", state.get(), signal.getId());
                         } else {
                             signal = queue.poll(100, TimeUnit.MILLISECONDS);
                             LOGGER.trace("got signal from poll and it is {}", signal == null ? "NULL" : signal.getId());
@@ -121,7 +127,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
                             LOGGER.trace("signal {} processed in event loop {} took {} ms", signal::getId,
                                     this::getName, () -> System.nanoTime() - start);
                             if (result instanceof ResultImpl resultImpl) {
-                                resultImpl.dispatch(signal, next);
+                                resultImpl.dispatch(destinationMappings, signal, next);
                             } else {
                                 throw new SigletError(String.format("Result must be type %s but it is %s",
                                         ResultImpl.class, result.getClass()));

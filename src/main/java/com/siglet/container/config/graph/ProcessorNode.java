@@ -4,6 +4,8 @@ import com.siglet.container.config.raw.ProcessorConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class ProcessorNode extends BaseNode {
 
@@ -34,5 +36,11 @@ public final class ProcessorNode extends BaseNode {
     @Override
     public ProcessorConfig getConfig() {
         return (ProcessorConfig) super.getConfig();
+    }
+
+    public Map<String, String> getDestinationMappings() {
+        return getConfig().getTo().stream()
+                .filter(t -> t.getValue().contains(":"))
+                .collect(Collectors.toMap(t -> t.getValue().split(":")[0], t -> t.getValue().split(":")[1]));
     }
 }

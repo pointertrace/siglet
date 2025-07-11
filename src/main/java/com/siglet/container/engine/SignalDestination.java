@@ -9,4 +9,5 @@ public interface SignalDestination<T extends Signal> {
     boolean send(T signal);
 
     Class<T> getType();
+
 }

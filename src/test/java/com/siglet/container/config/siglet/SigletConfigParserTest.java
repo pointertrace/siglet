@@ -52,6 +52,8 @@ class SigletConfigParserTest {
         assertInstanceOf(NodeChecker.class, sigletConfig.configChecker());
         assertEquals(Location.of(3, 24), sigletConfig.configCheckerFactoryClassLocation());
         assertEquals("mock spanlet description", sigletConfig.description());
+        assertNotNull(sigletConfig.destinations());
+        assertTrue(sigletConfig.destinations().isEmpty());
 
 
         YamlParser configParser = new YamlParser();
@@ -70,6 +72,52 @@ class SigletConfigParserTest {
 
     }
 
+    @Test
+    void parse_destinations() {
+
+        String config = """
+                name: mock spanlet
+                siglet-class: com.siglet.container.config.siglet.SigletConfigParserTest$SpanletMock
+                checker-factory-class: com.siglet.container.config.siglet.SigletConfigParserTest$ConfigFactoryMock
+                description: mock spanlet description
+                destinations:
+                  - first
+                  - second
+                """;
+
+
+        SigletConfig sigletConfig = sigletConfigParser.parse(config);
+
+        assertEquals("mock spanlet", sigletConfig.name());
+        assertEquals(Location.of(1, 7), sigletConfig.nameLocation());
+        assertEquals(SpanletMock.class, sigletConfig.sigletClass());
+        assertEquals(Location.of(2, 15), sigletConfig.sigletLocation());
+        assertInstanceOf(NodeChecker.class, sigletConfig.configChecker());
+        assertEquals(Location.of(3, 24), sigletConfig.configCheckerFactoryClassLocation());
+        assertEquals("mock spanlet description", sigletConfig.description());
+        assertNotNull(sigletConfig.destinations());
+        assertEquals(2, sigletConfig.destinations().size());
+        assertEquals("first", sigletConfig.destinations().getFirst().getValue());
+        assertEquals(Location.of(6,5), sigletConfig.destinations().getFirst().getLocation());
+        assertEquals("second", sigletConfig.destinations().get(1).getValue());
+        assertEquals(Location.of(7,5), sigletConfig.destinations().get(1).getLocation());
+
+
+        YamlParser configParser = new YamlParser();
+
+        Node node = configParser.parse("value: a valid value");
+
+        sigletConfig.configChecker().check(node);
+
+
+        SpanletConfigMock spanletConfigMock = node.getValue(SpanletConfigMock.class);
+
+        assertNotNull(spanletConfigMock);
+        assertEquals("a valid value", spanletConfigMock.getValue());
+        assertEquals(Location.of(1, 8), spanletConfigMock.getValueLocation());
+
+
+    }
 
     public static class SpanletMock implements ModifiableSpanlet<SpanletConfigMock> {
 

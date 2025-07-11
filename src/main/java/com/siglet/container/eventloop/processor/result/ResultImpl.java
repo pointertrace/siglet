@@ -6,6 +6,7 @@ import com.siglet.container.engine.SignalDestination;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class ResultImpl implements Result {
@@ -35,9 +36,10 @@ public class ResultImpl implements Result {
         return this;
     }
 
-    public <T extends Signal> void dispatch(T processSignal, List<SignalDestination<T>> availableDestinations) {
+    public <T extends Signal> void dispatch(Map<String,String> destinationMappings, T processSignal,
+                                            List<SignalDestination<T>> availableDestinations) {
         for(SignalRoute route : routes) {
-            route.dispatch(processSignal, availableDestinations);
+            route.dispatch(destinationMappings, processSignal, availableDestinations);
         }
     }
 }

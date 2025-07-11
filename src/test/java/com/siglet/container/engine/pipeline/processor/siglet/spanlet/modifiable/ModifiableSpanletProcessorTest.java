@@ -11,6 +11,8 @@ import com.siglet.container.eventloop.MapSignalDestination;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModifiableSpanletProcessorTest {
@@ -22,7 +24,7 @@ class ModifiableSpanletProcessorTest {
         SpanletConfig config = new SpanletConfig("prefix-");
 
         ModifiableSpanletProcessor spanletEventLoop = new ModifiableSpanletProcessor("prefix",
-                modifiableSpanlet,config,5,1);
+                modifiableSpanlet,config,5,1, Map.of());
 
         MapSignalDestination finalDestination = new MapSignalDestination("final", Signal.class);
 

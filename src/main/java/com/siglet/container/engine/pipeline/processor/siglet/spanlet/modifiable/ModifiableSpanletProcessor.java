@@ -13,6 +13,8 @@ import com.siglet.container.eventloop.processor.ProcessorContextImpl;
 import com.siglet.container.eventloop.processor.ProcessorEventloop;
 import com.siglet.container.eventloop.processor.ProcessorFactory;
 
+import java.util.Map;
+
 public class ModifiableSpanletProcessor implements Processor {
 
     private ProcessorNode node;
@@ -28,16 +30,17 @@ public class ModifiableSpanletProcessor implements Processor {
         EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
 
         processorEventloop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx,
-                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
+                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize(),
+                node.getDestinationMappings());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
     public ModifiableSpanletProcessor(String name, ModifiableSpanlet spanlet, Object config,
-                                      int queueCapacity, int threadPoolSize) {
+                                      int queueCapacity, int threadPoolSize, Map<String, String> destinationMappings) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                Signal.class, queueCapacity, threadPoolSize);
+                Signal.class, queueCapacity, threadPoolSize, destinationMappings);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(com.siglet.api.modifiable.trace.ModifiableSpanlet<T> spanlet) {

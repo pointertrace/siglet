@@ -5,6 +5,7 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.container.config.raw.LocatedString;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.NodeCheckerFactory;
 import com.siglet.parser.NodeValueBuilder;
@@ -16,8 +17,11 @@ import com.siglet.parser.node.SigletParserError;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public record SigletConfig(
+
         String name,
         Location nameLocation,
         String description,
@@ -25,7 +29,8 @@ public record SigletConfig(
         Class<? extends Processor> sigletClass,
         Location sigletLocation,
         NodeChecker configChecker,
-        Location configCheckerFactoryClassLocation) {
+        Location configCheckerFactoryClassLocation,
+        List<LocatedString> destinations) {
 
     public Processor createSigletInstance() {
         try {
@@ -63,7 +68,6 @@ public record SigletConfig(
 
     public static class Builder implements NodeValueBuilder, Located {
 
-
         private Location location;
 
         private String name;
@@ -82,6 +86,9 @@ public record SigletConfig(
 
         private Location configCheckerFactoryClassLocation;
 
+        private List<LocatedString> destinations = new ArrayList<>();
+
+        private Location destinationsLocation;
 
         @Override
         public Object build() {
@@ -89,7 +96,7 @@ public record SigletConfig(
             try {
                 NodeCheckerFactory configCheckerFactoryInstance = configCheckerFactory.getConstructor().newInstance();
                 return new SigletConfig(name, nameLocation, description, descriptionLocation, siglet, sigletLocation,
-                        configCheckerFactoryInstance.create(), configCheckerFactoryClassLocation);
+                        configCheckerFactoryInstance.create(), configCheckerFactoryClassLocation, destinations);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new SigletParserError(String.format("Error creating instance of ConfigCheckerFactory for " +
@@ -137,6 +144,17 @@ public record SigletConfig(
             this.configCheckerFactoryClassLocation = configCheckerFactoryClassLocation;
             return this;
         }
+
+        public Builder setDestinations(List<LocatedString> destinations) {
+            this.destinations.addAll(destinations);
+            return this;
+        }
+
+        public Builder setDestinationsLocation(Location destinationsLocation) {
+            this.destinationsLocation = destinationsLocation;
+            return this;
+        }
+
 
         @Override
         public Location getLocation() {

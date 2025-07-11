@@ -34,6 +34,7 @@ public class Graph {
 
     List<BaseNode> getNodesByName(List<String> names) {
         return names.stream()
+                .map(this::translateNodeName)
                 .map(this::getNodeByName)
                 .toList();
     }
@@ -52,10 +53,11 @@ public class Graph {
     }
 
     BaseNode getNodeByName(String name) {
-        if (!nodes.containsKey(name)) {
+        String translatedName = translateNodeName(name);
+        if (!nodes.containsKey(translatedName)) {
             throw new SigletError(String.format("Could not find any node named [%s]", name));
         }
-        return nodes.get(name);
+        return nodes.get(translateNodeName(name));
     }
 
     <T extends BaseNode> T getNodeByNameAndType(String name, Class<T> nodeType) {
@@ -100,6 +102,12 @@ public class Graph {
 
             }
         });
+    }
+
+    private String translateNodeName(String baseNodeName) {
+        return baseNodeName.contains(":") ?
+                baseNodeName.substring(baseNodeName.indexOf(':') + 1) :
+                baseNodeName;
     }
 
 

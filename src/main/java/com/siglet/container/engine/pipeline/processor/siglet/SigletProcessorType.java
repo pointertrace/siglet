@@ -47,7 +47,7 @@ public class SigletProcessorType implements ProcessorType {
             throw new SigletError(String.format("Cannot create siglet type %s", node.getName()));
         };
     }
-
+  // todo prepara cenario para siglets sem configuração
     private ConfigDefinition createConfigDefinition(SigletConfig sigletConfig) {
         return () -> requiredProperty(ProcessorConfig::setConfig, ProcessorConfig::setConfigLocation, "config",
                 sigletConfig.configChecker());

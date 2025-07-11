@@ -13,6 +13,8 @@ import com.siglet.container.eventloop.processor.ProcessorContextImpl;
 import com.siglet.container.eventloop.processor.ProcessorEventloop;
 import com.siglet.container.eventloop.processor.ProcessorFactory;
 
+import java.util.Map;
+
 public class UnmodifiableSpanletProcessor implements Processor {
 
     private ProcessorNode node;
@@ -26,20 +28,20 @@ public class UnmodifiableSpanletProcessor implements Processor {
 
         EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx, Signal.class,
-                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
+                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize(), node.getDestinationMappings());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
     public UnmodifiableSpanletProcessor(String name, UnmodifiableSpanlet spanlet, Object config,
-                                        int queueCapacity, int threadPoolSize) {
+                                        int queueCapacity, int threadPoolSize, Map<String, String> destinationMappings) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                Signal.class, queueCapacity, threadPoolSize);
+                Signal.class, queueCapacity, threadPoolSize, destinationMappings);
     }
 
 
-    private static <T> ProcessorFactory<T> createProcessorFactory(com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet<T> spanlet) {
+    private static <T> ProcessorFactory<T> createProcessorFactory(UnmodifiableSpanlet<T> spanlet) {
         return ctx -> new UnmodifiedSpanBaseEventloopProcessor<>(ctx, spanlet);
     }
 

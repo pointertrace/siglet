@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +17,10 @@ class SignalRouteConfigTest {
     private MapSignalDestination<SignalMock> firstDestination;
 
     private MapSignalDestination<SignalMock> secondDestination;
+
+    private MapSignalDestination<SignalMock> mappedFirstDestination;
+
+    private MapSignalDestination<SignalMock> mappedSecondDestination;
 
     private SignalMock processSignal;
 
@@ -30,6 +35,10 @@ class SignalRouteConfigTest {
 
         secondDestination = new MapSignalDestination<SignalMock>("second", SignalMock.class);
 
+        mappedFirstDestination = new MapSignalDestination<SignalMock>("mapped-first", SignalMock.class);
+
+        mappedSecondDestination = new MapSignalDestination<SignalMock>("mapped-second", SignalMock.class);
+
         processSignal = new SignalMock(1);
 
         otherSignal = new SignalMock(2);
@@ -40,7 +49,7 @@ class SignalRouteConfigTest {
     void dispatch_drop() {
         signalRoute = SignalRoute.drop();
 
-        signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+        signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
 
         assertEquals(0, firstDestination.getSize());
         assertEquals(0, secondDestination.getSize());
@@ -50,7 +59,7 @@ class SignalRouteConfigTest {
     void dispatch_proceed() {
         signalRoute = SignalRoute.proceed();
 
-        signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+        signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
 
         assertEquals(1, firstDestination.getSize());
         assertTrue(firstDestination.has("1"));
@@ -65,7 +74,7 @@ class SignalRouteConfigTest {
     void dispatch_proceedSpecificDestination() {
         signalRoute = SignalRoute.proceed("second");
 
-        signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+        signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
 
         assertEquals(0, firstDestination.getSize());
 
@@ -75,23 +84,55 @@ class SignalRouteConfigTest {
     }
 
     @Test
+    void dispatch_proceedSpecificMappedDestination() {
+
+        signalRoute = SignalRoute.proceed("second");
+
+        signalRoute.dispatch(Map.of("first", "mapped-first", "second", "mapped-second"), processSignal,
+                List.of(mappedFirstDestination, mappedSecondDestination));
+
+        assertEquals(0, mappedFirstDestination.getSize());
+
+        assertEquals(1, mappedSecondDestination.getSize());
+        assertTrue(mappedSecondDestination.has("1"));
+        assertEquals(processSignal, mappedSecondDestination.get("1"));
+    }
+
+    @Test
+    void dispatch_proceedSpecificMappedDestinationNotFound() {
+
+        signalRoute = SignalRoute.proceed("second");
+
+        EventLoopError e = assertThrowsExactly(EventLoopError.class, () -> {
+            signalRoute.dispatch(Map.of("first", "mapped-first", "second", "non-existent"),
+                    processSignal,
+                    List.of(mappedFirstDestination, mappedSecondDestination));
+        });
+
+        assertEquals("Signal 1 to be sent to second which is not available (first:mapped-first,second:non-existent)",
+                e.getMessage());
+
+    }
+
+    @Test
     void dispatch_proceedSpecificDestinationNotFound() {
 
         signalRoute = SignalRoute.proceed("non-existing-destination");
 
 
         EventLoopError e = assertThrowsExactly(EventLoopError.class, () -> {
-            signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+            signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
         });
 
-        assertEquals("Signal 1 to be sent to non-existing-destination which is not available", e.getMessage());
+        assertEquals("Signal 1 to be sent to non-existing-destination which is not available (first,second)",
+                e.getMessage());
     }
 
     @Test
     void dispatch_route() {
         signalRoute = SignalRoute.route(otherSignal, "second");
 
-        signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+        signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
 
         assertEquals(0, firstDestination.getSize());
 
@@ -106,10 +147,11 @@ class SignalRouteConfigTest {
 
 
         EventLoopError e = assertThrowsExactly(EventLoopError.class, () -> {
-            signalRoute.dispatch(processSignal, List.of(firstDestination, secondDestination));
+            signalRoute.dispatch(Map.of(), processSignal, List.of(firstDestination, secondDestination));
         });
 
-        assertEquals("Signal 2 to be sent to non-existing-destination which is not available", e.getMessage());
+        assertEquals("Signal 2 to be sent to non-existing-destination which is not available (first,second)",
+                e.getMessage());
     }
 
 

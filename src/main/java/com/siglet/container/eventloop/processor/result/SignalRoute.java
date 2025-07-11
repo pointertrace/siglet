@@ -5,6 +5,8 @@ import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.eventloop.EventLoopError;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SignalRoute<T extends Signal> {
 
@@ -56,7 +58,8 @@ public class SignalRoute<T extends Signal> {
         this.destination = destination;
     }
 
-    public void dispatch(T processSignal, List<SignalDestination<T>> destinations) {
+    public void dispatch(Map<String, String> destinationMappings, T processSignal,
+                         List<SignalDestination<T>> destinations) {
         if (signal == DROP_SIGNAL) {
             return;
         }
@@ -67,13 +70,32 @@ public class SignalRoute<T extends Signal> {
             return;
         }
         for (SignalDestination<T> availableSignalDestination : destinations) {
-            if (availableSignalDestination.getName().equals(destination)) {
+            String destinationName = null;
+            if (!destinationMappings.isEmpty()) {
+                destinationName = destinationMappings.get(destination);
+                if (destinationName == null) {
+                    throw new EventLoopError(String.format("Destination %s is not mapped to any signal", destination));
+                }
+            } else {
+                destinationName = destination;
+            }
+            if (destinationName.equals(availableSignalDestination.getName())) {
                 availableSignalDestination.send(chooseSignal(processSignal, signal));
                 return;
             }
         }
-        throw new EventLoopError(String.format("Signal %s to be sent to %s which is not available",
-                chooseSignal(processSignal, signal).getId(), destination));
+        if (destinationMappings.isEmpty()) {
+            throw new EventLoopError(String.format("Signal %s to be sent to %s which is not available (%s)",
+                    chooseSignal(processSignal, signal).getId(), destination,
+                    destinations.stream().map(SignalDestination::getName).collect(Collectors.joining(","))));
+        } else {
+            throw new EventLoopError(String.format("Signal %s to be sent to %s which is not available (%s)",
+                    chooseSignal(processSignal, signal).getId(), destination,
+                    destinationMappings.keySet().stream()
+                            .sorted()
+                            .map(key -> key + ":" + destinationMappings.get(key))
+                            .collect(Collectors.joining(","))));
+        }
     }
 
     private T chooseSignal(T processSignal, T routeSignal) {
