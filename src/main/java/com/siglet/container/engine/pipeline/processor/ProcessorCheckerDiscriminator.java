@@ -11,10 +11,10 @@ import com.siglet.parser.schema.SingleSchemaValidationError;
 
 public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminator {
 
-    private final ProcessorTypes processorTypes;
+    private final ProcessorTypeRegistry processorTypeRegistry;
 
-    public ProcessorCheckerDiscriminator(ProcessorTypes processorTypes) {
-        this.processorTypes = processorTypes;
+    public ProcessorCheckerDiscriminator(ProcessorTypeRegistry processorTypeRegistry) {
+        this.processorTypeRegistry = processorTypeRegistry;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ProcessorCheckerDiscriminator implements DynamicCheckerDiscriminato
                     throw new SingleSchemaValidationError(node.getLocation(), "must have a type property!");
                 }
                 if (type.getValue() instanceof String typeValue) {
-                    ProcessorType processorType = processorTypes.get(typeValue);
+                    ProcessorType processorType = processorTypeRegistry.get(typeValue);
                     if (processorType == null) {
                         throw new SingleSchemaValidationError(node.getLocation(),
                                 String.format("could not find [%s] as processor type", typeValue));

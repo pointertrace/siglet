@@ -12,34 +12,34 @@ import java.util.function.Consumer;
 
 public class Processors {
 
-    private final Map<String, Processor> processors = new HashMap<>();
+    private final Map<String, Processor> namedProcessors = new HashMap<>();
 
     public Processor create(Context context, ProcessorNode processorNode) {
         ProcessorConfig sigletConfig = processorNode.getConfig();
         if (sigletConfig.getKind() == ProcessorKind.SPANLET) {
-            return processors.put(processorNode.getName(), context.createProcessor(processorNode));
+            return namedProcessors.put(processorNode.getName(), context.createProcessor(processorNode));
         } else {
             throw new SigletError("Cannot create a processor for a non-spanlet item");
         }
     }
 
     public Processor getDestination(String name) {
-        return processors.values().stream()
+        return namedProcessors.values().stream()
                 .filter(processor -> processor.getName().equals(name))
                 .findFirst()
                 .orElse(null);
     }
 
     public void start() {
-        processors.values().forEach(Processor::start);
+        namedProcessors.values().forEach(Processor::start);
     }
 
     public void stop() {
-        processors.values().forEach(Processor::stop);
+        namedProcessors.values().forEach(Processor::stop);
 
     }
 
     public void forEach(Consumer<Processor> processorConsumer) {
-        processors.values().forEach(processorConsumer);
+        namedProcessors.values().forEach(processorConsumer);
     }
 }

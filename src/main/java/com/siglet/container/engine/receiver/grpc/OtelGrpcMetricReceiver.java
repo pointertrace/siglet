@@ -42,7 +42,6 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
                 InstrumentationScope instrumentationScope = scopeMetrics.getScope();
                 for (Metric metric : scopeMetrics.getMetricsList()) {
                     if (metric.hasGauge()) {
-                        System.out.println("metric received:" + metric);
                         // TODO verifica se precisa de resource e scope builder/
                         for (SignalDestination<Signal> destination : metricDestinations) {
                             ProtoMetricAdapter protoMetricAdapter = new ProtoMetricAdapter()

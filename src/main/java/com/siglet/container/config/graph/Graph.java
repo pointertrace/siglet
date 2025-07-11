@@ -39,14 +39,14 @@ public class Graph {
     }
 
     <T extends BaseNode> List<T> getNodesByNameAndType(List<String> names, Class<T> nodeType) {
-        List<BaseNode> nodes = getNodesByName(names);
-        nodes.forEach(node -> {
+        List<BaseNode> nodesByName = getNodesByName(names);
+        nodesByName.forEach(node -> {
             if (!nodeType.isAssignableFrom(node.getClass())) {
                 throw new SigletError(String.format("Node named [%s] is %s and should be %s", node.getName(),
                         node.getClass().getSimpleName(), nodeType.getSimpleName()));
             }
         });
-        return nodes.stream()
+        return nodesByName.stream()
                 .map(nodeType::cast)
                 .toList();
     }

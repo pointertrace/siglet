@@ -12,17 +12,17 @@ import com.siglet.container.engine.pipeline.processor.siglet.SigletProcessorType
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessorTypes {
+public class ProcessorTypeRegistry {
 
     private final Map<String, ProcessorType> definitions = new HashMap<>();
 
-    public ProcessorTypes() {
-        add(new GroovyActionProcessorType());
-        add(new GroovyFilterProcessorType());
-        add(new GroovyRouterProcessorType());
+    public ProcessorTypeRegistry() {
+        register(new GroovyActionProcessorType());
+        register(new GroovyFilterProcessorType());
+        register(new GroovyRouterProcessorType());
     }
 
-    public void add(ProcessorType processorType) {
+    public void register(ProcessorType processorType) {
         definitions.put(processorType.getName(), processorType);
     }
 
@@ -30,8 +30,8 @@ public class ProcessorTypes {
         return definitions.get(type);
     }
 
-    public void add(SigletConfig sigletConfig) {
-        add(new SigletProcessorType(sigletConfig));
+    public void register(SigletConfig sigletConfig) {
+        register(new SigletProcessorType(sigletConfig));
     }
 
     public Processor create(Context context, ProcessorNode node) {

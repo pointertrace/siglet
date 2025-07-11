@@ -1,6 +1,6 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
+import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import com.siglet.parser.Node;
 import com.siglet.parser.located.Location;
 import com.siglet.parser.YamlParser;
@@ -39,7 +39,7 @@ class PipelineConfigTest {
 
         Node node = parser.parse(config);
 
-        pipelineChecker(new ProcessorTypes()).check(node);
+        pipelineChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
 
@@ -86,7 +86,7 @@ class PipelineConfigTest {
 
         Node node = parser.parse(config);
 
-        pipelineChecker(new ProcessorTypes()).check(node);
+        pipelineChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
 
@@ -141,7 +141,7 @@ class PipelineConfigTest {
 
         Node node = parser.parse(config);
 
-        pipelineChecker(new ProcessorTypes()).check(node);
+        pipelineChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
 
@@ -197,7 +197,7 @@ class PipelineConfigTest {
 
         Node node = parser.parse(config);
 
-        pipelineChecker(new ProcessorTypes()).check(node);
+        pipelineChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
 

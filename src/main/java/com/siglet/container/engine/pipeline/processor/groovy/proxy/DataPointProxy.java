@@ -53,7 +53,6 @@ public class DataPointProxy extends BaseProxy {
     }
 
     public void attributes(Closure<Void> closure) {
-        System.out.println(closure);
         closure.setDelegate(new NumberDataPointAttributesProxy(getSignal(), metricAdapter, dataPointAdapter));
         closure.setResolveStrategy(Closure.DELEGATE_FIRST);
         closure.call();

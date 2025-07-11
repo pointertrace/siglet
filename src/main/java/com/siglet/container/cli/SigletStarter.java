@@ -3,7 +3,7 @@ package com.siglet.container.cli;
 import com.siglet.container.Siglet;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.config.siglet.SigletConfigLoader;
-import com.siglet.utils.Version;
+import com.siglet.utils.VersionRetrievers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -44,7 +44,7 @@ public class SigletStarter implements Runnable {
     @Override
     public void run() {
         if (versionRequested) {
-            System.out.println(String.format("Siglet version %s", Version.get()));
+            System.out.println(String.format("Siglet version %s", VersionRetrievers.get()));
             System.exit(0);
         }
         try {

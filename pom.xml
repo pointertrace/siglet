@@ -37,7 +37,6 @@
 
         <jdk.version>24</jdk.version>
 
-        <!--        <camel.version>4.3.0</camel.version>-->
         <log4j2-version>2.21.1</log4j2-version>
         <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
     </properties>
@@ -69,27 +68,6 @@
             <artifactId>spring-boot-loader</artifactId>
             <version>3.4.4</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-main</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash; we use these 2 camel components in this example &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-bean</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-timer</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.camel</groupId>-->
-        <!--            <artifactId>camel-groovy</artifactId>-->
-        <!--            <version>${camel.version}</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
@@ -125,13 +103,6 @@
             <artifactId>opentelemetry-api</artifactId>
             <version>1.49.0</version>
         </dependency>
-        <!-- logging -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.slf4j</groupId>-->
-        <!--            <artifactId>slf4j-api</artifactId>-->
-        <!--            <version>2.0.16</version>-->
-        <!--        </dependency>-->
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>

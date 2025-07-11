@@ -1,6 +1,6 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
+import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import com.siglet.parser.Node;
 import com.siglet.parser.located.Location;
 import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionConfig;
@@ -40,7 +40,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
@@ -81,7 +81,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
@@ -123,7 +123,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
@@ -177,7 +177,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
@@ -212,7 +212,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
@@ -267,7 +267,7 @@ class ProcessorConfigTest {
 
         Node node = parser.parse(configTxt);
 
-        processorChecker(new ProcessorTypes()).check(node);
+        processorChecker(new ProcessorTypeRegistry()).check(node);
 
         Object value = node.getValue();
         ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);

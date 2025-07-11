@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class VersionTest {
+class VersionRetrieversTest {
 
 
     @Test
     void get(){
-        assertNotNull(Version.get());
-        assertNotEquals("undetermined", Version.get());
+        assertNotNull(VersionRetrievers.get());
+        assertNotEquals("undetermined", VersionRetrievers.get());
     }
 
 }

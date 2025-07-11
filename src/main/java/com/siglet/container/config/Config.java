@@ -1,13 +1,10 @@
 package com.siglet.container.config;
 
 import com.siglet.container.config.graph.Graph;
-import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.config.raw.GlobalConfig;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
-import com.siglet.container.engine.Context;
-import com.siglet.container.engine.pipeline.processor.Processor;
-import com.siglet.container.engine.pipeline.processor.ProcessorTypes;
+import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 
 import java.util.List;
 import java.util.Map;
@@ -19,13 +16,13 @@ public class Config {
     private final Map<String, SigletConfig> sigletConfigs;
     private final RawConfig rawConfig;
     private final GlobalConfig globalConfig;
-    private final ProcessorTypes processorTypes;
+    private final ProcessorTypeRegistry processorTypeRegistry;
 
-    public Config(RawConfig rawConfig, List<SigletConfig> sigletsConfigs, ProcessorTypes processorTypes) {
+    public Config(RawConfig rawConfig, List<SigletConfig> sigletsConfigs, ProcessorTypeRegistry processorTypeRegistry) {
         this.rawConfig = rawConfig;
         this.sigletConfigs = sigletsConfigs.stream()
                 .collect(Collectors.toMap(SigletConfig::name, Function.identity()));
-        this.processorTypes = processorTypes;
+        this.processorTypeRegistry = processorTypeRegistry;
         this.globalConfig = rawConfig.getGlobalConfig() == null ? new GlobalConfig() : rawConfig.getGlobalConfig();
     }
 
@@ -41,8 +38,8 @@ public class Config {
         return globalConfig;
     }
 
-    public ProcessorTypes getProcessorTypes() {
-        return processorTypes;
+    public ProcessorTypeRegistry getProcessorTypes() {
+        return processorTypeRegistry;
     }
 
 }

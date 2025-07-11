@@ -52,7 +52,6 @@ public class DebugReceiver implements Receiver {
             if (!destination.send(signal)) {
                 return false;
             }
-            System.out.println("destination:"+destination);
         }
         return true;
     }
