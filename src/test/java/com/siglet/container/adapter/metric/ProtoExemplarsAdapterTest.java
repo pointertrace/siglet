@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 import org.junit.jupiter.api.Assertions;

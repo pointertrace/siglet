@@ -5,14 +5,14 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
+import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
 import com.siglet.container.config.raw.LocatedString;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.NodeCheckerFactory;
 import com.siglet.parser.NodeValueBuilder;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
 import com.siglet.parser.node.SigletParserError;
 
 import java.lang.reflect.InvocationTargetException;

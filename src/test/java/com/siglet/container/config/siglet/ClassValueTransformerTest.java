@@ -1,7 +1,7 @@
 package com.siglet.container.config.siglet;
 
-import com.siglet.parser.ValueTransformerException;
 import com.siglet.container.config.siglet.parser.ClassValueTransformer;
+import com.siglet.parser.ValueTransformerException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

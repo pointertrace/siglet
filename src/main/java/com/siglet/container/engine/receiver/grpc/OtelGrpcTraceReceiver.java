@@ -1,7 +1,6 @@
 package com.siglet.container.engine.receiver.grpc;
 
 import com.siglet.api.Signal;
-import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.engine.SignalDestination;

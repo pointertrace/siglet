@@ -2,9 +2,9 @@ package com.siglet.container.config.siglet.parser;
 
 import com.siglet.api.Processor;
 import com.siglet.container.config.raw.LocatedStringTransformer;
+import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.NodeCheckerFactory;
-import com.siglet.container.config.siglet.SigletConfig;
 
 import static com.siglet.parser.schema.SchemaFactory.*;
 

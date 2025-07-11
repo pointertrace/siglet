@@ -1,10 +1,10 @@
 package com.siglet.container.engine.pipeline.processor.groovy.action;
 
+import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.parser.Node;
 import com.siglet.parser.NodeChecker;
-import com.siglet.parser.located.Location;
-import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.parser.YamlParser;
+import com.siglet.parser.located.Location;
 import com.siglet.parser.schema.PropertyChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

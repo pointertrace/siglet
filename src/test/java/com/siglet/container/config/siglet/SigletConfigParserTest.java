@@ -5,14 +5,13 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.container.config.siglet.parser.SigletConfigParser;
 import com.siglet.parser.Node;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.NodeCheckerFactory;
+import com.siglet.parser.YamlParser;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;
-import com.siglet.container.config.siglet.SigletConfig;
-import com.siglet.container.config.siglet.parser.SigletConfigParser;
-import com.siglet.parser.YamlParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,9 @@
 package com.siglet.container.config;
 
-import com.siglet.parser.Node;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
+import com.siglet.parser.Node;
 import com.siglet.parser.YamlParser;
 
 import java.util.List;

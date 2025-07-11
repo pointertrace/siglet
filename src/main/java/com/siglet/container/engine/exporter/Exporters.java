@@ -4,7 +4,6 @@ import com.siglet.SigletError;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.DebugExporterConfig;
 import com.siglet.container.config.raw.GrpcExporterConfig;
-import com.siglet.container.engine.Context;
 import com.siglet.container.engine.exporter.debug.DebugExporter;
 import com.siglet.container.engine.exporter.grpc.GrpcExporter;
 

@@ -1,8 +1,8 @@
 package com.siglet.container.config.raw;
 
 import com.siglet.parser.Node;
-import com.siglet.parser.located.Location;
 import com.siglet.parser.YamlParser;
+import com.siglet.parser.located.Location;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

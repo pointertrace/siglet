@@ -1,9 +1,6 @@
 package com.siglet.container;
 
-import com.siglet.container.config.Config;
-import com.siglet.container.config.ConfigFactory;
 import com.siglet.container.config.siglet.SigletConfig;
-import com.siglet.container.config.siglet.SigletConfigLoader;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SigletEngine;
 import org.slf4j.Logger;

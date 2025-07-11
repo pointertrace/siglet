@@ -1,13 +1,11 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.SigletError;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

@@ -1,6 +1,5 @@
 package com.siglet.container.engine.pipeline.processor.groovy.filter;
 
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.parser.Describable;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;

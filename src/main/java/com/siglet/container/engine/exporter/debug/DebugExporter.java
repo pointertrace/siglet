@@ -2,7 +2,6 @@ package com.siglet.container.engine.exporter.debug;
 
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ExporterNode;
-import com.siglet.container.engine.Context;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
 

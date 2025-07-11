@@ -1,8 +1,8 @@
 package com.siglet.container.config.raw;
 
 import com.siglet.SigletError;
-import com.siglet.parser.located.Location;
 import com.siglet.container.config.graph.Graph;
+import com.siglet.parser.located.Location;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
 

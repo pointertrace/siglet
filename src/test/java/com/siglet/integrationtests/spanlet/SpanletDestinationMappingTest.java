@@ -3,8 +3,6 @@ package com.siglet.integrationtests.spanlet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.modifiable.trace.ModifiableSpan;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
 import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
 import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
 import com.siglet.container.Siglet;

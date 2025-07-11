@@ -1,10 +1,10 @@
 package com.siglet.container.engine.pipeline.processor;
 
 import com.siglet.SigletError;
+import com.siglet.container.config.raw.ProcessorKind;
 import com.siglet.parser.Node;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.SchemaValidationError;
-import com.siglet.container.config.raw.ProcessorKind;
 import com.siglet.parser.node.ObjectNode;
 import com.siglet.parser.schema.DynamicCheckerDiscriminator;
 import com.siglet.parser.schema.SingleSchemaValidationError;

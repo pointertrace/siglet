@@ -1,7 +1,7 @@
 package com.siglet.container.config.graph.validator;
 
-import com.siglet.container.config.graph.Graph;
 import com.siglet.container.config.graph.BaseNode;
+import com.siglet.container.config.graph.Graph;
 import com.siglet.container.config.graph.ReceiverNode;
 
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
 package com.siglet.container.config.graph;
 
-import com.siglet.container.config.raw.BaseConfig;
 import com.siglet.container.config.raw.ExporterConfig;
 
 import java.util.ArrayList;

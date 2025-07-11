@@ -1,9 +1,9 @@
 package com.siglet.container.config;
 
-import com.siglet.parser.NodeChecker;
 import com.siglet.container.config.raw.*;
 import com.siglet.container.engine.pipeline.processor.ProcessorCheckerDiscriminator;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
+import com.siglet.parser.NodeChecker;
 
 import static com.siglet.parser.schema.SchemaFactory.*;
 

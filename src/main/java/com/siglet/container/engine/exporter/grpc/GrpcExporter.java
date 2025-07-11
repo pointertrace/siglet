@@ -6,7 +6,6 @@ import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
-import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
@@ -18,10 +17,6 @@ import com.siglet.container.eventloop.accumulator.TimeoutAccumulatorEventLoop;
 import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
-
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 
 public class GrpcExporter implements Exporter {
 
