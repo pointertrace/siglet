@@ -88,19 +88,8 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
             List<IN> buffer = new ArrayList<>(maxSize);
             while (true) {
 
-                try {
-
-                    if (nextTick < 0) {
-                        signal = queue.take();
-                    } else {
-                        signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
-                    }
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    state.set(State.STOPPING);
-                    break;
-                }
+                signal = getNextSignal(nextTick);
+                if (signal == null) break;
 
                 if (signal != null) {
                     buffer.add(signal);
@@ -131,6 +120,24 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private IN getNextSignal(long nextTick) {
+        IN signal;
+        try {
+
+            if (nextTick < 0) {
+                signal = queue.take();
+            } else {
+                signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            state.set(State.STOPPING);
+            return null;
+        }
+        return signal;
     }
 
     private void aggregateAndSend(List<IN> buffer) {

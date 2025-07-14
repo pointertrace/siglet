@@ -105,21 +105,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
                 startLatch.countDown();
 
                 while (true) {
-                    LOGGER.trace("going to get next signal from queue");
-                    IN signal = null;
-                    try {
-                        if (state.get() == State.RUNNING) {
-                            signal = queue.take();
-                            // TODO ajustr
-                            LOGGER.trace("state {} got signal from take and it is {}", state.get(), signal.getId());
-                        } else {
-                            signal = queue.poll(100, TimeUnit.MILLISECONDS);
-                            LOGGER.trace("got signal from poll and it is {}", signal == null ? "NULL" : signal.getId());
-                        }
-                    } catch (InterruptedException e) {
-                        state.set(State.STOPPING);
-                        LOGGER.trace("state set to STOPPING because thread was interrupted");
-                    }
+                    IN signal = getNextSignal();
                     if (signal != null) {
                         try {
                             long start = System.nanoTime();
@@ -154,6 +140,25 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         } catch (InterruptedException e) {
             throw new EventLoopError(String.format("Interrupted exception in event loop %s", name));
         }
+    }
+
+    private IN getNextSignal() {
+        LOGGER.trace("going to get next signal from queue");
+        IN signal = null;
+        try {
+            if (state.get() == State.RUNNING) {
+                signal = queue.take();
+                // TODO ajustr
+                LOGGER.trace("state {} got signal from take and it is {}", state.get(), signal.getId());
+            } else {
+                signal = queue.poll(100, TimeUnit.MILLISECONDS);
+                LOGGER.trace("got signal from poll and it is {}", signal == null ? "NULL" : signal.getId());
+            }
+        } catch (InterruptedException e) {
+            state.set(State.STOPPING);
+            LOGGER.trace("state set to STOPPING because thread was interrupted");
+        }
+        return signal;
     }
 
     public ProcessorContext<CTX> getContext() {

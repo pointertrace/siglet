@@ -108,16 +108,8 @@ public class AdapterList<M extends Message, B extends Message.Builder, A extends
         checkReady();
         for (int i = 0; i < messages.size(); i++) {
             if (hasAdapter(i)) {
-                A adapter = adapters.get(i);
-                if (adapter.getMessage() != null) {
-                    if (messagePredicate.test(adapter.getMessage())) {
-                        return i;
-                    }
-                } else {
-                    if (builderPredicate.test(adapter.getBuilder())) {
-                        return i;
-                    }
-                }
+                int idx = getFromAdapter(messagePredicate, builderPredicate, i);
+                if (idx >= 0) return idx;
             } else {
                 M message = getMessage(i);
                 if (messagePredicate.test(message)) {
@@ -127,6 +119,21 @@ public class AdapterList<M extends Message, B extends Message.Builder, A extends
         }
         return -1;
     }
+
+    private int getFromAdapter(Predicate<M> messagePredicate, Predicate<B> builderPredicate, int i) {
+        A adapter = adapters.get(i);
+        if (adapter.getMessage() != null) {
+            if (messagePredicate.test(adapter.getMessage())) {
+                return i;
+            }
+        } else {
+            if (builderPredicate.test(adapter.getBuilder())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     public A get(int i) {
         checkReady();
