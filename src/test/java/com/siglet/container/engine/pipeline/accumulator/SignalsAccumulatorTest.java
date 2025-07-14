@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SignalsAccumulatorTest {
 
@@ -35,7 +36,7 @@ class SignalsAccumulatorTest {
 
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
 
         signalsAccumulator = new SignalsAccumulator();
 
@@ -96,40 +97,13 @@ class SignalsAccumulatorTest {
                 signalsAccumulator.getExportTraceServiceRequest();
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
-        // first resource
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"));
+        assertTrue(findResource(exportTraceServiceRequest, firstResource));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, firstScope));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, firstSpan));
 
-
-        assertEquals(1, exportTraceServiceRequest.getResourceSpansList().getFirst().getScopeSpansList().size());
-        // first resource - first scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
-
-        assertEquals(1,
-                exportTraceServiceRequest.getResourceSpansList().getFirst()
-                        .getScopeSpansList().getFirst().getSpansList().size());
-        // first resource - first scope - first span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(firstSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
+        assertEquals(1, countResources(exportTraceServiceRequest));
+        assertEquals(1, countScopes(exportTraceServiceRequest,firstResource));
+        assertEquals(1, countSpans(exportTraceServiceRequest,firstResource, firstScope));
     }
 
 
@@ -144,54 +118,14 @@ class SignalsAccumulatorTest {
 
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
-        // first resource
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"));
+        assertTrue(findResource(exportTraceServiceRequest, firstResource));
+        assertEquals(1, countResources(exportTraceServiceRequest));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, firstScope));
+        assertEquals(1, countScopes(exportTraceServiceRequest, firstResource));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, firstSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, secondSpan));
+        assertEquals(2, countSpans(exportTraceServiceRequest, firstResource, firstScope));
 
-
-        assertEquals(1, exportTraceServiceRequest.getResourceSpansList().getFirst().getScopeSpansList().size());
-        // first resource - first scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
-
-        assertEquals(2,
-                exportTraceServiceRequest.getResourceSpansList().getFirst()
-                        .getScopeSpansList().getFirst().getSpansList().size());
-        // first resource - first scope - first span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(firstSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
-
-        // first resource - first scope - second span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(secondSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-span not found"));
     }
 
     @Test
@@ -206,95 +140,21 @@ class SignalsAccumulatorTest {
                 signalsAccumulator.getExportTraceServiceRequest();
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
-        // first resource
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"));
 
+        assertTrue(findResource(exportTraceServiceRequest, firstResource));
+        assertEquals(1, countResources(exportTraceServiceRequest));
 
-        assertEquals(2, exportTraceServiceRequest.getResourceSpansList().getFirst().getScopeSpansList().size());
-        // first resource - first scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, firstScope));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, secondScope));
+        assertEquals(2, countScopes(exportTraceServiceRequest, firstResource));
 
-        assertEquals(2,
-                exportTraceServiceRequest.getResourceSpansList().getFirst()
-                        .getScopeSpansList().getFirst().getSpansList().size());
-        // first resource - first scope - first span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(firstSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-span not found"));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, firstSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, secondSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, secondScope, thirdSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, secondScope, forthSpan));
+        assertEquals(2, countSpans(exportTraceServiceRequest, firstResource, firstScope));
+        assertEquals(2, countSpans(exportTraceServiceRequest, firstResource, secondScope));
 
-        // first resource - first scope - second span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(secondSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-span not found"));
-
-        // first resource - second scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-second not found"));
-
-        assertEquals(2,
-                exportTraceServiceRequest.getResourceSpansList().getFirst()
-                        .getScopeSpansList().get(1).getSpansList().size());
-        // first resource - second scope - third span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(thirdSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("third-span not found"));
-
-        // first resource - second scope - forth span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(s -> s.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"))
-                .getSpansList().stream()
-                .filter(s -> s.equals(forthSpan))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("forth-span not found"));
     }
 
     @Test
@@ -308,115 +168,70 @@ class SignalsAccumulatorTest {
         ExportTraceServiceRequest exportTraceServiceRequest =
                 signalsAccumulator.getExportTraceServiceRequest();
 
-        // first resource
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"));
-
-        // second resource
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(secondResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"));
+        assertEquals(2, exportTraceServiceRequest.getResourceSpansList().size());
+        assertTrue(findResource(exportTraceServiceRequest, firstResource));
+        assertTrue(findResource(exportTraceServiceRequest, secondResource));
+        assertEquals(2, countResources(exportTraceServiceRequest));
 
 
-        // first resource - first scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, firstScope));
+        assertTrue(findScope(exportTraceServiceRequest, firstResource, secondScope));
+        assertTrue(findScope(exportTraceServiceRequest, secondResource, firstScope));
+        assertTrue(findScope(exportTraceServiceRequest, secondResource, secondScope));
+        assertEquals(2, countScopes(exportTraceServiceRequest, firstResource));
+        assertEquals(2, countScopes(exportTraceServiceRequest, secondResource));
 
-        // first resource - second scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, firstScope, firstSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, firstResource, secondScope, secondSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, secondResource, firstScope, thirdSpan));
+        assertTrue(findSpan(exportTraceServiceRequest, secondResource, secondScope, forthSpan));
 
+        assertEquals(1,countSpans(exportTraceServiceRequest, firstResource, firstScope));
+        assertEquals(1,countSpans(exportTraceServiceRequest, firstResource, secondScope));
+        assertEquals(1,countSpans(exportTraceServiceRequest, secondResource, firstScope));
+        assertEquals(1, countSpans(exportTraceServiceRequest, secondResource, secondScope));
 
-        // second resource - first scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(secondResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"));
+    }
 
-        // second resource - second scope
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(secondResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"));
+    private boolean findResource(ExportTraceServiceRequest exportTraceServiceRequest, Resource resource) {
+        return exportTraceServiceRequest.getResourceSpansList().stream()
+                .anyMatch(rs -> rs.getResource().equals(resource));
+    }
 
-        // first resource - first scope - first span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(sp -> sp.getName().equals("first-span"))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first span not found"));
+    private int countResources(ExportTraceServiceRequest exportTraceServiceRequest) {
+        return exportTraceServiceRequest.getResourceSpansList().size();
+    }
 
-        // first resource - second scope - second span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(firstResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"))
-                .getSpansList().stream()
-                .filter(sp -> sp.getName().equals("second-span"))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second span not found"));
+    private boolean findScope(ExportTraceServiceRequest exportTraceServiceRequest, Resource resource, InstrumentationScope scope) {
+        return exportTraceServiceRequest.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource().equals(resource))
+                .anyMatch(rs -> rs.getScopeSpansList().stream()
+                        .anyMatch(is -> is.getScope().equals(scope)));
+    }
 
-        // second resource - first scope - third span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(secondResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(firstScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("first-scope not found"))
-                .getSpansList().stream()
-                .filter(sp -> sp.getName().equals("third-span"))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("third span not found"));
+    private int countScopes(ExportTraceServiceRequest exportTraceServiceRequest, Resource resource) {
+        return exportTraceServiceRequest.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource().equals(resource))
+                .mapToInt(rs -> rs.getScopeSpansList().size())
+                .sum();
+    }
 
-        // second resource - second scope - forth span
-        exportTraceServiceRequest.getResourceSpansList().stream()
-                .filter(rs -> rs.getResource().equals(secondResource))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-resource not found"))
-                .getScopeSpansList().stream()
-                .filter(ss -> ss.getScope().equals(secondScope))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("second-scope not found"))
-                .getSpansList().stream()
-                .filter(sp -> sp.getName().equals("forth-span"))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("forth span not found"));
+    private boolean findSpan(ExportTraceServiceRequest exportTraceServiceRequest, Resource resource,
+                              InstrumentationScope scope, Span span) {
+        return exportTraceServiceRequest.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource().equals(resource))
+                .anyMatch(rs -> rs.getScopeSpansList().stream()
+                        .filter(is -> is.getScope().equals(scope))
+                        .anyMatch(ss -> ss.getSpansList().contains(span)));
+    }
 
+    private long countSpans(ExportTraceServiceRequest exportTraceServiceRequest, Resource resource,
+                         InstrumentationScope scope) {
+        return exportTraceServiceRequest.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource().equals(resource))
+                .flatMap(rs -> rs.getScopeSpansList().stream())
+                .filter(is -> is.getScope().equals(scope))
+                .mapToInt(is -> is.getSpansList().size())
+                .sum();
     }
 }
