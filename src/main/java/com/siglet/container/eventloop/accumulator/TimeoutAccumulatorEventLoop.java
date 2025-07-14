@@ -137,13 +137,11 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
     }
 
     private IN getNextSignal(long nextTick) throws InterruptedException {
-        IN signal;
         if (nextTick < 0) {
-            signal = queue.take();
+            return queue.take();
         } else {
-            signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
+            return queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
         }
-        return signal;
     }
 
     private void aggregateAndSend(List<IN> buffer) {
