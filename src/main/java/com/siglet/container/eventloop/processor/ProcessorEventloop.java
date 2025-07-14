@@ -112,12 +112,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
                             Result result = baseEventloopProcessor.process(signal);
                             LOGGER.trace("signal {} processed in event loop {} took {} ms", signal::getId,
                                     this::getName, () -> System.nanoTime() - start);
-                            if (result instanceof ResultImpl resultImpl) {
-                                resultImpl.dispatch(destinationMappings, signal, next);
-                            } else {
-                                throw new SigletError(String.format("Result must be type %s but it is %s",
-                                        ResultImpl.class, result.getClass()));
-                            }
+                            dispatch(result, signal);
                         } catch (Error e) {
                             state.set(State.STOPPING);
                             break;
@@ -139,6 +134,15 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
             LOGGER.info("event loop {} is running", name);
         } catch (InterruptedException e) {
             throw new EventLoopError(String.format("Interrupted exception in event loop %s", name));
+        }
+    }
+
+    private void dispatch(Result result, IN signal) {
+        if (result instanceof ResultImpl resultImpl) {
+            resultImpl.dispatch(destinationMappings, signal, next);
+        } else {
+            throw new SigletError(String.format("Result must be type %s but it is %s",
+                    ResultImpl.class, result.getClass()));
         }
     }
 

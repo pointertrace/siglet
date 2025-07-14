@@ -88,8 +88,19 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
             List<IN> buffer = new ArrayList<>(maxSize);
             while (true) {
 
-                signal = getNextSignal(nextTick);
-                if (signal == null) break;
+                try {
+
+                    if (nextTick < 0) {
+                        signal = queue.take();
+                    } else {
+                        signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
+                    }
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    state.set(State.STOPPING);
+                    break;
+                }
 
                 if (signal != null) {
                     buffer.add(signal);
