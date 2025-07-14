@@ -150,12 +150,10 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
             for (SignalDestination<OUT> next : next) {
                 next.send(aggregated);
             }
+        } catch (Error e) {
+            throw e;
         } catch (Throwable e) {
-            if (e instanceof Error) {
-                throw e;
-            } else {
-                LOGGER.error("exception aggregating and sending signals {}:{}", buffer, e.getMessage(), e);
-            }
+            LOGGER.error("exception aggregating and sending signals {}:{}", buffer, e.getMessage(), e);
         } finally {
             buffer.clear();
         }

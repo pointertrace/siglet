@@ -12,32 +12,32 @@ import java.util.Map;
 
 public class Exporters {
 
-    private final Map<String, Exporter> exporters = new HashMap<>();
+    private final Map<String, Exporter> exporterRegistry = new HashMap<>();
 
     public Exporter getExporter(String name) {
-        return exporters.get(name);
+        return exporterRegistry.get(name);
     }
 
 
     public Exporter create(ExporterNode node) {
         String name = node.getName();
-        if (exporters.containsKey(name)) {
+        if (exporterRegistry.containsKey(name)) {
             throw new SigletError("Receiver with name " + name + " already exists");
         }
         if (node.getConfig() instanceof DebugExporterConfig) {
-            return exporters.put(name, new DebugExporter(node));
+            return exporterRegistry.put(name, new DebugExporter(node));
         } else if (node.getConfig() instanceof GrpcExporterConfig) {
-            return exporters.put(name, new GrpcExporter(node));
+            return exporterRegistry.put(name, new GrpcExporter(node));
         } else {
             throw new SigletError(String.format("Cannot create receiver type %s", node.getConfig().getClass().getName()));
         }
     }
 
     public void start() {
-        exporters.values().forEach(Exporter::start);
+        exporterRegistry.values().forEach(Exporter::start);
     }
 
     public void stop() {
-        exporters.values().forEach(Exporter::stop);
+        exporterRegistry.values().forEach(Exporter::stop);
     }
 }
