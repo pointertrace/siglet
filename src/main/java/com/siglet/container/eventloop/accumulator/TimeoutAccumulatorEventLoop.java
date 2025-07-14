@@ -89,13 +89,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
             while (true) {
 
                 try {
-
-                    if (nextTick < 0) {
-                        signal = queue.take();
-                    } else {
-                        signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
-                    }
-
+                    signal = getNextSignal(nextTick);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     state.set(State.STOPPING);
@@ -103,13 +97,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
                 }
 
                 if (signal != null) {
-                    buffer.add(signal);
-                    if (buffer.size() == maxSize) {
-                        aggregateAndSend(buffer);
-                        nextTick = -1;
-                    } else if (buffer.size() == 1) {
-                        nextTick = System.nanoTime() + timeoutInMillis * 1_000_000L;
-                    }
+                    nextTick = processCurrentSignal(buffer, signal, nextTick);
                 } else {
                     if (!buffer.isEmpty() && System.nanoTime() >= nextTick) {
                         aggregateAndSend(buffer);
@@ -117,12 +105,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
                     }
                 }
             }
-            while (!queue.isEmpty()) {
-                queue.drainTo(buffer, maxSize - buffer.size());
-                if (!buffer.isEmpty()) {
-                    aggregateAndSend(buffer);
-                }
-            }
+            processRemainingSignals(buffer);
             stopLatch.countDown();
         });
 
@@ -133,20 +116,32 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         }
     }
 
-    private IN getNextSignal(long nextTick) {
-        IN signal;
-        try {
+    private long processCurrentSignal(List<IN> buffer, IN signal, long nextTick) {
+        buffer.add(signal);
+        if (buffer.size() == maxSize) {
+            aggregateAndSend(buffer);
+            nextTick = -1;
+        } else if (buffer.size() == 1) {
+            nextTick = System.nanoTime() + timeoutInMillis * 1_000_000L;
+        }
+        return nextTick;
+    }
 
-            if (nextTick < 0) {
-                signal = queue.take();
-            } else {
-                signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
+    private void processRemainingSignals(List<IN> buffer) {
+        while (!queue.isEmpty()) {
+            queue.drainTo(buffer, maxSize - buffer.size());
+            if (!buffer.isEmpty()) {
+                aggregateAndSend(buffer);
             }
+        }
+    }
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            state.set(State.STOPPING);
-            return null;
+    private IN getNextSignal(long nextTick) throws InterruptedException {
+        IN signal;
+        if (nextTick < 0) {
+            signal = queue.take();
+        } else {
+            signal = queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
         }
         return signal;
     }
