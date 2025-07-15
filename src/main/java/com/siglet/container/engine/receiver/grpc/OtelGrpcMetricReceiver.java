@@ -3,6 +3,7 @@ package com.siglet.container.engine.receiver.grpc;
 import com.siglet.api.Signal;
 import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.config.graph.ReceiverNode;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;
@@ -26,11 +27,14 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
 
     private final ReceiverNode node;
 
+    private final Context context;
+
     private final List<SignalDestination<Signal>> metricDestinations = new ArrayList<>();
 
-    public OtelGrpcMetricReceiver(GrpcServer server, ReceiverNode node) {
+    public OtelGrpcMetricReceiver(Context context, GrpcServer server, ReceiverNode node) {
         this.server = server;
         this.node = node;
+        this.context = context;
     }
 
 
@@ -44,8 +48,9 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
                     if (metric.hasGauge()) {
                         // TODO verifica se precisa de resource e scope builder/
                         for (SignalDestination<Signal> destination : metricDestinations) {
-                            ProtoMetricAdapter protoMetricAdapter = new ProtoMetricAdapter()
-                                    .recycle(metric, resource, instrumentationScope);
+
+                            ProtoMetricAdapter protoMetricAdapter =
+                                    context.getMetricObjectPool().get(metric, instrumentationScope, resource);
                             destination.send(protoMetricAdapter);
                         }
                     }

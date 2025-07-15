@@ -6,6 +6,7 @@ import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
@@ -31,7 +32,7 @@ public class GrpcExporter implements Exporter {
 
     private State state = State.RUNNING;
 
-    public GrpcExporter(ExporterNode node) {
+    public GrpcExporter(Context context, ExporterNode node) {
         this.node = node;
         GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
         spanAccumulator = new TimeoutAccumulatorEventLoop<>(
@@ -39,7 +40,7 @@ public class GrpcExporter implements Exporter {
                 1_000,
                 config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
                 config.getBatchSizeInSignals() == null ? 1 : config.getBatchSizeInSignals(),
-                SpanAccumulator::accumulateSpans);
+                span -> SpanAccumulator.accumulateSpans(context, span));
         spanAccumulator.connect(new SignalDestination<Signal>() {
             @Override
             public String getName() {

@@ -28,10 +28,9 @@ public class GroovyActionProcessor implements Processor {
         this.node = node;
         GroovyActionConfig groovyActionConfig = (GroovyActionConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventloop = new ProcessorEventloop<>(node.getName(),
                 createProcessorFactory(groovyActionConfig.getAction()), ctx, Signal.class,
-                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
+                node.getQueueSize(), node.getThreadPoolSize());
     }
 
     public GroovyActionProcessor(String name, String action,int queueCapacity, int threadPoolSize) {

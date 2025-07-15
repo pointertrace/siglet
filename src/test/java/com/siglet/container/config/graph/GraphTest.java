@@ -1,7 +1,9 @@
 package com.siglet.container.config.graph;
 
 import com.siglet.SigletError;
+import com.siglet.container.Siglet;
 import com.siglet.container.config.raw.*;
+import com.siglet.container.engine.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,52 +13,49 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GraphTest {
 
+    private Context context;
+
     private Graph graph;
 
-    private GrpcReceiverConfig receiverItem;
-
-    private PipelineConfig pipelineConfig;
-
-    private ProcessorConfig sigletConfig;
-
-    private GrpcExporterConfig exporterItem;
 
     @BeforeEach
-    public void setUp() {
-        graph = new Graph();
+    void setUp() {
+        String config = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  signal: trace
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
 
-        receiverItem = new GrpcReceiverConfig();
-        receiverItem.setName("receiver");
 
-        pipelineConfig = new PipelineConfig();
-        pipelineConfig.setName("pipeline");
-        pipelineConfig.setFrom("receiver");
+        context = new Context(config, List.of());
 
-        pipelineConfig.setStart(List.of(new LocatedString("sigletClass", null)));
-
-
-        sigletConfig = new ProcessorConfig();
-        sigletConfig.setName("sigletClass");
-        sigletConfig.setTo(List.of(new LocatedString("exporter", null)));
-        sigletConfig.setPipeline("pipeline");
-
-        exporterItem = new GrpcExporterConfig();
-        exporterItem.setName("exporter");
-
-
-        graph.addItem(receiverItem);
-        graph.addItem(pipelineConfig);
-        graph.addItem(sigletConfig);
-        graph.addItem(exporterItem);
+        graph = context.getGraph();
     }
 
 
     @Test
     void getNodeByName() {
 
-        BaseNode receiverNode = graph.getNodeByName("receiver");
+        BaseNode node = graph.getNodeByName("receiver");
+        assertNotNull(node);
 
-        assertSame(receiverItem, receiverNode.getConfig());
+
+        ReceiverNode receiverNode = assertInstanceOf(ReceiverNode.class, node);
+
+        assertEquals("receiver", receiverNode.getConfig().getName());
 
     }
 
@@ -71,10 +70,10 @@ class GraphTest {
     @Test
     void getNodeByNameAndType() {
 
-        BaseNode receiverNode = graph.getNodeByNameAndType("receiver", ReceiverNode.class);
+        ReceiverNode receiverNode = graph.getNodeByNameAndType("receiver", ReceiverNode.class);
+        assertNotNull(receiverNode);
 
-        assertSame(receiverItem, receiverNode.getConfig());
-
+        assertEquals("receiver", receiverNode.getConfig().getName());
     }
 
     @Test
@@ -102,8 +101,11 @@ class GraphTest {
 
         assertNotNull(nodes);
         assertEquals(2, nodes.size());
-        assertEquals(receiverItem, nodes.getFirst().getConfig());
-        assertEquals(pipelineConfig, nodes.get(1).getConfig());
+        ReceiverNode receiverNode = assertInstanceOf(ReceiverNode.class, nodes.getFirst());
+        assertEquals("receiver", receiverNode.getConfig().getName());
+
+        PipelineNode pipelineNode = assertInstanceOf(PipelineNode.class, nodes.get(1));
+        assertEquals("pipeline", pipelineNode.getConfig().getName());
 
     }
 
@@ -124,7 +126,8 @@ class GraphTest {
 
         assertNotNull(receiverNodes);
         assertEquals(1, receiverNodes.size());
-        assertEquals(receiverItem, receiverNodes.getFirst().getConfig());
+        ReceiverNode receiverNode = receiverNodes.getFirst();
+        assertEquals("receiver", receiverNode.getConfig().getName());
 
     }
 
@@ -141,7 +144,7 @@ class GraphTest {
     void getNodesByNameAndType_differentType() {
 
         SigletError e = assertThrowsExactly(SigletError.class, () -> graph.getNodesByNameAndType(
-                List.of("receiver","sigletClass"), ProcessorNode.class));
+                List.of("receiver","spanlet"), ProcessorNode.class));
 
         assertEquals("Node named [receiver] is ReceiverNode and should be ProcessorNode", e.getMessage());
     }
@@ -149,11 +152,9 @@ class GraphTest {
     @Test
     void connect() {
 
-        graph.connect();
-
         ReceiverNode receiverNode = graph.getNodeByNameAndType("receiver",ReceiverNode.class);
         PipelineNode pipelineNode = graph.getNodeByNameAndType("pipeline", PipelineNode.class);
-        ProcessorNode processorNode = graph.getNodeByNameAndType("sigletClass", ProcessorNode.class);
+        ProcessorNode processorNode = graph.getNodeByNameAndType("spanlet", ProcessorNode.class);
         ExporterNode exporterNode = graph.getNodeByNameAndType("exporter", ExporterNode.class);
 
         assertEquals(1,receiverNode.getTo().size());

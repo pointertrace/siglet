@@ -2,6 +2,7 @@ package com.siglet.container.config.graph;
 
 import com.siglet.SigletError;
 import com.siglet.container.config.raw.*;
+import com.siglet.container.engine.Context;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,20 +11,23 @@ import java.util.Map;
 
 public class Graph {
 
-    private final Map<String, BaseNode> nodes = new HashMap<>();
+    private final Map<String, BaseNode> nodeRegistry = new HashMap<>();
+
+    public Graph() {
+    }
 
     public void addItem(BaseConfig config) {
         switch (config) {
-            case ReceiverConfig receiver -> nodes.put(receiver.getName(),
+            case ReceiverConfig receiver -> nodeRegistry.put(receiver.getName(),
                     new ReceiverNode(receiver));
 
-            case ExporterConfig exporter -> nodes.put(exporter.getName(),
+            case ExporterConfig exporter -> nodeRegistry.put(exporter.getName(),
                     new ExporterNode(exporter));
 
-            case PipelineConfig pipeline -> nodes.put(pipeline.getName(),
+            case PipelineConfig pipeline -> nodeRegistry.put(pipeline.getName(),
                     new PipelineNode(pipeline));
 
-            case ProcessorConfig siglet -> nodes.put(siglet.getName(),
+            case ProcessorConfig siglet -> nodeRegistry.put(siglet.getName(),
                     new ProcessorNode(siglet));
 
             default -> throw new SigletError("Could not add config item type " + config.getClass().getName());
@@ -31,7 +35,7 @@ public class Graph {
     }
 
 
-    List<BaseNode> getNodesByName(List<String> names) {
+    public List<BaseNode> getNodesByName(List<String> names) {
         return names.stream()
                 .map(this::translateNodeName)
                 .map(this::getNodeByName)
@@ -51,15 +55,15 @@ public class Graph {
                 .toList();
     }
 
-    BaseNode getNodeByName(String name) {
+    public BaseNode getNodeByName(String name) {
         String translatedName = translateNodeName(name);
-        if (!nodes.containsKey(translatedName)) {
+        if (!nodeRegistry.containsKey(translatedName)) {
             throw new SigletError(String.format("Could not find any node named [%s]", name));
         }
-        return nodes.get(translateNodeName(name));
+        return nodeRegistry.get(translateNodeName(name));
     }
 
-    <T extends BaseNode> T getNodeByNameAndType(String name, Class<T> nodeType) {
+    public <T extends BaseNode> T getNodeByNameAndType(String name, Class<T> nodeType) {
         BaseNode node = getNodeByName(name);
         if (!nodeType.isAssignableFrom(node.getClass())) {
             throw new SigletError(String.format("Node named [%s] is %s and should be %s", name,
@@ -68,9 +72,9 @@ public class Graph {
         return nodeType.cast(node);
     }
 
-    public void connect() {
+    public void connect(Context context) {
 
-        nodes.values().forEach(node -> {
+        nodeRegistry.values().forEach(node -> {
             switch (node) {
                 case ProcessorNode processorNode -> {
                     processorNode.setTo(getNodesByName(processorNode.getConfig().getToNames()));
@@ -82,16 +86,18 @@ public class Graph {
                             ProcessorNode.class));
                 }
 
-                case ReceiverNode receiverNode -> receiverNode.getTo().addAll(nodes.values().stream()
+                case ReceiverNode receiverNode -> {
+                    receiverNode.getTo().addAll(nodeRegistry.values().stream()
                         .filter(PipelineNode.class::isInstance)
                         .map(PipelineNode.class::cast)
                         .filter(p -> p.getConfig().getFrom().equals(receiverNode.getName()))
                         .map(BaseNode::getName)
                         .map(name -> getNodeByNameAndType(name, PipelineNode.class))
                         .toList());
+                }
 
 
-                case ExporterNode exporterNode -> exporterNode.getFrom().addAll(nodes.values().stream()
+                case ExporterNode exporterNode -> exporterNode.getFrom().addAll(nodeRegistry.values().stream()
                         .filter(ProcessorNode.class::isInstance)
                         .map(ProcessorNode.class::cast)
                         .filter(s -> s.getConfig().getToNames().contains(exporterNode.getName()))
@@ -100,6 +106,8 @@ public class Graph {
                         .toList());
 
             }
+
+            calculateQueueAndThreadPoolSizes(context);
         });
     }
 
@@ -110,8 +118,16 @@ public class Graph {
     }
 
 
-    public Collection<BaseNode> getNodes() {
-        return nodes.values();
+    public Collection<BaseNode> getNodeRegistry() {
+        return nodeRegistry.values();
     }
+
+    private void calculateQueueAndThreadPoolSizes(Context context) {
+        nodeRegistry.values().stream()
+                .filter(ProcessorNode.class::isInstance)
+                .map(ProcessorNode.class::cast)
+                .forEach(processorNode ->  processorNode.calculateEventLoopConfig(context.getGlobalEventLoopConfig()));
+    }
+
 
 }

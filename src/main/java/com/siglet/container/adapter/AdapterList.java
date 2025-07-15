@@ -103,6 +103,19 @@ public class AdapterList<M extends Message, B extends Message.Builder, A extends
         }
     }
 
+    // todo testar
+    public void clearChanges() {
+        checkReady();
+        if (adapters != null) {
+            for (A adapter : adapters) {
+                if (adapter != null) {
+                    adapter.clearChanges();
+                }
+            }
+        }
+        updated = false;
+    }
+
 
     protected int findIndex(Predicate<M> messagePredicate, Predicate<B> builderPredicate) {
         checkReady();

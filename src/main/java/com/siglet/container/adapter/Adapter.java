@@ -151,6 +151,27 @@ public class Adapter<M extends Message, B extends Message.Builder> {
         }
     }
 
+    // todo testar
+    public void clearChanges() {
+        checkReady();
+        if (builder != null) {
+            builder.clear();
+        }
+        for (Map.Entry<AdapterListConfig<?, ?, ?, ?>, Consumer<List<?>>> enricher : listEnrichers.entrySet()) {
+            AdapterList<?, ?, ?> adapterList = childrenListAdapter.get(enricher.getKey());
+            if (adapterList != null && adapterList.isUpdated()) {
+                adapterList.clearChanges();
+            }
+        }
+        for (Map.Entry<AdapterConfig<?, ?>, Consumer<Message>> enricher : enrichers.entrySet()) {
+            Adapter<?, ?> adapter = childrenAdapter.get(enricher.getKey());
+            if (adapter != null && adapter.isUpdated()) {
+                adapter.clearChanges();
+            }
+        }
+        updated = false;
+    }
+
     public <T> boolean test(Function<M, T> messageGetter, Function<B, T> builderGetter, Predicate<T> predicate) {
         checkReady();
         if (builder != null) {

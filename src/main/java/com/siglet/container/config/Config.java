@@ -1,9 +1,11 @@
 package com.siglet.container.config;
 
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.GlobalConfig;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class Config {
 
     private final Map<String, SigletConfig> sigletConfigs;
     private final RawConfig rawConfig;
+    private Graph graph;
     private final GlobalConfig globalConfig;
     private final ProcessorTypeRegistry processorTypeRegistry;
 
@@ -30,8 +33,11 @@ public class Config {
         return sigletConfigs.get(name);
     }
 
-    public Graph getGraph() {
-        return  rawConfig.createGraph();
+    public Graph getGraph(Context context) {
+        if (graph == null) {
+           graph = rawConfig.createGraph(context);
+        }
+        return graph;
     }
 
     public GlobalConfig getGlobalConfig() {

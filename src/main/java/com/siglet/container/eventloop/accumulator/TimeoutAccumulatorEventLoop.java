@@ -81,7 +81,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
 
         thread = Thread.ofVirtual().name("aggregator-event-loop:" + name).start(() -> {
 
-            IN signal = null;
+            IN signal;
             long nextTick = -1;
             state.set(State.RUNNING);
             startLatch.countDown();
@@ -91,7 +91,6 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
                 try {
                     signal = getNextSignal(nextTick);
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                     state.set(State.STOPPING);
                     break;
                 }
@@ -112,7 +111,8 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         try {
             startLatch.await();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new SigletError(String.format("Interrupted exception in event loop %s when waiting threads to start ",
+                    name), e);
         }
     }
 
@@ -147,8 +147,8 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
     private void aggregateAndSend(List<IN> buffer) {
         try {
             OUT aggregated = accumulatorFunction.apply(buffer);
-            for (SignalDestination<OUT> next : next) {
-                next.send(aggregated);
+            for (SignalDestination<OUT> nextDestination : next) {
+                nextDestination.send(aggregated);
             }
         } catch (Error e) {
             throw e;
@@ -168,7 +168,9 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         try {
             stopLatch.await();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            throw new SigletError(String.format("InterrupedException in event loop %s when waiting for threads to " +
+                    "start", name));
         }
 
         state.set(State.STOPPED);

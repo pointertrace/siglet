@@ -5,9 +5,9 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
 
-public class SpanPool extends BasePool<ProtoSpanAdapter> {
+public class SpanObjectPool extends BaseObjectPool<ProtoSpanAdapter> {
 
-    public SpanPool(int initialSize) {
+    public SpanObjectPool(int initialSize) {
         super(initialSize, ProtoSpanAdapter::new);
     }
 

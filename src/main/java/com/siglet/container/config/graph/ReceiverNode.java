@@ -21,10 +21,6 @@ public final class ReceiverNode extends BaseNode {
         this.to = to;
     }
 
-    List<ProcessorNode> getSigletsTo() {
-        return to.stream().flatMap(t -> t.getStart().stream()).toList();
-    }
-
     @Override
     public ReceiverConfig getConfig() {
         return (ReceiverConfig) super.getConfig();

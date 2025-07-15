@@ -4,6 +4,7 @@ import com.siglet.SigletError;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.config.raw.DebugReceiverConfig;
 import com.siglet.container.config.raw.GrpcReceiverConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.receiver.debug.DebugReceiver;
 import com.siglet.container.engine.receiver.grpc.GrpcServer;
 
@@ -22,7 +23,7 @@ public class Receivers {
         return receiverRegistry.get(name);
     }
 
-    public  Receiver create(ReceiverNode node) {
+    public  Receiver create(Context context, ReceiverNode node) {
         String name = node.getConfig().getName();
         if (receiverRegistry.containsKey(name)) {
             throw new SigletError("Receiver with name " + name + " already exists");
@@ -30,8 +31,8 @@ public class Receivers {
         if (node.getConfig() instanceof GrpcReceiverConfig grpcConfig) {
             GrpcServer server = servers.computeIfAbsent(grpcConfig.getAddress(),
                     ignore -> new GrpcServer(grpcConfig.getAddress()));
-            return receiverRegistry.put(name, server.createReceiver(node));
-        } else if (node.getConfig() instanceof DebugReceiverConfig debugConfig) {
+            return receiverRegistry.put(name, server.createReceiver(context,node));
+        } else if (node.getConfig() instanceof DebugReceiverConfig) {
             return receiverRegistry.put(name, new DebugReceiver(node));
         } else {
             throw new SigletError(String.format("Cannot create receiver for config type %s",

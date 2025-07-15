@@ -100,43 +100,44 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
             state.set(State.RUNNING);
             LOGGER.info("event loop {} is running", name);
         } catch (InterruptedException e) {
-            throw new EventLoopError(String.format("Interrupted exception in event loop %s", name));
+            throw new EventLoopError(String.format("Interrupted exception in event loop %s when waiting threads to " +
+                    "start", name));
         }
     }
 
     private void processSignals(CountDownLatch startLatch) {
 
-            LOGGER.trace("virtual thread started for event loop {}", name);
+        LOGGER.trace("virtual thread started for event loop {}", name);
 
-            BaseEventloopProcessor<?> baseEventloopProcessor = processorFactory.create(processorContext);
+        BaseEventloopProcessor<?> baseEventloopProcessor = processorFactory.create(processorContext);
 
-            LOGGER.trace("processor created for event loop {}", name);
+        LOGGER.trace("processor created for event loop {}", name);
 
-            startLatch.countDown();
+        startLatch.countDown();
 
-            while (true) {
-                IN signal = getNextSignal();
-                if (signal != null) {
-                    try {
-                        long start = System.nanoTime();
-                        Result result = baseEventloopProcessor.process(signal);
-                        LOGGER.trace("signal {} processed in event loop {} took {} ms", signal::getId,
-                                this::getName, () -> System.nanoTime() - start);
-                        dispatch(result, signal);
-                    } catch (Error e) {
-                        state.set(State.STOPPING);
-                        break;
-                    } catch (Throwable e) {
-                        LOGGER.error("exception processing signal {} in event loop {}:{}",
-                                signal.getId(), name, e.getMessage(), e);
-                    }
-                } else if (state.get() == State.STOPPING && queue.isEmpty()) {
-                    LOGGER.trace("getting out of thread loop because state is STOPPING and queue is empty");
+        while (true) {
+            IN signal = getNextSignal();
+            if (signal != null) {
+                try {
+                    long start = System.nanoTime();
+                    Result result = baseEventloopProcessor.process(signal);
+                    LOGGER.trace("signal {} processed in event loop {} took {} ms", signal::getId,
+                            this::getName, () -> System.nanoTime() - start);
+                    dispatch(result, signal);
+                } catch (Error e) {
+                    state.set(State.STOPPING);
                     break;
+                } catch (Throwable e) {
+                    LOGGER.error("exception processing signal {} in event loop {}:{}",
+                            signal.getId(), name, e.getMessage(), e);
                 }
+            } else if (state.get() == State.STOPPING && queue.isEmpty()) {
+                LOGGER.trace("getting out of thread loop because state is STOPPING and queue is empty");
+                break;
             }
-            stopLatch.countDown();
         }
+        stopLatch.countDown();
+    }
 
     private void dispatch(Result result, IN signal) {
         if (result instanceof ResultImpl resultImpl) {
@@ -188,7 +189,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
             try {
                 stopLatch.await();
             } catch (InterruptedException e) {
-                throw new EventLoopError(String.format("Interrupted exception in event loop %s", name, e));
+                throw new EventLoopError(String.format("Interrupted exception in event loop %s", name));
             }
         }
         state.set(State.STOPPED);

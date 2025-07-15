@@ -32,17 +32,16 @@ public class GroovyRouterProcessor implements Processor {
         List<Route> routes = config.getRoutes().stream()
                 .map(routeConfig -> new Route(routeConfig.getWhen(), routeConfig.getTo()))
                 .toList();
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         this.processorEventloop = new ProcessorEventloop<>(node.getName(),
-                createProcessorFactory(config.getDefaultRoute(), routes), ctx, Signal.class,
-                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
+                createProcessorFactory(config.getDefaultRoute(), routes), ctx, Signal.class, node.getQueueSize(),
+                node.getThreadPoolSize());
     }
 
-    public GroovyRouterProcessor(String name, String defaultRoute, List<Route> routes , int queueCapacity,
+    public GroovyRouterProcessor(String name, String defaultRoute, List<Route> routes, int queueCapacity,
                                  int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         this.processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(defaultRoute, routes),
-                ctx, Signal.class, queueCapacity,threadPoolSize);
+                ctx, Signal.class, queueCapacity, threadPoolSize);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(String defaultDestination, List<Route> routes) {

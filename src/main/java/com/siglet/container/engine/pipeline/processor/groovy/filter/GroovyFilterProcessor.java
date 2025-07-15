@@ -28,9 +28,8 @@ public class GroovyFilterProcessor implements Processor {
         this.node = node;
         GroovyFilterConfig conf = (GroovyFilterConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
         processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(conf.getExpression()), ctx,
-                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());
+                Signal.class, node.getQueueSize(), node.getThreadPoolSize());
     }
 
     public GroovyFilterProcessor(String name, String expression, int queueCapacity, int threadPoolSize) {

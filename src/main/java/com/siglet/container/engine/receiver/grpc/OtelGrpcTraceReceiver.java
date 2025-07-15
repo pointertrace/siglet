@@ -3,6 +3,7 @@ package com.siglet.container.engine.receiver.grpc;
 import com.siglet.api.Signal;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ReceiverNode;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;
@@ -26,12 +27,15 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
 
     private final ReceiverNode node;
 
+    private final Context context;
+
     private final List<SignalDestination<Signal>> spanDestinations = new ArrayList<>();
 
-    public OtelGrpcTraceReceiver(GrpcServer server, ReceiverNode node) {
+    public OtelGrpcTraceReceiver(Context context, GrpcServer server, ReceiverNode node) {
         server.addService(this);
         this.server = server;
         this.node = node;
+        this.context = context;
     }
 
     @Override
@@ -42,10 +46,9 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
                     for (SignalDestination<Signal> destination : spanDestinations) {
-                    // TODO trocar por pool
-                        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter();
-                        protoSpanAdapter.recycle(span, resource.toBuilder().build(),
-                                instrumentationScope.toBuilder().build());
+                        ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
+                                instrumentationScope, resource);
+                        destination.send(protoSpanAdapter);
 
                     }
                 }

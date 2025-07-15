@@ -1,5 +1,6 @@
 package com.siglet.container.engine;
 
+import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static com.siglet.container.config.ConfigCheckFactory.processorChecker;
+import static com.siglet.container.config.ConfigCheckFactory.rawConfigChecker;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ContextTest {
@@ -46,10 +48,10 @@ class ContextTest {
 
         context = new Context(yaml, List.of());
 
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(new Object());
+        ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 
-        assertEquals(1_000, eventLoopConfig.getQueueSize());
-        assertEquals(Runtime.getRuntime().availableProcessors(), eventLoopConfig.getThreadPoolSize());
+        assertEquals(1_000, processorNode.getQueueSize());
+        assertEquals(Runtime.getRuntime().availableProcessors(), processorNode.getThreadPoolSize());
 
     }
 
@@ -86,10 +88,10 @@ class ContextTest {
 
         context = new Context(yaml, List.of());
 
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(new Object());
+        ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 
-        assertEquals(10, eventLoopConfig.getQueueSize());
-        assertEquals(20, eventLoopConfig.getThreadPoolSize());
+        assertEquals(10, processorNode.getQueueSize());
+        assertEquals(20, processorNode.getThreadPoolSize());
 
     }
 
@@ -120,33 +122,21 @@ class ContextTest {
                     kind: spanlet
                     to: first exporter
                     type: groovy-action
+                    queue-size: 100
+                    thread-pool-size: 200
                     config:
                       action: action-value
                 """;
 
-        String processorYaml = """
-                name: spanlet name
-                kind: spanlet
-                to: first exporter
-                type: groovy-action
-                queue-size: 100
-                thread-pool-size: 200
-                config:
-                    action: action-value
-                """;
-
-        Node node = new YamlParser().parse(processorYaml);
-        processorChecker(new ProcessorTypeRegistry()).check(node);
-
-        ProcessorConfig processorConfig = (ProcessorConfig) node.getValue();
-
+        Node node = new YamlParser().parse(yaml);
+        rawConfigChecker(new ProcessorTypeRegistry()).check(node);
 
         context = new Context(yaml, List.of());
 
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(processorConfig);
+        ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 
-        assertEquals(100, eventLoopConfig.getQueueSize());
-        assertEquals(200, eventLoopConfig.getThreadPoolSize());
+        assertEquals(100, processorNode.getQueueSize());
+        assertEquals(200, processorNode.getThreadPoolSize());
 
     }
 }

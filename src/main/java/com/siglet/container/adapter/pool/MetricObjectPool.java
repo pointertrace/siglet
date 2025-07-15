@@ -5,9 +5,9 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class MetricPool extends BasePool<ProtoMetricAdapter> {
+public class MetricObjectPool extends BaseObjectPool<ProtoMetricAdapter> {
 
-    public MetricPool(int initialSize) {
+    public MetricObjectPool(int initialSize) {
         super(initialSize, ProtoMetricAdapter::new);
     }
 

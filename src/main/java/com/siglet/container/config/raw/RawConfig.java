@@ -2,6 +2,7 @@ package com.siglet.container.config.raw;
 
 import com.siglet.SigletError;
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.engine.Context;
 import com.siglet.parser.located.Location;
 import com.siglet.utils.Joining;
 import com.siglet.utils.StringUtils;
@@ -12,6 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RawConfig extends BaseConfig {
+
+    private static final EventLoopConfig defaultEventLoopConfig =
+            EventLoopConfig.of(1_000, Runtime.getRuntime().availableProcessors());
+
 
     private GlobalConfig globalConfig;
 
@@ -78,7 +83,7 @@ public class RawConfig extends BaseConfig {
 
     }
 
-    public Graph createGraph() {
+    public Graph createGraph(Context context) {
         Graph graph = new Graph();
 
 
@@ -89,7 +94,7 @@ public class RawConfig extends BaseConfig {
                 .flatMap(this::getItems)
                 .forEach(graph::addItem);
 
-        graph.connect();
+        graph.connect(context);
 
         return graph;
     }

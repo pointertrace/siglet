@@ -19,16 +19,19 @@ public class UnmodifiableSpanletProcessor implements Processor {
 
     private ProcessorNode node;
 
+    private Context context;
+
     private final ProcessorEventloop<Signal, Object> processorEventLoop;
 
     public UnmodifiableSpanletProcessor(Context context, ProcessorNode node, UnmodifiableSpanlet<Object> spanlet) {
         this.node = node;
+        this.context = context;
         Object config = node.getConfig().getConfig();
-        ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
+        ProcessorContextImpl<Object> processorContext = new ProcessorContextImpl<>(config);
 
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
-        processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx, Signal.class,
-                eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize(), node.getDestinationMappings());
+        processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(context, spanlet),
+                processorContext, Signal.class, node.getQueueSize(), node.getThreadPoolSize(),
+                node.getDestinationMappings());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
@@ -36,13 +39,13 @@ public class UnmodifiableSpanletProcessor implements Processor {
                                         int queueCapacity, int threadPoolSize, Map<String, String> destinationMappings) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
-        processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
+        processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(context, spanlet), ctx,
                 Signal.class, queueCapacity, threadPoolSize, destinationMappings);
     }
 
 
-    private static <T> ProcessorFactory<T> createProcessorFactory(UnmodifiableSpanlet<T> spanlet) {
-        return ctx -> new UnmodifiedSpanBaseEventloopProcessor<>(ctx, spanlet);
+    private static <T> ProcessorFactory<T> createProcessorFactory(Context context, UnmodifiableSpanlet<T> spanlet) {
+        return ctx -> new UnmodifiedSpanBaseEventloopProcessor<>(context, ctx, spanlet);
     }
 
     @Override

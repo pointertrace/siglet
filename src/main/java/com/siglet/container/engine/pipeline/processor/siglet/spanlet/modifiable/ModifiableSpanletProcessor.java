@@ -27,11 +27,8 @@ public class ModifiableSpanletProcessor implements Processor {
         Object config = node.getConfig().getConfig();
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
 
-        EventLoopConfig eventLoopConfig = context.getEventLoopConfig(node.getConfig());
-
         processorEventloop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(spanlet), ctx,
-                Signal.class, eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize(),
-                node.getDestinationMappings());
+                Signal.class, node.getQueueSize(), node.getThreadPoolSize(), node.getDestinationMappings());
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config

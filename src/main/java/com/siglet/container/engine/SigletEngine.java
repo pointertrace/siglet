@@ -23,17 +23,17 @@ public class SigletEngine implements EngineElement {
         Graph graph = context.getGraph();
 
         // TODO move to a factory
-        graph.getNodes().stream()
+        graph.getNodeRegistry().stream()
                 .filter(ExporterNode.class::isInstance)
                 .map(ExporterNode.class::cast)
-                .forEach(exporters::create);
+                .forEach(exporterNode -> exporters.create(context, exporterNode));
 
-        graph.getNodes().stream()
+        graph.getNodeRegistry().stream()
                 .filter(PipelineNode.class::isInstance)
                 .map(PipelineNode.class::cast)
                 .forEach(pipelines::create);
 
-        graph.getNodes().stream()
+        graph.getNodeRegistry().stream()
                 .filter(ProcessorNode.class::isInstance)
                 .map(ProcessorNode.class::cast)
                 .forEach(sigletNode -> {
@@ -45,11 +45,10 @@ public class SigletEngine implements EngineElement {
                     pipeline.getProcessors().create(context, sigletNode);
                 });
 
-        graph.getNodes().stream()
+        graph.getNodeRegistry().stream()
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
-                .forEach(receivers::create);
-
+                .forEach(receiverNode -> receivers.create(context, receiverNode));
         connect();
 
     }

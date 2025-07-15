@@ -6,6 +6,7 @@ import com.siglet.api.unmodifiable.metric.UnmodifiableMetric;
 import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.config.raw.GrpcReceiverConfig;
+import com.siglet.container.engine.Context;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;
 import io.grpc.BindableService;
@@ -76,12 +77,12 @@ public class GrpcServer {
         return address;
     }
 
-    public <T extends Signal> Receiver createReceiver(ReceiverNode node) {
+    public <T extends Signal> Receiver createReceiver(Context context, ReceiverNode node) {
         if (UnmodifiableSpan.class.isAssignableFrom(getSignalType(node))) {
-            return new OtelGrpcTraceReceiver(this, node);
+            return new OtelGrpcTraceReceiver(context, this, node);
         }
         if (UnmodifiableMetric.class.isAssignableFrom(getSignalType(node))) {
-            return new OtelGrpcMetricReceiver(this, node);
+            return new OtelGrpcMetricReceiver(context, this, node);
         }
         throw new SigletError("Cannot create receiver of type " + getSignalType(node) + " for name " + node.getName());
     }

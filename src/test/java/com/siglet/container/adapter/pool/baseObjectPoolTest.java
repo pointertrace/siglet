@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-class BasePoolTest {
+class baseObjectPoolTest {
 
     private SpanCreator spanCreator;
 
@@ -123,7 +123,7 @@ class BasePoolTest {
 
     }
 
-    static class SpanPool extends BasePool<ProtoSpanAdapter> {
+    static class SpanPool extends BaseObjectPool<ProtoSpanAdapter> {
 
         public SpanPool(int initialSize, Supplier<ProtoSpanAdapter> supplier) {
             super(initialSize, supplier);

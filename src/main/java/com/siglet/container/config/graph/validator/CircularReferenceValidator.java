@@ -11,7 +11,7 @@ public class CircularReferenceValidator implements GraphValidator {
 
     @Override
     public void validate(Graph graph) {
-        List<ReceiverNode> receivers = graph.getNodes().stream()
+        List<ReceiverNode> receivers = graph.getNodeRegistry().stream()
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
                 .toList();
