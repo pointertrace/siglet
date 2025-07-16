@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.common;
 
-import com.siglet.api.modifiable.ModifiableInstrumentationScope;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -8,7 +7,7 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
 public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationScope, InstrumentationScope.Builder>
-        implements ModifiableInstrumentationScope {
+        implements com.siglet.api.data.InstrumentationScope {
 
 
     public ProtoInstrumentationScopeAdapter(){

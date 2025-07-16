@@ -121,7 +121,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
                 try {
                     long start = System.nanoTime();
                     Result result = baseEventloopProcessor.process(signal);
-                    LOGGER.trace("signal {} processed in event loop {} took {} ms", signal::getId,
+                    LOGGER.trace("signal {} processed in event loop {} took {} nanos", signal::getId,
                             this::getName, () -> System.nanoTime() - start);
                     dispatch(result, signal);
                 } catch (Error e) {

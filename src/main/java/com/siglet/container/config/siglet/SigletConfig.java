@@ -3,10 +3,8 @@ package com.siglet.container.config.siglet;
 import com.siglet.api.Processor;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.modifiable.trace.ModifiableSpan;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
+import com.siglet.api.data.trace.Span;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.config.raw.LocatedString;
 import com.siglet.parser.NodeChecker;
 import com.siglet.parser.NodeCheckerFactory;
@@ -43,24 +41,16 @@ public record SigletConfig(
     }
 
     public Method getSigletMethod() {
-        if (ModifiableSpanlet.class.isAssignableFrom(sigletClass)) {
+        if (Spanlet.class.isAssignableFrom(sigletClass)) {
             try {
-                return ModifiableSpanlet.class.getMethod("span", ModifiableSpan.class, ProcessorContext.class,
-                        ResultFactory.class);
-            } catch (NoSuchMethodException e) {
-                throw new SigletParserError(String.format("Spanlet %s is %s but does not have a span method",
-                        name, sigletClass.getName()), sigletLocation);
-            }
-        } else if (UnmodifiableSpanlet.class.isAssignableFrom(sigletClass)) {
-            try {
-                return UnmodifiableSpanlet.class.getMethod("span", UnmodifiableSpan.class, ProcessorContext.class,
+                return Spanlet.class.getMethod("span", Span.class, ProcessorContext.class,
                         ResultFactory.class);
             } catch (NoSuchMethodException e) {
                 throw new SigletParserError(String.format("Spanlet %s is %s but does not have a span method",
                         name, sigletClass.getName()), sigletLocation);
             }
         } else {
-            throw new SigletParserError(String.format("Spanlet %s is not an instance of UnmodifiableSpanletProcessor",
+            throw new SigletParserError(String.format("Spanlet %s is not an instance of SpanletProcessor",
                     name), sigletLocation);
         }
 

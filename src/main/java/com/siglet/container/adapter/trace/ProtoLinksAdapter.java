@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.api.modifiable.trace.ModifiableLinks;
+import com.siglet.api.data.trace.Links;
 import com.siglet.container.adapter.AdapterList;
 import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;
@@ -10,7 +10,7 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.util.Map;
 
 public class ProtoLinksAdapter extends AdapterList<Span.Link, Span.Link.Builder, ProtoLinkAdapter>
-        implements ModifiableLinks {
+        implements Links {
 
 
     public ProtoLinksAdapter() {

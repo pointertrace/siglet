@@ -1,26 +1,26 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableValueAtQuantile;
+import com.siglet.api.data.metric.ValueAtQuantile;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 
 public class ProtoValueAtQuantileAdapter extends Adapter<SummaryDataPoint.ValueAtQuantile,
         SummaryDataPoint.ValueAtQuantile.Builder>
-        implements ModifiableValueAtQuantile {
+        implements ValueAtQuantile {
 
     public ProtoValueAtQuantileAdapter () {
         super(AdapterConfig.SUMMARY_DATA_POINT_VALUE_AT_QUANTILE_ADAPTER_CONFIG);
     }
 
     @Override
-    public ModifiableValueAtQuantile setQuantile(double quantile) {
+    public ValueAtQuantile setQuantile(double quantile) {
         setValue(SummaryDataPoint.ValueAtQuantile.Builder::setQuantile, quantile);
         return this;
     }
 
     @Override
-    public ModifiableValueAtQuantile setValue(double value) {
+    public ValueAtQuantile setValue(double value) {
         setValue(SummaryDataPoint.ValueAtQuantile.Builder::setValue, value);
         return this;
     }

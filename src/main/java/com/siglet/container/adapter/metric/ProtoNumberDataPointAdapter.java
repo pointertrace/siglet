@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableNumberDataPoint;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -12,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import java.util.List;
 
 public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, NumberDataPoint.Builder>
-        implements ModifiableNumberDataPoint {
+        implements com.siglet.api.data.metric.NumberDataPoint {
 
 
     public ProtoNumberDataPointAdapter() {

@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableBuckets;
+import com.siglet.api.data.metric.Buckets;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.Buckets,
-        ExponentialHistogramDataPoint.Buckets.Builder> implements ModifiableBuckets {
+        ExponentialHistogramDataPoint.Buckets.Builder> implements Buckets {
 
 
     public ProtoBucketsAdapter() {
@@ -17,20 +17,20 @@ public class ProtoBucketsAdapter extends Adapter<ExponentialHistogramDataPoint.B
     }
 
     @Override
-    public ModifiableBuckets setOffset(int offset) {
+    public Buckets setOffset(int offset) {
         setValue(ExponentialHistogramDataPoint.Buckets.Builder::setOffset, offset);
         return this;
     }
 
     @Override
-    public ModifiableBuckets addBucketCount(long bucketCount) {
+    public Buckets addBucketCount(long bucketCount) {
         prepareUpdate();
         getBuilder().addBucketCounts(bucketCount);
         return this;
     }
 
     @Override
-    public ModifiableBuckets clearBucketCounts() {
+    public Buckets clearBucketCounts() {
         prepareUpdate();
         getBuilder().clearBucketCounts();
         return this;

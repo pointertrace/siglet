@@ -2,8 +2,7 @@ package com.siglet.container.engine.receiver.grpc;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
-import com.siglet.api.unmodifiable.metric.UnmodifiableMetric;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
+import com.siglet.api.data.trace.Span;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.config.raw.GrpcReceiverConfig;
 import com.siglet.container.engine.Context;
@@ -78,11 +77,8 @@ public class GrpcServer {
     }
 
     public <T extends Signal> Receiver createReceiver(Context context, ReceiverNode node) {
-        if (UnmodifiableSpan.class.isAssignableFrom(getSignalType(node))) {
+        if (Span.class.isAssignableFrom(getSignalType(node))) {
             return new OtelGrpcTraceReceiver(context, this, node);
-        }
-        if (UnmodifiableMetric.class.isAssignableFrom(getSignalType(node))) {
-            return new OtelGrpcMetricReceiver(context, this, node);
         }
         throw new SigletError("Cannot create receiver of type " + getSignalType(node) + " for name " + node.getName());
     }

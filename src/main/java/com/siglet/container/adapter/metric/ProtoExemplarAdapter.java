@@ -1,7 +1,6 @@
 package com.siglet.container.adapter.metric;
 
 import com.google.protobuf.ByteString;
-import com.siglet.api.modifiable.metric.ModifiableExemplar;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -10,7 +9,7 @@ import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 
-public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements ModifiableExemplar {
+public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements com.siglet.api.data.metric.Exemplar {
 
 
     public ProtoExemplarAdapter() {

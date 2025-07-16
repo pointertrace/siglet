@@ -3,8 +3,8 @@ package com.siglet.integrationtests.spanlet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.modifiable.trace.ModifiableSpan;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.api.data.trace.Span;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.Siglet;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
@@ -18,7 +18,6 @@ import com.siglet.parser.NodeValueBuilder;
 import com.siglet.parser.located.Location;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
-import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -65,7 +64,7 @@ class SpanletTest {
 
         siglet.start();
 
-        Span firstSpan = Span.newBuilder()
+        io.opentelemetry.proto.trace.v1.Span firstSpan = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0,1))
                 .setSpanId(AdapterUtils.spanId(1))
                 .setName("span-name")
@@ -106,12 +105,12 @@ class SpanletTest {
 
     }
 
-    public static class PrefixSpanProcessor implements ModifiableSpanlet<PrefixConfig> {
+    public static class PrefixSpanProcessor implements Spanlet<PrefixConfig> {
 
         @Override
-        public Result span(ModifiableSpan modifiableSpan, ProcessorContext<PrefixConfig> prefixConfig,
+        public Result span(Span span, ProcessorContext<PrefixConfig> prefixConfig,
                            ResultFactory resultFactory) {
-            modifiableSpan.setName(prefixConfig.getConfig().prefix() + modifiableSpan.getName());
+            span.setName(prefixConfig.getConfig().prefix() + span.getName());
             return resultFactory.proceed();
         }
 

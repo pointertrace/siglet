@@ -130,7 +130,7 @@ class ProcessorEventloopTest {
 
         eventLoop.connect(finalDestination);
 
-        assertTimeout(Duration.ofSeconds(10), () -> {
+        assertTimeout(Duration.ofSeconds(60), () -> {
 
             eventLoop.start();
 

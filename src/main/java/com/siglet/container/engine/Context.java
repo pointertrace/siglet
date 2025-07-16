@@ -17,21 +17,11 @@ public class Context {
 
     private final Config config;
 
-    private static final EventLoopConfig defaultEventLoopConfig =
-            EventLoopConfig.of(1_000, Runtime.getRuntime().availableProcessors());
-
     private final EventLoopConfig globalEventLoopConfig;
 
     private SpanObjectPool spanObjectPool;
 
     private MetricObjectPool metricObjectPool;
-
-    public Context(String configTxt, List<SigletConfig> sigletsConfigs) {
-        ConfigFactory configFactory = new ConfigFactory();
-        Config localConfig = configFactory.create(configTxt, sigletsConfigs);
-        this(localConfig, null, null,
-                defaultEventLoopConfig.chain(localConfig.getGlobalConfig()));
-    }
 
     public Context(Config config, SpanObjectPool spanObjectPool, MetricObjectPool metricObjectPool,
                    EventLoopConfig globalEventLoopConfig) {

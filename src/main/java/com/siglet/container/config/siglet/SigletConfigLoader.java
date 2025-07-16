@@ -54,6 +54,4 @@ public class SigletConfigLoader {
             throw new SigletError(String.format("Error trying to read %s as siglet jar: %s", path, e.getMessage()), e);
         }
     }
-
-
 }

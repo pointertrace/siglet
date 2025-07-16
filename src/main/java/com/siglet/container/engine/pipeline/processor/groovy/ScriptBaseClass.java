@@ -4,7 +4,6 @@ import com.siglet.SigletError;
 import com.siglet.api.Signal;
 import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.adapter.trace.ProtoTrace;
 import com.siglet.container.engine.pipeline.processor.groovy.action.Expression;
 import com.siglet.container.engine.pipeline.processor.groovy.proxy.CounterProxy;
 import com.siglet.container.engine.pipeline.processor.groovy.proxy.GaugeProxy;
@@ -91,13 +90,6 @@ public abstract class ScriptBaseClass extends Script {
                 case ProtoSpanAdapter spanAdapter -> {
                     return spanAdapter.getUpdatedResource();
                 }
-                case ProtoTrace traceAdapter -> {
-                    if (traceAdapter.getSize() == 0) {
-                        throw new SigletError("Cannot get resource from a trace without spans");
-                    } else {
-                        return traceAdapter.getAt(0).getUpdatedResource();
-                    }
-                }
                 case null, default ->
                         throw new SigletError("Cannot get resource from closure variable 'thisSignal' because it is " +
                                 "not a metric, span nor a trace");
@@ -116,13 +108,6 @@ public abstract class ScriptBaseClass extends Script {
                 }
                 case ProtoSpanAdapter spanAdapter -> {
                     return spanAdapter.getUpdatedInstrumentationScope();
-                }
-                case ProtoTrace traceAdapter -> {
-                    if (traceAdapter.getSize() == 0) {
-                        throw new SigletError("Cannot get resource from a trace without spans");
-                    } else {
-                        return traceAdapter.getAt(0).getUpdatedInstrumentationScope();
-                    }
                 }
                 case null, default ->
                         throw new SigletError("Cannot get instrumentation scope from closure variable 'thisSignal' " +

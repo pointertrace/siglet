@@ -4,6 +4,7 @@ import com.siglet.SigletError;
 import com.siglet.container.Siglet;
 import com.siglet.container.config.raw.*;
 import com.siglet.container.engine.Context;
+import com.siglet.container.engine.ContextFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GraphTest {
 
     private Context context;
+
+    private ContextFactory contextFactory;
 
     private Graph graph;
 
@@ -40,7 +43,8 @@ class GraphTest {
                 """;
 
 
-        context = new Context(config, List.of());
+        contextFactory = new ContextFactory();
+        context = contextFactory.create(config, List.of());
 
         graph = context.getGraph();
     }

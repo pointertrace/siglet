@@ -1,7 +1,6 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableExponentialHistogram;
-import com.siglet.api.unmodifiable.metric.AggregationTemporality;
+import com.siglet.api.data.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -12,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
 import java.util.List;
 
 public class ProtoExponentialHistogramAdapter extends Adapter<ExponentialHistogram, ExponentialHistogram.Builder>
-        implements ModifiableExponentialHistogram {
+        implements com.siglet.api.data.metric.ExponentialHistogram {
 
     public ProtoExponentialHistogramAdapter() {
         super(AdapterConfig.EXPONENTIAL_HISTOGRAM_ADAPTER_CONFIG,

@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.api.modifiable.trace.ModifiableLink;
+import com.siglet.api.data.trace.Link;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> implements ModifiableLink {
+public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> implements Link {
 
     public ProtoLinkAdapter() {
         super(AdapterConfig.LINK_ADAPTER_CONFIG);
@@ -66,7 +66,7 @@ public class ProtoLinkAdapter extends Adapter<Span.Link, Span.Link.Builder> impl
         return getValue(Span.Link::getTraceState, Span.Link.Builder::getTraceState);
     }
 
-    public ModifiableLink setTraceState(String traceState) {
+    public Link setTraceState(String traceState) {
         setValue(Span.Link.Builder::setTraceState, traceState);
         return this;
     }

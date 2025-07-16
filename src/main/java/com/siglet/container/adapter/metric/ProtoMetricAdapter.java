@@ -1,8 +1,7 @@
 package com.siglet.container.adapter.metric;
 
 import com.siglet.SigletError;
-import com.siglet.api.modifiable.metric.ModifiableData;
-import com.siglet.api.modifiable.metric.ModifiableMetric;
+import com.siglet.api.data.metric.Data;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.common.ProtoInstrumentationScopeAdapter;
@@ -11,7 +10,7 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.*;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements ModifiableMetric {
+public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements com.siglet.api.data.metric.Metric {
 
 
     private Resource protoResource;
@@ -122,7 +121,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
     }
 
     @Override
-    public ModifiableData getData() {
+    public Data getData() {
         if (hasGauge()) {
             return gauge();
         } else if (hasSum()) {

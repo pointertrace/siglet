@@ -3,8 +3,8 @@ package com.siglet.integrationtests.spanlet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
+import com.siglet.api.data.trace.Span;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.Siglet;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
@@ -19,7 +19,6 @@ import com.siglet.parser.NodeValueBuilder;
 import com.siglet.parser.located.Location;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
-import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -73,13 +72,13 @@ class SpanletDestinationMappingTest {
 
         siglet.start();
 
-        Span spanA = Span.newBuilder()
+        io.opentelemetry.proto.trace.v1.Span spanA = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0,1))
                 .setSpanId(AdapterUtils.spanId(1))
                 .setName("span-a")
                 .build();
 
-        Span spanB = Span.newBuilder()
+        io.opentelemetry.proto.trace.v1.Span spanB = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0,1))
                 .setSpanId(AdapterUtils.spanId(1))
                 .setName("span-b")
@@ -128,10 +127,10 @@ class SpanletDestinationMappingTest {
 
     }
 
-    public static class SplitSpanProcessor implements UnmodifiableSpanlet<PrefixConfig> {
+    public static class SplitSpanProcessor implements Spanlet<PrefixConfig> {
 
         @Override
-        public Result span(UnmodifiableSpan unmodifiableSpan, ProcessorContext<PrefixConfig> prefixConfig,
+        public Result span(Span unmodifiableSpan, ProcessorContext<PrefixConfig> prefixConfig,
                            ResultFactory resultFactory) {
             if (unmodifiableSpan.getName().endsWith("a")) {
                 return resultFactory.proceed("a");

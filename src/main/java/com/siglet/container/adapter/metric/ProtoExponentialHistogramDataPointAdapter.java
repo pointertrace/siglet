@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableExponentialHistogramDataPoint;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -12,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
 import java.util.List;
 
 public class ProtoExponentialHistogramDataPointAdapter extends Adapter<ExponentialHistogramDataPoint,
-        ExponentialHistogramDataPoint.Builder> implements ModifiableExponentialHistogramDataPoint {
+        ExponentialHistogramDataPoint.Builder> implements com.siglet.api.data.metric.ExponentialHistogramDataPoint {
 
     public ProtoExponentialHistogramDataPointAdapter() {
         super(AdapterConfig.EXPONENTIAL_HISTOGRAM_DATAPOINT_ADAPTER_CONFIG);
@@ -132,61 +131,61 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setStartTimeUnixNano(long startTimeUnixNano) {
+   public ProtoExponentialHistogramDataPointAdapter setStartTimeUnixNano(long startTimeUnixNano) {
         setValue(ExponentialHistogramDataPoint.Builder::setStartTimeUnixNano, startTimeUnixNano);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setTimeUnixNano(long timeUnixNano) {
+    public ProtoExponentialHistogramDataPointAdapter setTimeUnixNano(long timeUnixNano) {
         setValue(ExponentialHistogramDataPoint.Builder::setTimeUnixNano, timeUnixNano);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setCount(long count) {
+    public ProtoExponentialHistogramDataPointAdapter setCount(long count) {
         setValue(ExponentialHistogramDataPoint.Builder::setCount, count);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setFlags(int flags) {
+    public ProtoExponentialHistogramDataPointAdapter setFlags(int flags) {
         setValue(ExponentialHistogramDataPoint.Builder::setFlags, flags);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setSum(double sum) {
+    public ProtoExponentialHistogramDataPointAdapter setSum(double sum) {
         setValue(ExponentialHistogramDataPoint.Builder::setSum, sum);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setScale(int scale) {
+    public ProtoExponentialHistogramDataPointAdapter setScale(int scale) {
         setValue(ExponentialHistogramDataPoint.Builder::setScale, scale);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setZeroCount(long zeroCount) {
+    public ProtoExponentialHistogramDataPointAdapter setZeroCount(long zeroCount) {
         setValue(ExponentialHistogramDataPoint.Builder::setZeroCount, zeroCount);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setMax(double max) {
+    public ProtoExponentialHistogramDataPointAdapter setMax(double max) {
         setValue(ExponentialHistogramDataPoint.Builder::setMax, max);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setMin(double min) {
+    public ProtoExponentialHistogramDataPointAdapter setMin(double min) {
         setValue(ExponentialHistogramDataPoint.Builder::setMin, min);
         return this;
     }
 
     @Override
-    public ModifiableExponentialHistogramDataPoint setZeroThreshold(double zeroThreshold) {
+    public ProtoExponentialHistogramDataPointAdapter setZeroThreshold(double zeroThreshold) {
         setValue(ExponentialHistogramDataPoint.Builder::setZeroThreshold, zeroThreshold);
         return this;
     }

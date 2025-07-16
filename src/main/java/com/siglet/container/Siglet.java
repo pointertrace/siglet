@@ -1,7 +1,9 @@
 package com.siglet.container;
 
+import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.engine.Context;
+import com.siglet.container.engine.ContextFactory;
 import com.siglet.container.engine.SigletEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,10 @@ public class Siglet {
 
     public void start() {
 
-        Context context = new Context(configTxt, sigletsConfigs);
+        ContextFactory contextFactory = new ContextFactory();
+
+        Context context = contextFactory.create(configTxt, sigletsConfigs);
+        
         sigletEngine = new SigletEngine(context);
 
         sigletEngine.start();

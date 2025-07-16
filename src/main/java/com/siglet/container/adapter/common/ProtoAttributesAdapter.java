@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.common;
 
 import com.siglet.SigletError;
-import com.siglet.api.modifiable.ModifiableAttributes;
+import com.siglet.api.data.Attributes;
 import com.siglet.container.adapter.*;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProtoAttributesAdapter extends AdapterList<KeyValue, KeyValue.Builder,
-        ProtoAttributesAdapter.KeyValueAdapter> implements ModifiableAttributes {
+        ProtoAttributesAdapter.KeyValueAdapter> implements Attributes {
 
     public ProtoAttributesAdapter() {
         super(AdapterListConfig.ATTRIBUTES_ADAPTER_CONFIG);

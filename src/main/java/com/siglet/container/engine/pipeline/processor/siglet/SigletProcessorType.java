@@ -1,16 +1,14 @@
 package com.siglet.container.engine.pipeline.processor.siglet;
 
 import com.siglet.SigletError;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.config.raw.ProcessorKind;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.engine.pipeline.processor.ConfigDefinition;
 import com.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import com.siglet.container.engine.pipeline.processor.ProcessorType;
-import com.siglet.container.engine.pipeline.processor.siglet.spanlet.modifiable.ModifiableSpanletProcessor;
-import com.siglet.container.engine.pipeline.processor.siglet.spanlet.unmodifiable.UnmodifiableSpanletProcessor;
+import com.siglet.container.engine.pipeline.processor.siglet.spanlet.SpanletProcessor;
 
 import static com.siglet.parser.schema.SchemaFactory.requiredProperty;
 
@@ -38,10 +36,8 @@ public class SigletProcessorType implements ProcessorType {
         return (context, node) -> {
             if (node.getConfig().getKind() == ProcessorKind.SPANLET) {
                 com.siglet.api.Processor instance = sigletConfig.createSigletInstance();
-                if (instance instanceof ModifiableSpanlet modifiableSpanlet) {
-                    return new ModifiableSpanletProcessor(context, node, modifiableSpanlet);
-                } else if (instance instanceof UnmodifiableSpanlet unmodifiableSpanlet) {
-                    return new UnmodifiableSpanletProcessor(context, node, unmodifiableSpanlet);
+                if (instance instanceof Spanlet spanlet) {
+                    return new SpanletProcessor(context, node, spanlet);
                 }
             }
             throw new SigletError(String.format("Cannot create siglet type %s", node.getName()));

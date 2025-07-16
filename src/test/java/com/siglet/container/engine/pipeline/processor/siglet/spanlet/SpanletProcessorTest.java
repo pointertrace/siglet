@@ -1,13 +1,14 @@
-package com.siglet.container.engine.pipeline.processor.siglet.spanlet.unmodifiable;
+package com.siglet.container.engine.pipeline.processor.siglet.spanlet;
 
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
+import com.siglet.api.data.trace.Span;
+import com.siglet.api.data.trace.Spanlet;
+import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.eventloop.MapSignalDestination;
-import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -15,18 +16,16 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UnmodifiableSpanletProcessorTest {
-
+class SpanletProcessorTest {
     @Test
     void process() {
 
-        UnmodifiableSpanletTest unmodifiableSpanlet = new UnmodifiableSpanletTest();
-
+        SpanletTest modifiableSpanlet = new SpanletTest();
 
         SpanletConfig config = new SpanletConfig("prefix-");
 
-        UnmodifiableSpanletProcessor spanletEventLoop = new UnmodifiableSpanletProcessor("prefix",
-                unmodifiableSpanlet,config,5,1, Map.of());
+        SpanletProcessor spanletEventLoop = new SpanletProcessor("prefix",
+                modifiableSpanlet,config,5,1, Map.of());
 
         MapSignalDestination finalDestination = new MapSignalDestination("final", Signal.class);
 
@@ -34,7 +33,12 @@ class UnmodifiableSpanletProcessorTest {
 
         spanletEventLoop.start();
 
-        Span span = Span.newBuilder().setName("span-name").build();
+        io.opentelemetry.proto.trace.v1.Span span = io.opentelemetry.proto.trace.v1.Span.newBuilder()
+                .setTraceId(AdapterUtils.traceId(0,1))
+                .setSpanId(AdapterUtils.spanId(1))
+                .setName("span-name")
+                .build();
+
         ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, null, null);
 
 
@@ -43,6 +47,7 @@ class UnmodifiableSpanletProcessorTest {
         spanletEventLoop.stop();
 
         assertEquals("prefix-span-name",spanletEventLoop.getContext().getAttribute("name-with-prefix",String.class));
+        assertEquals("prefix-span-name",protoSpanAdapter.getName());
 
     }
 
@@ -54,12 +59,13 @@ class UnmodifiableSpanletProcessorTest {
         }
     }
 
-    public static class UnmodifiableSpanletTest implements com.siglet.api.unmodifiable.trace.UnmodifiableSpanlet<SpanletConfig> {
+    public static class SpanletTest implements Spanlet<SpanletConfig> {
 
         @Override
-        public Result span(UnmodifiableSpan span, ProcessorContext<SpanletConfig> processorContext,
+        public Result span(Span span, ProcessorContext<SpanletConfig> processorContext,
                            ResultFactory resultFactory) {
             processorContext.setAttribute("name-with-prefix",processorContext.getConfig().prefix + span.getName());
+            span.setName(processorContext.getConfig().prefix + span.getName());
             return resultFactory.proceed();
         }
     }

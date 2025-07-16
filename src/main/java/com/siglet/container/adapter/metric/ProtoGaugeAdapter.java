@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableGauge;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -9,7 +8,7 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
 import java.util.List;
 
-public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements ModifiableGauge {
+public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements com.siglet.api.data.metric.Gauge {
 
 
     public ProtoGaugeAdapter() {

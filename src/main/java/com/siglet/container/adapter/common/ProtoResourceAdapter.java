@@ -1,13 +1,12 @@
 package com.siglet.container.adapter.common;
 
-import com.siglet.api.modifiable.ModifiableResource;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> implements ModifiableResource {
+public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> implements com.siglet.api.data.Resource {
 
 
     public ProtoResourceAdapter() {

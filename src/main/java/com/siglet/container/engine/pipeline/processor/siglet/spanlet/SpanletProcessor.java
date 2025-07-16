@@ -1,10 +1,9 @@
-package com.siglet.container.engine.pipeline.processor.siglet.spanlet.modifiable;
+package com.siglet.container.engine.pipeline.processor.siglet.spanlet;
 
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Signal;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.config.graph.ProcessorNode;
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -15,14 +14,14 @@ import com.siglet.container.eventloop.processor.ProcessorFactory;
 
 import java.util.Map;
 
-public class ModifiableSpanletProcessor implements Processor {
+public class SpanletProcessor implements Processor {
 
     private ProcessorNode node;
 
 
     private final ProcessorEventloop<Signal, Object> processorEventloop;
 
-    public ModifiableSpanletProcessor(Context context, ProcessorNode node, ModifiableSpanlet<Object> spanlet) {
+    public SpanletProcessor(Context context, ProcessorNode node, Spanlet<Object> spanlet) {
         this.node = node;
         Object config = node.getConfig().getConfig();
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
@@ -32,15 +31,15 @@ public class ModifiableSpanletProcessor implements Processor {
     }
 
     // TODO remover para depender apenas do node out de um adapter node->config
-    public ModifiableSpanletProcessor(String name, ModifiableSpanlet spanlet, Object config,
-                                      int queueCapacity, int threadPoolSize, Map<String, String> destinationMappings) {
+    public SpanletProcessor(String name, Spanlet spanlet, Object config,
+                            int queueCapacity, int threadPoolSize, Map<String, String> destinationMappings) {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
                 Signal.class, queueCapacity, threadPoolSize, destinationMappings);
     }
 
-    private static <T> ProcessorFactory<T> createProcessorFactory(com.siglet.api.modifiable.trace.ModifiableSpanlet<T> spanlet) {
+    private static <T> ProcessorFactory<T> createProcessorFactory(Spanlet<T> spanlet) {
         return ctx -> new ModifiedSpanBaseEventloopProcessor<>(ctx, spanlet);
     }
 

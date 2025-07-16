@@ -6,6 +6,7 @@ import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import com.siglet.parser.Node;
 import com.siglet.parser.YamlParser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,6 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ContextTest {
 
     Context context;
+
+    ContextFactory contextFactory;
+
+    @BeforeEach
+    void setUp() {
+        contextFactory = new ContextFactory();
+
+    }
 
     @Test
     void getEventLoopConfig_default() {
@@ -46,7 +55,7 @@ class ContextTest {
                       action: action-value
                 """;
 
-        context = new Context(yaml, List.of());
+        context = contextFactory.create(yaml, List.of());
 
         ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 
@@ -86,7 +95,7 @@ class ContextTest {
                       action: action-value
                 """;
 
-        context = new Context(yaml, List.of());
+        context = contextFactory.create(yaml, List.of());
 
         ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 
@@ -131,7 +140,7 @@ class ContextTest {
         Node node = new YamlParser().parse(yaml);
         rawConfigChecker(new ProcessorTypeRegistry()).check(node);
 
-        context = new Context(yaml, List.of());
+        context = contextFactory.create(yaml, List.of());
 
         ProcessorNode processorNode = context.getGraph().getNodeByNameAndType("spanlet name", ProcessorNode.class);
 

@@ -3,8 +3,8 @@ package com.siglet.container.config.siglet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.modifiable.trace.ModifiableSpan;
-import com.siglet.api.modifiable.trace.ModifiableSpanlet;
+import com.siglet.api.data.trace.Span;
+import com.siglet.api.data.trace.Spanlet;
 import com.siglet.container.config.siglet.parser.SigletConfigParser;
 import com.siglet.parser.Node;
 import com.siglet.parser.NodeChecker;
@@ -118,10 +118,10 @@ class SigletConfigParserTest {
 
     }
 
-    public static class SpanletMock implements ModifiableSpanlet<SpanletConfigMock> {
+    public static class SpanletMock implements Spanlet<SpanletConfigMock> {
 
         @Override
-        public Result span(ModifiableSpan modifiableSpan, ProcessorContext<SpanletConfigMock> spanletConfigMock,
+        public Result span(Span modifiableSpan, ProcessorContext<SpanletConfigMock> spanletConfigMock,
                            ResultFactory resultFactory) {
             return resultFactory.proceed();
         }

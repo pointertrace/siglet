@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.api.trace.SpanKind;
-import com.siglet.api.trace.StatusCode;
+import com.siglet.api.data.trace.SpanKind;
+import com.siglet.api.data.trace.StatusCode;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.*;
 import io.opentelemetry.proto.common.v1.AnyValue;

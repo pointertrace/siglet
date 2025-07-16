@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.common;
 
-import com.siglet.api.modifiable.ModifiableEvent;
+import com.siglet.api.data.Event;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -9,7 +9,7 @@ import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.List;
 
-public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> implements ModifiableEvent {
+public class ProtoEventAdapter extends Adapter<Span.Event, Span.Event.Builder> implements Event {
 
     public ProtoEventAdapter() {
         super(AdapterConfig.EVENT_ADAPTER_CONFIG,

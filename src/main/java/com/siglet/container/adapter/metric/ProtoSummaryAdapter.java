@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableSummary;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -9,7 +8,7 @@ import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 
 import java.util.List;
 
-public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> implements ModifiableSummary {
+public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> implements com.siglet.api.data.metric.Summary {
 
     public ProtoSummaryAdapter() {
         super(AdapterConfig.SUMMARY_ADAPTER_CONFIG);

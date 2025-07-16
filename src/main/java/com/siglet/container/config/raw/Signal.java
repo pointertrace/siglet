@@ -1,12 +1,13 @@
 package com.siglet.container.config.raw;
 
-import com.siglet.api.unmodifiable.metric.UnmodifiableMetric;
-import com.siglet.api.unmodifiable.trace.UnmodifiableSpan;
+
+import com.siglet.api.data.metric.Metric;
+import com.siglet.api.data.trace.Span;
 
 public enum Signal {
 
-    TRACE(UnmodifiableSpan.class),
-    METRIC(UnmodifiableMetric.class);
+    TRACE(Span.class),
+    METRIC(Metric.class);
 
     private final Class<? extends com.siglet.api.Signal> baseType;
 

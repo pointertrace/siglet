@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableSummaryDataPoint;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -11,7 +10,7 @@ import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 import java.util.List;
 
 public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, SummaryDataPoint.Builder>
-        implements ModifiableSummaryDataPoint {
+        implements com.siglet.api.data.metric.SummaryDataPoint {
 
     public ProtoSummaryDataPointAdapter() {
         super(AdapterConfig.SUMMARY_DATA_POINT_ADAPTER_CONFIG);
@@ -70,31 +69,31 @@ public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, Summ
     }
 
     @Override
-    public ModifiableSummaryDataPoint setStartTimeUnixNano(long startTimeUnixNano) {
+    public ProtoSummaryDataPointAdapter setStartTimeUnixNano(long startTimeUnixNano) {
         setValue(SummaryDataPoint.Builder::setStartTimeUnixNano, startTimeUnixNano);
         return this;
     }
 
     @Override
-    public ModifiableSummaryDataPoint setTimeUnixNano(long timeUnixNano) {
+    public ProtoSummaryDataPointAdapter setTimeUnixNano(long timeUnixNano) {
         setValue(SummaryDataPoint.Builder::setTimeUnixNano, timeUnixNano);
         return this;
     }
 
     @Override
-    public ModifiableSummaryDataPoint setCount(long count) {
+    public ProtoSummaryDataPointAdapter setCount(long count) {
         setValue(SummaryDataPoint.Builder::setCount, count);
         return this;
     }
 
     @Override
-    public ModifiableSummaryDataPoint setFlags(int flags) {
+    public ProtoSummaryDataPointAdapter setFlags(int flags) {
         setValue(SummaryDataPoint.Builder::setFlags, flags);
         return this;
     }
 
     @Override
-    public ModifiableSummaryDataPoint setSum(double sum) {
+    public ProtoSummaryDataPointAdapter setSum(double sum) {
         setValue(SummaryDataPoint.Builder::setSum, sum);
         return this;
     }

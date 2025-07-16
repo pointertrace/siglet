@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jdk.version>24</jdk.version>
+        <jdk.version>21</jdk.version>
 
         <log4j2-version>2.21.1</log4j2-version>
         <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
@@ -190,7 +190,6 @@
                     <target>24</target>
                     <release>${jdk.version}</release>
                     <maxmem>512M</maxmem>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

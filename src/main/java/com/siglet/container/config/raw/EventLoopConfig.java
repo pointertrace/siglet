@@ -16,6 +16,10 @@ public interface EventLoopConfig {
         return new EmptyEventLoopConfig();
     }
 
+    static EventLoopConfig defaultConfig() {
+        return new SimpleEventLoopConfig(1_000, Runtime.getRuntime().availableProcessors());
+    }
+
     static EventLoopConfig of(Object eventLoopObject) {
         if (eventLoopObject != null && eventLoopObject instanceof EventLoopConfig eventLoopConfig) {
             return new SimpleEventLoopConfig(eventLoopConfig.getQueueSize(), eventLoopConfig.getThreadPoolSize());

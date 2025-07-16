@@ -1,7 +1,6 @@
 package org.springframework.boot.loader.launch;
 
 
-import com.siglet.api.modifiable.trace.ModifiableSpan;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
@@ -45,7 +44,7 @@ public class Test {
         ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter();
         protoSpanAdapter.recycle(span, resource, instrumentationScope);
 
-        Method method = instance.getClass().getMethod("span", ModifiableSpan.class, Void.class);
+        Method method = instance.getClass().getMethod("span", Span.class, Void.class);
 
         method.invoke(instance, protoSpanAdapter, null);
 

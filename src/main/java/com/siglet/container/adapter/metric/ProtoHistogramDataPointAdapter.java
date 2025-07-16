@@ -1,6 +1,5 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.modifiable.metric.ModifiableHistogramDataPoint;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, HistogramDataPoint.Builder>
-        implements ModifiableHistogramDataPoint {
+        implements com.siglet.api.data.metric.HistogramDataPoint {
 
     public ProtoHistogramDataPointAdapter() {
         super(AdapterConfig.HISTOGRAM_DATA_POINT_ADAPTER_CONFIG);
@@ -105,7 +104,7 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
     }
 
     @Override
-    public ModifiableHistogramDataPoint setCount(long count) {
+    public ProtoHistogramDataPointAdapter setCount(long count) {
         setValue(HistogramDataPoint.Builder::setCount, count);
         return this;
     }
@@ -117,57 +116,57 @@ public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, 
     }
 
     @Override
-    public ModifiableHistogramDataPoint setSum(double sum) {
+    public ProtoHistogramDataPointAdapter setSum(double sum) {
         setValue(HistogramDataPoint.Builder::setSum, sum);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint addBucketCount(long count) {
+    public ProtoHistogramDataPointAdapter addBucketCount(long count) {
         setValue(HistogramDataPoint.Builder::addBucketCounts, count);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint addAllBucketCounts(List<Long> count) {
+    public ProtoHistogramDataPointAdapter addAllBucketCounts(List<Long> count) {
         setValue(HistogramDataPoint.Builder::addAllBucketCounts, count);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint clearBucketCounts() {
+    public ProtoHistogramDataPointAdapter clearBucketCounts() {
         prepareUpdate();
         getBuilder().clearBucketCounts();
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint addExplicitBound(Double explicitBound) {
+    public ProtoHistogramDataPointAdapter addExplicitBound(Double explicitBound) {
         setValue(HistogramDataPoint.Builder::addExplicitBounds, explicitBound);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint addAllExplicitBounds(List<Double> explicityBounds) {
+    public ProtoHistogramDataPointAdapter addAllExplicitBounds(List<Double> explicityBounds) {
         setValue(HistogramDataPoint.Builder::addAllExplicitBounds, explicityBounds);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint clearExplicitBounds() {
+    public ProtoHistogramDataPointAdapter clearExplicitBounds() {
         prepareUpdate();
         getBuilder().clearExplicitBounds();
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint setMin(Double min) {
+    public ProtoHistogramDataPointAdapter setMin(Double min) {
         setValue(HistogramDataPoint.Builder::setMin, min);
         return this;
     }
 
     @Override
-    public ModifiableHistogramDataPoint setMax(Double max) {
+    public ProtoHistogramDataPointAdapter setMax(Double max) {
         setValue(HistogramDataPoint.Builder::setMax, max);
         return this;
     }
