@@ -43,7 +43,6 @@ class RawConfigTest {
                   address: localhost:8081
                 pipelines:
                 - name: pipeline name
-                  signal: trace
                   from: first receiver
                   start: spanlet name
                   processors:
@@ -124,7 +123,6 @@ class RawConfigTest {
                   address: localhost:8081
                 pipelines:
                 - name: pipeline name
-                  signal: trace
                   from: first receiver
                   start: spanlet name
                   processors:
@@ -169,20 +167,19 @@ class RawConfigTest {
                   (16:1)  pipelines:
                     (17:3)  PipelineConfig:
                       (17:9)  name: pipeline name
-                      (18:11)  signal: TRACE
-                      (19:9)  from: first receiver
-                      (20:10)  start:
-                        (20:10)  spanlet name
-                      (21:3)  processors:
-                        (22:5)  processorConfig:
-                          (22:11)  name: spanlet name
-                          (23:11)  kind: SPANLET
-                          (24:9)  to:
-                            (24:9)  first exporter
-                          (25:11)  type: groovy-action
-                          (26:5) config:
-                            (26:5)  groovyActionConfig:
-                              (27:15)  action: action-value""";
+                      (18:9)  from: first receiver
+                      (19:10)  start:
+                        (19:10)  spanlet name
+                      (20:3)  processors:
+                        (21:5)  processorConfig:
+                          (21:11)  name: spanlet name
+                          (22:11)  kind: SPANLET
+                          (23:9)  to:
+                            (23:9)  first exporter
+                          (24:11)  type: groovy-action
+                          (25:5) config:
+                            (25:5)  groovyActionConfig:
+                              (26:15)  action: action-value""";
 
         assertEquals(expected, rawConfig.describe());
 

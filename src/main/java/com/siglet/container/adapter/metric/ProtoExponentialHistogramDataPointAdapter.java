@@ -11,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.ExponentialHistogramDataPoint;
 import java.util.List;
 
 public class ProtoExponentialHistogramDataPointAdapter extends Adapter<ExponentialHistogramDataPoint,
-        ExponentialHistogramDataPoint.Builder> implements com.siglet.api.data.metric.ExponentialHistogramDataPoint {
+        ExponentialHistogramDataPoint.Builder> implements com.siglet.api.signal.metric.ExponentialHistogramDataPoint {
 
     public ProtoExponentialHistogramDataPointAdapter() {
         super(AdapterConfig.EXPONENTIAL_HISTOGRAM_DATAPOINT_ADAPTER_CONFIG);

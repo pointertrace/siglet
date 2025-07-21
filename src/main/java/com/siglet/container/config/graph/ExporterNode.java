@@ -1,6 +1,8 @@
 package com.siglet.container.config.graph;
 
+import com.siglet.SigletError;
 import com.siglet.container.config.raw.ExporterConfig;
+import com.siglet.container.config.raw.GrpcExporterConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,4 +27,13 @@ public final class ExporterNode extends BaseNode {
     public ExporterConfig getConfig() {
         return (ExporterConfig) super.getConfig();
     }
+
+//    public void calculateEventLoopConfig(EventLoopConfig globalEventLoopConfig) {
+//        if (getConfig() instanceof GrpcExporterConfig grpcExporterConfig) {
+//            EventLoopConfig eventLoopConfig = globalEventLoopConfig.chain(grpcExporterConfig);
+//            this.queueSize = eventLoopConfig.getQueueSize();
+//            this.threadPoolSize = eventLoopConfig.getThreadPoolSize();
+//        }
+//
+//    }
 }

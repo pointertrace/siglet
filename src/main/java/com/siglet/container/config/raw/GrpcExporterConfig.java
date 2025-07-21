@@ -1,10 +1,14 @@
 package com.siglet.container.config.raw;
 
+import com.siglet.SigletError;
 import com.siglet.parser.located.Location;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 
-public class GrpcExporterConfig extends ExporterConfig {
+public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfig {
+
+    private RawConfig rawConfig;
 
     private InetSocketAddress address;
 
@@ -18,6 +22,18 @@ public class GrpcExporterConfig extends ExporterConfig {
 
     private Location batchTimeoutInMillisLocation;
 
+    private Integer queueSize;
+
+    private Location queueSizeLocation;
+
+    public RawConfig getRawConfig() {
+        return rawConfig;
+    }
+
+    public void setRawConfig(RawConfig rawConfig) {
+        this.rawConfig = rawConfig;
+    }
+
     public InetSocketAddress getAddress() {
         return address;
     }
@@ -27,7 +43,7 @@ public class GrpcExporterConfig extends ExporterConfig {
     }
 
     public Integer getBatchSizeInSignals() {
-        return batchSizeInSignals;
+        return Objects.requireNonNullElse(this.batchSizeInSignals, 1);
     }
 
     public void setBatchSizeInSignals(Integer batchSizeInSignals) {
@@ -35,7 +51,7 @@ public class GrpcExporterConfig extends ExporterConfig {
     }
 
     public Integer getBatchTimeoutInMillis() {
-        return batchTimeoutInMillis;
+        return Objects.requireNonNullElse(this.batchTimeoutInMillis, 0);
     }
 
     public void setBatchTimeoutInMillis(Integer batchTimeoutInMillis) {
@@ -49,7 +65,7 @@ public class GrpcExporterConfig extends ExporterConfig {
         sb.append("  GrpcExporterConfig");
         sb.append("\n");
 
-        sb.append(super.describe(level+1));
+        sb.append(super.describe(level + 1));
 
         sb.append(prefix(level + 1));
         sb.append(addressLocation.describe());
@@ -73,6 +89,13 @@ public class GrpcExporterConfig extends ExporterConfig {
             sb.append("\n");
         }
 
+        if (queueSize != null) {
+            sb.append(prefix(level + 1));
+            sb.append(queueSizeLocation.describe());
+            sb.append("  queue-size: ");
+            sb.append(queueSize);
+            sb.append("\n");
+        }
         return sb.toString();
     }
 
@@ -98,5 +121,30 @@ public class GrpcExporterConfig extends ExporterConfig {
 
     public void setBatchTimeoutInMillisLocation(Location batchTimeoutInMillisLocation) {
         this.batchTimeoutInMillisLocation = batchTimeoutInMillisLocation;
+    }
+
+    @Override
+    public Integer getQueueSize() {
+        return queueSize;
+    }
+
+    public void setQueueSize(Integer queueSize) {
+        this.queueSize = queueSize;
+    }
+
+    public Location getQueueSizeLocation() {
+        return queueSizeLocation;
+    }
+
+    public void setQueueSizeLocation(Location queueSizeLocation) {
+        this.queueSizeLocation = queueSizeLocation;
+    }
+
+
+    public QueueSizeConfig getQueueSizeConfig() {
+        if (rawConfig == null) {
+            throw new SigletError("rawConfig is null");
+        }
+        return rawConfig.getGlobalConfigQueueSize().chain(QueueSizeConfig.of(this));
     }
 }

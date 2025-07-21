@@ -14,7 +14,7 @@ public class ProcessorContextImpl<T> implements ProcessorContext<T> {
 
     private final T config;
 
-    private ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<>();
 
     public ProcessorContextImpl(T config) {
         this.config = config;

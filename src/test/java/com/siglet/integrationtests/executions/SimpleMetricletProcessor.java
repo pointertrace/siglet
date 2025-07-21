@@ -10,12 +10,11 @@ public class SimpleMetricletProcessor {
 
         YamlParser configParser = new YamlParser();
 
-
         var configFile = """
                 receivers:
                 - grpc: receiver
                   address: localhost:4317
-                  signal: metric
+                  signalType: metric
                 exporters:
                 - grpc: exporter
                   address: localhost:4317

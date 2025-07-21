@@ -19,10 +19,17 @@ public class SignalTransformer implements ValueTransformer {
                     " and it should be a string!");
         }
         try {
-            return Signal.valueOf(strValue.toUpperCase());
+            SignalType signalType = SignalType.valueOf(strValue.toUpperCase());
+            if (signalType.isInternal()) {
+                throw new ValueTransformerException(String.format("SignalType value %s cannot be used in configuration!"
+                        , signalType.name()));
+
+            }
+            return SignalType.valueOf(strValue.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new ValueTransformerException(String.format("The value [%s] is not a valid signal type [%s]", value,
-                    Stream.of(Signal.values())
+            throw new ValueTransformerException(String.format("The value [%s] is not a valid signal type [%s]!", value,
+                    Stream.of(SignalType.values())
+                            .filter(st -> !st.isInternal())
                             .map(Enum::name)
                             .map(v -> v.replace('_', '-').toLowerCase())
                             .collect(Collectors.joining(", "))));

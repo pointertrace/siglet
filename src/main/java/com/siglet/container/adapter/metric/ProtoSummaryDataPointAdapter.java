@@ -10,7 +10,7 @@ import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 import java.util.List;
 
 public class ProtoSummaryDataPointAdapter extends Adapter<SummaryDataPoint, SummaryDataPoint.Builder>
-        implements com.siglet.api.data.metric.SummaryDataPoint {
+        implements com.siglet.api.signal.metric.SummaryDataPoint {
 
     public ProtoSummaryDataPointAdapter() {
         super(AdapterConfig.SUMMARY_DATA_POINT_ADAPTER_CONFIG);

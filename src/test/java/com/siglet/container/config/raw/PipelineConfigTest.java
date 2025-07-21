@@ -26,7 +26,6 @@ class PipelineConfigTest {
 
         var config = """
                 name: pipeline name
-                signal: trace
                 from: trace receiver
                 start: spanlet name
                 processors:
@@ -35,7 +34,7 @@ class PipelineConfigTest {
                   to: second exporter
                   type: groovy-action
                   config:
-                    action: thisSignal.name = thisSignal.name +"-suffix" """;
+                    action: signal.name = signal.name +"-suffix" """;
 
         Node node = parser.parse(config);
 
@@ -50,20 +49,19 @@ class PipelineConfigTest {
         String expected = """
                 (1:1)  PipelineConfig:
                   (1:7)  name: pipeline name
-                  (2:9)  signal: TRACE
-                  (3:7)  from: trace receiver
-                  (4:8)  start:
-                    (4:8)  spanlet name
-                  (5:1)  processors:
-                    (6:3)  processorConfig:
-                      (6:9)  name: spanlet name
-                      (7:9)  kind: SPANLET
-                      (8:7)  to:
-                        (8:7)  second exporter
-                      (9:9)  type: groovy-action
-                      (10:3) config:
-                        (10:3)  groovyActionConfig:
-                          (11:13)  action: thisSignal.name = thisSignal.name +"-suffix" """;
+                  (2:7)  from: trace receiver
+                  (3:8)  start:
+                    (3:8)  spanlet name
+                  (4:1)  processors:
+                    (5:3)  processorConfig:
+                      (5:9)  name: spanlet name
+                      (6:9)  kind: SPANLET
+                      (7:7)  to:
+                        (7:7)  second exporter
+                      (8:9)  type: groovy-action
+                      (9:3) config:
+                        (9:3)  groovyActionConfig:
+                          (10:13)  action: signal.name = signal.name +"-suffix" """;
 
         assertEquals(expected, pipelineConfig.describe());
     }
@@ -73,7 +71,6 @@ class PipelineConfigTest {
 
         var config = """
                 name: pipeline name
-                signal: trace
                 from: trace receiver
                 start: spanlet name
                 processors:
@@ -82,7 +79,7 @@ class PipelineConfigTest {
                   to: second exporter
                   type: groovy-action
                   config:
-                    action: thisSignal.name = thisSignal.name +"-suffix" """;
+                    action: signal.name = signal.name +"-suffix" """;
 
         Node node = parser.parse(config);
 
@@ -97,23 +94,20 @@ class PipelineConfigTest {
         assertEquals("pipeline name", pipelineConfig.getName());
         assertEquals(Location.of(1, 7), pipelineConfig.getNameLocation());
 
-        assertEquals(Signal.TRACE, pipelineConfig.getSignal());
-        assertEquals(Location.of(2, 9), pipelineConfig.getSignalLocation());
-
         assertEquals("trace receiver", pipelineConfig.getFrom());
-        assertEquals(Location.of(3, 7), pipelineConfig.getFromLocation());
+        assertEquals(Location.of(2, 7), pipelineConfig.getFromLocation());
 
         List<LocatedString> start = pipelineConfig.getStart();
         assertNotNull(start);
-        assertEquals(Location.of(4, 8), pipelineConfig.getStartLocation());
+        assertEquals(Location.of(3, 8), pipelineConfig.getStartLocation());
 
         assertEquals(1, start.size());
         assertEquals("spanlet name", start.getFirst().getValue());
-        assertEquals(Location.of(4, 8), start.getFirst().getLocation());
+        assertEquals(Location.of(3, 8), start.getFirst().getLocation());
 
 
         assertNotNull(pipelineConfig.getProcessors());
-        assertEquals(Location.of(5, 1), pipelineConfig.getSigletsLocation());
+        assertEquals(Location.of(4, 1), pipelineConfig.getSigletsLocation());
         List<ProcessorConfig> siglets = pipelineConfig.getProcessors();
 
         assertEquals(1, siglets.size());
@@ -126,7 +120,6 @@ class PipelineConfigTest {
 
         var config = """
                 name: pipeline name
-                signal: trace
                 from: trace receiver
                 start:
                 - first sigletConfig
@@ -152,25 +145,22 @@ class PipelineConfigTest {
         assertEquals("pipeline name", pipelineConfig.getName());
         assertEquals(Location.of(1, 7), pipelineConfig.getNameLocation());
 
-        assertEquals(Signal.TRACE, pipelineConfig.getSignal());
-        assertEquals(Location.of(2, 9), pipelineConfig.getSignalLocation());
-
         assertEquals("trace receiver", pipelineConfig.getFrom());
-        assertEquals(Location.of(3, 7), pipelineConfig.getFromLocation());
+        assertEquals(Location.of(2, 7), pipelineConfig.getFromLocation());
 
         List<LocatedString> start = pipelineConfig.getStart();
         assertNotNull(start);
-        assertEquals(Location.of(4, 1), pipelineConfig.getStartLocation());
+        assertEquals(Location.of(3, 1), pipelineConfig.getStartLocation());
 
         assertEquals(2, start.size());
         assertEquals("first sigletConfig", start.getFirst().getValue());
-        assertEquals(Location.of(5, 3), start.getFirst().getLocation());
+        assertEquals(Location.of(4, 3), start.getFirst().getLocation());
         assertEquals("second sigletConfig", start.get(1).getValue());
-        assertEquals(Location.of(6, 3), start.get(1).getLocation());
+        assertEquals(Location.of(5, 3), start.get(1).getLocation());
 
 
         assertNotNull(pipelineConfig.getProcessors());
-        assertEquals(Location.of(7, 1), pipelineConfig.getSigletsLocation());
+        assertEquals(Location.of(6, 1), pipelineConfig.getSigletsLocation());
         List<ProcessorConfig> siglets = pipelineConfig.getProcessors();
 
         assertEquals(1, siglets.size());
@@ -182,7 +172,6 @@ class PipelineConfigTest {
 
         var config = """
                 name: pipeline name
-                signal: trace
                 from: trace receiver
                 start:
                 - first spanlet
@@ -193,7 +182,7 @@ class PipelineConfigTest {
                   to: second-exporter
                   type: groovy-action
                   config:
-                    action: thisSignal.name = thisSignal.name +"-suffix" """;
+                    action: signal.name = signal.name +"-suffix" """;
 
         Node node = parser.parse(config);
 
@@ -208,21 +197,20 @@ class PipelineConfigTest {
         String expected = """
                 (1:1)  PipelineConfig:
                   (1:7)  name: pipeline name
-                  (2:9)  signal: TRACE
-                  (3:7)  from: trace receiver
-                  (4:1)  start:
-                    (5:3)  first spanlet
-                    (6:3)  second spanlet
-                  (7:1)  processors:
-                    (8:3)  processorConfig:
-                      (8:9)  name: first spanlet
-                      (9:9)  kind: SPANLET
-                      (10:7)  to:
-                        (10:7)  second-exporter
-                      (11:9)  type: groovy-action
-                      (12:3) config:
-                        (12:3)  groovyActionConfig:
-                          (13:13)  action: thisSignal.name = thisSignal.name +"-suffix" """;
+                  (2:7)  from: trace receiver
+                  (3:1)  start:
+                    (4:3)  first spanlet
+                    (5:3)  second spanlet
+                  (6:1)  processors:
+                    (7:3)  processorConfig:
+                      (7:9)  name: first spanlet
+                      (8:9)  kind: SPANLET
+                      (9:7)  to:
+                        (9:7)  second-exporter
+                      (10:9)  type: groovy-action
+                      (11:3) config:
+                        (11:3)  groovyActionConfig:
+                          (12:13)  action: signal.name = signal.name +"-suffix" """;
 
         assertEquals(expected, pipelineConfig.describe());
     }

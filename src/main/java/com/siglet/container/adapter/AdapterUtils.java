@@ -2,9 +2,9 @@ package com.siglet.container.adapter;
 
 import com.google.protobuf.ByteString;
 import com.siglet.SigletError;
-import com.siglet.api.data.metric.AggregationTemporality;
-import com.siglet.api.data.trace.SpanKind;
-import com.siglet.api.data.trace.StatusCode;
+import com.siglet.api.signal.metric.AggregationTemporality;
+import com.siglet.api.signal.trace.SpanKind;
+import com.siglet.api.signal.trace.StatusCode;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
@@ -15,8 +15,8 @@ import io.opentelemetry.proto.trace.v1.Status;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static com.siglet.api.data.metric.AggregationTemporality.CUMULATIVE;
-import static com.siglet.api.data.metric.AggregationTemporality.DELTA;
+import static com.siglet.api.signal.metric.AggregationTemporality.CUMULATIVE;
+import static com.siglet.api.signal.metric.AggregationTemporality.DELTA;
 
 
 public class AdapterUtils {

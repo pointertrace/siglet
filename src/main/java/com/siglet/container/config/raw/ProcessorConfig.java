@@ -1,6 +1,7 @@
 package com.siglet.container.config.raw;
 
 
+import com.siglet.SigletError;
 import com.siglet.parser.Describable;
 import com.siglet.parser.located.Location;
 
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProcessorConfig extends BaseConfig implements EventLoopConfig {
+public class ProcessorConfig extends BaseConfig implements QueueSizeConfig, ThreadPoolSizeConfig {
 
-    private ProcessorKind kind;
+    private RawConfig rawConfig;
+
+    private ProcessorKind processorKind;
 
     private Location kindLocation;
 
@@ -36,12 +39,16 @@ public class ProcessorConfig extends BaseConfig implements EventLoopConfig {
 
     private Location threadPoolSizeLocation;
 
-    public ProcessorKind getKind() {
-        return kind;
+    public void setRawConfig(RawConfig rawConfig) {
+        this.rawConfig = rawConfig;
     }
 
-    public void setKind(ProcessorKind kind) {
-        this.kind = kind;
+    public ProcessorKind getProcessorKind() {
+        return processorKind;
+    }
+
+    public void setProcessorKind(ProcessorKind processorKind) {
+        this.processorKind = processorKind;
     }
 
     public Location getKindLocation() {
@@ -129,7 +136,7 @@ public class ProcessorConfig extends BaseConfig implements EventLoopConfig {
         sb.append(prefix(level + 1));
         sb.append(kindLocation.describe());
         sb.append("  kind: ");
-        sb.append(getKind());
+        sb.append(getProcessorKind());
         sb.append("\n");
 
         sb.append(prefix(level + 1));
@@ -210,5 +217,19 @@ public class ProcessorConfig extends BaseConfig implements EventLoopConfig {
 
     public void setThreadPoolSizeLocation(Location threadPoolSizeLocation) {
         this.threadPoolSizeLocation = threadPoolSizeLocation;
+    }
+
+    public QueueSizeConfig getQueueSizeConfig() {
+        if (rawConfig == null) {
+            throw new SigletError("rawConfig is null");
+        }
+        return rawConfig.getGlobalConfigQueueSize().chain(QueueSizeConfig.of(this));
+    }
+
+    public ThreadPoolSizeConfig getThreadPoolSizeConfig() {
+        if (rawConfig == null) {
+            throw new SigletError("rawConfig is null");
+        }
+        return rawConfig.getGlobalConfigThreadPoolSize().chain(ThreadPoolSizeConfig.of(this));
     }
 }

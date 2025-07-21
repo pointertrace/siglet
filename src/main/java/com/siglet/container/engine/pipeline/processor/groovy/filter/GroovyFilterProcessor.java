@@ -5,8 +5,8 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.ProcessorConfig;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -18,23 +18,31 @@ import com.siglet.container.eventloop.processor.ProcessorFactory;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 import groovy.lang.Script;
 
+import java.util.Set;
+
 public class GroovyFilterProcessor implements Processor {
 
     private ProcessorNode node;
 
-    private final ProcessorEventloop<Signal, Void> processorEventLoop;
+    private final ProcessorEventloop<Void> processorEventLoop;
 
     public GroovyFilterProcessor(Context context, ProcessorNode node) {
         this.node = node;
         GroovyFilterConfig conf = (GroovyFilterConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
-        processorEventLoop = new ProcessorEventloop<>(node.getName(), createProcessorFactory(conf.getExpression()), ctx,
-                Signal.class, node.getQueueSize(), node.getThreadPoolSize());
+        processorEventLoop = new ProcessorEventloop<>(
+                node.getName(),
+                createProcessorFactory(conf.getExpression()),
+                ctx,
+                node.getSignal(),
+                node.getConfig().getQueueSizeConfig().getQueueSize(),
+                node.getConfig().getThreadPoolSizeConfig().getThreadPoolSize());
     }
 
-    public GroovyFilterProcessor(String name, String expression, int queueCapacity, int threadPoolSize) {
+    public GroovyFilterProcessor(String name, String expression, SignalType signalType,
+                                 int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
-        processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(expression), ctx, Signal.class,
+        processorEventLoop = new ProcessorEventloop<>(name, createProcessorFactory(expression), ctx, signalType,
                 queueCapacity, threadPoolSize);
     }
 
@@ -83,12 +91,12 @@ public class GroovyFilterProcessor implements Processor {
     }
 
     @Override
-    public Class<Signal> getType() {
-        return processorEventLoop.getType();
+    public Set<SignalType> getSignalCapabilities() {
+        return processorEventLoop.getSignalCapabilities();
     }
 
     @Override
-    public void connect(SignalDestination<Signal> destination) {
+    public void connect(SignalDestination destination) {
         processorEventLoop.connect(destination);
     }
 

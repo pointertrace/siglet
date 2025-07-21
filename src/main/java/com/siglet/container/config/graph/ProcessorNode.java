@@ -1,23 +1,19 @@
 package com.siglet.container.config.graph;
 
 import com.siglet.SigletError;
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.ProcessorConfig;
+import com.siglet.container.config.raw.SignalType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class ProcessorNode extends BaseNode implements EventLoopConfig {
+public final class ProcessorNode extends BaseNode {
 
     private List<BaseNode> to = new ArrayList<>();
 
     private PipelineNode pipeline;
-
-    private Integer queueSize;
-
-    private Integer threadPoolSize;
 
     ProcessorNode(ProcessorConfig item) {
         super(item);
@@ -50,26 +46,7 @@ public final class ProcessorNode extends BaseNode implements EventLoopConfig {
                 .collect(Collectors.toMap(t -> t.getValue().split(":")[0], t -> t.getValue().split(":")[1]));
     }
 
-    @Override
-    public Integer getQueueSize() {
-        if (queueSize == null) {
-            throw new SigletError(String.format("Queue size is not calculated for processor %s",getName()));
-        }
-        return queueSize;
-    }
-
-    @Override
-    public Integer getThreadPoolSize() {
-        if (threadPoolSize == null) {
-            throw new SigletError(String.format("Thread pool size is not calculated for processor %s",getName()));
-        }
-        return threadPoolSize;
-    }
-
-    public void calculateEventLoopConfig(EventLoopConfig globalEventLoopConfig) {
-        EventLoopConfig eventLoopConfig = globalEventLoopConfig.chain(getConfig());
-        this.queueSize = eventLoopConfig.getQueueSize();
-        this.threadPoolSize = eventLoopConfig.getThreadPoolSize();
-
+    public SignalType getSignal() {
+        return getConfig().getProcessorKind().getSignal();
     }
 }

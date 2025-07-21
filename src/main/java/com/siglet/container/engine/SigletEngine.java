@@ -1,7 +1,6 @@
 package com.siglet.container.engine;
 
 import com.siglet.SigletError;
-import com.siglet.api.Signal;
 import com.siglet.container.config.graph.*;
 import com.siglet.container.engine.exporter.Exporters;
 import com.siglet.container.engine.pipeline.Pipeline;
@@ -54,8 +53,8 @@ public class SigletEngine implements EngineElement {
     }
 
 
-    private SignalDestination<Signal> getDestination(String name) {
-        SignalDestination<Signal> result = pipelines.getDestination(name);
+    private SignalDestination getDestination(String name) {
+        SignalDestination result = pipelines.getDestination(name);
         if (result == null) {
             result = exporters.getExporter(name);
         }

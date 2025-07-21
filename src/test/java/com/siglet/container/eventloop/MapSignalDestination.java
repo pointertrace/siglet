@@ -1,22 +1,21 @@
 package com.siglet.container.eventloop;
 
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.SignalDestination;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapSignalDestination<IN extends Signal> implements SignalDestination<IN> {
+public class MapSignalDestination implements SignalDestination {
 
     public final String name;
 
-    private final Class<IN> type;
+    public final Map<String, Signal> signals = new ConcurrentHashMap<>();
 
-    public final Map<String, IN> signals = new ConcurrentHashMap<>();
-
-    public MapSignalDestination(String name, Class<IN> type) {
+    public MapSignalDestination(String name) {
         this.name = name;
-        this.type = type;
     }
 
     @Override
@@ -25,22 +24,22 @@ public class MapSignalDestination<IN extends Signal> implements SignalDestinatio
     }
 
     @Override
-    public boolean send(IN signal) {
+    public boolean send(Signal signal) {
         signals.put(signal.getId(), signal);
         return true;
     }
 
     @Override
-    public Class<IN> getType() {
-        return type;
+    public Set<SignalType> getSignalCapabilities() {
+        return Set.of(SignalType.SIGNAL);
     }
 
-    public IN get(String id) {
-        IN signal = signals.get(id);
+    public <T extends Signal> T get(String id,Class<T> signalType) {
+        Signal signal = signals.get(id);
         if (signal == null) {
             return null;
         }
-        return signal;
+        return signalType.cast(signal);
     }
 
     public boolean has(String id) {

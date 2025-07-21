@@ -2,6 +2,7 @@ package com.siglet.container.engine.exporter.debug;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 
 import java.util.*;
 
@@ -15,13 +16,13 @@ public class DebugExporters {
     }
 
     protected synchronized void addExporter(String exporter) {
-        exportedSignals.put(exporter, Collections.synchronizedList(new  ArrayList<Signal>()));
+        exportedSignals.put(exporter, Collections.synchronizedList(new ArrayList<Signal>()));
     }
 
     public synchronized void addSignal(String exporter, Signal signal) {
         List<Signal> signals = exportedSignals.get(exporter);
         if (signals == null) {
-            throw new SigletError(String.format("Cannot find debug exporter named %s",exporter));
+            throw new SigletError(String.format("Cannot find debug exporter named %s", exporter));
         }
         signals.add(signal);
     }
@@ -29,9 +30,18 @@ public class DebugExporters {
     public synchronized <T extends Signal> List<T> get(String exporter, Class<T> signalType) {
         List<Signal> signals = exportedSignals.get(exporter);
         if (signals == null) {
-            throw new SigletError(String.format("Cannot find debug exporter named %s",exporter));
+            throw new SigletError(String.format("Cannot find debug exporter named %s", exporter));
         }
-        return signals.stream().map(signalType::cast).toList();
+        return signals.stream()
+                .filter(signalType::isInstance)
+                .map(signalType::cast).toList();
     }
 
+    public synchronized List<Signal> get(String exporter) {
+        List<Signal> signals = exportedSignals.get(exporter);
+        if (signals == null) {
+            throw new SigletError(String.format("Cannot find debug exporter named %s", exporter));
+        }
+        return signals;
+    }
 }

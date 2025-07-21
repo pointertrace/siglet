@@ -2,8 +2,8 @@ package com.siglet.container.engine;
 
 import com.siglet.api.Signal;
 
-public interface SignalSource<T extends Signal> {
+public interface SignalSource {
 
-    void connect(SignalDestination<T> destination);
+    void connect(SignalDestination destination);
     
 }

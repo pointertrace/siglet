@@ -6,7 +6,7 @@ import com.siglet.container.engine.EngineElement;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.SignalSource;
 
-public interface Processor extends EngineElement, SignalSource<Signal>, SignalDestination<Signal> {
+public interface Processor extends EngineElement, SignalSource, SignalDestination {
 
     ProcessorNode getNode();
 }

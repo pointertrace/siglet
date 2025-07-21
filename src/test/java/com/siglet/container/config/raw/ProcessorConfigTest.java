@@ -1,5 +1,6 @@
 package com.siglet.container.config.raw;
 
+import com.siglet.SigletError;
 import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import com.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionConfig;
 import com.siglet.parser.Node;
@@ -35,7 +36,7 @@ class ProcessorConfigTest {
                 - second exporter
                 type: groovy-action
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -57,7 +58,7 @@ class ProcessorConfigTest {
                   (6:7)  type: groovy-action
                   (7:1) config:
                     (7:1)  groovyActionConfig:
-                      (8:11)  action: signal.name = signal.name +"-suffix" """;
+                      (8:11)  action: signalType.name = signalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -76,7 +77,7 @@ class ProcessorConfigTest {
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -100,7 +101,7 @@ class ProcessorConfigTest {
                   (8:19)  threadPoolSize: 20
                   (9:1) config:
                     (9:1)  groovyActionConfig:
-                      (10:11)  action: signal.name = signal.name +"-suffix" """;
+                      (10:11)  action: signalType.name = signalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -118,7 +119,7 @@ class ProcessorConfigTest {
                 - second exporter
                 type: groovy-action
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -132,7 +133,7 @@ class ProcessorConfigTest {
         assertEquals("spanlet node", processorConfig.getName());
         assertEquals(Location.of(1, 7), processorConfig.getNameLocation());
 
-        assertEquals(ProcessorKind.SPANLET, processorConfig.getKind());
+        assertEquals(ProcessorKind.SPANLET, processorConfig.getProcessorKind());
         assertEquals(Location.of(2, 7), processorConfig.getKindLocation());
 
         List<LocatedString> to = processorConfig.getTo();
@@ -158,7 +159,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
 
@@ -172,7 +173,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -191,7 +192,7 @@ class ProcessorConfigTest {
                   (4:7)  type: groovy-action
                   (5:1) config:
                     (5:1)  groovyActionConfig:
-                      (6:11)  action: signal.name = signal.name +"-suffix" """;
+                      (6:11)  action: signalType.name = signalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -207,7 +208,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -223,7 +224,7 @@ class ProcessorConfigTest {
         assertEquals("spanlet node", processorConfig.getName());
         assertEquals(Location.of(1, 7), processorConfig.getNameLocation());
 
-        assertEquals(ProcessorKind.SPANLET, processorConfig.getKind());
+        assertEquals(ProcessorKind.SPANLET, processorConfig.getProcessorKind());
         assertEquals(Location.of(2, 7), processorConfig.getKindLocation());
 
         List<LocatedString> to = processorConfig.getTo();
@@ -246,7 +247,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(5, 1), processorConfig.getConfigLocation());
-        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
 
     }
@@ -262,7 +263,7 @@ class ProcessorConfigTest {
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: signal.name = signal.name +"-suffix"
+                  action: signalType.name = signalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -278,7 +279,7 @@ class ProcessorConfigTest {
         assertEquals("spanlet node", processorConfig.getName());
         assertEquals(Location.of(1, 7), processorConfig.getNameLocation());
 
-        assertEquals(ProcessorKind.SPANLET, processorConfig.getKind());
+        assertEquals(ProcessorKind.SPANLET, processorConfig.getProcessorKind());
         assertEquals(Location.of(2, 7), processorConfig.getKindLocation());
 
         List<LocatedString> to = processorConfig.getTo();
@@ -293,16 +294,268 @@ class ProcessorConfigTest {
         assertEquals(Location.of(4, 7), processorConfig.getTypeLocation());
 
         assertEquals(10, processorConfig.getQueueSize());
-        assertEquals(Location.of(5,13),processorConfig.getQueueSizeLocation());
+        assertEquals(Location.of(5, 13), processorConfig.getQueueSizeLocation());
 
         assertEquals(20, processorConfig.getThreadPoolSize());
-        assertEquals(Location.of(6,19),processorConfig.getThreadPoolSizeLocation());
+        assertEquals(Location.of(6, 19), processorConfig.getThreadPoolSizeLocation());
 
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
-
+        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
+
+    @Test
+    void getQueueSize_rawConfigNull() {
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        SigletError e = assertThrows(SigletError.class, processorConfig::getQueueSizeConfig);
+        assertEquals("rawConfig is null", e.getMessage());
+
+    }
+
+    @Test
+    void getQueueSize_rawConfigGlobalConfigNull() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(QueueSizeConfig.defaultConfig().getQueueSize(), processorConfig.getQueueSizeConfig().getQueueSize());
+
+    }
+
+    @Test
+    void getQueueSize_rawConfigNotNullGlobalConfigEmpty() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(QueueSizeConfig.defaultConfig().getQueueSize(), processorConfig.getQueueSizeConfig().getQueueSize());
+
+    }
+
+    @Test
+    void getQueueSize_rawConfigNotNullGlobalConfigDefined() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setQueueSize(10);
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(10, processorConfig.getQueueSizeConfig().getQueueSize());
+
+    }
+
+    @Test
+    void getQueueSize_rawConfigNotNullGlobalConfigDefinedProcessorDefined() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                queue-size: 20
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setQueueSize(10);
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(20, processorConfig.getQueueSizeConfig().getQueueSize());
+
+    }
+
+
+    @Test
+    void getThreadPoolSize_rawConfigGlobalConfigNull() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(ThreadPoolSizeConfig.defaultConfig().getThreadPoolSize(),
+                processorConfig.getThreadPoolSizeConfig().getThreadPoolSize());
+
+    }
+
+    @Test
+    void getThreadPoolSize_rawConfigNotNullGlobalConfigEmpty() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(ThreadPoolSizeConfig.defaultConfig().getThreadPoolSize(),
+                processorConfig.getThreadPoolSizeConfig().getThreadPoolSize());
+
+    }
+
+    @Test
+    void getThreadPoolSize_rawConfigNotNullGlobalConfigDefined() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setThreadPoolSize(10);
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(10, processorConfig.getThreadPoolSizeConfig().getThreadPoolSize());
+
+    }
+
+    @Test
+    void getThreadPoolSize_rawConfigNotNullGlobalConfigDefinedProcessorDefined() {
+
+        String configTxt = """
+                name: spanlet node
+                kind: spanlet
+                to: exporter
+                type: groovy-action
+                thread-pool-size: 20
+                config:
+                  action: signalType.name = signalType.name +"-suffix"
+                """;
+
+        Node node = parser.parse(configTxt);
+
+        processorChecker(new ProcessorTypeRegistry()).check(node);
+
+        Object value = node.getValue();
+        ProcessorConfig processorConfig = assertInstanceOf(ProcessorConfig.class, value);
+
+        RawConfig rawConfig = new RawConfig();
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setThreadPoolSize(10);
+        rawConfig.setGlobalConfig(globalConfig);
+        processorConfig.setRawConfig(rawConfig);
+
+        assertEquals(20, processorConfig.getThreadPoolSizeConfig().getThreadPoolSize());
+
+    }
+
 }

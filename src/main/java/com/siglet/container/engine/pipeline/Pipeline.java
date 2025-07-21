@@ -23,7 +23,7 @@ public class Pipeline implements EngineElement {
         return processors;
     }
 
-    public SignalDestination<Signal> getDestination(String name) {
+    public SignalDestination getDestination(String name) {
         return processors.getDestination(name);
     }
 

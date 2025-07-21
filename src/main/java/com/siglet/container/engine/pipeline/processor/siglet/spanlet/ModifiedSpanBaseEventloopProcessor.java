@@ -5,8 +5,8 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
-import com.siglet.api.data.trace.Span;
-import com.siglet.api.data.trace.Spanlet;
+import com.siglet.api.signal.trace.Span;
+import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.eventloop.processor.BaseEventloopProcessor;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 

@@ -3,8 +3,8 @@ package com.siglet.integrationtests.spanlet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.data.trace.Span;
-import com.siglet.api.data.trace.Spanlet;
+import com.siglet.api.signal.trace.Span;
+import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.Siglet;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
@@ -38,7 +38,6 @@ class SpanletTest {
                 - debug: exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:

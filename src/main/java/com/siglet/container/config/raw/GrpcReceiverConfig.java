@@ -10,7 +10,7 @@ public class GrpcReceiverConfig extends ReceiverConfig {
 
     private Location addressLocation;
 
-    private Signal signal;
+    private SignalType signalType;
 
     private Location signalTypeLocation;
 
@@ -22,12 +22,12 @@ public class GrpcReceiverConfig extends ReceiverConfig {
         this.address = address;
     }
 
-    public Signal getSignal() {
-        return signal;
+    public SignalType getSignal() {
+        return signalType;
     }
 
-    public void setSignal(Signal signal) {
-        this.signal= signal;
+    public void setSignal(SignalType signalType) {
+        this.signalType = signalType;
     }
 
     public Location getAddressLocation() {
@@ -61,11 +61,11 @@ public class GrpcReceiverConfig extends ReceiverConfig {
         sb.append(address);
         sb.append("\n");
 
-        if (signal != null) {
+        if (signalType != null) {
             sb.append(prefix(level + 1));
             sb.append(signalTypeLocation.describe());
             sb.append("  signal: ");
-            sb.append(signal.name().toLowerCase());
+            sb.append(signalType.name().toLowerCase());
             sb.append("\n");
         }
 

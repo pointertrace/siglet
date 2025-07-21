@@ -3,8 +3,8 @@ package com.siglet.container.config.siglet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.data.trace.Span;
-import com.siglet.api.data.trace.Spanlet;
+import com.siglet.api.signal.trace.Span;
+import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.config.siglet.parser.SigletConfigParser;
 import com.siglet.parser.Node;
 import com.siglet.parser.NodeChecker;
@@ -25,7 +25,7 @@ class SigletConfigParserTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         sigletConfigParser = new SigletConfigParser();
 

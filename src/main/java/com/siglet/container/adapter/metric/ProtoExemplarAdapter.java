@@ -9,7 +9,7 @@ import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.Exemplar;
 
-public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements com.siglet.api.data.metric.Exemplar {
+public class ProtoExemplarAdapter extends Adapter<Exemplar, Exemplar.Builder> implements com.siglet.api.signal.metric.Exemplar {
 
 
     public ProtoExemplarAdapter() {

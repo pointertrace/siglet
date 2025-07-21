@@ -4,6 +4,7 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.State;
 import com.siglet.container.eventloop.MapSignalDestination;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
@@ -22,13 +23,13 @@ class ProcessorEventloopTest {
 
         ProcessorContext<MultiplyConfig> processorContext = new ProcessorContextImpl<>(new MultiplyConfig(2, "final"));
 
-        ProcessorEventloop<ValueSignal, MultiplyConfig> eventLoop = new ProcessorEventloop<>("event-loop", processorFactory,
-                processorContext, ValueSignal.class, 3, 5);
+        ProcessorEventloop<MultiplyConfig> eventLoop = new ProcessorEventloop<>("event-loop", processorFactory,
+                processorContext, SignalType.SIGNAL, 3, 5);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
-        MapSignalDestination<ValueSignal> finalDestination =
-                new MapSignalDestination<ValueSignal>("final", ValueSignal.class);
+        MapSignalDestination finalDestination =
+                new MapSignalDestination("final");
 
         eventLoop.connect(finalDestination);
 
@@ -50,15 +51,15 @@ class ProcessorEventloopTest {
 
         assertTrue(finalDestination.has("1"));
         // 1 x 2 = 2
-        assertEquals(2, finalDestination.get("1").value);
+        assertEquals(2, finalDestination.get("1", ValueSignal.class).value);
 
         assertTrue(finalDestination.has("2"));
         // 2 x 2 = 4
-        assertEquals(4, finalDestination.get("2").value);
+        assertEquals(4, finalDestination.get("2", ValueSignal.class).value);
 
         assertTrue(finalDestination.has("3"));
         // 3 x 2 = 6
-        assertEquals(6, finalDestination.get("3").value);
+        assertEquals(6, finalDestination.get("3", ValueSignal.class).value);
     }
 
     @Test
@@ -68,15 +69,15 @@ class ProcessorEventloopTest {
 
         ProcessorContext<MultiplyConfig> processorContextFirst = new ProcessorContextImpl<>(new MultiplyConfig(2, "second"));
 
-        ProcessorEventloop<ValueSignal, MultiplyConfig> first = new ProcessorEventloop<>("first", processorFactory,
-                processorContextFirst, ValueSignal.class, 3, 5);
+        ProcessorEventloop<MultiplyConfig> first = new ProcessorEventloop<>("first", processorFactory,
+                processorContextFirst, SignalType.SIGNAL, 3, 5);
 
         ProcessorContext<MultiplyConfig> processorContextSecond = new ProcessorContextImpl<>(new MultiplyConfig(5, "final"));
 
-        ProcessorEventloop<ValueSignal, MultiplyConfig> second = new ProcessorEventloop<>("second", processorFactory,
-                processorContextSecond, ValueSignal.class, 3, 5);
+        ProcessorEventloop<MultiplyConfig> second = new ProcessorEventloop<>("second", processorFactory,
+                processorContextSecond, SignalType.SIGNAL, 3, 5);
 
-        MapSignalDestination<ValueSignal> finalDestination = new MapSignalDestination<ValueSignal>("final", ValueSignal.class);
+        MapSignalDestination finalDestination = new MapSignalDestination("final");
 
         first.connect(second);
 
@@ -99,17 +100,17 @@ class ProcessorEventloopTest {
         assertTrue(finalDestination.has("1"));
 
         // 1 x 2 x 5 = 10
-        assertEquals(10, finalDestination.get("1").value);
+        assertEquals(10, finalDestination.get("1", ValueSignal.class).value);
 
         assertTrue(finalDestination.has("2"));
 
         // 2 x 2 x 5 = 20
-        assertEquals(20, finalDestination.get("2").value);
+        assertEquals(20, finalDestination.get("2", ValueSignal.class).value);
 
         assertTrue(finalDestination.has("3"));
 
         // 3 x 2 x 5 = 30
-        assertEquals(30, finalDestination.get("3").value);
+        assertEquals(30, finalDestination.get("3", ValueSignal.class).value);
     }
 
 
@@ -120,13 +121,13 @@ class ProcessorEventloopTest {
 
         ProcessorContext<MultiplyConfig> processorContext = new ProcessorContextImpl<>(new MultiplyConfig(10, "final"));
 
-        ProcessorEventloop<ValueSignal, MultiplyConfig> eventLoop = new ProcessorEventloop<>("test", processorFactory,
-                processorContext, ValueSignal.class, 100_000, 5);
+        ProcessorEventloop<MultiplyConfig> eventLoop = new ProcessorEventloop<>("test", processorFactory,
+                processorContext, SignalType.SIGNAL, 100_000, 5);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
-        MapSignalDestination<ValueSignal> finalDestination =
-                new MapSignalDestination<>("final", ValueSignal.class);
+        MapSignalDestination finalDestination =
+                new MapSignalDestination("final");
 
         eventLoop.connect(finalDestination);
 
@@ -147,7 +148,7 @@ class ProcessorEventloopTest {
 
         assertEquals(State.STOPPED, eventLoop.getState());
         for (int i = 0; i < 100_000; i++) {
-            assertEquals(i * 10, finalDestination.get("" + i).value);
+            assertEquals(i * 10, finalDestination.get("" + i, ValueSignal.class).value);
         }
 
     }
@@ -159,8 +160,8 @@ class ProcessorEventloopTest {
 
         ProcessorFactory<Void> processorFactory = ThrowExceptionBaseEventloopProcessor::new;
 
-        ProcessorEventloop<ValueSignal, Void> eventLoop = new ProcessorEventloop<ValueSignal,
-                Void>("test", processorFactory, processorContext, ValueSignal.class, 10,5);
+        ProcessorEventloop<Void> eventLoop = new ProcessorEventloop<Void>("test", processorFactory,
+                processorContext, SignalType.SIGNAL, 10, 5);
 
         eventLoop.start();
 

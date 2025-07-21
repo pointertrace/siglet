@@ -26,7 +26,6 @@ class GrpcReceiverConfigTest {
         var config = """
                 grpc: first
                 address: localhost:8080
-                signal: metric
                 """;
 
 
@@ -44,7 +43,6 @@ class GrpcReceiverConfigTest {
                 (1:1)  GrpcReceiverConfig
                   (1:7)  name: first
                   (2:10)  address: localhost/127.0.0.1:8080
-                  (3:9)  signal: metric
                 """;
 
         assertEquals(expected, grpcReceiverConfig.describe());
@@ -56,7 +54,6 @@ class GrpcReceiverConfigTest {
         var config = """
                 grpc: first
                 address: localhost:8080
-                signal: metric
                 """;
 
 
@@ -77,7 +74,5 @@ class GrpcReceiverConfigTest {
         assertEquals(new InetSocketAddress("localhost", 8080), grpcReceiverConfig.getAddress());
         assertEquals(Location.of(2, 10), grpcReceiverConfig.getAddressLocation());
 
-        assertEquals(Signal.METRIC, grpcReceiverConfig.getSignal());
-        assertEquals(Location.of(3, 9), grpcReceiverConfig.getSignalTypeLocation());
     }
 }

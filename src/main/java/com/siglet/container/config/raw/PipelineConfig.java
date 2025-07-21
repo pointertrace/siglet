@@ -7,8 +7,6 @@ import java.util.List;
 
 public class PipelineConfig extends BaseConfig {
 
-    private Signal signal;
-
     private Location signalLocation;
 
     private String from;
@@ -22,15 +20,6 @@ public class PipelineConfig extends BaseConfig {
     private List<ProcessorConfig> processors;
 
     private Location sigletsLocation;
-
-
-    public Signal getSignal() {
-        return signal;
-    }
-
-    public void setSignal(Signal signal) {
-        this.signal = signal;
-    }
 
     public Location getSignalLocation() {
         return signalLocation;
@@ -101,12 +90,6 @@ public class PipelineConfig extends BaseConfig {
         sb.append("\n");
 
         sb.append(super.describe(level+1));
-
-        sb.append(prefix(level + 1));
-        sb.append(signalLocation.describe());
-        sb.append("  signal: ");
-        sb.append(signal);
-        sb.append("\n");
 
         sb.append(prefix(level + 1));
         sb.append(fromLocation.describe());

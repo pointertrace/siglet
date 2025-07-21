@@ -1,7 +1,6 @@
 package com.siglet.container.config;
 
 import com.siglet.container.config.graph.Graph;
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.raw.GlobalConfig;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;

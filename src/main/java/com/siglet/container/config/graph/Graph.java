@@ -13,9 +13,6 @@ public class Graph {
 
     private final Map<String, BaseNode> nodeRegistry = new HashMap<>();
 
-    public Graph() {
-    }
-
     public void addItem(BaseConfig config) {
         switch (config) {
             case ReceiverConfig receiver -> nodeRegistry.put(receiver.getName(),
@@ -33,7 +30,6 @@ public class Graph {
             default -> throw new SigletError("Could not add config item type " + config.getClass().getName());
         }
     }
-
 
     public List<BaseNode> getNodesByName(List<String> names) {
         return names.stream()
@@ -88,12 +84,12 @@ public class Graph {
 
                 case ReceiverNode receiverNode -> {
                     receiverNode.getTo().addAll(nodeRegistry.values().stream()
-                        .filter(PipelineNode.class::isInstance)
-                        .map(PipelineNode.class::cast)
-                        .filter(p -> p.getConfig().getFrom().equals(receiverNode.getName()))
-                        .map(BaseNode::getName)
-                        .map(name -> getNodeByNameAndType(name, PipelineNode.class))
-                        .toList());
+                            .filter(PipelineNode.class::isInstance)
+                            .map(PipelineNode.class::cast)
+                            .filter(p -> p.getConfig().getFrom().equals(receiverNode.getName()))
+                            .map(BaseNode::getName)
+                            .map(name -> getNodeByNameAndType(name, PipelineNode.class))
+                            .toList());
                 }
 
 
@@ -123,11 +119,16 @@ public class Graph {
     }
 
     private void calculateQueueAndThreadPoolSizes(Context context) {
-        nodeRegistry.values().stream()
-                .filter(ProcessorNode.class::isInstance)
-                .map(ProcessorNode.class::cast)
-                .forEach(processorNode ->  processorNode.calculateEventLoopConfig(context.getGlobalEventLoopConfig()));
+//        nodeRegistry.values().stream()
+//                .filter(ProcessorNode.class::isInstance)
+//                .map(ProcessorNode.class::cast)
+//                .forEach(processorNode -> processorNode.calculateEventLoopConfig(
+//                        context.getGlobalEventLoopConfig()));
+//        nodeRegistry.values().stream()
+//                .filter(ExporterNode.class::isInstance)
+//                .map(ExporterNode.class::cast)
+//                .forEach(exporterNode -> exporterNode.calculateEventLoopConfig(
+//                        context.getGlobalEventLoopConfig()));
     }
-
 
 }

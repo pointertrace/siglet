@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.common;
 
-import com.siglet.api.data.Events;
+import com.siglet.api.signal.Events;
 import com.siglet.container.adapter.AdapterList;
 import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.trace.v1.Span;

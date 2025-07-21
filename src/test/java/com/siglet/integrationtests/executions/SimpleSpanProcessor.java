@@ -13,14 +13,14 @@ public class SimpleSpanProcessor {
                 receivers:
                   - grpc: receiver
                     address: localhost:8080
-                    signal: trace
+                    signalType: trace
                 exporters:
                   - grpc: exporter
                     address: localhost:4317
                     batch-size-in-signals: 1
                 pipelines:
                   - name: trace-pipeline
-                    signal: trace
+                    signalType: trace
                     from: receiver
                     start: print spanId
                     processors:
@@ -30,8 +30,8 @@ public class SimpleSpanProcessor {
                         type: groovy-action
                         config:
                           action: |
-                            println "spanId=" + signal.spanIdEx
-                            signal.name = "prefix-" + signal.name
+                            println "spanId=" + signalType.spanIdEx
+                            signalType.name = "prefix-" + signalType.name
                 """;
 
         Siglet siglet = new Siglet(config);

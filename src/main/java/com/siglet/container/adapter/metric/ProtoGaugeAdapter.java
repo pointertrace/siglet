@@ -8,7 +8,7 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 
 import java.util.List;
 
-public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements com.siglet.api.data.metric.Gauge {
+public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements com.siglet.api.signal.metric.Gauge {
 
 
     public ProtoGaugeAdapter() {

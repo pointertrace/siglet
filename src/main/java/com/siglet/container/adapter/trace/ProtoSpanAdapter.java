@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.api.data.trace.SpanKind;
+import com.siglet.api.signal.trace.SpanKind;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ProtoSpanAdapter extends Adapter<Span, Span.Builder>
-        implements com.siglet.api.data.trace.Span {
+        implements com.siglet.api.signal.trace.Span {
 
     private Resource protoResource;
 

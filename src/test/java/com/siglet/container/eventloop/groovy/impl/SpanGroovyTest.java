@@ -1,7 +1,7 @@
 package com.siglet.container.eventloop.groovy.impl;
 
-import com.siglet.api.data.trace.SpanKind;
-import com.siglet.api.data.trace.StatusCode;
+import com.siglet.api.signal.trace.SpanKind;
+import com.siglet.api.signal.trace.StatusCode;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.common.ProtoAttributesAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;

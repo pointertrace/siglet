@@ -25,11 +25,11 @@ class TimeoutAccumulatorEventLoopTest {
 
     private SignalMock signal4;
 
-    private TimeoutAccumulatorEventLoop<SignalMock, AggregatedSignalMock> timeoutAccumulatorEventLoop;
+    private TimeoutAccumulatorEventLoop timeoutAccumulatorEventLoop;
 
     public AtomicInteger aggregatorIdGenerator;
 
-    private MapSignalDestination<AggregatedSignalMock> destination;
+    private MapSignalDestination destination;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +44,7 @@ class TimeoutAccumulatorEventLoopTest {
 
         aggregatorIdGenerator = new AtomicInteger(1);
 
-        destination = new MapSignalDestination<>("final", AggregatedSignalMock.class);
+        destination = new MapSignalDestination("final");
 
     }
 
@@ -54,7 +54,7 @@ class TimeoutAccumulatorEventLoopTest {
 
         AtomicInteger count = new AtomicInteger(1);
 
-        timeoutAccumulatorEventLoop = new TimeoutAccumulatorEventLoop<>("test", 1000, 2, 1,
+        timeoutAccumulatorEventLoop = new TimeoutAccumulatorEventLoop("test", 1000, 2, 1,
                 AggregatedSignalMock::new);
 
         timeoutAccumulatorEventLoop.connect(destination);
@@ -68,10 +68,10 @@ class TimeoutAccumulatorEventLoopTest {
         assertEquals(2, destination.getSize());
 
         assertTrue(destination.has("1"));
-        assertTrue(destination.get("1").has(1));
+        assertTrue(destination.get("1", AggregatedSignalMock.class).has(1));
 
         assertTrue(destination.has("2"));
-        assertTrue(destination.get("2").has(2));
+        assertTrue(destination.get("2", AggregatedSignalMock.class).has(2));
 
 
     }
@@ -205,21 +205,23 @@ class TimeoutAccumulatorEventLoopTest {
 
         private final int id;
 
-        private final List<SignalMock> signals;
+        private final List<Signal> signals;
 
-        private AggregatedSignalMock(List<SignalMock> signals) {
+        private AggregatedSignalMock(List<Signal> signals) {
             this.signals = signals;
             this.id = aggregatorIdGenerator.getAndIncrement();
         }
 
         public boolean has(int signalMockId) {
             return signals.stream()
+                    .map(SignalMock.class::cast)
                     .anyMatch(signalMock -> signalMock.id == signalMockId);
         }
 
         @Override
         public String getId() {
             return signals.stream()
+                    .map(SignalMock.class::cast)
                     .map(SignalMock::getId)
                     .collect(Collectors.joining(",", "[", "]"));
         }
@@ -227,6 +229,7 @@ class TimeoutAccumulatorEventLoopTest {
         @Override
         public String toString() {
             return signals.stream()
+                    .map(SignalMock.class::cast)
                     .map(SignalMock::getId)
                     .collect(Collectors.joining(",", "AggregatedSignalMock[", "]"));
         }

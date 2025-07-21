@@ -1,7 +1,7 @@
 package com.siglet.container.engine.pipeline.processor.groovy.proxy;
 
 import com.siglet.api.Signal;
-import com.siglet.api.data.trace.SpanKind;
+import com.siglet.api.signal.trace.SpanKind;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import groovy.lang.Closure;
 

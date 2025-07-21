@@ -1,8 +1,8 @@
 package com.siglet.container.engine.pipeline.processor.groovy.router;
 
-import com.siglet.api.Signal;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
@@ -22,11 +22,12 @@ class GroovyRouterProcessorTest {
                 new Route("signal.name == 'second-span-name'", "second")
         );
 
-        GroovyRouterProcessor groovyFilterEventLoop = new GroovyRouterProcessor("groovy-router","default",routes,3, 1);
+        GroovyRouterProcessor groovyFilterEventLoop = new GroovyRouterProcessor("groovy-router", "default",
+                routes, SignalType.TRACE, 3, 1);
 
-        MapSignalDestination<Signal> firstDestination = new MapSignalDestination<>("first", Signal.class);
-        MapSignalDestination<Signal> secondDestination = new MapSignalDestination<>("second",Signal.class);
-        MapSignalDestination<Signal> defaultDestination = new MapSignalDestination<>("default", Signal.class);
+        MapSignalDestination firstDestination = new MapSignalDestination("first");
+        MapSignalDestination secondDestination = new MapSignalDestination("second");
+        MapSignalDestination defaultDestination = new MapSignalDestination("default");
 
         groovyFilterEventLoop.connect(firstDestination);
         groovyFilterEventLoop.connect(secondDestination);

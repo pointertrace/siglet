@@ -7,7 +7,7 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.common.v1.KeyValue;
 
 public class ProtoInstrumentationScopeAdapter extends Adapter<InstrumentationScope, InstrumentationScope.Builder>
-        implements com.siglet.api.data.InstrumentationScope {
+        implements com.siglet.api.signal.InstrumentationScope {
 
 
     public ProtoInstrumentationScopeAdapter(){

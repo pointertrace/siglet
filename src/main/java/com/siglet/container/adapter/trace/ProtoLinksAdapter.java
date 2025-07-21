@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.api.data.trace.Links;
+import com.siglet.api.signal.trace.Links;
 import com.siglet.container.adapter.AdapterList;
 import com.siglet.container.adapter.AdapterListConfig;
 import com.siglet.container.adapter.AdapterUtils;

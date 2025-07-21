@@ -1,13 +1,16 @@
 package com.siglet.container.engine;
 
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 
-public interface SignalDestination<T extends Signal> {
+import java.util.Set;
+
+public interface SignalDestination {
 
     String getName();
 
-    boolean send(T signal);
+    boolean send(Signal signal);
 
-    Class<T> getType();
+    Set<SignalType> getSignalCapabilities();
 
 }

@@ -1,6 +1,5 @@
 package com.siglet.container.engine.receiver.grpc;
 
-import com.siglet.api.Signal;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.engine.Context;
@@ -29,7 +28,7 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
 
     private final Context context;
 
-    private final List<SignalDestination<Signal>> spanDestinations = new ArrayList<>();
+    private final List<SignalDestination> spanDestinations = new ArrayList<>();
 
     public OtelGrpcTraceReceiver(Context context, GrpcServer server, ReceiverNode node) {
         server.addService(this);
@@ -45,7 +44,7 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
             for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
-                    for (SignalDestination<Signal> destination : spanDestinations) {
+                    for (SignalDestination destination : spanDestinations) {
                         ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
                                 instrumentationScope, resource);
                         destination.send(protoSpanAdapter);
@@ -61,7 +60,7 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
     }
 
     @Override
-    public void connect(SignalDestination<Signal> destination) {
+    public void connect(SignalDestination destination) {
         spanDestinations.add(destination);
     }
 

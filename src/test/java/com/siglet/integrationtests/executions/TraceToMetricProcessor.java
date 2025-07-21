@@ -11,10 +11,10 @@ public class TraceToMetricProcessor {
                 receivers:
                 - grpc: trace-receiver
                   address: localhost:8080
-                  signal: trace
+                  signalType: trace
                 - grpc: metric-receiver
                   address: localhost:8080
-                  signal: metric
+                  signalType: metric
                 exporters:
                 - grpc: exporter
                   address: localhost:4317

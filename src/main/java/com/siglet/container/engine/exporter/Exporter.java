@@ -5,7 +5,7 @@ import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.engine.EngineElement;
 import com.siglet.container.engine.SignalDestination;
 
-public interface Exporter extends EngineElement, SignalDestination<Signal> {
+public interface Exporter extends EngineElement, SignalDestination {
 
     ExporterNode getNode();
 

@@ -1,9 +1,10 @@
 package com.siglet.container.engine.pipeline.processor.groovy.action;
 
-import com.siglet.api.Signal;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
+import io.netty.util.Signal;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
@@ -20,9 +21,10 @@ class GroovyActionProcessorTest {
                 context.setAttribute("name-with-prefix",signal.name)
                 """;
 
-        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",script,1,1);
+        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
+                script, SignalType.TRACE, 1, 1);
 
-        MapSignalDestination<Signal> finalDestination = new MapSignalDestination<>("final", Signal.class);
+        MapSignalDestination finalDestination = new MapSignalDestination("final");
 
         groovyActionProcessorEventLoop.connect(finalDestination);
 
@@ -30,7 +32,7 @@ class GroovyActionProcessorTest {
 
         Span span =
                 Span.newBuilder()
-                        .setTraceId(AdapterUtils.traceId(0,1))
+                        .setTraceId(AdapterUtils.traceId(0, 1))
                         .setSpanId(AdapterUtils.spanId(1))
                         .setName("span-name").build();
 
@@ -44,9 +46,9 @@ class GroovyActionProcessorTest {
         assertEquals(1, finalDestination.getSize());
         assertTrue(finalDestination.has("Span(traceId:00000000000000000000000000000001,spanId:0000000000000001)"));
         assertEquals(protoSpanAdapter, finalDestination.get("Span(traceId:00000000000000000000000000000001," +
-                "spanId:0000000000000001)"));
-        assertEquals("prefix-span-name",protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix",String.class));
+                "spanId:0000000000000001)", ProtoSpanAdapter.class));
+        assertEquals("prefix-span-name", protoSpanAdapter.getName());
+        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
 
     }
 
@@ -59,9 +61,10 @@ class GroovyActionProcessorTest {
                 drop()
                 """;
 
-        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",script,1,1);
+        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
+                script, SignalType.TRACE, 1, 1);
 
-        MapSignalDestination<Signal> finalDestination = new MapSignalDestination<>("final", Signal.class);
+        MapSignalDestination finalDestination = new MapSignalDestination("final");
 
         groovyActionProcessorEventLoop.connect(finalDestination);
 
@@ -75,8 +78,8 @@ class GroovyActionProcessorTest {
 
         groovyActionProcessorEventLoop.stop();
 
-        assertEquals("prefix-span-name",protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix",String.class));
+        assertEquals("prefix-span-name", protoSpanAdapter.getName());
+        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
 
         assertEquals(0, finalDestination.getSize());
     }
@@ -90,10 +93,11 @@ class GroovyActionProcessorTest {
                 proceed("other")
                 """;
 
-        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",script,1,1);
+        GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
+                 script,SignalType.TRACE, 1, 1);
 
-        MapSignalDestination<Signal> finalDestination = new MapSignalDestination<>("final", Signal.class);
-        MapSignalDestination<Signal> otherDestination = new MapSignalDestination<>("other",Signal.class);
+        MapSignalDestination finalDestination = new MapSignalDestination("final");
+        MapSignalDestination otherDestination = new MapSignalDestination("other");
 
 
         groovyActionProcessorEventLoop.connect(finalDestination);
@@ -109,14 +113,14 @@ class GroovyActionProcessorTest {
 
         groovyActionProcessorEventLoop.stop();
 
-        assertEquals("prefix-span-name",protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix",String.class));
+        assertEquals("prefix-span-name", protoSpanAdapter.getName());
+        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
 
         assertEquals(0, finalDestination.getSize());
         assertEquals(1, otherDestination.getSize());
         assertTrue(otherDestination.has("Span(traceId:00000000000000000000000000000000,spanId:0000000000000000)"));
         assertEquals(protoSpanAdapter, otherDestination.get("Span(traceId:00000000000000000000000000000000," +
-                "spanId:0000000000000000)"));
+                "spanId:0000000000000000)", ProtoSpanAdapter.class));
 
     }
 }

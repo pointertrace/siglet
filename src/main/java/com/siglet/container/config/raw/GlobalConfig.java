@@ -4,7 +4,7 @@ import com.siglet.parser.Describable;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;
 
-public class GlobalConfig implements Located, Describable, EventLoopConfig {
+public class GlobalConfig implements Located, Describable, QueueSizeConfig, ThreadPoolSizeConfig {
 
     private Location location;
 

@@ -2,7 +2,7 @@ package com.siglet.container.engine.receiver.grpc;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
-import com.siglet.api.data.trace.Span;
+import com.siglet.api.signal.trace.Span;
 import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.config.raw.GrpcReceiverConfig;
 import com.siglet.container.engine.Context;

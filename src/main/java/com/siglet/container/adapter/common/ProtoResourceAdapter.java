@@ -6,7 +6,7 @@ import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.resource.v1.Resource;
 
-public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> implements com.siglet.api.data.Resource {
+public class ProtoResourceAdapter extends Adapter<Resource, Resource.Builder> implements com.siglet.api.signal.Resource {
 
 
     public ProtoResourceAdapter() {

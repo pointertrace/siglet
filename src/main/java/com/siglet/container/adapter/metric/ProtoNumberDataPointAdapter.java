@@ -11,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.NumberDataPoint;
 import java.util.List;
 
 public class ProtoNumberDataPointAdapter extends Adapter<NumberDataPoint, NumberDataPoint.Builder>
-        implements com.siglet.api.data.metric.NumberDataPoint {
+        implements com.siglet.api.signal.metric.NumberDataPoint {
 
 
     public ProtoNumberDataPointAdapter() {

@@ -4,6 +4,7 @@ import com.siglet.SigletError;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.eventloop.EventLoopError;
@@ -17,21 +18,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestination<IN> {
+public class ProcessorEventloop<C> implements SignalDestination {
 
     private static final Logger LOGGER = LogManager.getLogger(ProcessorEventloop.class);
 
     private final String name;
 
-    private final ProcessorFactory<CTX> processorFactory;
+    private final ProcessorFactory<C> processorFactory;
 
-    private final ProcessorContext<CTX> processorContext;
+    private final ProcessorContext<C> processorContext;
 
     private final int threadPoolSize;
 
     private final AtomicReference<State> state = new AtomicReference<>(State.CREATED);
 
-    private final ArrayBlockingQueue<IN> queue;
+    private final ArrayBlockingQueue<Signal> queue;
 
     private final List<Thread> threads;
 
@@ -39,18 +40,18 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
 
     private CountDownLatch stopLatch;
 
-    private List<SignalDestination<IN>> next = new ArrayList<>();
+    private List<SignalDestination> next = new ArrayList<>();
 
-    private final Class<IN> type;
+    private final SignalType signalType;
 
-    public ProcessorEventloop(String name, ProcessorFactory<CTX> processorFactory,
-                              ProcessorContext<CTX> processorContext, Class<IN> type, int queueSize,
+    public ProcessorEventloop(String name, ProcessorFactory<C> processorFactory,
+                              ProcessorContext<C> processorContext, SignalType signalType, int queueSize,
                               int threadPoolSize) {
-        this(name, processorFactory, processorContext, type, queueSize, threadPoolSize, Map.of());
+        this(name, processorFactory, processorContext, signalType, queueSize, threadPoolSize, Map.of());
     }
 
-    public ProcessorEventloop(String name, ProcessorFactory<CTX> processorFactory,
-                              ProcessorContext<CTX> processorContext, Class<IN> type, int queueSize,
+    public ProcessorEventloop(String name, ProcessorFactory<C> processorFactory,
+                              ProcessorContext<C> processorContext, SignalType signalType, int queueSize,
                               int threadPoolSize, Map<String, String> destinationMappings) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name can't be null or empty");
@@ -65,7 +66,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         this.threadPoolSize = threadPoolSize;
         this.threads = new ArrayList<>(threadPoolSize);
         this.queue = new ArrayBlockingQueue<>(queueSize);
-        this.type = type;
+        this.signalType = signalType;
         this.destinationMappings.putAll(destinationMappings);
     }
 
@@ -77,7 +78,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         return state.get();
     }
 
-    public boolean send(IN signal) {
+    public boolean send(Signal signal) {
         checkState(State.RUNNING);
         return queue.offer(signal);
     }
@@ -116,7 +117,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         startLatch.countDown();
 
         while (true) {
-            IN signal = getNextSignal();
+            Signal signal = getNextSignal();
             if (signal != null) {
                 try {
                     long start = System.nanoTime();
@@ -139,7 +140,7 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         stopLatch.countDown();
     }
 
-    private void dispatch(Result result, IN signal) {
+    private void dispatch(Result result, Signal signal) {
         if (result instanceof ResultImpl resultImpl) {
             resultImpl.dispatch(destinationMappings, signal, next);
         } else {
@@ -148,9 +149,9 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         }
     }
 
-    private IN getNextSignal() {
+    private Signal getNextSignal() {
         LOGGER.trace("going to get next signal from queue");
-        IN signal = null;
+        Signal signal = null;
         try {
             if (state.get() == State.RUNNING) {
                 signal = queue.take();
@@ -167,15 +168,15 @@ public class ProcessorEventloop<IN extends Signal, CTX> implements SignalDestina
         return signal;
     }
 
-    public ProcessorContext<CTX> getContext() {
+    public ProcessorContext<C> getContext() {
         return processorContext;
     }
 
-    public Class<IN> getType() {
-        return type;
+    public Set<SignalType> getSignalCapabilities() {
+        return Set.of(signalType);
     }
 
-    public void connect(SignalDestination<IN> signalDestination) {
+    public void connect(SignalDestination signalDestination) {
         checkState(State.CREATED);
         next.add(signalDestination);
     }

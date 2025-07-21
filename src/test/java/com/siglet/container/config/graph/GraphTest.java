@@ -30,7 +30,6 @@ class GraphTest {
                 - debug: exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:
@@ -39,7 +38,7 @@ class GraphTest {
                     to: exporter
                     type: groovy-action
                     config:
-                      action: signal.name = signal.name +"-suffix"
+                      action: signalType.name = signalType.name +"-suffix"
                 """;
 
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtoHistogramDataPointAdapter extends Adapter<HistogramDataPoint, HistogramDataPoint.Builder>
-        implements com.siglet.api.data.metric.HistogramDataPoint {
+        implements com.siglet.api.signal.metric.HistogramDataPoint {
 
     public ProtoHistogramDataPointAdapter() {
         super(AdapterConfig.HISTOGRAM_DATA_POINT_ADAPTER_CONFIG);

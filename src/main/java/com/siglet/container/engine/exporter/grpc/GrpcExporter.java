@@ -6,6 +6,7 @@ import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -19,6 +20,8 @@ import io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 
+import java.util.Set;
+
 public class GrpcExporter implements Exporter {
 
     private TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub;
@@ -26,22 +29,22 @@ public class GrpcExporter implements Exporter {
 
     private final ExporterNode node;
 
-    private final TimeoutAccumulatorEventLoop<Signal, Signal> spanAccumulator;
+    private final TimeoutAccumulatorEventLoop spanAccumulator;
 
-    private final TimeoutAccumulatorEventLoop<Signal, Signal> metricAccumulator;
+    private final TimeoutAccumulatorEventLoop metricAccumulator;
 
     private State state = State.RUNNING;
 
     public GrpcExporter(Context context, ExporterNode node) {
         this.node = node;
         GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
-        spanAccumulator = new TimeoutAccumulatorEventLoop<>(
+        spanAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-span",
-                1_000,
-                config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
-                config.getBatchSizeInSignals() == null ? 1 : config.getBatchSizeInSignals(),
+                config.getQueueSizeConfig().getQueueSize(),
+                config.getBatchTimeoutInMillis(),
+                config.getBatchSizeInSignals(),
                 span -> SpanAccumulator.accumulateSpans(context, span));
-        spanAccumulator.connect(new SignalDestination<Signal>() {
+        spanAccumulator.connect(new SignalDestination() {
             @Override
             public String getName() {
                 return "aggregated-spans";
@@ -54,12 +57,12 @@ public class GrpcExporter implements Exporter {
             }
 
             @Override
-            public Class<Signal> getType() {
-                return Signal.class;
+            public Set<SignalType> getSignalCapabilities() {
+                return Set.of(SignalType.TRACE, SignalType.METRIC);
             }
         });
 
-        metricAccumulator = new TimeoutAccumulatorEventLoop<>(
+        metricAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-metric",
                 1_000,
                 config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
@@ -81,8 +84,8 @@ public class GrpcExporter implements Exporter {
     }
 
     @Override
-    public Class<Signal> getType() {
-        return Signal.class;
+    public Set<SignalType> getSignalCapabilities() {
+        return Set.of(SignalType.TRACE, SignalType.METRIC);
     }
 
     @Override

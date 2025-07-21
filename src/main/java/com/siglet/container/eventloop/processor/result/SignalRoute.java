@@ -49,17 +49,17 @@ public class SignalRoute<T extends Signal> {
     }
 
     public void dispatch(Map<String, String> destinationMappings, T processSignal,
-                         List<SignalDestination<T>> destinations) {
+                         List<SignalDestination> destinations) {
         if (signal == DROP_SIGNAL) {
             return;
         }
         if (destination.equals(ANY_DESTINATION)) {
-            for (SignalDestination<T> availableSignalDestination : destinations) {
+            for (SignalDestination availableSignalDestination : destinations) {
                 availableSignalDestination.send(chooseSignal(processSignal, signal));
             }
             return;
         }
-        for (SignalDestination<T> availableSignalDestination : destinations) {
+        for (SignalDestination availableSignalDestination : destinations) {
             String destinationName = null;
             if (!destinationMappings.isEmpty()) {
                 destinationName = destinationMappings.get(destination);

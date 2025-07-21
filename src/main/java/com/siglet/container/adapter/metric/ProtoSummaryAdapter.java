@@ -8,7 +8,7 @@ import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;
 
 import java.util.List;
 
-public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> implements com.siglet.api.data.metric.Summary {
+public class ProtoSummaryAdapter extends Adapter<Summary, Summary.Builder> implements com.siglet.api.signal.metric.Summary {
 
     public ProtoSummaryAdapter() {
         super(AdapterConfig.SUMMARY_ADAPTER_CONFIG);

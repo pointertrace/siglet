@@ -14,13 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SignalRouteConfigTest {
 
-    private MapSignalDestination<SignalMock> firstDestination;
+    private MapSignalDestination firstDestination;
 
-    private MapSignalDestination<SignalMock> secondDestination;
+    private MapSignalDestination secondDestination;
 
-    private MapSignalDestination<SignalMock> mappedFirstDestination;
+    private MapSignalDestination mappedFirstDestination;
 
-    private MapSignalDestination<SignalMock> mappedSecondDestination;
+    private MapSignalDestination mappedSecondDestination;
 
     private SignalMock processSignal;
 
@@ -31,13 +31,13 @@ class SignalRouteConfigTest {
     @BeforeEach
     void setUp() {
 
-        firstDestination = new MapSignalDestination<SignalMock>("first", SignalMock.class);
+        firstDestination = new MapSignalDestination("first");
 
-        secondDestination = new MapSignalDestination<SignalMock>("second", SignalMock.class);
+        secondDestination = new MapSignalDestination("second");
 
-        mappedFirstDestination = new MapSignalDestination<SignalMock>("mapped-first", SignalMock.class);
+        mappedFirstDestination = new MapSignalDestination("mapped-first");
 
-        mappedSecondDestination = new MapSignalDestination<SignalMock>("mapped-second", SignalMock.class);
+        mappedSecondDestination = new MapSignalDestination("mapped-second");
 
         processSignal = new SignalMock(1);
 
@@ -63,11 +63,11 @@ class SignalRouteConfigTest {
 
         assertEquals(1, firstDestination.getSize());
         assertTrue(firstDestination.has("1"));
-        assertEquals(processSignal, firstDestination.get("1"));
+        assertEquals(processSignal, firstDestination.get("1", SignalMock.class));
 
         assertEquals(1, secondDestination.getSize());
         assertTrue(secondDestination.has("1"));
-        assertEquals(processSignal, secondDestination.get("1"));
+        assertEquals(processSignal, secondDestination.get("1", SignalMock.class ));
     }
 
     @Test
@@ -80,7 +80,7 @@ class SignalRouteConfigTest {
 
         assertEquals(1, secondDestination.getSize());
         assertTrue(secondDestination.has("1"));
-        assertEquals(processSignal, secondDestination.get("1"));
+        assertEquals(processSignal, secondDestination.get("1", SignalMock.class));
     }
 
     @Test
@@ -95,7 +95,7 @@ class SignalRouteConfigTest {
 
         assertEquals(1, mappedSecondDestination.getSize());
         assertTrue(mappedSecondDestination.has("1"));
-        assertEquals(processSignal, mappedSecondDestination.get("1"));
+        assertEquals(processSignal, mappedSecondDestination.get("1", SignalMock.class));
     }
 
     @Test
@@ -138,7 +138,7 @@ class SignalRouteConfigTest {
 
         assertEquals(1, secondDestination.getSize());
         assertTrue(secondDestination.has("2"));
-        assertEquals(otherSignal, secondDestination.get("2"));
+        assertEquals(otherSignal, secondDestination.get("2", SignalMock.class));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.common;
 
 import com.siglet.SigletError;
-import com.siglet.api.data.Attributes;
+import com.siglet.api.signal.Attributes;
 import com.siglet.container.adapter.*;
 import io.opentelemetry.proto.common.v1.KeyValue;
 

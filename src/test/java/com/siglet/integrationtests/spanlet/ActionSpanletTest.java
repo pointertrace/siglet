@@ -28,7 +28,6 @@ class ActionSpanletTest {
                 - debug: exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:
@@ -78,7 +77,6 @@ class ActionSpanletTest {
                 - debug: second-exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:

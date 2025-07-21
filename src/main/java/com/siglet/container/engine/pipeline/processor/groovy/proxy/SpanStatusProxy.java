@@ -1,7 +1,7 @@
 package com.siglet.container.engine.pipeline.processor.groovy.proxy;
 
 import com.siglet.api.Signal;
-import com.siglet.api.data.trace.StatusCode;
+import com.siglet.api.signal.trace.StatusCode;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 
 public class SpanStatusProxy extends BaseProxy {

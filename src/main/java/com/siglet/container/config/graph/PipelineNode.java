@@ -1,6 +1,7 @@
 package com.siglet.container.config.graph;
 
 import com.siglet.container.config.raw.PipelineConfig;
+import com.siglet.container.config.raw.SignalType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,18 +12,8 @@ public final class PipelineNode extends BaseNode {
 
     private List<ProcessorNode> start = new ArrayList<>();
 
-    private List<ProcessorNode> siglets = new ArrayList<>();
-
     public PipelineNode(PipelineConfig pipelineConfig) {
         super(pipelineConfig);
-    }
-
-    public List<ProcessorNode> getSiglets() {
-        return siglets;
-    }
-
-    public void setSiglets(List<ProcessorNode> siglets) {
-        this.siglets = siglets;
     }
 
     public List<ReceiverNode> getFrom() {
@@ -45,4 +36,9 @@ public final class PipelineNode extends BaseNode {
     public PipelineConfig getConfig() {
         return (PipelineConfig) super.getConfig();
     }
+
+    public SignalType getSignal() {
+        return getStart().getFirst().getSignal();
+    }
+
 }

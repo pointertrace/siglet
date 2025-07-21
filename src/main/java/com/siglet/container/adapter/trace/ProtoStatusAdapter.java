@@ -1,12 +1,12 @@
 package com.siglet.container.adapter.trace;
 
-import com.siglet.api.data.trace.StatusCode;
+import com.siglet.api.signal.trace.StatusCode;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterUtils;
 import io.opentelemetry.proto.trace.v1.Status;
 
-public class ProtoStatusAdapter extends Adapter<Status, Status.Builder> implements com.siglet.api.data.trace.Status {
+public class ProtoStatusAdapter extends Adapter<Status, Status.Builder> implements com.siglet.api.signal.trace.Status {
 
 
     public ProtoStatusAdapter() {

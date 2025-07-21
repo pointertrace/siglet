@@ -29,7 +29,6 @@ class RouterSpanletTest {
                 - debug: third-exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:

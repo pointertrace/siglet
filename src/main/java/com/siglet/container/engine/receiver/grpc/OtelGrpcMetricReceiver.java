@@ -29,7 +29,7 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
 
     private final Context context;
 
-    private final List<SignalDestination<Signal>> metricDestinations = new ArrayList<>();
+    private final List<SignalDestination> metricDestinations = new ArrayList<>();
 
     public OtelGrpcMetricReceiver(Context context, GrpcServer server, ReceiverNode node) {
         this.server = server;
@@ -47,7 +47,7 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
                 for (Metric metric : scopeMetrics.getMetricsList()) {
                     if (metric.hasGauge()) {
                         // TODO verifica se precisa de resource e scope builder/
-                        for (SignalDestination<Signal> destination : metricDestinations) {
+                        for (SignalDestination destination : metricDestinations) {
 
                             ProtoMetricAdapter protoMetricAdapter =
                                     context.getMetricObjectPool().get(metric, instrumentationScope, resource);
@@ -63,7 +63,7 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
     }
 
     @Override
-    public void connect(SignalDestination<Signal> signalDestination) {
+    public void connect(SignalDestination signalDestination) {
         metricDestinations.add(signalDestination);
     }
 

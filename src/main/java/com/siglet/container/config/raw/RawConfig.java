@@ -14,10 +14,6 @@ import java.util.stream.Stream;
 
 public class RawConfig extends BaseConfig {
 
-    private static final EventLoopConfig defaultEventLoopConfig =
-            EventLoopConfig.of(1_000, Runtime.getRuntime().availableProcessors());
-
-
     private GlobalConfig globalConfig;
 
     private Location globalConfigLocation;
@@ -86,7 +82,6 @@ public class RawConfig extends BaseConfig {
     public Graph createGraph(Context context) {
         Graph graph = new Graph();
 
-
         getReceivers().forEach(graph::addItem);
         getExporters().forEach(graph::addItem);
         getPipelines().forEach(graph::addItem);
@@ -112,12 +107,22 @@ public class RawConfig extends BaseConfig {
         getPipelines().stream()
                 .flatMap(this::getItems)
                 .forEach(BaseConfig::afterSetValues);
+
+        getPipelines().stream()
+                .flatMap(this::getItems)
+                .filter(ProcessorConfig.class::isInstance)
+                .map(ProcessorConfig.class::cast)
+                .forEach(processorConfig -> processorConfig.setRawConfig(this));
     }
 
     @Override
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(prefix(level));
-        sb.append(getLocation().describe()); sb.append("  RawConfig:"); if (globalConfig != null) { sb.append("\n"); sb.append(globalConfig.describe(level + 1));
+        sb.append(getLocation().describe());
+        sb.append("  RawConfig:");
+        if (globalConfig != null) {
+            sb.append("\n");
+            sb.append(globalConfig.describe(level + 1));
         }
 
         sb.append("\n");
@@ -186,5 +191,21 @@ public class RawConfig extends BaseConfig {
 
     public void setGlobalConfigLocation(Location globalConfigLocation) {
         this.globalConfigLocation = globalConfigLocation;
+    }
+
+    public QueueSizeConfig getGlobalConfigQueueSize() {
+        if (getGlobalConfig() == null) {
+            return QueueSizeConfig.defaultConfig();
+        } else {
+            return QueueSizeConfig.defaultConfig().chain(QueueSizeConfig.of(getGlobalConfig()));
+        }
+    }
+
+    public ThreadPoolSizeConfig getGlobalConfigThreadPoolSize() {
+        if (getGlobalConfig() == null) {
+            return ThreadPoolSizeConfig.defaultConfig();
+        } else {
+            return ThreadPoolSizeConfig.defaultConfig().chain(ThreadPoolSizeConfig.of(getGlobalConfig()));
+        }
     }
 }

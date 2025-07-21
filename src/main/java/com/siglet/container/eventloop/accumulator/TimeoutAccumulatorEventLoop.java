@@ -2,6 +2,7 @@ package com.siglet.container.eventloop.accumulator;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.EngineElement;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -11,13 +12,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> implements SignalDestination<IN>,
+public class TimeoutAccumulatorEventLoop implements SignalDestination,
         EngineElement {
 
     private static final Logger LOGGER = LogManager.getLogger(TimeoutAccumulatorEventLoop.class);
@@ -28,11 +30,11 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
 
     private final int maxSize;
 
-    private final Function<List<IN>, OUT> accumulatorFunction;
+    private final Function<List<Signal>, Signal> accumulatorFunction;
 
-    private final List<SignalDestination<OUT>> next = new ArrayList<>();
+    private final List<SignalDestination> next = new ArrayList<>();
 
-    private final ArrayBlockingQueue<IN> queue;
+    private final ArrayBlockingQueue<Signal> queue;
 
     private Thread thread;
 
@@ -44,7 +46,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
 
 
     public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                       Function<List<IN>, OUT> accumulatorFunction) {
+                                       Function<List<Signal>,Signal> accumulatorFunction) {
         this.name = name;
         this.timeoutInMillis = timeoutInMillis;
         this.maxSize = maxSize;
@@ -58,17 +60,17 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
     }
 
     @Override
-    public Class<IN> getType() {
-        return null;
+    public Set<SignalType> getSignalCapabilities() {
+        return Set.of(SignalType.TRACE, SignalType.METRIC);
     }
 
     @Override
-    public boolean send(IN signal) {
+    public boolean send(Signal signal) {
         checkState(State.RUNNING);
         return queue.offer(signal);
     }
 
-    public void connect(SignalDestination<OUT> destination) {
+    public void connect(SignalDestination destination) {
         if (getState() != State.CREATED) {
             throw new SigletError("Cannot connect if state is not created");
         }
@@ -81,11 +83,11 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
 
         thread = Thread.ofVirtual().name("aggregator-event-loop:" + name).start(() -> {
 
-            IN signal;
+            Signal signal;
             long nextTick = -1;
             state.set(State.RUNNING);
             startLatch.countDown();
-            List<IN> buffer = new ArrayList<>(maxSize);
+            List<Signal> buffer = new ArrayList<>(maxSize);
             while (true) {
 
                 try {
@@ -116,7 +118,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         }
     }
 
-    private long processCurrentSignal(List<IN> buffer, IN signal, long nextTick) {
+    private long processCurrentSignal(List<Signal> buffer, Signal signal, long nextTick) {
         buffer.add(signal);
         if (buffer.size() == maxSize) {
             aggregateAndSend(buffer);
@@ -127,7 +129,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         return nextTick;
     }
 
-    private void processRemainingSignals(List<IN> buffer) {
+    private void processRemainingSignals(List<Signal> buffer) {
         while (!queue.isEmpty()) {
             queue.drainTo(buffer, maxSize - buffer.size());
             if (!buffer.isEmpty()) {
@@ -136,7 +138,7 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         }
     }
 
-    private IN getNextSignal(long nextTick) throws InterruptedException {
+    private Signal getNextSignal(long nextTick) throws InterruptedException {
         if (nextTick < 0) {
             return queue.take();
         } else {
@@ -144,10 +146,10 @@ public class TimeoutAccumulatorEventLoop<IN extends Signal, OUT extends Signal> 
         }
     }
 
-    private void aggregateAndSend(List<IN> buffer) {
+    private void aggregateAndSend(List<Signal> buffer) {
         try {
-            OUT aggregated = accumulatorFunction.apply(buffer);
-            for (SignalDestination<OUT> nextDestination : next) {
+            Signal aggregated = accumulatorFunction.apply(buffer);
+            for (SignalDestination nextDestination : next) {
                 nextDestination.send(aggregated);
             }
         } catch (Error e) {

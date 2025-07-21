@@ -1,7 +1,7 @@
 package com.siglet.container.adapter.trace;
 
 import com.google.protobuf.ByteString;
-import com.siglet.api.data.trace.Link;
+import com.siglet.api.signal.trace.Link;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;

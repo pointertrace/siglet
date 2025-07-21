@@ -1,6 +1,5 @@
 package com.siglet.container;
 
-import com.siglet.container.config.raw.EventLoopConfig;
 import com.siglet.container.config.siglet.SigletConfig;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.ContextFactory;

@@ -1,19 +1,22 @@
 package com.siglet.container.engine.receiver.debug;
 
+import com.siglet.SigletError;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ReceiverNode;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DebugReceiver implements Receiver {
 
     private volatile State state = State.CREATED;
 
-    private final List<SignalDestination<Signal>> destinations = new ArrayList<>();
+    private final List<SignalDestination> destinations = new ArrayList<>();
 
     private final ReceiverNode node;
 
@@ -43,17 +46,43 @@ public class DebugReceiver implements Receiver {
     }
 
     @Override
-    public void connect(SignalDestination<Signal> signalDestination) {
+    public void connect(SignalDestination signalDestination) {
         destinations.add(signalDestination);
     }
-
+//    ver se destinations pode ser uma classe!!!!
     public boolean send(Signal signal) {
-        for(SignalDestination<Signal> destination : destinations) {
-            if (!destination.send(signal)) {
-                return false;
+        if (! isCompatible(signal, destinations)) {
+            throw new SigletError(String.format("Cannot send signal %s because there is no compatible destination",
+                    signal));
+        }
+        for (SignalDestination destination : destinations) {
+            if (isCompatible(signal, destination.getSignalCapabilities())) {
+                if (!destination.send(signal)) {
+                    return false;
+                }
             }
         }
         return true;
+    }
+
+    public boolean isCompatible(Signal signal, Set<SignalType> signalTypes) {
+        for (SignalType signalType : signalTypes) {
+            if (signalType.isCompatible(signal)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isCompatible(Signal signal, List<SignalDestination> destinations) {
+        for (SignalDestination destination : destinations) {
+            for (SignalType signalType : destination.getSignalCapabilities()) {
+                if (signalType.isCompatible(signal)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

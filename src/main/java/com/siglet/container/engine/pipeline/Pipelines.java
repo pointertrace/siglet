@@ -21,7 +21,7 @@ public class Pipelines {
         return namedPipelines.put(node.getConfig().getName(), new Pipeline(node));
     }
 
-    public SignalDestination<Signal> getDestination(String name) {
+    public SignalDestination getDestination(String name) {
         return namedPipelines.values().stream()
                 .map(pipeline -> pipeline.getDestination(name))
                 .filter(Objects::nonNull)

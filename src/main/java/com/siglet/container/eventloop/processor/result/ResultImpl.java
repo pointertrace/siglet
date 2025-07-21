@@ -37,7 +37,7 @@ public class ResultImpl implements Result {
     }
 
     public <T extends Signal> void dispatch(Map<String,String> destinationMappings, T processSignal,
-                                            List<SignalDestination<T>> availableDestinations) {
+                                            List<SignalDestination> availableDestinations) {
         for(SignalRoute route : routes) {
             route.dispatch(destinationMappings, processSignal, availableDestinations);
         }

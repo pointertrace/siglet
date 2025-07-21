@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.data.metric.AggregationTemporality;
+import com.siglet.api.signal.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -11,7 +11,7 @@ import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
 import java.util.List;
 
 public class ProtoHistogramAdapter extends Adapter<Histogram, Histogram.Builder>
-        implements com.siglet.api.data.metric.Histogram {
+        implements com.siglet.api.signal.metric.Histogram {
 
 
     public ProtoHistogramAdapter() {

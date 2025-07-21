@@ -5,7 +5,7 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
-import com.siglet.container.config.raw.EventLoopConfig;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -18,25 +18,32 @@ import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 import com.siglet.container.eventloop.processor.result.ResultImpl;
 import groovy.lang.Script;
 
+import java.util.Set;
+
 public class GroovyActionProcessor implements Processor {
 
     private ProcessorNode node;
 
-    private final ProcessorEventloop<Signal, Void> processorEventloop;
+    private final ProcessorEventloop<Void> processorEventloop;
 
     public GroovyActionProcessor(Context context, ProcessorNode node) {
         this.node = node;
         GroovyActionConfig groovyActionConfig = (GroovyActionConfig) node.getConfig().getConfig();
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
-        processorEventloop = new ProcessorEventloop<>(node.getName(),
-                createProcessorFactory(groovyActionConfig.getAction()), ctx, Signal.class,
-                node.getQueueSize(), node.getThreadPoolSize());
+        processorEventloop = new ProcessorEventloop<>(
+                node.getName(),
+                createProcessorFactory(groovyActionConfig.getAction()),
+                ctx,
+                node.getSignal(),
+                node.getConfig().getQueueSizeConfig().getQueueSize(),
+                node.getConfig().getThreadPoolSizeConfig().getThreadPoolSize());
     }
 
-    public GroovyActionProcessor(String name, String action,int queueCapacity, int threadPoolSize) {
+    public GroovyActionProcessor(String name, String action, SignalType  signalType,
+                                 int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(action), ctx,
-                Signal.class, queueCapacity, threadPoolSize);
+                signalType, queueCapacity, threadPoolSize);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(String action) {
@@ -78,12 +85,12 @@ public class GroovyActionProcessor implements Processor {
     }
 
     @Override
-    public Class<Signal> getType() {
-        return processorEventloop.getType();
+    public Set<SignalType> getSignalCapabilities() {
+        return processorEventloop.getSignalCapabilities();
     }
 
     @Override
-    public void connect(SignalDestination<Signal> destination) {
+    public void connect(SignalDestination destination) {
         processorEventloop.connect(destination);
     }
 

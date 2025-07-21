@@ -1,7 +1,7 @@
 package com.siglet.container.engine.pipeline.processor.siglet;
 
 import com.siglet.SigletError;
-import com.siglet.api.data.trace.Spanlet;
+import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.config.raw.ProcessorConfig;
 import com.siglet.container.config.raw.ProcessorKind;
 import com.siglet.container.config.siglet.SigletConfig;
@@ -34,7 +34,7 @@ public class SigletProcessorType implements ProcessorType {
     @Override
     public ProcessorCreator getProcessorCreator() {
         return (context, node) -> {
-            if (node.getConfig().getKind() == ProcessorKind.SPANLET) {
+            if (node.getConfig().getProcessorKind() == ProcessorKind.SPANLET) {
                 com.siglet.api.Processor instance = sigletConfig.createSigletInstance();
                 if (instance instanceof Spanlet spanlet) {
                     return new SpanletProcessor(context, node, spanlet);

@@ -31,8 +31,6 @@ public class ConfigCheckFactory {
 
     public static final String BATCH_TIMEOUT_IN_MILLIS_PROP = "batch-timeout-in-millis";
 
-    public static final String SIGNAL_TYPE_PROP = "signal-type";
-
     public static final String DEBUG_PROP = "debug";
 
     public static final String TO_PROP = "to";
@@ -53,8 +51,6 @@ public class ConfigCheckFactory {
 
     public static final String START_PROP = "start";
 
-    public static final String PIPELINE_PROP = "pipeline";
-
     public static final String RECEIVERS_PROP = "receivers";
 
     public static final String EXPORTERS_PROP = "exporters";
@@ -73,9 +69,7 @@ public class ConfigCheckFactory {
                 requiredProperty(GrpcReceiverConfig::setName, GrpcReceiverConfig::setNameLocation,
                         GRPC_PROP, text()),
                 requiredProperty(GrpcReceiverConfig::setAddress, GrpcReceiverConfig::setAddressLocation,
-                        ADDRESS_PROP, text(inetSocketAddress())),
-                property(GrpcReceiverConfig::setSignal, GrpcReceiverConfig::setSignalTypeLocation,
-                        SIGNAL_PROP, false, text(new SignalTransformer()))
+                        ADDRESS_PROP, text(inetSocketAddress()))
         );
     }
 
@@ -100,7 +94,9 @@ public class ConfigCheckFactory {
                         numberInt()),
                 optionalProperty(GrpcExporterConfig::setBatchTimeoutInMillis,
                         GrpcExporterConfig::setBatchTimeoutInMillisLocation,
-                        BATCH_TIMEOUT_IN_MILLIS_PROP, numberInt()));
+                        BATCH_TIMEOUT_IN_MILLIS_PROP, numberInt()),
+                optionalProperty(GrpcExporterConfig::setQueueSize, GrpcExporterConfig::setQueueSizeLocation,
+                        QUEUE_SIZE_PROP, numberInt()));
     }
 
     public static NodeChecker globalConfigChecker() {
@@ -128,7 +124,7 @@ public class ConfigCheckFactory {
         return strictObject(ProcessorConfig::new,
                 requiredProperty(ProcessorConfig::setName, ProcessorConfig::setNameLocation,
                         NAME_PROP, text()),
-                requiredProperty(ProcessorConfig::setKind, ProcessorConfig::setKindLocation,
+                requiredProperty(ProcessorConfig::setProcessorKind, ProcessorConfig::setKindLocation,
                         KIND_PROP, text(new ProcessorKindTransformer())),
                 alternativeRequiredProperty(TO_PROP,
                         requiredProperty(ProcessorConfig::setTo, ProcessorConfig::setToLocation,
@@ -154,8 +150,6 @@ public class ConfigCheckFactory {
         return strictObject(PipelineConfig::new,
                 requiredProperty(PipelineConfig::setName, PipelineConfig::setNameLocation,
                         NAME_PROP, text()),
-                requiredProperty(PipelineConfig::setSignal, PipelineConfig::setSignalLocation,
-                        SIGNAL_PROP, text(new SignalTransformer())),
                 requiredProperty(PipelineConfig::setFrom, PipelineConfig::setFromLocation,
                         FROM_PROP, text()),
                 alternativeRequiredProperty(START_PROP,

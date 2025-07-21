@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.data.metric.AggregationTemporality;
+import com.siglet.api.signal.metric.AggregationTemporality;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;
@@ -10,7 +10,7 @@ import io.opentelemetry.proto.metrics.v1.Sum;
 
 import java.util.List;
 
-public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements com.siglet.api.data.metric.Sum {
+public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder> implements com.siglet.api.signal.metric.Sum {
 
     public ProtoSumAdapter() {
         super(AdapterConfig.SUM_ADAPTER_CONFIG);

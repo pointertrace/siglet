@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.common;
 
-import com.siglet.api.data.Event;
+import com.siglet.api.signal.Event;
 import com.siglet.container.adapter.Adapter;
 import com.siglet.container.adapter.AdapterConfig;
 import com.siglet.container.adapter.AdapterListConfig;

@@ -1,6 +1,6 @@
 package com.siglet.container.adapter.metric;
 
-import com.siglet.api.data.metric.ValueAtQuantiles;
+import com.siglet.api.signal.metric.ValueAtQuantiles;
 import com.siglet.container.adapter.AdapterList;
 import com.siglet.container.adapter.AdapterListConfig;
 import io.opentelemetry.proto.metrics.v1.SummaryDataPoint;

@@ -3,11 +3,11 @@ package com.siglet.container.engine.pipeline.processor.siglet.spanlet;
 import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
-import com.siglet.api.Signal;
-import com.siglet.api.data.trace.Span;
-import com.siglet.api.data.trace.Spanlet;
+import com.siglet.api.signal.trace.Span;
+import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
+import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +27,7 @@ class SpanletProcessorTest {
         SpanletProcessor spanletEventLoop = new SpanletProcessor("prefix",
                 modifiableSpanlet,config,5,1, Map.of());
 
-        MapSignalDestination finalDestination = new MapSignalDestination("final", Signal.class);
+        MapSignalDestination finalDestination = new MapSignalDestination("final");
 
         spanletEventLoop.connect(finalDestination);
 

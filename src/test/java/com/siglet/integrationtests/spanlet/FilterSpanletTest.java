@@ -28,7 +28,6 @@ class FilterSpanletTest {
                 - debug: exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:
@@ -85,7 +84,6 @@ class FilterSpanletTest {
                 - debug: second-exporter
                 pipelines:
                 - name: pipeline
-                  signal: trace
                   from: receiver
                   start: spanlet
                   processors:
