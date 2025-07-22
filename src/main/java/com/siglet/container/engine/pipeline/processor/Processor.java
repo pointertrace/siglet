@@ -1,6 +1,5 @@
 package com.siglet.container.engine.pipeline.processor;
 
-import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.engine.EngineElement;
 import com.siglet.container.engine.SignalDestination;

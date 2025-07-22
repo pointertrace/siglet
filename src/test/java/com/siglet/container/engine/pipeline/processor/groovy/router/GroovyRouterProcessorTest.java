@@ -2,7 +2,7 @@ package com.siglet.container.engine.pipeline.processor.groovy.router;
 
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class GroovyRouterProcessorTest {
         );
 
         GroovyRouterProcessor groovyFilterEventLoop = new GroovyRouterProcessor("groovy-router", "default",
-                routes, SignalType.TRACE, 3, 1);
+                routes, SignalType.SPAN, 3, 1);
 
         MapSignalDestination firstDestination = new MapSignalDestination("first");
         MapSignalDestination secondDestination = new MapSignalDestination("second");

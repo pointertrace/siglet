@@ -36,7 +36,7 @@ class ProcessorConfigTest {
                 - second exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -58,7 +58,7 @@ class ProcessorConfigTest {
                   (6:7)  type: groovy-action
                   (7:1) config:
                     (7:1)  groovyActionConfig:
-                      (8:11)  action: signalType.name = signalType.name +"-suffix" """;
+                      (8:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -77,7 +77,7 @@ class ProcessorConfigTest {
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -101,7 +101,7 @@ class ProcessorConfigTest {
                   (8:19)  threadPoolSize: 20
                   (9:1) config:
                     (9:1)  groovyActionConfig:
-                      (10:11)  action: signalType.name = signalType.name +"-suffix" """;
+                      (10:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -119,7 +119,7 @@ class ProcessorConfigTest {
                 - second exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -159,7 +159,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
 
@@ -173,7 +173,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -192,7 +192,7 @@ class ProcessorConfigTest {
                   (4:7)  type: groovy-action
                   (5:1) config:
                     (5:1)  groovyActionConfig:
-                      (6:11)  action: signalType.name = signalType.name +"-suffix" """;
+                      (6:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -208,7 +208,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -247,7 +247,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(5, 1), processorConfig.getConfigLocation());
-        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
 
     }
@@ -263,7 +263,7 @@ class ProcessorConfigTest {
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -302,7 +302,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("signalType.name = signalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
 
@@ -314,7 +314,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -338,7 +338,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -364,7 +364,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -392,7 +392,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -422,7 +422,7 @@ class ProcessorConfigTest {
                 type: groovy-action
                 queue-size: 20
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -452,7 +452,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -479,7 +479,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -508,7 +508,7 @@ class ProcessorConfigTest {
                 to: exporter
                 type: groovy-action
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -538,7 +538,7 @@ class ProcessorConfigTest {
                 type: groovy-action
                 thread-pool-size: 20
                 config:
-                  action: signalType.name = signalType.name +"-suffix"
+                  action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);

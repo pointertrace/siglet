@@ -62,8 +62,7 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(prefix(level));
         sb.append(getLocation().describe());
-        sb.append("  GrpcExporterConfig");
-        sb.append("\n");
+        sb.append("  GrpcExporterConfig\n");
 
         sb.append(super.describe(level + 1));
 

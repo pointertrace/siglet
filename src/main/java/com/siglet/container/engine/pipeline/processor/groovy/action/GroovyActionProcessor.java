@@ -5,7 +5,7 @@ import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ProcessorNode;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -39,7 +39,7 @@ public class GroovyActionProcessor implements Processor {
                 node.getConfig().getThreadPoolSizeConfig().getThreadPoolSize());
     }
 
-    public GroovyActionProcessor(String name, String action, SignalType  signalType,
+    public GroovyActionProcessor(String name, String action, SignalType signalType,
                                  int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(action), ctx,

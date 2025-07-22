@@ -1,7 +1,6 @@
 package com.siglet.container.config.graph;
 
 import com.siglet.container.config.raw.PipelineConfig;
-import com.siglet.container.config.raw.SignalType;
 
 import java.util.ArrayList;
 import java.util.List;

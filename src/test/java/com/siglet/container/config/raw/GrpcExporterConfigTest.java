@@ -1,7 +1,6 @@
 package com.siglet.container.config.raw;
 
 import com.siglet.SigletError;
-import com.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import com.siglet.parser.Node;
 import com.siglet.parser.YamlParser;
 import com.siglet.parser.located.Location;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.net.InetSocketAddress;
 
 import static com.siglet.container.config.ConfigCheckFactory.grpcExporterChecker;
-import static com.siglet.container.config.ConfigCheckFactory.processorChecker;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GrpcExporterConfigTest {

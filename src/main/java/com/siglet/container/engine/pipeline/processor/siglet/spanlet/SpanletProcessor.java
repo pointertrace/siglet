@@ -4,7 +4,7 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Signal;
 import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.config.graph.ProcessorNode;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -44,7 +44,7 @@ public class SpanletProcessor implements Processor {
 
         ProcessorContextImpl<Object> ctx = new ProcessorContextImpl<>(config);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                SignalType.TRACE, queueCapacity, threadPoolSize, destinationMappings);
+                SignalType.SPAN, queueCapacity, threadPoolSize, destinationMappings);
     }
 
     private static <T> ProcessorFactory<T> createProcessorFactory(Spanlet<T> spanlet) {

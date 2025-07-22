@@ -5,27 +5,19 @@ import com.siglet.api.Signal;
 import com.siglet.api.signal.metric.Metric;
 import com.siglet.api.signal.trace.Span;
 
-public enum SignalType {
+public enum OtelSignalType {
 
-    TRACE(Span.class, false),
-    METRIC(Metric.class, false),
-    SIGNAL(Signal.class, true);
+    TRACE(Span.class),
+    METRIC(Metric.class);
 
     private final Class<? extends com.siglet.api.Signal> baseType;
 
-    private final boolean internal;
-
-    SignalType(Class<? extends com.siglet.api.Signal> baseType, boolean internal) {
+    OtelSignalType(Class<? extends com.siglet.api.Signal> baseType) {
         this.baseType = baseType;
-        this.internal = internal;
     }
 
     public Class<? extends com.siglet.api.Signal> getBaseType() {
         return baseType;
-    }
-
-    public boolean isInternal() {
-        return internal;
     }
 
     public boolean isCompatible(Signal signal) {

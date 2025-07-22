@@ -1,12 +1,8 @@
 package com.siglet.container.engine.receiver.grpc;
 
-import com.siglet.api.Signal;
 import com.siglet.container.adapter.metric.ProtoMetricAdapter;
-import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
-import com.siglet.container.engine.State;
-import com.siglet.container.engine.receiver.Receiver;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse;
@@ -20,20 +16,13 @@ import io.opentelemetry.proto.resource.v1.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImplBase
-        implements Receiver {
-
-    private final GrpcServer server;
-
-    private final ReceiverNode node;
+public class OtelGrpcMetricService extends MetricsServiceGrpc.MetricsServiceImplBase {
 
     private final Context context;
 
     private final List<SignalDestination> metricDestinations = new ArrayList<>();
 
-    public OtelGrpcMetricReceiver(Context context, GrpcServer server, ReceiverNode node) {
-        this.server = server;
-        this.node = node;
+    public OtelGrpcMetricService(Context context) {
         this.context = context;
     }
 
@@ -46,12 +35,10 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
                 InstrumentationScope instrumentationScope = scopeMetrics.getScope();
                 for (Metric metric : scopeMetrics.getMetricsList()) {
                     if (metric.hasGauge()) {
-                        // TODO verifica se precisa de resource e scope builder/
                         for (SignalDestination destination : metricDestinations) {
-
-                            ProtoMetricAdapter protoMetricAdapter =
-                                    context.getMetricObjectPool().get(metric, instrumentationScope, resource);
-                            destination.send(protoMetricAdapter);
+                                ProtoMetricAdapter protoMetricAdapter =
+                                        context.getMetricObjectPool().get(metric, instrumentationScope, resource);
+                                destination.send(protoMetricAdapter);
                         }
                     }
                 }
@@ -62,37 +49,7 @@ public class OtelGrpcMetricReceiver extends MetricsServiceGrpc.MetricsServiceImp
         responseObserver.onCompleted();
     }
 
-    @Override
-    public void connect(SignalDestination signalDestination) {
-        metricDestinations.add(signalDestination);
-    }
-
-    @Override
-    public synchronized void start() {
-        if (server.getState() == State.CREATED) {
-            server.start();
-        }
-    }
-
-    @Override
-    public synchronized void stop() {
-        if (server.getState() == State.RUNNING) {
-            server.stop();
-        }
-    }
-
-    @Override
-    public State getState() {
-        return server.getState();
-    }
-
-    @Override
-    public String getName() {
-        return node.getName();
-    }
-
-    @Override
-    public ReceiverNode getNode() {
-        return node;
+    public void addDestination(SignalDestination destination) {
+        metricDestinations.add(destination);
     }
 }

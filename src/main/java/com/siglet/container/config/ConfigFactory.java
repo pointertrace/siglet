@@ -31,9 +31,6 @@ public class ConfigFactory {
         RawConfig rawConfig = node.getValue(RawConfig.class);
         rawConfig.afterSetValues();
 
-
-
-        return new Config(rawConfig,sigletsConfigs, processorTypeRegistry);
-
+        return new Config(rawConfig, sigletsConfigs, processorTypeRegistry);
     }
 }

@@ -1,7 +1,7 @@
 package com.siglet.container.engine.pipeline.processor.groovy.filter;
 
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class GroovyFilterProcessorTest {
                 """;
 
         GroovyFilterProcessor groovyFilterProcessorEventLoop = new GroovyFilterProcessor("groovy-filter",
-                script, SignalType.TRACE, 1, 1);
+                script, SignalType.SPAN, 1, 1);
 
         MapSignalDestination finalDestination = new MapSignalDestination("final");
 

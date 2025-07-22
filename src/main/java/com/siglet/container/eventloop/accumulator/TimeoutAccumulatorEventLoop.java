@@ -2,7 +2,7 @@ package com.siglet.container.eventloop.accumulator;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.EngineElement;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -61,7 +61,7 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination,
 
     @Override
     public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.TRACE, SignalType.METRIC);
+        return Set.of(SignalType.SPAN, SignalType.METRIC);
     }
 
     @Override

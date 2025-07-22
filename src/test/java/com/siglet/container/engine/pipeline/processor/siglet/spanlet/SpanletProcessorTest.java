@@ -7,7 +7,6 @@ import com.siglet.api.signal.trace.Span;
 import com.siglet.api.signal.trace.Spanlet;
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
 import org.junit.jupiter.api.Test;
 

@@ -79,25 +79,7 @@ public class RawConfig extends BaseConfig {
 
     }
 
-    public Graph createGraph(Context context) {
-        Graph graph = new Graph();
 
-        getReceivers().forEach(graph::addItem);
-        getExporters().forEach(graph::addItem);
-        getPipelines().forEach(graph::addItem);
-        getPipelines().stream()
-                .flatMap(this::getItems)
-                .forEach(graph::addItem);
-
-        graph.connect(context);
-
-        return graph;
-    }
-
-
-    public Stream<ProcessorConfig> getItems(PipelineConfig pipeline) {
-        return pipeline.getProcessors().stream();
-    }
 
     @Override
     public void afterSetValues() {
@@ -105,14 +87,17 @@ public class RawConfig extends BaseConfig {
         getExporters().forEach(BaseConfig::afterSetValues);
         getPipelines().forEach(BaseConfig::afterSetValues);
         getPipelines().stream()
-                .flatMap(this::getItems)
+                .flatMap(pipeline -> pipeline.getProcessors().stream())
                 .forEach(BaseConfig::afterSetValues);
 
         getPipelines().stream()
-                .flatMap(this::getItems)
-                .filter(ProcessorConfig.class::isInstance)
-                .map(ProcessorConfig.class::cast)
+                .flatMap(pipeline -> pipeline.getProcessors().stream())
                 .forEach(processorConfig -> processorConfig.setRawConfig(this));
+
+        getExporters().stream()
+                .filter(GrpcExporterConfig.class::isInstance)
+                .map(GrpcExporterConfig.class::cast)
+                .forEach(exporterConfig -> exporterConfig.setRawConfig(this));
     }
 
     @Override

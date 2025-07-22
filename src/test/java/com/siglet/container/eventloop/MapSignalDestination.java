@@ -1,7 +1,7 @@
 package com.siglet.container.eventloop;
 
 import com.siglet.api.Signal;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.SignalDestination;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class MapSignalDestination implements SignalDestination {
 
     @Override
     public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.SIGNAL);
+        return Set.of(SignalType.TRACE);
     }
 
     public <T extends Signal> T get(String id,Class<T> signalType) {

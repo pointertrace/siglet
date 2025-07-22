@@ -10,10 +10,10 @@ public class ComplexProcessor {
                 receivers:
                 - grpc: trace-receiver
                   address: localhost:8081
-                  signalType: trace
+                  otelSignalType: trace
                 - grpc: metric-receiver
                   address: localhost:8081
-                  signalType: metric
+                  otelSignalType: metric
                 exporters:
                 - grpc: exporter
                   address: localhost:4317

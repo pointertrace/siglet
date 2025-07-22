@@ -1,11 +1,8 @@
 package com.siglet.container.engine.receiver.grpc;
 
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.graph.ReceiverNode;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
-import com.siglet.container.engine.State;
-import com.siglet.container.engine.receiver.Receiver;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
@@ -19,21 +16,13 @@ import io.opentelemetry.proto.trace.v1.Span;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
-        implements Receiver {
-
-    private final GrpcServer server;
-
-    private final ReceiverNode node;
+public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase {
 
     private final Context context;
 
     private final List<SignalDestination> spanDestinations = new ArrayList<>();
 
-    public OtelGrpcTraceReceiver(Context context, GrpcServer server, ReceiverNode node) {
-        server.addService(this);
-        this.server = server;
-        this.node = node;
+    public OtelGrpcTraceService(Context context) {
         this.context = context;
     }
 
@@ -48,7 +37,6 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
                         ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
                                 instrumentationScope, resource);
                         destination.send(protoSpanAdapter);
-
                     }
                 }
             }
@@ -59,37 +47,8 @@ public class OtelGrpcTraceReceiver extends TraceServiceGrpc.TraceServiceImplBase
         responseObserver.onCompleted();
     }
 
-    @Override
-    public void connect(SignalDestination destination) {
+    public void addDestination(SignalDestination destination) {
         spanDestinations.add(destination);
     }
 
-    @Override
-    public synchronized void start() {
-        if (server.getState() == State.CREATED) {
-            server.start();
-        }
-    }
-
-    @Override
-    public synchronized void stop() {
-        if (server.getState() == State.RUNNING) {
-            server.stop();
-        }
-    }
-
-    @Override
-    public State getState() {
-        return server.getState();
-    }
-
-    @Override
-    public String getName() {
-        return node.getName();
-    }
-
-    @Override
-    public ReceiverNode getNode() {
-        return node;
-    }
 }

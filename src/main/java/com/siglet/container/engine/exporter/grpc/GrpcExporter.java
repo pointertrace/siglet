@@ -5,8 +5,8 @@ import com.siglet.api.Signal;
 import com.siglet.container.adapter.metric.ProtoMetricAdapter;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
 import com.siglet.container.config.graph.ExporterNode;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.config.raw.GrpcExporterConfig;
-import com.siglet.container.config.raw.SignalType;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
@@ -25,6 +25,7 @@ import java.util.Set;
 public class GrpcExporter implements Exporter {
 
     private TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub;
+
     private MetricsServiceGrpc.MetricsServiceBlockingStub metricServicesStub;
 
     private final ExporterNode node;
@@ -35,6 +36,7 @@ public class GrpcExporter implements Exporter {
 
     private State state = State.RUNNING;
 
+    // todo refatorar para extrair as classes de destination
     public GrpcExporter(Context context, ExporterNode node) {
         this.node = node;
         GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
@@ -58,7 +60,7 @@ public class GrpcExporter implements Exporter {
 
             @Override
             public Set<SignalType> getSignalCapabilities() {
-                return Set.of(SignalType.TRACE, SignalType.METRIC);
+                return Set.of(SignalType.SPAN, SignalType.METRIC);
             }
         });
 
@@ -85,7 +87,7 @@ public class GrpcExporter implements Exporter {
 
     @Override
     public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.TRACE, SignalType.METRIC);
+        return Set.of(SignalType.SPAN, SignalType.METRIC);
     }
 
     @Override

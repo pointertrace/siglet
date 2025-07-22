@@ -1,8 +1,6 @@
 package com.siglet.container.config.graph;
 
-import com.siglet.SigletError;
 import com.siglet.container.config.raw.ExporterConfig;
-import com.siglet.container.config.raw.GrpcExporterConfig;
 
 import java.util.ArrayList;
 import java.util.List;

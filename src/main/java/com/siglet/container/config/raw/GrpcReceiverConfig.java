@@ -10,7 +10,7 @@ public class GrpcReceiverConfig extends ReceiverConfig {
 
     private Location addressLocation;
 
-    private SignalType signalType;
+    private OtelSignalType otelSignalType;
 
     private Location signalTypeLocation;
 
@@ -22,12 +22,12 @@ public class GrpcReceiverConfig extends ReceiverConfig {
         this.address = address;
     }
 
-    public SignalType getSignal() {
-        return signalType;
+    public OtelSignalType getSignal() {
+        return otelSignalType;
     }
 
-    public void setSignal(SignalType signalType) {
-        this.signalType = signalType;
+    public void setSignal(OtelSignalType otelSignalType) {
+        this.otelSignalType = otelSignalType;
     }
 
     public Location getAddressLocation() {
@@ -61,11 +61,11 @@ public class GrpcReceiverConfig extends ReceiverConfig {
         sb.append(address);
         sb.append("\n");
 
-        if (signalType != null) {
+        if (otelSignalType != null) {
             sb.append(prefix(level + 1));
             sb.append(signalTypeLocation.describe());
             sb.append("  signal: ");
-            sb.append(signalType.name().toLowerCase());
+            sb.append(otelSignalType.name().toLowerCase());
             sb.append("\n");
         }
 

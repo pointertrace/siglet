@@ -3,7 +3,7 @@ package com.siglet.container.engine.receiver.debug;
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
 import com.siglet.container.config.graph.ReceiverNode;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;

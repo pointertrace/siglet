@@ -2,9 +2,8 @@ package com.siglet.container.engine.pipeline.processor.groovy.action;
 
 import com.siglet.container.adapter.AdapterUtils;
 import com.siglet.container.adapter.trace.ProtoSpanAdapter;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.eventloop.MapSignalDestination;
-import io.netty.util.Signal;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,7 @@ class GroovyActionProcessorTest {
                 """;
 
         GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
-                script, SignalType.TRACE, 1, 1);
+                script, SignalType.SPAN, 1, 1);
 
         MapSignalDestination finalDestination = new MapSignalDestination("final");
 
@@ -62,7 +61,7 @@ class GroovyActionProcessorTest {
                 """;
 
         GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
-                script, SignalType.TRACE, 1, 1);
+                script, SignalType.SPAN, 1, 1);
 
         MapSignalDestination finalDestination = new MapSignalDestination("final");
 
@@ -94,7 +93,7 @@ class GroovyActionProcessorTest {
                 """;
 
         GroovyActionProcessor groovyActionProcessorEventLoop = new GroovyActionProcessor("groovy-action",
-                 script,SignalType.TRACE, 1, 1);
+                 script, SignalType.SPAN, 1, 1);
 
         MapSignalDestination finalDestination = new MapSignalDestination("final");
         MapSignalDestination otherDestination = new MapSignalDestination("other");

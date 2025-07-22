@@ -4,7 +4,7 @@ import com.siglet.api.ProcessorContext;
 import com.siglet.api.Result;
 import com.siglet.api.ResultFactory;
 import com.siglet.api.Signal;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.engine.State;
 import com.siglet.container.eventloop.MapSignalDestination;
 import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;

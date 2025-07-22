@@ -5,6 +5,7 @@ import com.siglet.container.adapter.pool.SpanObjectPool;
 import com.siglet.container.config.Config;
 import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.config.graph.GraphFactory;
 import com.siglet.container.config.graph.ProcessorNode;
 import com.siglet.container.config.raw.GrpcExporterConfig;
 import com.siglet.container.config.raw.ProcessorKind;
@@ -13,6 +14,10 @@ import com.siglet.container.engine.pipeline.processor.Processor;
 public class Context {
 
     private final Config config;
+
+    private Graph graph;
+
+    private GraphFactory graphFactory = new GraphFactory();
 
     private SpanObjectPool spanObjectPool;
 
@@ -25,7 +30,10 @@ public class Context {
     }
 
     public Graph getGraph() {
-        return config.getGraph(this);
+        if (graph == null) {
+            graph = graphFactory.create(config);
+        }
+        return graph;
     }
 
     public Processor createProcessor(ProcessorNode processorNode) {
@@ -33,47 +41,55 @@ public class Context {
     }
 
 
-//    private int getSpanObjectPoolSize() {
-//        return getGraph().getNodeRegistry().stream()
-//                .filter(ProcessorNode.class::isInstance)
-//                .map(ProcessorNode.class::cast)
-//                .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.SPANLET)
-//                .mapToInt(processorNode -> processorNode.getQueueSize() + processorNode.getThreadPoolSize())
-//                .sum() +
-//                getGraph().getNodeRegistry().stream()
-//                        .filter(ExporterNode.class::isInstance)
-//                        .map(ExporterNode.class::cast)
-//                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
-//                        .mapToInt(exporterNode > exporterNode.getQueueSize() + exporterNode.getThreadPoolSize())
-//                        .sum();
-//    }
-//
-//    private int getMetricObjectPoolSize() {
-//        return getGraph().getNodeRegistry().stream()
-//                .filter(ProcessorNode.class::isInstance)
-//                .map(ProcessorNode.class::cast)
-//                .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.METRICLET)
-//                .mapToInt(processorNode -> processorNode.getQueueSize() + processorNode.getThreadPoolSize())
-//                .sum() +
-//                getGraph().getNodeRegistry().stream()
-//                        .filter(ExporterNode.class::isInstance)
-//                        .map(ExporterNode.class::cast)
-//                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
-//                        .mapToInt(exporterNode -> exporterNode.getQueueSize() + exporterNode.getThreadPoolSize())
-//                        .sum();
-//    }
-//
+    private int getSpanObjectPoolSize() {
+        return getGraph().getNodeRegistry().stream()
+                .filter(ProcessorNode.class::isInstance)
+                .map(ProcessorNode.class::cast)
+                .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.SPANLET)
+                .map(ProcessorNode::getConfig)
+                .mapToInt(config -> config.getThreadPoolSizeConfig().getThreadPoolSize() +
+                        config.getQueueSizeConfig().getQueueSize())
+                .sum() +
+                getGraph().getNodeRegistry().stream()
+                        .filter(ExporterNode.class::isInstance)
+                        .map(ExporterNode.class::cast)
+                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
+                        .map(ExporterNode::getConfig)
+                        .map(GrpcExporterConfig.class::cast)
+                        .mapToInt(config -> config.getQueueSizeConfig().getQueueSize())
+                        .sum();
+    }
+
+    private int getMetricObjectPoolSize() {
+        return getGraph().getNodeRegistry().stream()
+                .filter(ProcessorNode.class::isInstance)
+                .map(ProcessorNode.class::cast)
+                .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.METRICLET)
+                .map(ProcessorNode::getConfig)
+                .mapToInt(config -> config.getThreadPoolSizeConfig().getThreadPoolSize() +
+                        config.getQueueSizeConfig().getQueueSize())
+                .sum() +
+                getGraph().getNodeRegistry().stream()
+                        .filter(ExporterNode.class::isInstance)
+                        .map(ExporterNode.class::cast)
+                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
+                        .map(ExporterNode::getConfig)
+                        .map(GrpcExporterConfig.class::cast)
+                        .mapToInt(config -> config.getQueueSizeConfig().getQueueSize())
+                        .sum();
+   }
+
 
     public SpanObjectPool getSpanObjectPool() {
         if (spanObjectPool == null) {
-//            spanObjectPool = new SpanObjectPool(getSpanObjectPoolSize());
+            spanObjectPool = new SpanObjectPool(getSpanObjectPoolSize());
         }
         return spanObjectPool;
     }
 
     public MetricObjectPool getMetricObjectPool() {
         if (metricObjectPool == null) {
-//            metricObjectPool = new MetricObjectPool(getMetricObjectPoolSize());
+            metricObjectPool = new MetricObjectPool(getMetricObjectPoolSize());
         }
         return metricObjectPool;
     }

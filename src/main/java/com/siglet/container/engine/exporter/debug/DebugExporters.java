@@ -2,7 +2,6 @@ package com.siglet.container.engine.exporter.debug;
 
 import com.siglet.SigletError;
 import com.siglet.api.Signal;
-import com.siglet.container.config.raw.SignalType;
 
 import java.util.*;
 

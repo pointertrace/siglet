@@ -68,10 +68,11 @@ public class Graph {
         return nodeType.cast(node);
     }
 
-    public void connect(Context context) {
+    public void connect() {
 
         nodeRegistry.values().forEach(node -> {
             switch (node) {
+
                 case ProcessorNode processorNode -> {
                     processorNode.setTo(getNodesByName(processorNode.getConfig().getToNames()));
                     processorNode.setPipeline(getNodeByNameAndType(processorNode.getConfig().getPipeline(), PipelineNode.class));
@@ -81,7 +82,6 @@ public class Graph {
                     pipelineNode.getStart().addAll(getNodesByNameAndType(pipelineNode.getConfig().getStartNames(),
                             ProcessorNode.class));
                 }
-
                 case ReceiverNode receiverNode -> {
                     receiverNode.getTo().addAll(nodeRegistry.values().stream()
                             .filter(PipelineNode.class::isInstance)
@@ -91,8 +91,6 @@ public class Graph {
                             .map(name -> getNodeByNameAndType(name, PipelineNode.class))
                             .toList());
                 }
-
-
                 case ExporterNode exporterNode -> exporterNode.getFrom().addAll(nodeRegistry.values().stream()
                         .filter(ProcessorNode.class::isInstance)
                         .map(ProcessorNode.class::cast)
@@ -100,10 +98,9 @@ public class Graph {
                         .map(BaseNode::getName)
                         .map(name -> getNodeByNameAndType(name, ProcessorNode.class))
                         .toList());
-
             }
 
-            calculateQueueAndThreadPoolSizes(context);
+//            calculateQueueAndThreadPoolSizes(context);
         });
     }
 

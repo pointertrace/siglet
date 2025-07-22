@@ -1,7 +1,7 @@
 package com.siglet.container.engine;
 
 import com.siglet.api.Signal;
-import com.siglet.container.config.raw.SignalType;
+import com.siglet.container.config.graph.SignalType;
 
 import java.util.Set;
 

@@ -1,7 +1,6 @@
 package com.siglet.container.engine.pipeline;
 
 import com.siglet.SigletError;
-import com.siglet.api.Signal;
 import com.siglet.container.config.graph.PipelineNode;
 import com.siglet.container.engine.SignalDestination;
 
@@ -12,17 +11,17 @@ import java.util.function.Consumer;
 
 public class Pipelines {
 
-    private final Map<String, Pipeline> namedPipelines = new HashMap<>();
+    private final Map<String, Pipeline> pipelineRegistry = new HashMap<>();
 
     public Pipeline create(PipelineNode node) {
-        if (namedPipelines.containsKey(node.getName())) {
+        if (pipelineRegistry.containsKey(node.getName())) {
             throw new SigletError("Pipeline with name " + node.getName() + " already exists");
         }
-        return namedPipelines.put(node.getConfig().getName(), new Pipeline(node));
+        return pipelineRegistry.put(node.getConfig().getName(), new Pipeline(node));
     }
 
     public SignalDestination getDestination(String name) {
-        return namedPipelines.values().stream()
+        return pipelineRegistry.values().stream()
                 .map(pipeline -> pipeline.getDestination(name))
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -30,20 +29,20 @@ public class Pipelines {
     }
 
     public void forEach(Consumer<Pipeline> pipelineConsumer) {
-        namedPipelines.values().forEach(pipelineConsumer);
+        pipelineRegistry.values().forEach(pipelineConsumer);
     }
 
     public void start() {
-        namedPipelines.values().forEach(Pipeline::start);
+        pipelineRegistry.values().forEach(Pipeline::start);
     }
 
 
     public void stop() {
-        namedPipelines.values().forEach(Pipeline::stop);
+        pipelineRegistry.values().forEach(Pipeline::stop);
     }
 
 
     public Pipeline get(String name) {
-        return namedPipelines.get(name);
+        return pipelineRegistry.get(name);
     }
 }

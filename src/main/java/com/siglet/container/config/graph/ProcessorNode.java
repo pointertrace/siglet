@@ -1,8 +1,6 @@
 package com.siglet.container.config.graph;
 
-import com.siglet.SigletError;
 import com.siglet.container.config.raw.ProcessorConfig;
-import com.siglet.container.config.raw.SignalType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +45,6 @@ public final class ProcessorNode extends BaseNode {
     }
 
     public SignalType getSignal() {
-        return getConfig().getProcessorKind().getSignal();
+        return getConfig().getProcessorKind().getSignalType();
     }
 }

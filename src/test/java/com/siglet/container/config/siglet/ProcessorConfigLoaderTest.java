@@ -6,7 +6,6 @@ import com.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 import com.siglet.parser.NodeChecker;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -32,7 +31,6 @@ class ProcessorConfigLoaderTest {
     }
 
     @Test
-    @Disabled
     void load() throws Exception {
 
         SigletConfig sigletConfig = sigletConfigLoader.load(Paths.get(spanletUrl.toURI()));

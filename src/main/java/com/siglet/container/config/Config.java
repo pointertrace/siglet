@@ -1,6 +1,7 @@
 package com.siglet.container.config;
 
 import com.siglet.container.config.graph.Graph;
+import com.siglet.container.config.graph.GraphFactory;
 import com.siglet.container.config.raw.GlobalConfig;
 import com.siglet.container.config.raw.RawConfig;
 import com.siglet.container.config.siglet.SigletConfig;
@@ -17,6 +18,7 @@ public class Config {
     private final Map<String, SigletConfig> sigletConfigs;
     private final RawConfig rawConfig;
     private Graph graph;
+    private final GraphFactory graphFactory = new GraphFactory();
     private final GlobalConfig globalConfig;
     private final ProcessorTypeRegistry processorTypeRegistry;
 
@@ -32,19 +34,16 @@ public class Config {
         return sigletConfigs.get(name);
     }
 
-    public Graph getGraph(Context context) {
-        if (graph == null) {
-           graph = rawConfig.createGraph(context);
-        }
-        return graph;
-    }
-
     public GlobalConfig getGlobalConfig() {
         return globalConfig;
     }
 
     public ProcessorTypeRegistry getProcessorTypes() {
         return processorTypeRegistry;
+    }
+
+    public RawConfig getRawConfig() {
+        return rawConfig;
     }
 
 }

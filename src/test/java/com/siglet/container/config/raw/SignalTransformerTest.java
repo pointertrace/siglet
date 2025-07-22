@@ -27,18 +27,11 @@ class SignalTransformerTest {
     void transform_nonValidEnumValue() {
         ValueTransformerException e = assertThrowsExactly(ValueTransformerException.class,
                 () -> signalTransformer.transform("invalid-value"));
-        assertEquals("The value [invalid-value] is not a valid signal type [trace, metric]!", e.getMessage());
-    }
-
-    @Test
-    void transform_internalVLue() {
-        ValueTransformerException e = assertThrowsExactly(ValueTransformerException.class,
-                () -> signalTransformer.transform("SIGNAL"));
-        assertEquals("SignalType value SIGNAL cannot be used in configuration!", e.getMessage());
+        assertEquals("The value [invalid-value] is not a valid signal type [TRACE, METRIC]!", e.getMessage());
     }
 
     @Test
     void transform() throws ValueTransformerException {
-        assertEquals(SignalType.TRACE,signalTransformer.transform("TRACE"));
+        assertEquals(OtelSignalType.TRACE,signalTransformer.transform("TRACE"));
     }
 }

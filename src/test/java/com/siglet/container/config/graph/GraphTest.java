@@ -1,8 +1,6 @@
 package com.siglet.container.config.graph;
 
 import com.siglet.SigletError;
-import com.siglet.container.Siglet;
-import com.siglet.container.config.raw.*;
 import com.siglet.container.engine.Context;
 import com.siglet.container.engine.ContextFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +36,7 @@ class GraphTest {
                     to: exporter
                     type: groovy-action
                     config:
-                      action: signalType.name = signalType.name +"-suffix"
+                      action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
 
 

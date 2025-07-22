@@ -3,7 +3,8 @@ package com.siglet.container.config.raw;
 import com.siglet.SigletError;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 class QueueSizeConfigTest {
 

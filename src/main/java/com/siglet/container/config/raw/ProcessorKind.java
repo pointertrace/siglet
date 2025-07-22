@@ -1,9 +1,12 @@
 package com.siglet.container.config.raw;
 
+import com.siglet.container.config.graph.SignalType;
+
 public enum ProcessorKind {
-    SPANLET(SignalType.TRACE),
+
+    SPANLET(SignalType.SPAN),
     TRACELET(SignalType.TRACE),
-    TRACE_AGGREGATOR(SignalType.TRACE),
+    TRACE_AGGREGATOR(SignalType.SPAN),
     METRICLET(SignalType.METRIC);
 
     private final SignalType signalType;
@@ -12,7 +15,7 @@ public enum ProcessorKind {
         this.signalType = signalType;
     }
 
-    public SignalType getSignal() {
+    public SignalType getSignalType() {
         return signalType;
     }
 

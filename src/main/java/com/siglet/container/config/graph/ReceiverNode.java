@@ -25,4 +25,5 @@ public final class ReceiverNode extends BaseNode {
     public ReceiverConfig getConfig() {
         return (ReceiverConfig) super.getConfig();
     }
+
 }
