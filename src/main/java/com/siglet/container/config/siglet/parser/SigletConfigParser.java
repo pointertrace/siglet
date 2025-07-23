@@ -13,7 +13,7 @@ public class SigletConfigParser {
     private final SigletConfigCheckerFactory sigletConfigCheckerFactory = new SigletConfigCheckerFactory();
 
     public SigletConfig parse(String yaml) {
-       return parse(yaml, Thread.currentThread().getContextClassLoader());
+        return parse(yaml, Thread.currentThread().getContextClassLoader());
     }
 
     public SigletConfig parse(String yaml, ClassLoader classLoader) {

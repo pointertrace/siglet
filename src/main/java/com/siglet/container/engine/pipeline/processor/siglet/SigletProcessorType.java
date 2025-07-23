@@ -9,6 +9,7 @@ import com.siglet.container.engine.pipeline.processor.ConfigDefinition;
 import com.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import com.siglet.container.engine.pipeline.processor.ProcessorType;
 import com.siglet.container.engine.pipeline.processor.siglet.spanlet.SpanletProcessor;
+import com.siglet.parser.schema.EmptyPropertyChecker;
 
 import static com.siglet.parser.schema.SchemaFactory.requiredProperty;
 
@@ -43,9 +44,13 @@ public class SigletProcessorType implements ProcessorType {
             throw new SigletError(String.format("Cannot create siglet type %s", node.getName()));
         };
     }
-  // todo prepara cenario para siglets sem configuração
+
     private ConfigDefinition createConfigDefinition(SigletConfig sigletConfig) {
-        return () -> requiredProperty(ProcessorConfig::setConfig, ProcessorConfig::setConfigLocation, "config",
-                sigletConfig.configChecker());
+        if (sigletConfig.configChecker() == null) {
+            return () -> new EmptyPropertyChecker("config");
+        } else {
+            return () -> requiredProperty(ProcessorConfig::setConfig, ProcessorConfig::setConfigLocation, "config",
+                    sigletConfig.configChecker());
+        }
     }
 }

@@ -19,7 +19,7 @@ public class SigletConfigCheckerFactory {
                 requiredProperty(SigletConfig.Builder::setSiglet, SigletConfig.Builder::setSigletLocation,
                         "siglet-class",
                         text(new ClassValueTransformer(Processor.class, classLoader))),
-                requiredProperty(SigletConfig.Builder::setConfigFactory,
+                optionalProperty(SigletConfig.Builder::setConfigFactory,
                         SigletConfig.Builder::setConfigCheckerFactoryClassLocation,
                         "checker-factory-class",
                         text(new ClassValueTransformer(NodeCheckerFactory.class, classLoader))),

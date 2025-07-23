@@ -1,8 +1,5 @@
 package com.siglet.container.eventloop.processor;
 
-
-
-
 import com.siglet.api.ProcessorContext;
 
 import java.util.Collection;

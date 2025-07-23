@@ -12,6 +12,7 @@ import com.siglet.parser.NodeValueBuilder;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;
 import com.siglet.parser.node.SigletParserError;
+import com.siglet.parser.schema.EmptyPropertyChecker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,9 +85,12 @@ public record SigletConfig(
         public Object build() {
 
             try {
-                NodeCheckerFactory configCheckerFactoryInstance = configCheckerFactory.getConstructor().newInstance();
+                NodeChecker configChecker = null;
+                if (configCheckerFactory != null) {
+                    configChecker = configCheckerFactory.getConstructor().newInstance().create();
+                }
                 return new SigletConfig(name, nameLocation, description, descriptionLocation, siglet, sigletLocation,
-                        configCheckerFactoryInstance.create(), configCheckerFactoryClassLocation, destinations);
+                        configChecker, configCheckerFactoryClassLocation, destinations);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new SigletParserError(String.format("Error creating instance of ConfigCheckerFactory for " +

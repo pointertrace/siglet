@@ -12,6 +12,7 @@ import com.siglet.parser.NodeCheckerFactory;
 import com.siglet.parser.YamlParser;
 import com.siglet.parser.located.Located;
 import com.siglet.parser.located.Location;
+import com.siglet.parser.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -72,6 +73,30 @@ class SigletConfigParserTest {
     }
 
     @Test
+    void parse_nullConfiguration() {
+
+        String config = """
+                name: mock spanlet
+                siglet-class: com.siglet.container.config.siglet.SigletConfigParserTest$SpanletMock
+                description: mock spanlet description
+                """;
+
+
+        SigletConfig sigletConfig = sigletConfigParser.parse(config);
+
+        assertEquals("mock spanlet", sigletConfig.name());
+        assertEquals(Location.of(1, 7), sigletConfig.nameLocation());
+        assertEquals(SpanletMock.class, sigletConfig.sigletClass());
+        assertEquals(Location.of(2, 15), sigletConfig.sigletLocation());
+        assertEquals("mock spanlet description", sigletConfig.description());
+        assertNotNull(sigletConfig.destinations());
+        assertTrue(sigletConfig.destinations().isEmpty());
+        assertNull(sigletConfig.configChecker());
+
+
+    }
+
+    @Test
     void parse_destinations() {
 
         String config = """
@@ -97,9 +122,9 @@ class SigletConfigParserTest {
         assertNotNull(sigletConfig.destinations());
         assertEquals(2, sigletConfig.destinations().size());
         assertEquals("first", sigletConfig.destinations().getFirst().getValue());
-        assertEquals(Location.of(6,5), sigletConfig.destinations().getFirst().getLocation());
+        assertEquals(Location.of(6, 5), sigletConfig.destinations().getFirst().getLocation());
         assertEquals("second", sigletConfig.destinations().get(1).getValue());
-        assertEquals(Location.of(7,5), sigletConfig.destinations().get(1).getLocation());
+        assertEquals(Location.of(7, 5), sigletConfig.destinations().get(1).getLocation());
 
 
         YamlParser configParser = new YamlParser();
