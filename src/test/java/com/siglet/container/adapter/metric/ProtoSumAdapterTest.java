@@ -19,7 +19,7 @@ class ProtoSumAdapterTest {
     private NumberDataPoint protoExtraNumberDataPoint;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         protoNumberDataPoint = NumberDataPoint.newBuilder()
                 .setTimeUnixNano(1)
                 .setStartTimeUnixNano(2)

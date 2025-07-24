@@ -37,7 +37,7 @@ class AttributesGroovyTest {
     private Compiler compiler;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         List<KeyValue> attributes = List.of(
                 KeyValue.newBuilder()
                         .setKey("first attribute key")

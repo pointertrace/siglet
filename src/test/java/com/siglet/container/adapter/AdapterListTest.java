@@ -21,7 +21,7 @@ class AdapterListTest {
     private KeyValue second;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         first = KeyValue.newBuilder()
                 .setKey("first")

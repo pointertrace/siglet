@@ -23,7 +23,7 @@ class ProtoExponentialHistogramDataPointsAdapterTest {
     private ProtoExponentialHistogramDataPointsAdapter protoExponentialHistogramDataPointsAdapter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
 
         firstExponentialHistogramDataPoint = ExponentialHistogramDataPoint.newBuilder()

@@ -14,7 +14,7 @@ class GlobalConfigTest {
     private YamlParser parser;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         parser = new YamlParser();
     }
 

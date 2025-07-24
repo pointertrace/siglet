@@ -16,7 +16,7 @@ class AdapterTest {
     Adapter<KeyValue, Builder> adapter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         keyValue = KeyValue.newBuilder()
                 .setKey("key")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build())
@@ -120,17 +120,17 @@ class AdapterTest {
     void getUpdated_builderNull() {
 
 
-        AdapterUpdatedWithoutBuilderChange adapter = new AdapterUpdatedWithoutBuilderChange();
-        adapter.recycle(keyValue);
-        adapter.updated = true;
+        AdapterUpdatedWithoutBuilderChange adapterUpdatedWithoutBuilderChange = new AdapterUpdatedWithoutBuilderChange();
+        adapterUpdatedWithoutBuilderChange.recycle(keyValue);
+        adapterUpdatedWithoutBuilderChange.updated = true;
 
 
         assertEquals(KeyValue.newBuilder()
                 .setKey("key")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build())
-                .build(), adapter.getUpdated());
+                .build(), adapterUpdatedWithoutBuilderChange.getUpdated());
 
-        assertTrue(adapter.isUpdated());
+        assertTrue(adapterUpdatedWithoutBuilderChange.isUpdated());
 
     }
 
@@ -194,16 +194,16 @@ class AdapterTest {
     @Test
     void enrich() {
 
-        AdapterWithBuilderEnrich adapter = new AdapterWithBuilderEnrich();
-        adapter.recycle(keyValue);
+        AdapterWithBuilderEnrich adapterWithEnrich = new AdapterWithBuilderEnrich();
+        adapterWithEnrich.recycle(keyValue);
 
-        adapter.setValue(KeyValue.Builder::setKey, "new-value");
+        adapterWithEnrich.setValue(KeyValue.Builder::setKey, "new-value");
 
 
         assertEquals(KeyValue.newBuilder()
                 .setKey("new-value.suffix")
                 .setValue(AnyValue.newBuilder().setStringValue("value").build())
-                .build(), adapter.getUpdated());
+                .build(), adapterWithEnrich.getUpdated());
 
 
     }

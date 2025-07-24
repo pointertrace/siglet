@@ -23,7 +23,7 @@ class ProtoExemplarsAdapterTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         protoExemplars = new ArrayList<>();
 

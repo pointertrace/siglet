@@ -20,7 +20,7 @@ class ProtoHistogramAdapterTest {
     private HistogramDataPoint protoExtraNumberDataPoint;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         protoNumberDataPoint = HistogramDataPoint.newBuilder()
                 .setTimeUnixNano(1)
                 .setStartTimeUnixNano(2)

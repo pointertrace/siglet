@@ -23,7 +23,7 @@ class ProtoNumberDataPointsAdapterTest {
     private ProtoNumberDataPointAdapter protoThirdNumberDataPointAdapter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
 
         firstNumberDataPoint = NumberDataPoint.newBuilder()

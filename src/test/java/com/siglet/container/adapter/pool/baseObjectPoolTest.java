@@ -33,7 +33,7 @@ class baseObjectPoolTest {
     private Resource resource2;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         spanCreator = new SpanCreator();
 
         span1 = Span.newBuilder()

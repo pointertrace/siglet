@@ -19,7 +19,7 @@ class ProtoSummaryAdapterTest {
     private SummaryDataPoint protoExtraSummaryDataPoint;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         protoSummaryDataPoint = SummaryDataPoint.newBuilder()
                 .setTimeUnixNano(1)
                 .setStartTimeUnixNano(2)

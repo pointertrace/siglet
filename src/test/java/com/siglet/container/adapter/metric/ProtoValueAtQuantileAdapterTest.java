@@ -13,7 +13,7 @@ class ProtoValueAtQuantileAdapterTest {
     private ProtoValueAtQuantileAdapter protoValueAtQuantileAdapter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         protoValueAtQuantile = SummaryDataPoint.ValueAtQuantile.newBuilder()
                 .setValue(1.2)

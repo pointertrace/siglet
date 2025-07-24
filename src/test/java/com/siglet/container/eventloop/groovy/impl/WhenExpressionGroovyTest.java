@@ -25,7 +25,7 @@ class WhenExpressionGroovyTest {
     private Compiler compiler;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         resource = Resource.newBuilder()
                 .addAttributes(KeyValue.newBuilder()
                         .setKey("resource attribute key")
