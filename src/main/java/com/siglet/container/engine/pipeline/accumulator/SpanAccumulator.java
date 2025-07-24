@@ -14,12 +14,12 @@ public class SpanAccumulator {
     }
 
     public static AccumulatedSpans accumulateSpans(Context context, List<Signal> signals) {
-        SignalsAccumulator signalsAccumulator = new SignalsAccumulator();
+        SpansAccumulator spansAccumulator = new SpansAccumulator();
         StringBuilder sb = new StringBuilder("Aggregated Spans[");
         signals.forEach(signal -> {
             if (signal instanceof ProtoSpanAdapter protoSpanAdapter) {
                 sb.append(protoSpanAdapter.getSpanId());
-                signalsAccumulator.add(protoSpanAdapter.getUpdated(), protoSpanAdapter.getUpdatedInstrumentationScope(),
+                spansAccumulator.add(protoSpanAdapter.getUpdated(), protoSpanAdapter.getUpdatedInstrumentationScope(),
                         protoSpanAdapter.getUpdatedResource());
                 context.getSpanObjectPool().recycle(protoSpanAdapter);
             } else {
@@ -28,7 +28,7 @@ public class SpanAccumulator {
             }
         });
         sb.append("]");
-        return new AccumulatedSpans(signalsAccumulator.getExportTraceServiceRequest(), sb.toString());
+        return new AccumulatedSpans(spansAccumulator.getExportTraceServiceRequest(), sb.toString());
     }
 
 }

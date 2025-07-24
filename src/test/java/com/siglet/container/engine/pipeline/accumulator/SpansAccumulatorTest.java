@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SignalsAccumulatorTest {
+class SpansAccumulatorTest {
 
 
-    private SignalsAccumulator signalsAccumulator;
+    private SpansAccumulator spansAccumulator;
 
     private Span firstSpan;
 
@@ -38,7 +38,7 @@ class SignalsAccumulatorTest {
     @BeforeEach
     void setUp() {
 
-        signalsAccumulator = new SignalsAccumulator();
+        spansAccumulator = new SpansAccumulator();
 
         firstSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0, 1))
@@ -91,10 +91,10 @@ class SignalsAccumulatorTest {
     @Test
     void oneSpanOneScopeOneResource() {
 
-        signalsAccumulator.add(firstSpan, firstScope, firstResource);
+        spansAccumulator.add(firstSpan, firstScope, firstResource);
 
         ExportTraceServiceRequest exportTraceServiceRequest =
-                signalsAccumulator.getExportTraceServiceRequest();
+                spansAccumulator.getExportTraceServiceRequest();
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
         assertTrue(findResource(exportTraceServiceRequest, firstResource));
@@ -110,11 +110,11 @@ class SignalsAccumulatorTest {
     @Test
     void twoSpanOneScopeOneResource() {
 
-        signalsAccumulator.add(firstSpan, firstScope, firstResource);
-        signalsAccumulator.add(secondSpan, firstScope, firstResource);
+        spansAccumulator.add(firstSpan, firstScope, firstResource);
+        spansAccumulator.add(secondSpan, firstScope, firstResource);
 
         ExportTraceServiceRequest exportTraceServiceRequest =
-                signalsAccumulator.getExportTraceServiceRequest();
+                spansAccumulator.getExportTraceServiceRequest();
 
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
@@ -131,13 +131,13 @@ class SignalsAccumulatorTest {
     @Test
     void twoSpanTwoScopeOneResource() {
 
-        signalsAccumulator.add(firstSpan, firstScope, firstResource);
-        signalsAccumulator.add(secondSpan, firstScope, firstResource);
-        signalsAccumulator.add(thirdSpan, secondScope, firstResource);
-        signalsAccumulator.add(forthSpan, secondScope, firstResource);
+        spansAccumulator.add(firstSpan, firstScope, firstResource);
+        spansAccumulator.add(secondSpan, firstScope, firstResource);
+        spansAccumulator.add(thirdSpan, secondScope, firstResource);
+        spansAccumulator.add(forthSpan, secondScope, firstResource);
 
         ExportTraceServiceRequest exportTraceServiceRequest =
-                signalsAccumulator.getExportTraceServiceRequest();
+                spansAccumulator.getExportTraceServiceRequest();
 
         assertEquals(1, exportTraceServiceRequest.getResourceSpansList().size());
 
@@ -160,13 +160,13 @@ class SignalsAccumulatorTest {
     @Test
     void twoSpanTwoScopeTwoResource() {
 
-        signalsAccumulator.add(firstSpan, firstScope, firstResource);
-        signalsAccumulator.add(secondSpan, secondScope, firstResource);
-        signalsAccumulator.add(thirdSpan, firstScope, secondResource);
-        signalsAccumulator.add(forthSpan, secondScope, secondResource);
+        spansAccumulator.add(firstSpan, firstScope, firstResource);
+        spansAccumulator.add(secondSpan, secondScope, firstResource);
+        spansAccumulator.add(thirdSpan, firstScope, secondResource);
+        spansAccumulator.add(forthSpan, secondScope, secondResource);
 
         ExportTraceServiceRequest exportTraceServiceRequest =
-                signalsAccumulator.getExportTraceServiceRequest();
+                spansAccumulator.getExportTraceServiceRequest();
 
         assertEquals(2, exportTraceServiceRequest.getResourceSpansList().size());
         assertTrue(findResource(exportTraceServiceRequest, firstResource));

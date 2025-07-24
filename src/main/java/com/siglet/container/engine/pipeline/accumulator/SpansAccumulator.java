@@ -13,16 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SignalsAccumulator {
+public class SpansAccumulator {
 
 
     private final Map<ResourceSpans.Builder, List<ScopeSpans.Builder>> scopes = new HashMap<>();
 
     private final ExportTraceServiceRequest.Builder exportTraceServiceRequestBuilder =
             ExportTraceServiceRequest.newBuilder();
-
-    private final ExportMetricsServiceRequest.Builder exportMetricsServiceRequestBuilder =
-            ExportMetricsServiceRequest.newBuilder();
 
     public void add(Span span, InstrumentationScope scope, Resource resource) {
 
@@ -64,10 +61,6 @@ public class SignalsAccumulator {
     }
 
 
-
-    public ExportMetricsServiceRequest.Builder getExportMetricsServiceRequestBuilder() {
-        return exportMetricsServiceRequestBuilder;
-    }
 
     public ExportTraceServiceRequest getExportTraceServiceRequest() {
         for(Map.Entry<ResourceSpans.Builder, List<ScopeSpans.Builder>> entry : scopes.entrySet()) {

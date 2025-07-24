@@ -10,7 +10,7 @@ import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.receiver.Receiver;
 import io.grpc.Server;
-import io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

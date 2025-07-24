@@ -103,7 +103,6 @@ public class AdapterList<M extends Message, B extends Message.Builder, A extends
         }
     }
 
-    // todo testar
     public void clearChanges() {
         checkReady();
         if (adapters != null) {

@@ -8,7 +8,6 @@ import com.siglet.container.config.graph.ExporterNode;
 import com.siglet.container.config.graph.SignalType;
 import com.siglet.container.config.raw.GrpcExporterConfig;
 import com.siglet.container.engine.Context;
-import com.siglet.container.engine.SignalDestination;
 import com.siglet.container.engine.State;
 import com.siglet.container.engine.exporter.Exporter;
 import com.siglet.container.engine.pipeline.accumulator.AccumulatedMetrics;
@@ -16,17 +15,13 @@ import com.siglet.container.engine.pipeline.accumulator.AccumulatedSpans;
 import com.siglet.container.engine.pipeline.accumulator.MetricAccumulator;
 import com.siglet.container.engine.pipeline.accumulator.SpanAccumulator;
 import com.siglet.container.eventloop.accumulator.TimeoutAccumulatorEventLoop;
-import io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 
 import java.util.Set;
 
 public class GrpcExporter implements Exporter {
-
-    private TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub;
-
-    private MetricsServiceGrpc.MetricsServiceBlockingStub metricServicesStub;
 
     private final ExporterNode node;
 
@@ -36,7 +31,6 @@ public class GrpcExporter implements Exporter {
 
     private State state = State.RUNNING;
 
-    // todo refatorar para extrair as classes de destination
     public GrpcExporter(Context context, ExporterNode node) {
         this.node = node;
         GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
@@ -46,30 +40,15 @@ public class GrpcExporter implements Exporter {
                 config.getBatchTimeoutInMillis(),
                 config.getBatchSizeInSignals(),
                 span -> SpanAccumulator.accumulateSpans(context, span));
-        spanAccumulator.connect(new SignalDestination() {
-            @Override
-            public String getName() {
-                return "aggregated-spans";
-            }
 
-            @Override
-            public boolean send(Signal signal) {
-                traceServiceStub.export(((AccumulatedSpans) signal).getRequest());
-                return true;
-            }
-
-            @Override
-            public Set<SignalType> getSignalCapabilities() {
-                return Set.of(SignalType.SPAN, SignalType.METRIC);
-            }
-        });
 
         metricAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-metric",
-                1_000,
-                config.getBatchTimeoutInMillis() == null ? 0 : config.getBatchTimeoutInMillis(),
-                config.getBatchSizeInSignals() == null ? 1 : config.getBatchSizeInSignals(),
-                MetricAccumulator::accumulate);
+                config.getQueueSizeConfig().getQueueSize(),
+                config.getBatchTimeoutInMillis(),
+                config.getBatchSizeInSignals(),
+                metric -> MetricAccumulator.accumulateMetrics(context, metric));
+
     }
 
 
@@ -96,9 +75,9 @@ public class GrpcExporter implements Exporter {
         NettyChannelBuilder builder = NettyChannelBuilder
                 .forAddress(getConfig().getAddress())
                 .usePlaintext();
-        traceServiceStub = TraceServiceGrpc.newBlockingStub(builder.build());
-        metricServicesStub = MetricsServiceGrpc.newBlockingStub(builder.build());
 
+        metricAccumulator.connect(new GrpcMetricDestination(MetricsServiceGrpc.newBlockingStub(builder.build())));
+        spanAccumulator.connect(new GrpcSpanDestination(TraceServiceGrpc.newBlockingStub(builder.build())));
         spanAccumulator.start();
         metricAccumulator.start();
         state = State.RUNNING;

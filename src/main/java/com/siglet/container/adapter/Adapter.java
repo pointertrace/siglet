@@ -151,7 +151,6 @@ public class Adapter<M extends Message, B extends Message.Builder> {
         }
     }
 
-    // todo testar
     public void clearChanges() {
         checkReady();
         if (builder != null) {
