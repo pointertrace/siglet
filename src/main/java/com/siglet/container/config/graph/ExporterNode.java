@@ -26,12 +26,4 @@ public final class ExporterNode extends BaseNode {
         return (ExporterConfig) super.getConfig();
     }
 
-//    public void calculateEventLoopConfig(EventLoopConfig globalEventLoopConfig) {
-//        if (getConfig() instanceof GrpcExporterConfig grpcExporterConfig) {
-//            EventLoopConfig eventLoopConfig = globalEventLoopConfig.chain(grpcExporterConfig);
-//            this.queueSize = eventLoopConfig.getQueueSize();
-//            this.threadPoolSize = eventLoopConfig.getThreadPoolSize();
-//        }
-//
-//    }
 }

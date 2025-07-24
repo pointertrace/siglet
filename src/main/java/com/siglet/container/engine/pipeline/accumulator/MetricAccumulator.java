@@ -9,6 +9,9 @@ import java.util.List;
 
 public class MetricAccumulator {
 
+    private MetricAccumulator() {
+    }
+
 
     public static AccumulatedMetrics accumulateMetrics(Context context, List<Signal> signals) {
         MetricsAccumulator metricsAccumulator = new MetricsAccumulator();

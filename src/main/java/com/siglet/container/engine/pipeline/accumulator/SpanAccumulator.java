@@ -9,7 +9,6 @@ import java.util.List;
 
 public class SpanAccumulator {
 
-
     private SpanAccumulator() {
     }
 

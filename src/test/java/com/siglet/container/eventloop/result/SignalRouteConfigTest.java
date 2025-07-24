@@ -26,7 +26,7 @@ class SignalRouteConfigTest {
 
     private SignalMock otherSignal;
 
-    private SignalRoute<SignalMock> signalRoute;
+    private SignalRoute signalRoute;
 
     @BeforeEach
     void setUp() {

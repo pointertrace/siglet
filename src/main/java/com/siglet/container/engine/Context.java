@@ -47,8 +47,8 @@ public class Context {
                 .map(ProcessorNode.class::cast)
                 .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.SPANLET)
                 .map(ProcessorNode::getConfig)
-                .mapToInt(config -> config.getThreadPoolSizeConfig().getThreadPoolSize() +
-                        config.getQueueSizeConfig().getQueueSize())
+                .mapToInt(processorConfig -> processorConfig.getThreadPoolSizeConfig().getThreadPoolSize() +
+                        processorConfig.getQueueSizeConfig().getQueueSize())
                 .sum() +
                 getGraph().getNodeRegistry().stream()
                         .filter(ExporterNode.class::isInstance)
@@ -56,7 +56,7 @@ public class Context {
                         .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
                         .map(ExporterNode::getConfig)
                         .map(GrpcExporterConfig.class::cast)
-                        .mapToInt(config -> config.getQueueSizeConfig().getQueueSize())
+                        .mapToInt(grpcExporterConfig -> grpcExporterConfig.getQueueSizeConfig().getQueueSize())
                         .sum();
     }
 
@@ -66,8 +66,8 @@ public class Context {
                 .map(ProcessorNode.class::cast)
                 .filter(processorNode -> processorNode.getConfig().getProcessorKind() == ProcessorKind.METRICLET)
                 .map(ProcessorNode::getConfig)
-                .mapToInt(config -> config.getThreadPoolSizeConfig().getThreadPoolSize() +
-                        config.getQueueSizeConfig().getQueueSize())
+                .mapToInt(processorConfig -> processorConfig.getThreadPoolSizeConfig().getThreadPoolSize() +
+                        processorConfig.getQueueSizeConfig().getQueueSize())
                 .sum() +
                 getGraph().getNodeRegistry().stream()
                         .filter(ExporterNode.class::isInstance)
@@ -75,9 +75,9 @@ public class Context {
                         .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
                         .map(ExporterNode::getConfig)
                         .map(GrpcExporterConfig.class::cast)
-                        .mapToInt(config -> config.getQueueSizeConfig().getQueueSize())
+                        .mapToInt(grpcExporterConfig -> grpcExporterConfig.getQueueSizeConfig().getQueueSize())
                         .sum();
-   }
+    }
 
 
     public SpanObjectPool getSpanObjectPool() {

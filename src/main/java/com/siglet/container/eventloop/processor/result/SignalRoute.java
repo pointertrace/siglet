@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SignalRoute<T extends Signal> {
+public class SignalRoute {
 
     private static final Signal PROCESS_SIGNAL = () -> "process-signal";
 
@@ -16,19 +16,19 @@ public class SignalRoute<T extends Signal> {
 
     private static final String ANY_DESTINATION = "*";
 
-    public static <S extends Signal> SignalRoute<S> drop() {
+    public static  SignalRoute drop() {
         return new SignalRoute(DROP_SIGNAL, ANY_DESTINATION);
     }
 
-    public static <S extends Signal> SignalRoute<S> proceed() {
+    public static SignalRoute proceed() {
         return new SignalRoute(PROCESS_SIGNAL, ANY_DESTINATION);
     }
 
-    public static <S extends Signal> SignalRoute<S> proceed(String destination) {
+    public static SignalRoute proceed(String destination) {
         return new SignalRoute(PROCESS_SIGNAL, destination);
     }
 
-    public static <S extends Signal> SignalRoute<S> route(Signal signal, String destination) {
+    public static SignalRoute route(Signal signal, String destination) {
         if (signal == PROCESS_SIGNAL || signal == DROP_SIGNAL || signal == null) {
             throw new EventLoopError(String.format("Invalid signal %s", signal == null ? "NULL" : signal.getId()));
         }
@@ -39,16 +39,16 @@ public class SignalRoute<T extends Signal> {
         return new SignalRoute(signal, destination);
     }
 
-    private final T signal;
+    private final Signal signal;
 
     private final String destination;
 
-    private SignalRoute(T signal, String destination) {
+    private SignalRoute(Signal signal, String destination) {
         this.signal = signal;
         this.destination = destination;
     }
 
-    public void dispatch(Map<String, String> destinationMappings, T processSignal,
+    public void dispatch(Map<String, String> destinationMappings, Signal processSignal,
                          List<SignalDestination> destinations) {
         if (signal == DROP_SIGNAL) {
             return;
@@ -60,7 +60,7 @@ public class SignalRoute<T extends Signal> {
             return;
         }
         for (SignalDestination availableSignalDestination : destinations) {
-            String destinationName = null;
+            String destinationName;
             if (!destinationMappings.isEmpty()) {
                 destinationName = destinationMappings.get(destination);
                 if (destinationName == null) {
@@ -88,7 +88,7 @@ public class SignalRoute<T extends Signal> {
         }
     }
 
-    private T chooseSignal(T processSignal, T routeSignal) {
+    private Signal chooseSignal(Signal processSignal, Signal routeSignal) {
         if (signal == PROCESS_SIGNAL) {
             return processSignal;
 

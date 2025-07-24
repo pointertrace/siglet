@@ -100,7 +100,6 @@ public class Graph {
                         .toList());
             }
 
-//            calculateQueueAndThreadPoolSizes(context);
         });
     }
 
@@ -113,19 +112,6 @@ public class Graph {
 
     public Collection<BaseNode> getNodeRegistry() {
         return nodeRegistry.values();
-    }
-
-    private void calculateQueueAndThreadPoolSizes(Context context) {
-//        nodeRegistry.values().stream()
-//                .filter(ProcessorNode.class::isInstance)
-//                .map(ProcessorNode.class::cast)
-//                .forEach(processorNode -> processorNode.calculateEventLoopConfig(
-//                        context.getGlobalEventLoopConfig()));
-//        nodeRegistry.values().stream()
-//                .filter(ExporterNode.class::isInstance)
-//                .map(ExporterNode.class::cast)
-//                .forEach(exporterNode -> exporterNode.calculateEventLoopConfig(
-//                        context.getGlobalEventLoopConfig()));
     }
 
 }

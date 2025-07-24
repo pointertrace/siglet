@@ -77,7 +77,7 @@ public record SigletConfig(
 
         private Location configCheckerFactoryClassLocation;
 
-        private List<LocatedString> destinations = new ArrayList<>();
+        private final List<LocatedString> destinations = new ArrayList<>();
 
         private Location destinationsLocation;
 
