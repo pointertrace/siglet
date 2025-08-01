@@ -1,0 +1,82 @@
+package io.github.pointertrace.siglet.container.adapter.metric;
+
+import io.opentelemetry.proto.metrics.v1.AggregationTemporality;
+import io.opentelemetry.proto.metrics.v1.Histogram;
+import io.opentelemetry.proto.metrics.v1.HistogramDataPoint;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class ProtoHistogramAdapterTest {
+
+
+    private Histogram protoHistogram;
+
+    private ProtoHistogramAdapter protoHistogramAdapter;
+
+    private HistogramDataPoint protoNumberDataPoint;
+
+    private HistogramDataPoint protoExtraNumberDataPoint;
+
+    @BeforeEach
+    void setUp() {
+        protoNumberDataPoint = HistogramDataPoint.newBuilder()
+                .setTimeUnixNano(1)
+                .setStartTimeUnixNano(2)
+                .build();
+
+        protoHistogram = Histogram.newBuilder()
+                .addDataPoints(protoNumberDataPoint)
+                .setAggregationTemporality(AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE)
+                .build();
+
+
+        protoHistogramAdapter = new ProtoHistogramAdapter();
+        protoHistogramAdapter.recycle(protoHistogram);
+
+    }
+
+    @Test
+    void get() {
+        protoHistogramAdapter.getDataPoints().get(0);
+        assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
+        assertFalse(protoHistogramAdapter.isUpdated());
+    }
+
+    @Test
+    void update_andGet() {
+
+        protoHistogramAdapter.getDataPoints().add()
+                .setTimeUnixNano(10)
+                .setStartTimeUnixNano(20);
+
+        protoExtraNumberDataPoint = HistogramDataPoint.newBuilder()
+                .setTimeUnixNano(10)
+                .setStartTimeUnixNano(20)
+                .build();
+
+        new ProtoHistogramDataPointAdapter().recycle(protoExtraNumberDataPoint);
+
+        assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
+        assertEquals(protoExtraNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(1));
+        assertTrue(protoHistogramAdapter.isUpdated());
+
+    }
+
+    @Test
+    void get_updatableNotUpdated() {
+
+        protoHistogramAdapter = new ProtoHistogramAdapter();
+        protoHistogramAdapter.recycle(protoHistogram);
+
+
+        protoHistogramAdapter.getDataPoints().get(0);
+        assertSame(protoNumberDataPoint, protoHistogramAdapter.getDataPoints().getUpdated().get(0));
+        assertSame(protoHistogram, protoHistogramAdapter.getUpdated());
+        assertFalse(protoHistogramAdapter.isUpdated());
+
+    }
+
+
+}

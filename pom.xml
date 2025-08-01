@@ -1,77 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Licensed to the Apache Software Foundation (ASF) under one or more
-    contributor license agreements.  See the NOTICE file distributed with
-    this work for additional information regarding copyright ownership.
-    The ASF licenses this file to You under the Apache License, Version 2.0
-    (the "License"); you may not use this file except in compliance with
-    the License.  You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.siglet</groupId>
-    <artifactId>siglet</artifactId>
+    <groupId>io.github.pointertrace.siglet</groupId>
+    <artifactId>siglet-container</artifactId>
     <version>1.0.0-SNAPSTHOT</version>
     <packaging>jar</packaging>
-    <name>Siglet - "servlets" for opentelemetry signals</name>
+    <name>Container to rum siglets - "servlets" for opentelemetry signals</name>
     <description>A container that implements the idea of java servlet but for opentelemetry singals</description>
 
     <properties>
 
-        <!-- unify the encoding for all the modules -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <jdk.version>21</jdk.version>
-
         <log4j2-version>2.21.1</log4j2-version>
-        <maven-compiler-plugin-version>3.11.0</maven-compiler-plugin-version>
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/pointer-trace/sigletConfig.git</connection>
-        <developerConnection>scm:git:git@github.com:pointer-trace/sigletConfig.git</developerConnection>
-        <url>https://github.com/pointer-trace/sigletConfig</url>
+        <connection>scm:git:https://github.com/pointertrace/siglet-container.git</connection>
+        <developerConnection>scm:git:git@github.com:pointertrace/siglet-contianer.git</developerConnection>
+        <url>https://github.com/pointertrace/siglet-container</url>
     </scm>
-
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Osvaldo Pina</name>
+            <email>pointertrace@gmail.com</email>
+            <url>https://github.com/pointer-trace</url>
+        </developer>
+    </developers>
     <dependencies>
         <dependency>
-            <groupId>org.siglet</groupId>
+            <groupId>io.github.pointertrace.siglet</groupId>
             <artifactId>siglet-api</artifactId>
-            <version>1.0.0-SNAPSTHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.siglet</groupId>
+            <groupId>io.github.pointertrace.siglet</groupId>
             <artifactId>siglet-parser</artifactId>
-            <version>1.0.0-SNAPSTHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-loader-tools</artifactId>
-            <version>3.4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-loader</artifactId>
-            <version>3.4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.2</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry.proto</groupId>
@@ -103,19 +77,31 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.24.3</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.24.3</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.24.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.26</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -129,23 +115,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-            <version>1.5.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>info.picocli</groupId>
-            <artifactId>picocli</artifactId>
-            <version>4.7.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>4.0.26</version>
+            <groupId>org.example</groupId>
+            <artifactId>SimpleSpanlet</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -164,7 +139,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.siglet.container.cli.Main</mainClass>
+                            <mainClass>io.github.pointertrace.siglet.container.cli.Main</mainClass>
                             <includeSystemScope>true</includeSystemScope>
                         </configuration>
                     </execution>
@@ -173,11 +148,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin-version}</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>24</source>
                     <target>24</target>
-                    <release>${jdk.version}</release>
+                    <release>21</release>
                     <maxmem>512M</maxmem>
                 </configuration>
             </plugin>
@@ -215,4 +190,27 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
