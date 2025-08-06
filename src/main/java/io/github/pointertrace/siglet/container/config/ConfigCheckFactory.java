@@ -43,8 +43,6 @@ public class ConfigCheckFactory {
 
     public static final String KIND_PROP = "kind";
 
-    public static final String SIGNAL_PROP = "signal";
-
     public static final String PROCESSORS_PROP = "processors";
 
     public static final String FROM_PROP = "from";
@@ -128,9 +126,9 @@ public class ConfigCheckFactory {
                         KIND_PROP, text(new ProcessorKindTransformer())),
                 alternativeRequiredProperty(TO_PROP,
                         requiredProperty(ProcessorConfig::setTo, ProcessorConfig::setToLocation,
-                                TO_PROP, array(text(new LocatedStringTransformer()))),
+                                TO_PROP, array(text(new ProcessorDestinationTransformer()))),
                         requiredProperty(ProcessorConfig::setToSingleValue, ProcessorConfig::setToLocation,
-                                TO_PROP, text(new LocatedStringTransformer()))),
+                                TO_PROP, text(new ProcessorDestinationTransformer()))),
                 requiredProperty(ProcessorConfig::setType, ProcessorConfig::setTypeLocation,
                         TYPE_PROP, text()),
                 requiredDynamicProperty(CONFIG_PROP, ProcessorConfig::setConfigLocation,
@@ -150,7 +148,7 @@ public class ConfigCheckFactory {
         return strictObject(PipelineConfig::new,
                 requiredProperty(PipelineConfig::setName, PipelineConfig::setNameLocation,
                         NAME_PROP, text()),
-                requiredProperty(PipelineConfig::setFrom, PipelineConfig::setFromLocation,
+                optionalProperty(PipelineConfig::setFrom, PipelineConfig::setFromLocation,
                         FROM_PROP, text()),
                 alternativeRequiredProperty(START_PROP,
                         requiredProperty(PipelineConfig::setStart, PipelineConfig::setStartLocation,

@@ -1,14 +1,9 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
-import io.github.pointertrace.siglet.container.SigletError;
-import io.github.pointertrace.siglet.container.utils.Joining;
-import io.github.pointertrace.siglet.container.utils.StringUtils;
 import io.github.pointertrace.siget.parser.located.Location;
+import io.github.pointertrace.siglet.container.config.raw.validator.ComposedValidator;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RawConfig extends BaseConfig {
 
@@ -52,32 +47,6 @@ public class RawConfig extends BaseConfig {
         this.pipelines = pipelines;
     }
 
-    // todo chamar
-    protected void validateUniqueNames() {
-        String notUniqueNames = Stream.of(
-                        getReceivers().stream()
-                                .map(ReceiverConfig::getName),
-                        getExporters().stream()
-                                .map(ExporterConfig::getName),
-                        getPipelines().stream()
-                                .map(PipelineConfig::getName),
-                        getPipelines().stream()
-                                .flatMap(p -> p.getProcessors().stream())
-                                .map(ProcessorConfig::getName)
-                )
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
-                .filter(e -> e.getValue() > 1)
-                .map(e -> "'" + e.getKey() + "' appears " + StringUtils.frequency(e.getValue()))
-                .collect(Joining.twoDelimiters(", ", " and ",
-                        "Names must be unique within the configuration file but: ", "!"));
-
-        if (notUniqueNames != null) {
-            throw new SigletError(notUniqueNames);
-        }
-
-    }
-
-
 
     @Override
     public void afterSetValues() {
@@ -96,6 +65,7 @@ public class RawConfig extends BaseConfig {
                 .filter(GrpcExporterConfig.class::isInstance)
                 .map(GrpcExporterConfig.class::cast)
                 .forEach(exporterConfig -> exporterConfig.setRawConfig(this));
+
     }
 
     @Override

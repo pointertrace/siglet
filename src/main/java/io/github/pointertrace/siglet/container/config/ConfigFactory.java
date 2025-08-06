@@ -1,6 +1,7 @@
 package io.github.pointertrace.siglet.container.config;
 
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
+import io.github.pointertrace.siglet.container.config.raw.validator.ComposedValidator;
 import io.github.pointertrace.siglet.container.config.siglet.SigletConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siget.parser.Node;
@@ -12,15 +13,13 @@ import static io.github.pointertrace.siglet.container.config.ConfigCheckFactory.
 
 public class ConfigFactory {
 
+    private static final ComposedValidator composedValidator = new ComposedValidator();
+
     public Config create(String yaml) {
         return create(yaml, List.of());
     }
 
-    public Config create(String yaml, List<SigletConfig> sigletsConfigs) {
-
-        ProcessorTypeRegistry processorTypeRegistry = new ProcessorTypeRegistry();
-
-        sigletsConfigs.forEach(processorTypeRegistry::register);
+    public RawConfig createRawConfig(String yaml, ProcessorTypeRegistry processorTypeRegistry) {
 
         YamlParser yamlParser = new YamlParser();
 
@@ -31,6 +30,20 @@ public class ConfigFactory {
         RawConfig rawConfig = node.getValue(RawConfig.class);
         rawConfig.afterSetValues();
 
-        return new Config(rawConfig, sigletsConfigs, processorTypeRegistry);
+        return rawConfig;
     }
+
+    public Config create(String yaml, List<SigletConfig> sigletsConfigs) {
+
+        ProcessorTypeRegistry processorTypeRegistry = new ProcessorTypeRegistry();
+
+        sigletsConfigs.forEach(processorTypeRegistry::register);
+
+        RawConfig rawConfig = createRawConfig(yaml,processorTypeRegistry);
+
+        composedValidator.Validate(rawConfig);
+
+        return new Config(createRawConfig(yaml,processorTypeRegistry), sigletsConfigs, processorTypeRegistry);
+    }
+
 }
