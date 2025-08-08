@@ -19,7 +19,7 @@ public class ComposedValidator implements RawConfigValidator {
     }
 
     @Override
-    public void Validate(RawConfig config) {
-        validators.forEach(validator -> validator.Validate(config));
+    public void validate(RawConfig config) {
+        validators.forEach(validator -> validator.validate(config));
     }
 }

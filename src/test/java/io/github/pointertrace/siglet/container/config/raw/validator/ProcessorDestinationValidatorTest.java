@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw.validator;
 
 import io.github.pointertrace.siglet.container.SigletError;
-import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
@@ -50,10 +49,10 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.validate(rawConfig));
 
         assertEquals("Processor [spanlet] at (10,5) has [non-existing] as destination and there is no " +
-                     "processor or exporter with that name.", e.getMessage());
+                     "processor, exporter or pipeline with that name.", e.getMessage());
 
     }
 
@@ -80,15 +79,15 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.validate(rawConfig));
 
         assertEquals("Processor [spanlet] at (10,5) has [non-existing] as destination and there is no " +
-                     "processor or exporter with that name.", e.getMessage());
+                     "processor, exporter or pipeline with that name.", e.getMessage());
 
     }
 
     @Test
-    void validate_destinationIsNotProcessorOrExporter() {
+    void validate_destinationIsNotProcessorOrExporterOrPipeline() {
 
         String configTxt = """
                 receivers:
@@ -102,7 +101,7 @@ class ProcessorDestinationValidatorTest {
                   processors:
                   - name: spanlet
                     kind: spanlet
-                    to: pipeline
+                    to: receiver
                     type: groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
@@ -110,15 +109,15 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.validate(rawConfig));
 
-        assertEquals("Processor [spanlet] at (10,5) has pipeline [pipeline] as destination and it should be " +
-                     "a processor or a exporter.", e.getMessage());
+        assertEquals("Processor [spanlet] at (10,5) has receiver [receiver] as destination and it should be " +
+                     "a processor, exporter or pipeline.", e.getMessage());
 
     }
 
     @Test
-    void validate_destinationAliasIsNotProcessorOrExporter() {
+    void validate_destinationAliasIsNotProcessorOrExporterOrPipeline() {
 
         String configTxt = """
                 receivers:
@@ -140,16 +139,16 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> processorDestinationValidator.validate(rawConfig));
 
         assertEquals("Processor [spanlet] at (10,5) has receiver [receiver] as destination and it should be " +
-                     "a processor or a exporter.", e.getMessage());
+                     "a processor, exporter or pipeline.", e.getMessage());
 
     }
 
 
     @Test
-    void validate() {
+    void validate_toExporter() {
 
         String configTxt = """
                 receivers:
@@ -171,10 +170,174 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        processorDestinationValidator.Validate(rawConfig);
+        processorDestinationValidator.validate(rawConfig);
 
     }
 
+    @Test
+    void validate_toExporterAlias() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: alias:exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        processorDestinationValidator.validate(rawConfig);
+
+    }
+
+    @Test
+    void validate_toProcessor() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: other-spanlet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                  - name: other-spanlet
+                    kind: spanlet
+                    to: exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        processorDestinationValidator.validate(rawConfig);
+
+    }
+
+    @Test
+    void validate_toProcessorAlias() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: alias:other-spanlet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                  - name: other-spanlet
+                    kind: spanlet
+                    to: exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        processorDestinationValidator.validate(rawConfig);
+
+    }
+
+    @Test
+    void validate_toPipeline() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: other-pipeline
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                - name: other-pipeline
+                  start: spanlet
+                  processors:
+                  - name: other-spanlet
+                    kind: spanlet
+                    to: exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        processorDestinationValidator.validate(rawConfig);
+
+    }
+
+    @Test
+    void validate_toPipelineAlias() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to: alias:other-pipeline
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                - name: other-pipeline
+                  start: spanlet
+                  processors:
+                  - name: other-spanlet
+                    kind: spanlet
+                    to: exporter
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        processorDestinationValidator.validate(rawConfig);
+
+    }
     @Test
     void validate_alias() {
 
@@ -198,7 +361,7 @@ class ProcessorDestinationValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        processorDestinationValidator.Validate(rawConfig);
+        processorDestinationValidator.validate(rawConfig);
 
     }
 }

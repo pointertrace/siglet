@@ -14,7 +14,7 @@ public class UniqueNameValidator implements RawConfigValidator {
 
 
     @Override
-    public void Validate(RawConfig config) {
+    public void validate(RawConfig config) {
         Map<String, List<BaseConfig>> namedConfigItems = new HashMap<>();
 
         config.getReceivers().forEach(receiverConfig -> addItem(receiverConfig, namedConfigItems));

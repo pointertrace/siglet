@@ -10,7 +10,7 @@ public class ProcessorDestinationValidator implements RawConfigValidator {
 
 
     @Override
-    public void Validate(RawConfig config) {
+    public void validate(RawConfig config) {
         Map<String, BaseConfig> namedConfigItems = getUniqueNamedConfigItems(config);
 
         config.getPipelines().stream()
@@ -28,12 +28,14 @@ public class ProcessorDestinationValidator implements RawConfigValidator {
             if (destinationConfig == null) {
                 throw new SigletError(String.format("Processor [%s] at %s has [%s] as destination and there " +
                                                     "is " +
-                                                    "no processor or exporter with that name.", processor.getName(),
+                                                    "no processor, exporter or pipeline with that name.",
+                        processor.getName(),
                         processor.getLocation(), destinationValue));
-            } else if (!(destinationConfig instanceof ProcessorConfig) && !(destinationConfig instanceof ExporterConfig)) {
+            } else if (!(destinationConfig instanceof ProcessorConfig) && !(destinationConfig instanceof ExporterConfig)
+                       && !(destinationConfig instanceof PipelineConfig)) {
                 throw new SigletError(String.format("Processor [%s] at %s has %s [%s] as destination and it " +
                                                     "should be a " +
-                                                    "processor or a exporter.", processor.getName(),
+                                                    "processor, exporter or pipeline.", processor.getName(),
                         processor.getLocation(), getItemType(destinationConfig), destinationConfig.getName()));
             }
 

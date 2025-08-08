@@ -1,7 +1,10 @@
-package io.github.pointertrace.siglet.container.config.raw.validator;
+package io.github.pointertrace.siglet.container.config.graph.validator;
 
 import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
+import io.github.pointertrace.siglet.container.config.graph.Graph;
+import io.github.pointertrace.siglet.container.config.graph.GraphFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,56 +12,73 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProcessorOrphanValidatorTest {
+class PipelineSignalTypeValidatorTest {
 
     private ConfigFactory configFactory;
 
-    private ProcessorOrphanValidator processorOrphanValidator;
+    private GraphFactory graphFactory;
+
+    private PipelineSignalTypeValidator pipelineSignalTypeValidator;
 
     @BeforeEach
     void setUp() {
 
         configFactory = new ConfigFactory();
 
-        processorOrphanValidator = new ProcessorOrphanValidator();
+        graphFactory = new GraphFactory();
+
+        pipelineSignalTypeValidator = new PipelineSignalTypeValidator();
 
     }
 
     @Test
-    void validate_processorOrphan() {
+    void validate_multipleSignalTypesPipeline() {
 
         String configTxt = """
                 receivers:
                 - debug: receiver
                 exporters:
                 - debug: exporter
-                - debug: orphan-exporter
                 pipelines:
                 - name: pipeline
                   from: receiver
-                  start: spanlet
+                  start: first-spanlet
                   processors:
-                  - name: spanlet
+                  - name: first-spanlet
                     kind: spanlet
-                    to: exporter
+                    to: second-spanlet
                     type: groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
-                  - name: orphan-spanlet
+                  - name: second-spanlet
                     kind: spanlet
+                    to: first-metriclet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                  - name: first-metriclet
+                    kind: metriclet
+                    to: second-metriclet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                  - name: second-metriclet
+                    kind: metriclet
                     to: exporter
                     type: groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        Config config = configFactory.create(configTxt);
 
-        SigletError e = assertThrows(SigletError.class, () -> processorOrphanValidator.validate(rawConfig));
+        Graph graph = graphFactory.create(config);
 
-        assertEquals("""
-                The following processors are orphaned:
-                    [orphan-spanlet] at (17,5)""", e.getMessage());
+        SigletError e = assertThrows(SigletError.class, () -> pipelineSignalTypeValidator.validate(graph));
+
+        assertTrue(e.getMessage().contains("Pipeline [pipeline] at (6,3) has multiple signal types:"));
+        assertTrue(e.getMessage().contains("    SPAN: [first-spanlet] at (10,5), [second-spanlet] at (16,5)"));
+        assertTrue(e.getMessage().contains("    METRIC: [first-metriclet] at (22,5), [second-metriclet] at (28,5)"));
 
     }
 
@@ -71,19 +91,16 @@ class ProcessorOrphanValidatorTest {
                 - debug: exporter
                 pipelines:
                 - name: other-pipeline
-                  start: spanlet
-                  processors:
-                  - name: spanlet
-                    kind: spanlet
-                    to: exporter
-                    type: groovy-action
-                    config:
-                      action: signal.name = signal.name +"-suffix"
-                - name: pipeline
                   from: receiver
-                  start: spanlet
+                  start: first-spanlet
                   processors:
-                  - name: spanlet
+                  - name: first-spanlet
+                    kind: spanlet
+                    to: second-spanlet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                  - name: second-spanlet
                     kind: spanlet
                     to: exporter
                     type: groovy-action
@@ -91,40 +108,11 @@ class ProcessorOrphanValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        Config config = configFactory.create(configTxt);
 
-        processorOrphanValidator.validate(rawConfig);
+        Graph graph = graphFactory.create(config);
 
-    }
-
-    @Test
-    void validate_alias() {
-        String configTxt = """
-                receivers:
-                - debug: receiver
-                exporters:
-                - debug: exporter
-                pipelines:
-                - name: pipeline
-                  start: spanlet
-                  processors:
-                  - name: spanlet
-                    kind: spanlet
-                    to: alias:other-spanlet
-                    type: groovy-action
-                    config:
-                      action: signal.name = signal.name +"-suffix"
-                  - name: other-spanlet
-                    kind: spanlet
-                    to: exporter
-                    type: groovy-action
-                    config:
-                      action: signal.name = signal.name +"-suffix"
-                """;
-
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
-
-        processorOrphanValidator.validate(rawConfig);
+        pipelineSignalTypeValidator.validate(graph);
 
     }
 

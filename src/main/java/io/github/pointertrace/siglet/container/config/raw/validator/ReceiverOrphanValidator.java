@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class ReceiverOrphanValidator implements RawConfigValidator {
 
     @Override
-    public void Validate(RawConfig config) {
+    public void validate(RawConfig config) {
         Map<String, BaseConfig> receivers = config.getReceivers().stream()
                 .collect(Collectors.toMap(BaseConfig::getName, Function.identity()));
 

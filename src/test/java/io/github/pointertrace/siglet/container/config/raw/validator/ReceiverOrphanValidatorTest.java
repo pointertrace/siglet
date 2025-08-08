@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw.validator;
 
 import io.github.pointertrace.siglet.container.SigletError;
-import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
@@ -47,9 +46,9 @@ class ReceiverOrphanValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig =  configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> receiverOrphanValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> receiverOrphanValidator.validate(rawConfig));
 
         assertEquals("""
                 The following receivers are orphaned:
@@ -78,9 +77,9 @@ class ReceiverOrphanValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig =  configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        receiverOrphanValidator.Validate(rawConfig);
+        receiverOrphanValidator.validate(rawConfig);
 
     }
 }

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public interface RawConfigValidator {
 
 
-    void Validate(RawConfig config);
+    void validate(RawConfig config);
 
     default String getItemType(BaseConfig item) {
         return switch (item) {

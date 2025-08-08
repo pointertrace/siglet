@@ -49,7 +49,7 @@ class ExporterOrphanValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> exporterOrphanValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> exporterOrphanValidator.validate(rawConfig));
 
         assertEquals("""
                 The following exporters are orphaned:
@@ -88,7 +88,7 @@ class ExporterOrphanValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        exporterOrphanValidator.Validate(rawConfig);
+        exporterOrphanValidator.validate(rawConfig);
 
     }
 
@@ -123,7 +123,7 @@ class ExporterOrphanValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        exporterOrphanValidator.Validate(rawConfig);
+        exporterOrphanValidator.validate(rawConfig);
 
     }
 }

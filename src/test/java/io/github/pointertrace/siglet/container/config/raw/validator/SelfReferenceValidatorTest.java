@@ -7,24 +7,56 @@ import io.github.pointertrace.siglet.container.engine.pipeline.processor.Process
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
-
-class UniqueNameValidatorTest {
+class SelfReferenceValidatorTest {
 
     private ConfigFactory configFactory;
 
-    private UniqueNameValidator uniqueNameValidator;
-
+    private SelfReferenceValidator selfReferenceValidator;
 
     @BeforeEach
     void setUp() {
 
         configFactory = new ConfigFactory();
 
-        uniqueNameValidator = new UniqueNameValidator();
+        selfReferenceValidator = new SelfReferenceValidator();
 
+    }
+
+    @Test
+    void validate_selfReference() {
+
+        String configTxt = """
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start:
+                  - spanlet
+                  - pipeline
+                  processors:
+                  - name: spanlet
+                    kind: spanlet
+                    to:
+                    - exporter
+                    - spanlet
+                    type: groovy-action
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+
+        SigletError e = assertThrows(SigletError.class, () -> selfReferenceValidator.validate(rawConfig));
+
+        assertEquals("""
+                The following items have a self reference:
+                    pipeline [pipeline] at (6,3)
+                    processor [spanlet] at (12,5)""", e.getMessage());
     }
 
     @Test
@@ -38,11 +70,13 @@ class UniqueNameValidatorTest {
                 pipelines:
                 - name: pipeline
                   from: receiver
-                  start: spanlet
+                  start:
+                  - spanlet
                   processors:
                   - name: spanlet
                     kind: spanlet
-                    to: exporter
+                    to:
+                    - exporter
                     type: groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
@@ -50,57 +84,7 @@ class UniqueNameValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        uniqueNameValidator.validate(rawConfig);
+         selfReferenceValidator.validate(rawConfig);
 
     }
-
-    @Test
-    void validate_validationError() {
-
-        String configTxt = """
-                receivers:
-                - debug: receiver
-                - debug: name
-                exporters:
-                - debug: exporter
-                - debug: name
-                pipelines:
-                - name: name
-                  from: receiver
-                  start: spanlet
-                  processors:
-                  - name: name
-                    kind: spanlet
-                    to: exporter
-                    type: groovy-action
-                    config:
-                      action: signal.name = signal.name +"-suffix"
-                - name: pipeline
-                  from: receiver
-                  start: spanlet
-                  processors:
-                  - name: spanlet
-                    kind: spanlet
-                    to: exporter
-                    type: groovy-action
-                    config:
-                      action: signal.name = signal.name +"-suffix"
-                """;
-
-
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
-
-        SigletError e = assertThrows(SigletError.class, () -> uniqueNameValidator.validate(rawConfig));
-
-        assertEquals(
-                """
-                        Configuration items must have a unique name but The following items have the same name:
-                            receiver [name] at (3,3)
-                            exporter [name] at (6,3)
-                            pipeline [name] at (8,3)
-                            processor [name] at (12,5)""", e.getMessage());
-
-    }
-
-
 }

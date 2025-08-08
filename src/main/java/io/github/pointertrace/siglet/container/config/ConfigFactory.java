@@ -41,7 +41,7 @@ public class ConfigFactory {
 
         RawConfig rawConfig = createRawConfig(yaml,processorTypeRegistry);
 
-        composedValidator.Validate(rawConfig);
+        composedValidator.validate(rawConfig);
 
         return new Config(createRawConfig(yaml,processorTypeRegistry), sigletsConfigs, processorTypeRegistry);
     }

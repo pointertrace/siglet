@@ -13,7 +13,7 @@ public class PipelineOriginValidator implements RawConfigValidator {
 
 
     @Override
-    public void Validate(RawConfig config) {
+    public void validate(RawConfig config) {
         Map<String, BaseConfig> namedConfigItems = getUniqueNamedConfigItems(config);
 
         config.getPipelines().forEach(pipeline -> validatePipelineOrigin(pipeline, namedConfigItems));

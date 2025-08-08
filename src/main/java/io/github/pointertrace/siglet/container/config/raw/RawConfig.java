@@ -3,6 +3,7 @@ package io.github.pointertrace.siglet.container.config.raw;
 import io.github.pointertrace.siget.parser.located.Location;
 import io.github.pointertrace.siglet.container.config.raw.validator.ComposedValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RawConfig extends BaseConfig {
@@ -15,7 +16,7 @@ public class RawConfig extends BaseConfig {
 
     private Location receiversLocation;
 
-    private List<ExporterConfig> exporters;
+    private List<ExporterConfig> exporters = new ArrayList<>();
 
     private Location exportersLocation;
 

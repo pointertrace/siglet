@@ -1,6 +1,7 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.pointertrace.siget.parser.located.Location;
@@ -17,7 +18,7 @@ public class PipelineConfig extends BaseConfig {
 
     private Location startLocation;
 
-    private List<ProcessorConfig> processors;
+    private List<ProcessorConfig> processors = new ArrayList<>();
 
     private Location sigletsLocation;
 

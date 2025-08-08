@@ -37,6 +37,7 @@ public final class PipelineNode extends BaseNode {
     }
 
     public SignalType getSignal() {
+        // melhorar para incluir pipelines vazios
         return getStart().getFirst().getSignal();
     }
 

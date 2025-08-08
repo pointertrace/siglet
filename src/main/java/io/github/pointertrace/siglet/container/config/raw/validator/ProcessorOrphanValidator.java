@@ -11,7 +11,7 @@ public class ProcessorOrphanValidator implements RawConfigValidator {
 
 
     @Override
-    public void Validate(RawConfig config) {
+    public void validate(RawConfig config) {
         Set<String> destinations = new HashSet<>();
 
         destinations.addAll(config.getPipelines().stream()

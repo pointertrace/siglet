@@ -156,7 +156,7 @@ public class ConfigCheckFactory {
                         requiredProperty(PipelineConfig::setStartSingleValue, PipelineConfig::setStartLocation,
                                 START_PROP, text(new LocatedStringTransformer()))
                 ),
-                requiredProperty(PipelineConfig::setProcessors, PipelineConfig::setSigletsLocation,
+                optionalProperty(PipelineConfig::setProcessors, PipelineConfig::setSigletsLocation,
                         PROCESSORS_PROP, array(processorChecker(processorTypeRegistry))
                 )
         );
@@ -168,7 +168,7 @@ public class ConfigCheckFactory {
                         globalConfigChecker()),
                 requiredProperty(RawConfig::setReceivers, RawConfig::setReceiversLocation, RECEIVERS_PROP,
                         receiversChecker()),
-                requiredProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,
+                optionalProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,
                         grpcExportersChecker()),
                 requiredProperty(RawConfig::setPipelines, RawConfig::setPipelinesLocation, PIPELINES_PROP,
                         pipelinesChecker(processorTypeRegistry)));

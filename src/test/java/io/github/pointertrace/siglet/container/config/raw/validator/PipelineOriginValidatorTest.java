@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw.validator;
 
 import io.github.pointertrace.siglet.container.SigletError;
-import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
@@ -50,7 +49,7 @@ class PipelineOriginValidatorTest {
 
         RawConfig rawConfig =  configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> pipelineOriginValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> pipelineOriginValidator.validate(rawConfig));
 
         assertEquals("Pipeline [pipeline] at (6,3) has [non-existing] as origin and there is no receiver " +
                      "with that name.", e.getMessage());
@@ -81,7 +80,7 @@ class PipelineOriginValidatorTest {
 
         RawConfig rawConfig =  configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        SigletError e = assertThrows(SigletError.class, () -> pipelineOriginValidator.Validate(rawConfig));
+        SigletError e = assertThrows(SigletError.class, () -> pipelineOriginValidator.validate(rawConfig));
 
         assertEquals("Pipeline [pipeline] at (6,3) has processor [spanlet] as origin and it should be a " +
                      "receiver.", e.getMessage());
@@ -111,7 +110,7 @@ class PipelineOriginValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        pipelineOriginValidator.Validate(rawConfig);
+        pipelineOriginValidator.validate(rawConfig);
 
     }
 
@@ -137,7 +136,7 @@ class PipelineOriginValidatorTest {
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
 
-        pipelineOriginValidator.Validate(rawConfig);
+        pipelineOriginValidator.validate(rawConfig);
 
     }
 }
