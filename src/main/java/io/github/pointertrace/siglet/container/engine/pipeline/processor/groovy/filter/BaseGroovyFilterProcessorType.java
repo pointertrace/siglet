@@ -5,14 +5,9 @@ import io.github.pointertrace.siglet.container.engine.pipeline.processor.ConfigD
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorType;
 
-public class GroovyFilterProcessorType implements ProcessorType {
+public abstract class BaseGroovyFilterProcessorType implements ProcessorType {
 
     private final GroovyFilterDefinition filterDefinition = new GroovyFilterDefinition();
-
-    @Override
-    public String getName() {
-        return "groovy-filter";
-    }
 
     @Override
     public ConfigDefinition getConfigDefinition() {

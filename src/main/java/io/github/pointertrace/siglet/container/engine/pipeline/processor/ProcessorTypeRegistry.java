@@ -4,9 +4,9 @@ import io.github.pointertrace.siglet.container.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.container.config.siglet.SigletConfig;
 import io.github.pointertrace.siglet.container.engine.Context;
-import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionProcessorType;
-import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.filter.GroovyFilterProcessorType;
-import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.router.GroovyRouterProcessorType;
+import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.action.SpanletGroovyActionProcessorType;
+import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.filter.SpanletGroovyFilterProcessorType;
+import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.router.SpanletGroovyRouterProcessorType;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.siglet.SigletProcessorType;
 
 import java.util.HashMap;
@@ -17,9 +17,9 @@ public class ProcessorTypeRegistry {
     private final Map<String, ProcessorType> definitions = new HashMap<>();
 
     public ProcessorTypeRegistry() {
-        register(new GroovyActionProcessorType());
-        register(new GroovyFilterProcessorType());
-        register(new GroovyRouterProcessorType());
+        register(new SpanletGroovyActionProcessorType());
+        register(new SpanletGroovyFilterProcessorType());
+        register(new SpanletGroovyRouterProcessorType());
     }
 
     public void register(ProcessorType processorType) {

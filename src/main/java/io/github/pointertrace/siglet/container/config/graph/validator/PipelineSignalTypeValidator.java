@@ -38,7 +38,7 @@ public class PipelineSignalTypeValidator implements GraphValidator {
     }
 
     public String description(Map.Entry<SignalType, List<ProcessorNode>> nodesSignalTypes) {
-        return String.format("%s%s: %s", Describable.PREFIX.repeat(2),
+        return String.format("%s%s: %s", Describable.prefix(2),
                 nodesSignalTypes.getKey().name(),
                 nodesSignalTypes.getValue().stream()
                         .map(node -> String.format("[%s] at %s", node.getName(), node.getConfig().getLocation()))

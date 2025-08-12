@@ -54,7 +54,7 @@ public class UniqueNameValidator implements RawConfigValidator {
     private String errorMessage(List<BaseConfig> sameNameItems) {
 
         return sameNameItems.stream()
-                .map(sameNameItem -> Describable.PREFIX.repeat(2) + getItemType(sameNameItem) + " [" +
+                .map(sameNameItem -> Describable.prefix(2) + getItemType(sameNameItem) + " [" +
                                      sameNameItem.getName() + "] at " + sameNameItem.getLocation())
                 .collect(Collectors.joining("\n"));
 

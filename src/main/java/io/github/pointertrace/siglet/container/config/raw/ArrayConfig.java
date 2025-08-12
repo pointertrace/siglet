@@ -2,6 +2,7 @@ package io.github.pointertrace.siglet.container.config.raw;
 
 
 
+import io.github.pointertrace.siget.parser.Describable;
 import io.github.pointertrace.siget.parser.located.Location;
 
 import java.util.List;
@@ -27,12 +28,12 @@ public class ArrayConfig<T extends BaseConfig> extends BaseConfig {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  arrayConfig");
         for (BaseConfig child : values) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(child.getLocation().describe());
             sb.append("  array item");
             sb.append("\n");

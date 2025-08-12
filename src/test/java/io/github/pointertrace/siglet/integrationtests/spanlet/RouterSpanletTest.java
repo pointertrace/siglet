@@ -38,7 +38,7 @@ class RouterSpanletTest {
                     - first-exporter
                     - second-exporter
                     - third-exporter
-                    type: groovy-router
+                    type: spanlet-groovy-router
                     config:
                       default: third-exporter
                       routes:

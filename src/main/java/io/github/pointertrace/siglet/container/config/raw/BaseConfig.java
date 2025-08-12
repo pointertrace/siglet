@@ -45,7 +45,7 @@ public abstract class BaseConfig implements Located, Describable {
     }
 
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getNameLocation().describe());
         sb.append("  name: ");
         sb.append(getName());

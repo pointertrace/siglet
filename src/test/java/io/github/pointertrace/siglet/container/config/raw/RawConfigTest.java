@@ -49,7 +49,7 @@ class RawConfigTest {
                   - name: spanlet name
                     kind: spanlet
                     to: first exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: action-value
                 """;
@@ -129,7 +129,7 @@ class RawConfigTest {
                   - name: spanlet name
                     kind: spanlet
                     to: first exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: action-value
                 """;
@@ -176,7 +176,7 @@ class RawConfigTest {
                           (22:11)  kind: SPANLET
                           (23:9)  to:
                             (23:9)  first exporter
-                          (24:11)  type: groovy-action
+                          (24:11)  type: spanlet-groovy-action
                           (25:5) config:
                             (25:5)  groovyActionConfig:
                               (26:15)  action: action-value""";

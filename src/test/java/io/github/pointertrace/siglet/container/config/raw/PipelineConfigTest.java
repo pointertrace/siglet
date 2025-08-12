@@ -32,7 +32,7 @@ class PipelineConfigTest {
                 - name: spanlet name
                   kind: spanlet
                   to: second exporter
-                  type: groovy-action
+                  type: spanlet-groovy-action
                   config:
                     action: signal.name = signal.name +"-suffix" """;
 
@@ -58,7 +58,7 @@ class PipelineConfigTest {
                       (6:9)  kind: SPANLET
                       (7:7)  to:
                         (7:7)  second exporter
-                      (8:9)  type: groovy-action
+                      (8:9)  type: spanlet-groovy-action
                       (9:3) config:
                         (9:3)  groovyActionConfig:
                           (10:13)  action: signal.name = signal.name +"-suffix" """;
@@ -77,7 +77,7 @@ class PipelineConfigTest {
                 - name: spanlet name
                   kind: spanlet
                   to: second exporter
-                  type: groovy-action
+                  type: spanlet-groovy-action
                   config:
                     action: signal.name = signal.name +"-suffix" """;
 
@@ -128,9 +128,9 @@ class PipelineConfigTest {
                 - name: spanlet name
                   kind: spanlet
                   to: second exporter
-                  type: groovy-action
+                  type: spanlet-groovy-action
                   config:
-                    action: thisSignal.name = thisSignal.name +"-suffix" """;
+                    action: signal.name = signal.name +"-suffix" """;
 
         Node node = parser.parse(config);
 
@@ -180,7 +180,7 @@ class PipelineConfigTest {
                 - name: first spanlet
                   kind: spanlet
                   to: second-exporter
-                  type: groovy-action
+                  type: spanlet-groovy-action
                   config:
                     action: signal.name = signal.name +"-suffix" """;
 
@@ -207,7 +207,7 @@ class PipelineConfigTest {
                       (8:9)  kind: SPANLET
                       (9:7)  to:
                         (9:7)  second-exporter
-                      (10:9)  type: groovy-action
+                      (10:9)  type: spanlet-groovy-action
                       (11:3) config:
                         (11:3)  groovyActionConfig:
                           (12:13)  action: signal.name = signal.name +"-suffix" """;

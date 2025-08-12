@@ -21,7 +21,7 @@ public class CircularReferenceValidator implements GraphValidator {
 
         if (!circularReferences.isEmpty()) {
             throw new SigletError(circularReferences.stream()
-                    .map(circularReference -> Describable.PREFIX.repeat(2) + circularReference)
+                    .map(circularReference -> Describable.prefix(2) + circularReference)
                     .collect(Collectors.joining("\n", "There are circular references:\n",
                             "")));
         }

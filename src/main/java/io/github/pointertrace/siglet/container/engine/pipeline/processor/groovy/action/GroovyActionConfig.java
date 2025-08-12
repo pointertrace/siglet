@@ -30,12 +30,12 @@ public class GroovyActionConfig implements Located, Describable {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(Describable.PREFIX.repeat(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  groovyActionConfig:");
 
         sb.append("\n");
-        sb.append(Describable.PREFIX.repeat(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(getActionLocation().describe());
         sb.append("  action: ");
         sb.append(getAction());

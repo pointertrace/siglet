@@ -1,5 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
+import io.github.pointertrace.siget.parser.Describable;
 import io.github.pointertrace.siget.parser.located.Location;
 
 import java.net.InetSocketAddress;
@@ -48,21 +49,21 @@ public class GrpcReceiverConfig extends ReceiverConfig {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  GrpcReceiverConfig");
         sb.append("\n");
 
         sb.append(super.describe(level+1));
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(address);
         sb.append("\n");
 
         if (otelSignalType != null) {
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(signalTypeLocation.describe());
             sb.append("  signal: ");
             sb.append(otelSignalType.name().toLowerCase());

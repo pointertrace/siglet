@@ -5,12 +5,11 @@ import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.graph.Graph;
 import io.github.pointertrace.siglet.container.config.graph.GraphFactory;
-import io.github.pointertrace.siglet.container.config.raw.RawConfig;
-import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PipelineSignalTypeValidatorTest {
 
@@ -47,25 +46,25 @@ class PipelineSignalTypeValidatorTest {
                   - name: first-spanlet
                     kind: spanlet
                     to: second-spanlet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: second-spanlet
                     kind: spanlet
                     to: first-metriclet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: first-metriclet
                     kind: metriclet
                     to: second-metriclet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: second-metriclet
                     kind: metriclet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -97,13 +96,13 @@ class PipelineSignalTypeValidatorTest {
                   - name: first-spanlet
                     kind: spanlet
                     to: second-spanlet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: second-spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;

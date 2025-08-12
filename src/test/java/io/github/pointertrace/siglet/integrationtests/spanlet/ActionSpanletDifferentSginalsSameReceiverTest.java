@@ -36,7 +36,7 @@ class ActionSpanletDifferentSginalsSameReceiverTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-span"
                 - name: metric-pipeline
@@ -46,7 +46,7 @@ class ActionSpanletDifferentSginalsSameReceiverTest {
                   - name: metriclet
                     kind: metriclet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-metric"
                 """;

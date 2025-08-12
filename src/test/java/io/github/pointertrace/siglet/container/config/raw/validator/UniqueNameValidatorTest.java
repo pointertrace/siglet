@@ -43,7 +43,7 @@ class UniqueNameValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -72,7 +72,7 @@ class UniqueNameValidatorTest {
                   - name: name
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 - name: pipeline
@@ -82,7 +82,7 @@ class UniqueNameValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;

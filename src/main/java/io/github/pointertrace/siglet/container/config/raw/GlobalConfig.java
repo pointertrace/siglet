@@ -59,13 +59,13 @@ public class GlobalConfig implements Located, Describable, QueueSizeConfig, Thre
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  GlobalConfig");
 
         if (queueSize != null) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(queueSizeLocation.describe());
             sb.append("  queue-size: ");
             sb.append(queueSize);
@@ -74,7 +74,7 @@ public class GlobalConfig implements Located, Describable, QueueSizeConfig, Thre
 
         if (threadPoolSize != null) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(threadPoolSizeLocation.describe());
             sb.append("  thread-pool-size: ");
             sb.append(threadPoolSize);
@@ -82,7 +82,7 @@ public class GlobalConfig implements Located, Describable, QueueSizeConfig, Thre
 
         if (spanObjectPoolSize != null) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(spanObjectPoolSizeLocation.describe());
             sb.append("  span-object-pool-size: ");
             sb.append(spanObjectPoolSize);
@@ -90,7 +90,7 @@ public class GlobalConfig implements Located, Describable, QueueSizeConfig, Thre
 
         if (metricObjectPoolSize != null) {
         sb.append("\n");
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(metricObjectPoolSizeLocation.describe());
         sb.append("  metric-object-pool-size: ");
         sb.append(metricObjectPoolSize);

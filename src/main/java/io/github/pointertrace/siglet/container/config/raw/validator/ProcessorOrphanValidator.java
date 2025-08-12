@@ -34,7 +34,7 @@ public class ProcessorOrphanValidator implements RawConfigValidator {
 
         if (!orphanProcessors.isEmpty()) {
             throw new SigletError(orphanProcessors.stream()
-                    .map(exporter -> String.format("%s[%s] at %s", Describable.PREFIX.repeat(2),
+                    .map(exporter -> String.format("%s[%s] at %s", Describable.prefix(2),
                             exporter.getName(), exporter.getLocation()))
                     .collect(Collectors.joining("\n", "The following processors are orphaned:\n", "")));
         }

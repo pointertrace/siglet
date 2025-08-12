@@ -42,7 +42,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: non-existing
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -72,7 +72,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:non-existing
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -102,7 +102,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: receiver
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -132,7 +132,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:receiver
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -163,7 +163,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -190,7 +190,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -217,13 +217,13 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: other-spanlet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: other-spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -250,13 +250,13 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:other-spanlet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                   - name: other-spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -283,7 +283,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: other-pipeline
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 - name: other-pipeline
@@ -292,7 +292,7 @@ class ProcessorDestinationValidatorTest {
                   - name: other-spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -319,7 +319,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:other-pipeline
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 - name: other-pipeline
@@ -328,7 +328,7 @@ class ProcessorDestinationValidatorTest {
                   - name: other-spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -354,7 +354,7 @@ class ProcessorDestinationValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: alias:exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;

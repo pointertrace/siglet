@@ -1,5 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
+import io.github.pointertrace.siget.parser.Describable;
 import io.github.pointertrace.siglet.container.SigletError;
 import io.github.pointertrace.siget.parser.located.Location;
 
@@ -60,20 +61,20 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  GrpcExporterConfig\n");
 
         sb.append(super.describe(level + 1));
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(address);
         sb.append("\n");
 
         if (batchSizeInSignals != null) {
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(batchSizeInSignalsLocation.describe());
             sb.append("  batch-size-in-signal: ");
             sb.append(batchSizeInSignals);
@@ -81,7 +82,7 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
         }
 
         if (batchTimeoutInMillis != null) {
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(batchTimeoutInMillisLocation.describe());
             sb.append("  batch-timeout-in-millis: ");
             sb.append(batchTimeoutInMillis);
@@ -89,7 +90,7 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
         }
 
         if (queueSize != null) {
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(queueSizeLocation.describe());
             sb.append("  queue-size: ");
             sb.append(queueSize);

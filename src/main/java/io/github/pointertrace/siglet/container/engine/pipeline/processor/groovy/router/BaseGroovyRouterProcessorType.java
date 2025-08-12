@@ -1,32 +1,27 @@
-package io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.action;
+package io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.router;
 
 import io.github.pointertrace.siglet.container.SigletError;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ConfigDefinition;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorType;
 
-public class GroovyActionProcessorType implements ProcessorType {
+public abstract class BaseGroovyRouterProcessorType implements ProcessorType {
 
-    private final GroovyActionDefinition actionDefinition = new GroovyActionDefinition();
-
-    @Override
-    public String getName() {
-        return "groovy-action";
-    }
+    private final GroovyRouterDefinition routerDefinition = new GroovyRouterDefinition();
 
     @Override
     public ConfigDefinition getConfigDefinition() {
-        return actionDefinition;
+        return routerDefinition;
     }
 
     @Override
     public ProcessorCreator getProcessorCreator() {
-        return (context, node) -> {
-            if (node.getConfig().getConfig() instanceof GroovyActionConfig) {
-                return new GroovyActionProcessor(context, node);
+        return  (context, node) -> {
+            if (node.getConfig().getConfig() instanceof GroovyRouterConfig) {
+                return new GroovyRouterProcessor(context, node);
             } else {
                 throw new SigletError(String.format("for groovy action type config must be a %s",
-                        node.getConfig().getClass().getName()));
+                        node.getConfig().getConfig().getClass().getName()));
             }
         };
     }

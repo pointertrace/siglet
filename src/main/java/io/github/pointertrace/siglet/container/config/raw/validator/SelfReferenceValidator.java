@@ -38,7 +38,7 @@ public class SelfReferenceValidator implements RawConfigValidator {
                 .map(LocatedString::getValue)
                 .filter(to -> to.equals(processorConfig.getName()))
                 .map(to -> String.format("%sprocessor [%s] at %s",
-                        Describable.PREFIX.repeat(2), processorConfig.getName(), processorConfig.getLocation()))
+                        Describable.prefix(2), processorConfig.getName(), processorConfig.getLocation()))
                 .findAny()
                 .orElse(null);
     }
@@ -48,7 +48,7 @@ public class SelfReferenceValidator implements RawConfigValidator {
                 .map(LocatedString::getValue)
                 .filter(start -> start.equals(pipelineConfig.getName()))
                 .map(to -> String.format("%spipeline [%s] at %s",
-                        Describable.PREFIX.repeat(2), pipelineConfig.getName(), pipelineConfig.getLocation()))
+                        Describable.prefix(2), pipelineConfig.getName(), pipelineConfig.getLocation()))
                 .findAny()
                 .orElse(null);
     }

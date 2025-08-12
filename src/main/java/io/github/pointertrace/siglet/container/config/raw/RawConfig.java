@@ -1,5 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
+import io.github.pointertrace.siget.parser.Describable;
 import io.github.pointertrace.siget.parser.located.Location;
 import io.github.pointertrace.siglet.container.config.raw.validator.ComposedValidator;
 
@@ -71,7 +72,7 @@ public class RawConfig extends BaseConfig {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  RawConfig:");
         if (globalConfig != null) {
@@ -80,7 +81,7 @@ public class RawConfig extends BaseConfig {
         }
 
         sb.append("\n");
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(receiversLocation.describe());
         sb.append("  receivers:");
         sb.append("\n");
@@ -88,7 +89,7 @@ public class RawConfig extends BaseConfig {
             sb.append(receiver.describe(level + 2));
         }
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(exportersLocation.describe());
         sb.append("  exporters:");
         sb.append("\n");
@@ -96,7 +97,7 @@ public class RawConfig extends BaseConfig {
             sb.append(exporter.describe(level + 2));
         }
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(pipelinesLocation.describe());
         sb.append("  pipelines:");
         sb.append("\n");

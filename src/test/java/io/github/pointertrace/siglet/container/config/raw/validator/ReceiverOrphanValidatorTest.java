@@ -41,7 +41,7 @@ class ReceiverOrphanValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -72,7 +72,7 @@ class ReceiverOrphanValidatorTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;

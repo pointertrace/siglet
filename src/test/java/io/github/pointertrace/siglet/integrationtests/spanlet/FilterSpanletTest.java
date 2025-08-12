@@ -34,7 +34,7 @@ class FilterSpanletTest {
                   - name: spanlet
                     kind: spanlet
                     to: exporter
-                    type: groovy-filter
+                    type: spanlet-groovy-filter
                     config:
                       expression: |
                         signal.name.startsWith("prefix")
@@ -92,7 +92,7 @@ class FilterSpanletTest {
                     to:
                     - first-exporter
                     - second-exporter
-                    type: groovy-filter
+                    type: spanlet-groovy-filter
                     config:
                       expression: |
                         signal.name.startsWith("prefix")

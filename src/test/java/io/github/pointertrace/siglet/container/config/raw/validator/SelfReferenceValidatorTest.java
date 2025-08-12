@@ -44,7 +44,7 @@ class SelfReferenceValidatorTest {
                     to:
                     - exporter
                     - spanlet
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -77,7 +77,7 @@ class SelfReferenceValidatorTest {
                     kind: spanlet
                     to:
                     - exporter
-                    type: groovy-action
+                    type: spanlet-groovy-action
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;

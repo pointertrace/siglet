@@ -34,9 +34,9 @@ class ProcessorConfigTest {
                 to:
                 - first exporter
                 - second exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -55,10 +55,10 @@ class ProcessorConfigTest {
                   (3:1)  to:
                     (4:3)  first exporter
                     (5:3)  second exporter
-                  (6:7)  type: groovy-action
+                  (6:7)  type: spanlet-groovy-action
                   (7:1) config:
                     (7:1)  groovyActionConfig:
-                      (8:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
+                      (8:11)  action: signal.name = signal.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -73,11 +73,11 @@ class ProcessorConfigTest {
                 to:
                 - first exporter
                 - second exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -96,12 +96,12 @@ class ProcessorConfigTest {
                   (3:1)  to:
                     (4:3)  first exporter
                     (5:3)  second exporter
-                  (6:7)  type: groovy-action
+                  (6:7)  type: spanlet-groovy-action
                   (7:13)  queueSize: 10
                   (8:19)  threadPoolSize: 20
                   (9:1) config:
                     (9:1)  groovyActionConfig:
-                      (10:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
+                      (10:11)  action: signal.name = signal.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -117,9 +117,9 @@ class ProcessorConfigTest {
                 to:
                 - first exporter
                 - second exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -147,7 +147,7 @@ class ProcessorConfigTest {
         assertEquals("second exporter", to.get(1).getValue());
         assertEquals(Location.of(5, 3), to.get(1).getLocation());
 
-        assertEquals("groovy-action", processorConfig.getType());
+        assertEquals("spanlet-groovy-action", processorConfig.getType());
         assertEquals(Location.of(6, 7), processorConfig.getTypeLocation());
 
         assertNull(processorConfig.getQueueSize());
@@ -159,7 +159,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
 
@@ -171,9 +171,9 @@ class ProcessorConfigTest {
                 name: spanlet-node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -189,10 +189,10 @@ class ProcessorConfigTest {
                   (2:7)  kind: SPANLET
                   (3:5)  to:
                     (3:5)  exporter
-                  (4:7)  type: groovy-action
+                  (4:7)  type: spanlet-groovy-action
                   (5:1) config:
                     (5:1)  groovyActionConfig:
-                      (6:11)  action: otelSignalType.name = otelSignalType.name +"-suffix" """;
+                      (6:11)  action: signal.name = signal.name +"-suffix" """;
 
         assertEquals(expected, processorConfig.describe());
 
@@ -206,9 +206,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -235,7 +235,7 @@ class ProcessorConfigTest {
         assertEquals("exporter", to.getFirst().getValue());
         assertEquals(Location.of(3, 5), to.getFirst().getLocation());
 
-        assertEquals("groovy-action", processorConfig.getType());
+        assertEquals("spanlet-groovy-action", processorConfig.getType());
         assertEquals(Location.of(4, 7), processorConfig.getTypeLocation());
 
         assertNull(processorConfig.getQueueSize());
@@ -247,7 +247,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(5, 1), processorConfig.getConfigLocation());
-        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
 
 
     }
@@ -259,11 +259,11 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 queue-size: 10
                 thread-pool-size: 20
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -290,7 +290,7 @@ class ProcessorConfigTest {
         assertEquals("exporter", to.getFirst().getValue());
         assertEquals(Location.of(3, 5), to.getFirst().getLocation());
 
-        assertEquals("groovy-action", processorConfig.getType());
+        assertEquals("spanlet-groovy-action", processorConfig.getType());
         assertEquals(Location.of(4, 7), processorConfig.getTypeLocation());
 
         assertEquals(10, processorConfig.getQueueSize());
@@ -302,7 +302,7 @@ class ProcessorConfigTest {
         GroovyActionConfig groovyActionConfig = assertInstanceOf(GroovyActionConfig.class, processorConfig.getConfig());
         assertNotNull(groovyActionConfig);
         assertEquals(Location.of(7, 1), processorConfig.getConfigLocation());
-        assertEquals("otelSignalType.name = otelSignalType.name +\"-suffix\"", groovyActionConfig.getAction());
+        assertEquals("signal.name = signal.name +\"-suffix\"", groovyActionConfig.getAction());
 
     }
 
@@ -312,9 +312,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -336,9 +336,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -362,9 +362,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -390,9 +390,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -419,10 +419,10 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 queue-size: 20
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -450,9 +450,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -477,9 +477,9 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);
@@ -506,7 +506,7 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 config:
                   action: otelSignalType.name = otelSignalType.name +"-suffix"
                 """;
@@ -535,10 +535,10 @@ class ProcessorConfigTest {
                 name: spanlet node
                 kind: spanlet
                 to: exporter
-                type: groovy-action
+                type: spanlet-groovy-action
                 thread-pool-size: 20
                 config:
-                  action: otelSignalType.name = otelSignalType.name +"-suffix"
+                  action: signal.name = signal.name +"-suffix"
                 """;
 
         Node node = parser.parse(configTxt);

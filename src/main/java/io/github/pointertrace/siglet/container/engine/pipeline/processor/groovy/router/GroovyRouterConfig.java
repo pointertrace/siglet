@@ -53,12 +53,12 @@ public class GroovyRouterConfig implements Located, Describable {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(Describable.PREFIX.repeat(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  groovyRouterConfig:");
         sb.append("\n");
 
-        sb.append(Describable.PREFIX.repeat(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(getRoutesLocation().describe());
         sb.append("  routes:\n");
         for (RouteConfig routeConfig : getRoutes()) {
@@ -66,7 +66,7 @@ public class GroovyRouterConfig implements Located, Describable {
             sb.append("\n");
         }
 
-        sb.append(Describable.PREFIX.repeat(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(getDefaultRouteLocation().describe());
         sb.append("  defaultRoute: ");
         sb.append(getDefaultRoute());

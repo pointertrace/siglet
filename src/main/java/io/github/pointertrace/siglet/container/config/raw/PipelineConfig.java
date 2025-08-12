@@ -4,6 +4,7 @@ package io.github.pointertrace.siglet.container.config.raw;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.pointertrace.siget.parser.Describable;
 import io.github.pointertrace.siget.parser.located.Location;
 
 public class PipelineConfig extends BaseConfig {
@@ -85,32 +86,32 @@ public class PipelineConfig extends BaseConfig {
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  PipelineConfig:");
         sb.append("\n");
 
         sb.append(super.describe(level+1));
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(fromLocation.describe());
         sb.append("  from: ");
         sb.append(from);
         sb.append("\n");
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(startLocation.describe());
         sb.append("  start:\n");
 
         for(LocatedString startLocated: start) {
-            sb.append(prefix(level + 2));
+            sb.append(Describable.prefix(level + 2));
             sb.append(startLocated.getLocation().describe());
             sb.append("  ");
             sb.append(startLocated.getValue());
             sb.append("\n");
         }
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(sigletsLocation.describe());
         sb.append("  processors:");
         sb.append("\n");

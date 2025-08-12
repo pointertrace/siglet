@@ -29,7 +29,7 @@ public class ExporterOrphanValidator implements RawConfigValidator {
 
         if (!exporters.isEmpty()) {
             throw new SigletError(exporters.values().stream()
-                    .map(exporter -> String.format("%s[%s] at %s", Describable.PREFIX.repeat(2),
+                    .map(exporter -> String.format("%s[%s] at %s", Describable.prefix(2),
                             exporter.getName(), exporter.getLocation()))
                     .collect(Collectors.joining("\n", "The following exporters are orphaned:\n", "")));
         }

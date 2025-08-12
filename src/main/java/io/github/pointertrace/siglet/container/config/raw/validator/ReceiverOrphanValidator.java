@@ -27,7 +27,7 @@ public class ReceiverOrphanValidator implements RawConfigValidator {
 
         if (!receivers.isEmpty()) {
             throw new SigletError(receivers.values().stream()
-                    .map(receiver -> String.format("%s[%s] at %s", Describable.PREFIX.repeat(2),
+                    .map(receiver -> String.format("%s[%s] at %s", Describable.prefix(2),
                             receiver.getName(), receiver.getLocation()))
                     .collect(Collectors.joining("\n", "The following receivers are orphaned:\n", "")));
         }

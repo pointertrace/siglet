@@ -126,38 +126,38 @@ public class ProcessorConfig extends BaseConfig implements QueueSizeConfig, Thre
 
     @Override
     public String describe(int level) {
-        StringBuilder sb = new StringBuilder(prefix(level));
+        StringBuilder sb = new StringBuilder(Describable.prefix(level));
         sb.append(getLocation().describe());
         sb.append("  processorConfig:\n");
 
 
         sb.append(super.describe(level + 1));
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(kindLocation.describe());
         sb.append("  kind: ");
         sb.append(getProcessorKind());
         sb.append("\n");
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(toLocation.describe());
         sb.append("  to:\n");
         for (LocatedString toName : getTo()) {
-            sb.append(prefix(level + 2));
+            sb.append(Describable.prefix(level + 2));
             sb.append(toName.getLocation().describe());
             sb.append("  ");
             sb.append(toName.getValue());
             sb.append("\n");
         }
 
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(getTypeLocation().describe());
         sb.append("  type: ");
         sb.append(getType());
 
         if (queueSize != null) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(getQueueSizeLocation().describe());
             sb.append("  queueSize: ");
             sb.append(getQueueSize());
@@ -165,13 +165,13 @@ public class ProcessorConfig extends BaseConfig implements QueueSizeConfig, Thre
 
         if (threadPoolSize != null) {
             sb.append("\n");
-            sb.append(prefix(level + 1));
+            sb.append(Describable.prefix(level + 1));
             sb.append(getThreadPoolSizeLocation().describe());
             sb.append("  threadPoolSize: ");
             sb.append(getThreadPoolSize());
         }
         sb.append("\n");
-        sb.append(prefix(level + 1));
+        sb.append(Describable.prefix(level + 1));
         sb.append(getConfigLocation().describe());
 
         if (getConfig() == null) {
