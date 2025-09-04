@@ -1,0 +1,5 @@
+siglets:
+  - name: suffix-spanlet
+    siglet-class: io.github.pointertrace.siglet.example.jatjar.suffix.siglet.SuffixSpanlet
+    checker-factory-class: io.github.pointertrace.siglet.example.jatjar.suffix.parser.SuffixConfigCheckerFactory
+    description: adds a span name suffix
