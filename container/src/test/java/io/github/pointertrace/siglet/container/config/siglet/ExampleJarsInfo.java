@@ -25,11 +25,6 @@ public class ExampleJarsInfo {
             throw new IllegalStateException("Could not determine project directories do get bundle jars");
         }
 
-//        return new File(
-//                System.getProperty("user.home") + "/.m2/repository/" +
-//                "io/github/pointertrace/siglet/example/fatjar-suffix-spanlet/" +
-//                "1.0.0-SNAPSHOT" +
-//                "/fatjar-suffix-spanlet-1.0.0-SNAPSHOT.jar");
     }
 
     public static File getSpringBootExampleSigletFile() {
@@ -52,11 +47,6 @@ public class ExampleJarsInfo {
         } else {
             throw new IllegalStateException("Could not determine project directories do get bundle jars");
         }
-//        return new File(
-//                System.getProperty("user.home") + "/.m2/repository/" +
-//                "io/github/pointertrace/siglet/example/springboot-suffix-spanlet/" +
-//                "1.0.0-SNAPSHOT" +
-//                "/springboot-suffix-spanlet-1.0.0-SNAPSHOT.jar");
     }
 
 }
