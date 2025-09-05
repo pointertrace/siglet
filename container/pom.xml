@@ -8,11 +8,10 @@
     <artifactId>siglet-container</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Container to rum siglets - "servlets" for opentelemetry signals</name>
+    <name>Container to run siglets</name>
     <description>A container that implements the idea of java servlet but for opentelemetry singals</description>
 
     <properties>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <log4j2-version>2.21.1</log4j2-version>
@@ -187,18 +186,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <dependencies>
-                    <!-- Exists here to guarantee that this jar will be downloaded but will not be part of app nor
-                    tests classloader-->
-<!--                    <dependency>-->
-<!--                        <groupId>io.github.pointertrace.siglet.example</groupId>-->
-<!--                        <artifactId>siglet-examples</artifactId>-->
-<!--                        <version>1.0.0-SNAPSHOT</version>-->
-<!--                    </dependency>-->
-<!--                    <dependency>-->
-<!--                        <groupId>io.github.pointertrace.siglet.example</groupId>-->
-<!--                        <artifactId>springboot-suffix-spanlet</artifactId>-->
-<!--                        <version>1.0.0-SNAPSHOT</version>-->
-<!--                    </dependency>-->
                 </dependencies>
                 <configuration>
                     <includes>

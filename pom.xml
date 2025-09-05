@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.pointertrace.siglet</groupId>
-    <artifactId>siglet-container-parent</artifactId>
+    <artifactId>siglet-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>container-parent</name>
+    <name>siglet-parent</name>
     <packaging>pom</packaging>
     <description>Parent pom for Siglet Container</description>
 
@@ -16,12 +16,7 @@
         <developerConnection>scm:git:git@github.com:pointertrace/siglet-contianer.git</developerConnection>
         <url>https://github.com/pointertrace/siglet-container</url>
     </scm>
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
-        </license>
-    </licenses>
+
     <developers>
         <developer>
             <name>Osvaldo Pina</name>
@@ -29,8 +24,16 @@
             <url>https://github.com/pointer-trace</url>
         </developer>
     </developers>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
     <modules>
         <module>test-bundle</module>
+        <module>api</module>
+        <module>parser</module>
         <module>container</module>
     </modules>
 </project>

@@ -77,39 +77,6 @@ class SigletBundleTest {
     }
 
     @Test
-    void test() {
-        System.out.println(System.getProperty("user.dir") + "/../test-bundle/fatjar/target");
-
-        String path = System.getProperty("user.dir") + "/../test-bundle/fatjar/target";
-
-        File ff = new File(path);
-        System.out.println(Arrays.toString(ff.list((f, n) -> n.startsWith("fatjar-suffix-spanlet-") && n.endsWith("SNAPSHOT.jar"))));
-
-        System.out.println(System.getProperty("project.build.directory"));
-    }
-
-    @Test
-    void test1() {
-
-        if (System.getProperty("project.build.directory") == null) {
-            if (System.getProperty("user.dir") == null) {
-                throw new IllegalStateException("Could not determine project directories do get bundle jars");
-            }
-            String basePath = System.getProperty("user.dir") + "/../test-bundle/fatjar/target";
-            File baseDirectory = new File(basePath);
-            if (!baseDirectory.exists()) {
-                throw new IllegalStateException("Could not determine project directories do get bundle jars");
-            }
-            File[] jarFiles = baseDirectory.listFiles((dir, name) -> name.startsWith("fatjar-suffix-spanlet-") &&
-                                                                     name.endsWith("SNAPSHOT.jar"));
-            if (jarFiles.length != 1) {
-                throw new IllegalStateException("Could not determine project directories do get bundle jars");
-            }
-            System.out.println(jarFiles[0]);
-        }
-    }
-
-    @Test
     void load_springBootUberJar() throws Exception {
         SigletBundle sigletBundle =
                 SigletBundle.load(ExampleJarsInfo.getSpringBootExampleSigletFile());
