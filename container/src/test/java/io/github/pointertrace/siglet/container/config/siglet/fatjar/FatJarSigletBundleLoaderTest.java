@@ -59,11 +59,11 @@ class FatJarSigletBundleLoaderTest {
 
         SigletDefinition sigletDefinition = sigletBundle.definitions().getFirst();
 
-        assertEquals("suffix-spanlet", sigletDefinition.getSigletConfig().name());
-        assertEquals("adds a span name suffix", sigletDefinition.getSigletConfig().description());
-        assertEquals("io.github.pointertrace.siglet.example.jatjar.suffix.siglet.SuffixSpanlet",
+        assertEquals("fatjar-suffix-spanlet", sigletDefinition.getSigletConfig().name());
+        assertEquals("adds a suffix to span name", sigletDefinition.getSigletConfig().description());
+        assertEquals("io.github.pointertrace.siglet.container.test.bundle.jatjar.suffix.siglet.SuffixSpanlet",
                 sigletDefinition.getSigletConfig().sigletClassName());
-        assertEquals("io.github.pointertrace.siglet.example.jatjar.suffix.parser.SuffixConfigCheckerFactory",
+        assertEquals("io.github.pointertrace.siglet.container.test.bundle.jatjar.suffix.parser.SuffixConfigCheckerFactory",
                 sigletDefinition.getSigletConfig().configCheckerFactoryClassName());
         Spanlet<Object> spanlet = assertInstanceOf(Spanlet.class, sigletDefinition.createProcessor());
         NodeChecker nodeChecker = assertInstanceOf(NodeChecker.class, sigletDefinition.createConfigChecker());

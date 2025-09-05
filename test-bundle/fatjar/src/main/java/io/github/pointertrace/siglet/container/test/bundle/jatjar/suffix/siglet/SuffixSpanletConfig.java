@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.example.jatjar.suffix.siglet;
+package io.github.pointertrace.siglet.container.test.bundle.jatjar.suffix.siglet;
 
 public class SuffixSpanletConfig {
 

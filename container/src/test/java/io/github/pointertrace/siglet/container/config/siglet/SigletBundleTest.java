@@ -27,7 +27,6 @@ class SigletBundleTest {
 
     private ProtoSpanAdapter protoSpanAdapter;
 
-
     @BeforeEach
     void setUp() {
         Handlers.register();
@@ -41,75 +40,74 @@ class SigletBundleTest {
 
     @Test
     void load_fatjar() throws Exception {
-        SigletBundle sigletBundle = SigletBundle.load(ExampleJarsInfo.getFatJarExampleSigletFile());
 
-        assertNotNull(sigletBundle);
-        assertTrue(sigletBundle.id().startsWith("fatjar:"));
-        assertTrue(sigletBundle.id().endsWith("fatjar-suffix-spanlet-1.0.0-SNAPSHOT.jar"));
+        try(SigletBundle sigletBundle = SigletBundle.load(ExampleJarsInfo.getFatJarExampleSigletFile())) {
 
-        assertNotNull(sigletBundle.definitions());
-        assertEquals(1, sigletBundle.definitions().size());
-        assertNotNull(sigletBundle.definitions().getFirst());
+            assertNotNull(sigletBundle);
+            assertTrue(sigletBundle.id().startsWith("fatjar:"));
+            assertTrue(sigletBundle.id().endsWith("fatjar-suffix-spanlet-1.0.0-SNAPSHOT.jar"));
 
-        SigletConfig sigletConfig = (sigletBundle.definitions().getFirst().getSigletConfig());
-        assertEquals("suffix-spanlet", sigletConfig.name());
+            assertNotNull(sigletBundle.definitions());
+            assertEquals(1, sigletBundle.definitions().size());
+            assertNotNull(sigletBundle.definitions().getFirst());
 
-        assertNotNull(sigletBundle.definitions().getFirst().createProcessor());
-        Spanlet<?> spanlet = assertInstanceOf(Spanlet.class,
-                sigletBundle.definitions().getFirst().createProcessor());
+            SigletConfig sigletConfig = (sigletBundle.definitions().getFirst().getSigletConfig());
+            assertEquals("fatjar-suffix-spanlet", sigletConfig.name());
 
-        Node config = yamlParser.parse("suffix: -suffix");
+            assertNotNull(sigletBundle.definitions().getFirst().createProcessor());
+            Spanlet<?> spanlet = assertInstanceOf(Spanlet.class,
+                    sigletBundle.definitions().getFirst().createProcessor());
 
-        NodeChecker nodeChecker = assertInstanceOf(NodeChecker.class, sigletBundle.definitions().getFirst().createConfigChecker());
-        nodeChecker.check(config);
+            Node config = yamlParser.parse("suffix: -suffix");
 
-        Object spanletConfig = config.getValue();
-        assertNotNull(sigletConfig);
+            NodeChecker nodeChecker = assertInstanceOf(NodeChecker.class, sigletBundle.definitions().getFirst().createConfigChecker());
+            nodeChecker.check(config);
 
-        ProcessorContextImpl<?> processorContext = new ProcessorContextImpl<>(spanletConfig);
+            Object spanletConfig = config.getValue();
+            assertNotNull(sigletConfig);
 
-        spanlet.span(protoSpanAdapter, (ProcessorContext) processorContext, ResultFactoryImpl.INSTANCE);
+            ProcessorContextImpl<?> processorContext = new ProcessorContextImpl<>(spanletConfig);
 
-        assertEquals("name-suffix-fatjar", protoSpanAdapter.getName());
+            spanlet.span(protoSpanAdapter, (ProcessorContext) processorContext, ResultFactoryImpl.INSTANCE);
 
-        sigletBundle.close();
+            assertEquals("name-suffix-fatjar", protoSpanAdapter.getName());
+
+        }
 
     }
 
     @Test
     void load_springBootUberJar() throws Exception {
-        SigletBundle sigletBundle =
-                SigletBundle.load(ExampleJarsInfo.getSpringBootExampleSigletFile());
+        try (SigletBundle sigletBundle = SigletBundle.load(ExampleJarsInfo.getSpringBootExampleSigletFile())) {
 
-        assertNotNull(sigletBundle);
-        assertTrue(sigletBundle.id().startsWith("springboot-uberjar:"));
-        assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-1.0.0-SNAPSHOT.jar"));
-        assertNotNull(sigletBundle.definitions());
-        assertEquals(1, sigletBundle.definitions().size());
-        assertNotNull(sigletBundle.definitions().getFirst());
+            assertNotNull(sigletBundle);
+            assertTrue(sigletBundle.id().startsWith("springboot-uberjar:"));
+            assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-1.0.0-SNAPSHOT.jar"));
+            assertNotNull(sigletBundle.definitions());
+            assertEquals(1, sigletBundle.definitions().size());
+            assertNotNull(sigletBundle.definitions().getFirst());
 
-        SigletConfig sigletConfig = (sigletBundle.definitions().getFirst().getSigletConfig());
-        assertEquals("suffix-spanlet", sigletConfig.name());
+            SigletConfig sigletConfig = (sigletBundle.definitions().getFirst().getSigletConfig());
+            assertEquals("springboot-suffix-spanlet", sigletConfig.name());
 
-        assertNotNull(sigletBundle.definitions().getFirst().createProcessor());
-        Spanlet<?> spanlet = assertInstanceOf(Spanlet.class,
-                sigletBundle.definitions().getFirst().createProcessor());
+            assertNotNull(sigletBundle.definitions().getFirst().createProcessor());
+            Spanlet<?> spanlet = assertInstanceOf(Spanlet.class,
+                    sigletBundle.definitions().getFirst().createProcessor());
 
-        Node config = yamlParser.parse("suffix: -suffix");
+            Node config = yamlParser.parse("suffix: -suffix");
 
-        NodeChecker nodeChecker = assertInstanceOf(NodeChecker.class, sigletBundle.definitions().getFirst().createConfigChecker());
-        nodeChecker.check(config);
+            NodeChecker nodeChecker = assertInstanceOf(NodeChecker.class, sigletBundle.definitions().getFirst().createConfigChecker());
+            nodeChecker.check(config);
 
-        Object spanletConfig = config.getValue();
-        assertNotNull(sigletConfig);
+            Object spanletConfig = config.getValue();
+            assertNotNull(sigletConfig);
 
-        ProcessorContextImpl<?> processorContext = new ProcessorContextImpl<>(spanletConfig);
+            ProcessorContextImpl<?> processorContext = new ProcessorContextImpl<>(spanletConfig);
 
-        spanlet.span(protoSpanAdapter, (ProcessorContext) processorContext, ResultFactoryImpl.INSTANCE);
+            spanlet.span(protoSpanAdapter, (ProcessorContext) processorContext, ResultFactoryImpl.INSTANCE);
 
-        assertEquals("name-suffix-springboot-uberjar", protoSpanAdapter.getName());
+            assertEquals("name-suffix-springboot-uberjar", protoSpanAdapter.getName());
 
-        sigletBundle.close();
-
+        }
     }
 }

@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.example.springboot.suffix;
+package io.github.pointertrace.siglet.container.test.bundle.springboot.suffix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

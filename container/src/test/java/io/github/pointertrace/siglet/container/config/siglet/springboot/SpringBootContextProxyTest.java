@@ -22,10 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SpringBootContextProxyTest {
 
-    private SpringBootContextProxy springBootContextProxy;
 
-    @BeforeEach
-    void setUp() throws Exception {
+    @Test
+    void getProcessorAndNodeChecker() throws Exception {
 
         Handlers.register();
         File springBootJarFile = ExampleJarsInfo.getSpringBootExampleSigletFile();
@@ -34,25 +33,18 @@ class SpringBootContextProxyTest {
         SpringBootClassLoader springBootClassLoader =
                 SpringBootClassLoader.of(archive, SpringBootClassLoader.class.getClassLoader());
 
-        springBootContextProxy = new SpringBootContextProxy(springBootClassLoader,
-                SpringBootStartClassReader.read(springBootJarFile));
+        try (SpringBootContextProxy springBootContextProxy = new SpringBootContextProxy(springBootClassLoader,
+                SpringBootStartClassReader.read(springBootJarFile))) {
+            springBootContextProxy.start();
 
-    }
+            assertInstanceOf(Spanlet.class, springBootContextProxy.getProcessor(
+                    "io.github.pointertrace.siglet.container.test.bundle.springboot.suffix.siglet.SuffixSpanlet"));
 
-    @Test
-    void getProcessorAndNodeChecker() throws Exception {
+            assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
+                    "io.github.pointertrace.siglet.container.test.bundle.springboot.suffix.parser.SuffixConfigChecker"));
 
-        springBootContextProxy.start();
-
-        assertInstanceOf(Spanlet.class, springBootContextProxy.getProcessor(
-                "io.github.pointertrace.siglet.example.springboot.suffix.siglet.SuffixSpanlet"));
-
-        assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
-                "io.github.pointertrace.siglet.example.springboot.suffix.parser.SuffixConfigChecker"));
-
-        assertEquals("Hello World", getHelloWorldFromHttp());
-
-        springBootContextProxy.stop();
+            assertEquals("Hello World", getHelloWorldFromHttp());
+        }
 
         assertThrows(ConnectException.class, this::getHelloWorldFromHttp);
 

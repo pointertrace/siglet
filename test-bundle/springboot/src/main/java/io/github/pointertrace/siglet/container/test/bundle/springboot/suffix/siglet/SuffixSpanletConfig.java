@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.example.springboot.suffix.siglet;
+package io.github.pointertrace.siglet.container.test.bundle.springboot.suffix.siglet;
 
 public class SuffixSpanletConfig {
 

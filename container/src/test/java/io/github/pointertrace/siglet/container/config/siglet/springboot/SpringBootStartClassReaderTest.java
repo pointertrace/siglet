@@ -10,7 +10,7 @@ class SpringBootStartClassReaderTest {
     @Test
     void read() {
 
-        assertEquals("io.github.pointertrace.siglet.example.springboot.suffix.SuffixSpanletApplication",
+        assertEquals("io.github.pointertrace.siglet.container.test.bundle.springboot.suffix.SuffixSpanletApplication",
                 SpringBootStartClassReader.read(ExampleJarsInfo.getSpringBootExampleSigletFile()));
 
     }

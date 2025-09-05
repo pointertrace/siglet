@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.example.springboot.suffix.web;
+package io.github.pointertrace.siglet.container.test.bundle.springboot.suffix.web;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
