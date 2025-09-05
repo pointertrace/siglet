@@ -16,7 +16,7 @@ class GroovyActionProcessorTest {
 
         String script = """
                 signal.name = "prefix-" + signal.name
-                context.setAttribute("name-with-prefix",signal.name)
+                context.attributes["name-with-prefix"] = signal.name
                 """;
 
         SpanletGroovyActionProcessor groovyActionProcessorEventLoop = new SpanletGroovyActionProcessor("groovy-action",
@@ -46,7 +46,8 @@ class GroovyActionProcessorTest {
         assertEquals(protoSpanAdapter, finalDestination.get("Span(traceId:00000000000000000000000000000001," +
                 "spanId:0000000000000001)", ProtoSpanAdapter.class));
         assertEquals("prefix-span-name", protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
+        assertEquals("prefix-span-name",
+                groovyActionProcessorEventLoop.getContext().getAttributes().get("name-with-prefix"));
 
     }
 
@@ -55,7 +56,7 @@ class GroovyActionProcessorTest {
 
         String script = """
                 signal.name = "prefix-" + signal.name
-                context.setAttribute("name-with-prefix",signal.name)
+                context.attributes["name-with-prefix"] = signal.name
                 drop()
                 """;
 
@@ -77,7 +78,8 @@ class GroovyActionProcessorTest {
         groovyActionProcessorEventLoop.stop();
 
         assertEquals("prefix-span-name", protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
+        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttributes()
+                        .get("name-with-prefix"));
 
         assertEquals(0, finalDestination.getSize());
     }
@@ -87,7 +89,7 @@ class GroovyActionProcessorTest {
 
         String script = """
                 signal.name = "prefix-" + signal.name
-                context.setAttribute("name-with-prefix",signal.name)
+                context.attributes["name-with-prefix"] = signal.name
                 proceed("other")
                 """;
 
@@ -112,7 +114,8 @@ class GroovyActionProcessorTest {
         groovyActionProcessorEventLoop.stop();
 
         assertEquals("prefix-span-name", protoSpanAdapter.getName());
-        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttribute("name-with-prefix", String.class));
+        assertEquals("prefix-span-name", groovyActionProcessorEventLoop.getContext().getAttributes()
+                .get("name-with-prefix"));
 
         assertEquals(0, finalDestination.getSize());
         assertEquals(1, otherDestination.getSize());

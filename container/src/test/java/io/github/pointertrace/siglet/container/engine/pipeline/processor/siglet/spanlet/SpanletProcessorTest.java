@@ -46,7 +46,7 @@ class SpanletProcessorTest {
 
         spanletEventLoop.stop();
 
-        assertEquals("prefix-span-name",spanletEventLoop.getContext().getAttribute("name-with-prefix",String.class));
+        assertEquals("prefix-span-name",spanletEventLoop.getContext().getAttributes() .get("name-with-prefix"));
         assertEquals("prefix-span-name",protoSpanAdapter.getName());
 
     }
@@ -64,7 +64,7 @@ class SpanletProcessorTest {
         @Override
         public Result span(Span span, ProcessorContext<SpanletConfig> processorContext,
                            ResultFactory resultFactory) {
-            processorContext.setAttribute("name-with-prefix",processorContext.getConfig().prefix + span.getName());
+            processorContext.getAttributes().put("name-with-prefix", processorContext.getConfig().prefix + span.getName());
             span.setName(processorContext.getConfig().prefix + span.getName());
             return resultFactory.proceed();
         }
