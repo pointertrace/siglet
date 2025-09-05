@@ -32,6 +32,7 @@
     </licenses>
     <modules>
         <module>test-bundle</module>
+        <module>assembly-plugin</module>
         <module>api</module>
         <module>parser</module>
         <module>container</module>
