@@ -1,4 +1,4 @@
-FROM  eclipse-temurin:21.0.6_7-jdk-alpine-3.21
+FROM openjdk:24-slim
 COPY target/siglet-*.jar /opt/siglet.jar
 RUN addgroup -S siglet && adduser -S siglet -G siglet
 RUN chown -R siglet:siglet /opt

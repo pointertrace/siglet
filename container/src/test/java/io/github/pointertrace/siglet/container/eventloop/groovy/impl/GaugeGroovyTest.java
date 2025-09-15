@@ -81,7 +81,7 @@ class GaugeGroovyTest {
                 """;
 
         Script script = compiler.compile(gaugeScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
         ProtoMetricAdapter newGauge = (ProtoMetricAdapter) script.run();
 

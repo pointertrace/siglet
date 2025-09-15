@@ -31,10 +31,16 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder>
     }
 
     @Override
-    public boolean isMonotonic() {
+    public boolean getMonotonic() {
         return getValue(Sum::getIsMonotonic, Sum.Builder::getIsMonotonic);
     }
 
+
+    @Override
+    public ProtoSumAdapter setMonotonic(boolean monotonic) {
+        setValue(Sum.Builder::setIsMonotonic, monotonic);
+        return this;
+    }
     @Override
     public AggregationTemporality getAggregationTemporality() {
         return AdapterUtils.valueOf(
@@ -47,9 +53,4 @@ public class ProtoSumAdapter extends Adapter<Sum, Sum.Builder>
         return this;
     }
 
-    @Override
-    public ProtoSumAdapter setMonotonic(boolean monotonic) {
-        setValue(Sum.Builder::setIsMonotonic, monotonic);
-        return this;
-    }
 }

@@ -10,8 +10,11 @@ import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.*;
 import io.opentelemetry.proto.resource.v1.Resource;
 
+import java.util.UUID;
+
 public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implements io.github.pointertrace.siglet.api.signal.metric.Metric {
 
+    private UUID id;
 
     private Resource protoResource;
 
@@ -36,6 +39,7 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
         super.recycle(protoMetric);
         this.protoResource = protoResource;
         this.protoInstrumentationScope = protoInstrumentationScope;
+        this.id = UUID.randomUUID();
         return this;
     }
 
@@ -239,8 +243,14 @@ public class ProtoMetricAdapter extends Adapter<Metric, Metric.Builder> implemen
 
 
     @Override
-    // todo melhorar id
     public String getId() {
-        return "Metric";
+        return "Metric(" + switch (getDataCase()) {
+            case SUM -> "sum-";
+            case GAUGE -> "gauge-";
+            case HISTOGRAM -> "histogram-";
+            case EXPONENTIAL_HISTOGRAM -> "exponential-histogram-";
+            case SUMMARY -> "summary-";
+            default -> "unknown-";
+        } + id + ")";
     }
 }

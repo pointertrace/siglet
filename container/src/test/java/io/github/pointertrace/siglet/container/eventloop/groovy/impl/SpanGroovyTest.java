@@ -105,7 +105,7 @@ class SpanGroovyTest {
 
 
         Script script = compiler.compile(spanScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
         script.run();
         assertEquals("new span name", spanAdapter.getName());
@@ -164,7 +164,7 @@ class SpanGroovyTest {
                 """;
 
         Script script = compiler.compile(spanScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
         script.run();
 

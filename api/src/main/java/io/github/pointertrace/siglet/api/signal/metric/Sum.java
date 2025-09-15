@@ -8,7 +8,7 @@ public interface Sum extends Data {
 
     Sum setAggregationTemporality(AggregationTemporality aggregationTemporality);
 
-    boolean isMonotonic();
+    boolean getMonotonic();
 
     Sum setMonotonic(boolean monotonic);
 

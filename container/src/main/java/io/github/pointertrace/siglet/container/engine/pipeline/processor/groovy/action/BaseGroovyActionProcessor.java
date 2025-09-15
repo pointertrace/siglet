@@ -11,6 +11,7 @@ import io.github.pointertrace.siglet.container.engine.SignalDestination;
 import io.github.pointertrace.siglet.container.engine.State;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.BaseGroovyBaseEventloopProcessor;
+import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.BindingUtils;
 import io.github.pointertrace.siglet.container.eventloop.processor.ProcessorContextImpl;
 import io.github.pointertrace.siglet.container.eventloop.processor.ProcessorEventloop;
 import io.github.pointertrace.siglet.container.eventloop.processor.ProcessorFactory;
@@ -18,6 +19,8 @@ import io.github.pointertrace.siglet.container.eventloop.processor.result.Result
 import io.github.pointertrace.siglet.container.eventloop.processor.result.ResultImpl;
 import groovy.lang.Script;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class BaseGroovyActionProcessor implements Processor {
@@ -40,7 +43,7 @@ public abstract class BaseGroovyActionProcessor implements Processor {
     }
 
     BaseGroovyActionProcessor(String name, String action, SignalType signalType,
-                                     int queueCapacity, int threadPoolSize) {
+                              int queueCapacity, int threadPoolSize) {
         ProcessorContextImpl<Void> ctx = new ProcessorContextImpl<>(null);
         processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(action), ctx,
                 signalType, queueCapacity, threadPoolSize);
@@ -94,7 +97,7 @@ public abstract class BaseGroovyActionProcessor implements Processor {
         processorEventloop.connect(destination);
     }
 
-    private static class GroovyActionBaseEventloopProcessor<T> extends BaseGroovyBaseEventloopProcessor<T> {
+    public static class GroovyActionBaseEventloopProcessor<T> extends BaseGroovyBaseEventloopProcessor<T> {
 
         private final Script actionScript;
 
@@ -104,18 +107,17 @@ public abstract class BaseGroovyActionProcessor implements Processor {
         }
 
         @Override
-        protected Result process(Signal signal, ProcessorContext<T> context, ResultFactory resultFactory) {
-            actionScript.getBinding().setVariable("result", ResultImpl.proceed());
-            actionScript.getBinding().setVariable("signal", signal);
-            actionScript.getBinding().setVariable("context", context);
+        public Result process(Signal signal, ProcessorContext<T> context, ResultFactory resultFactory) {
+            getCompiler().prepareScript(actionScript, signal, context);
             actionScript.run();
-            Object resultObj = actionScript.getBinding().getVariable("result");
-            if (resultObj instanceof Result result) {
-                return result;
-            } else {
-                throw new IllegalStateException("Result object wrong type or not found as a binding variable in " +
-                        "groovy script");
+            Result result = BindingUtils.getResult(actionScript.getBinding());
+            Map<String, List<Signal>> routes = BindingUtils.getRoutes(actionScript.getBinding());
+            for (Map.Entry<String, List<Signal>> entry : routes.entrySet()) {
+                for (Signal s : entry.getValue()) {
+                    result = result.andSend(s, entry.getKey());
+                }
             }
+            return result;
         }
     }
 }

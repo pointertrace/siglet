@@ -116,7 +116,7 @@ public abstract class BaseGroovyRouterProcessor implements Processor {
         @Override
         protected Result process(Signal signal, ProcessorContext<T> context, ResultFactory resultFactory) {
             for (CompiledRoute compiledRoute : compiledRoutes) {
-                getCompiler().prepareScript(compiledRoute.predicate(), signal);
+                getCompiler().prepareScript(compiledRoute.predicate(), signal, context);
                 Boolean predicate = (Boolean) compiledRoute.predicate().run();
                 if (predicate) {
                     return resultFactory.proceed(compiledRoute.destination());

@@ -58,10 +58,10 @@ class CounterGroovyTest {
     @Test
     void newCounter()  {
         String counterScript = """
-                newCounter {
-                    name "counter name " + signal.name
-                    description "counter description"
-                    unit "counter unit"
+                newSum {
+                    name "sum name " + signal.name
+                    description "sum description"
+                    unit "sum unit"
                     dataPoint {
                         value 50
                         flags 5
@@ -75,19 +75,19 @@ class CounterGroovyTest {
 
 
         Script script = compiler.compile(counterScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
 
 
-        ProtoMetricAdapter newCounter = (ProtoMetricAdapter) script.run();
+        ProtoMetricAdapter newSum = (ProtoMetricAdapter) script.run();
 
-        assertTrue(newCounter.hasSum());
-        assertEquals("counter name span name", newCounter.getName());
-        assertEquals("counter description", newCounter.getDescription());
-        assertEquals("counter unit", newCounter.getUnit());
+        assertTrue(newSum.hasSum());
+        assertEquals("sum name span name", newSum.getName());
+        assertEquals("sum description", newSum.getDescription());
+        assertEquals("sum unit", newSum.getUnit());
 
-        assertEquals(1, newCounter.getSum().getDataPoints().getSize());
-        ProtoNumberDataPointAdapter numberDataPoint = newCounter.getSum().getDataPoints().get(0);
+        assertEquals(1, newSum.getSum().getDataPoints().getSize());
+        ProtoNumberDataPointAdapter numberDataPoint = newSum.getSum().getDataPoints().get(0);
         assertNotNull(numberDataPoint);
         assertEquals(50,numberDataPoint.getAsLong());
         assertEquals(5,numberDataPoint.getFlags());
@@ -100,7 +100,7 @@ class CounterGroovyTest {
 
 
         // resource and instrumentation scope
-        assertSame(resource, newCounter.getUpdatedResource());
-        assertSame(instrumentationScope, newCounter.getUpdatedInstrumentationScope());
+        assertSame(resource, newSum.getUpdatedResource());
+        assertSame(instrumentationScope, newSum.getUpdatedInstrumentationScope());
     }
 }

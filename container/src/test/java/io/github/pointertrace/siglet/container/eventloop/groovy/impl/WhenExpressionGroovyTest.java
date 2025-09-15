@@ -88,7 +88,7 @@ class WhenExpressionGroovyTest {
 
 
         Script script = compiler.compile(spanScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
         script.run();
         assertEquals("new span name", spanAdapter.getName());
@@ -105,7 +105,7 @@ class WhenExpressionGroovyTest {
                 """;
 
         Script script = compiler.compile(spanScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
 
         script.run();
         assertEquals("span name", spanAdapter.getName());

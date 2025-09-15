@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Container to run siglets</name>
-    <description>A container that implements the idea of java servlet but for opentelemetry singals</description>
+    <description>A container that implements the idea of java servlet but for opentelemetry signals</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -19,7 +19,7 @@ public class ProtoGaugeAdapter extends Adapter<Gauge, Gauge.Builder> implements 
         });
     }
 
-    public List<NumberDataPoint> getDataPointsList() {
+    protected List<NumberDataPoint> getDataPointsList() {
         return getValue(Gauge::getDataPointsList, Gauge.Builder::getDataPointsList);
     }
 

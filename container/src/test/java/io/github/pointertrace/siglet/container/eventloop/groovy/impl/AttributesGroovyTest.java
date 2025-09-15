@@ -117,7 +117,7 @@ class AttributesGroovyTest {
                 """;
 
         Script script = compiler.compile(attributesScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
         script.run();
 
 
@@ -142,7 +142,7 @@ class AttributesGroovyTest {
                 """;
 
         Script script = compiler.compile(attributesScript);
-        compiler.prepareScript(script, spanAdapter);
+        compiler.prepareScript(script, spanAdapter, null);
         script.run();
 
         ProtoAttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().get(0).getAttributes();

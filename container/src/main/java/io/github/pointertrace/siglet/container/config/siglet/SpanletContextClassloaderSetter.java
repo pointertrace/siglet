@@ -17,10 +17,10 @@ public class SpanletContextClassloaderSetter implements InvocationHandler {
         this.classLoader = classLoader;
     }
 
-    public static Spanlet<?> addContextClassloaderSetter(Spanlet<?> original, ClassLoader classLoader) {
+    public static <T> Spanlet<T> addContextClassloaderSetter(Spanlet<T> original, ClassLoader classLoader) {
         Object o =  Proxy.newProxyInstance(Spanlet.class.getClassLoader(), new Class<?>[]{Spanlet.class},
                 new SpanletContextClassloaderSetter(original, classLoader));
-        return (Spanlet<?>) o;
+        return (Spanlet<T>) o;
     }
 
     @Override
