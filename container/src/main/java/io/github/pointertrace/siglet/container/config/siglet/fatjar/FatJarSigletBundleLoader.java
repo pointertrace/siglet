@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.siglet.fatjar;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.siglet.BundleLoader;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.container.config.siglet.SigletBundle;

@@ -6,7 +6,7 @@ import io.github.pointertrace.siglet.parser.SchemaValidationError;
 import io.github.pointertrace.siglet.parser.node.ObjectNode;
 import io.github.pointertrace.siglet.parser.schema.DynamicCheckerDiscriminator;
 import io.github.pointertrace.siglet.parser.schema.SingleSchemaValidationError;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.ConfigCheckFactory;
 
 import java.util.HashSet;

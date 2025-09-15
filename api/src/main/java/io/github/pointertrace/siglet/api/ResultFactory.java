@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.api;
 
 /**
- * Factory to create results for a result for a processed signal
+ * Factory to create a result for a processed signal
  */
 public interface ResultFactory {
 

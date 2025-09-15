@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.action.GroovyActionConfig;
 import io.github.pointertrace.siglet.parser.Node;

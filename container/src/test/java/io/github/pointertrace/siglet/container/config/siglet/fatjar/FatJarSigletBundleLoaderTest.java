@@ -5,7 +5,7 @@ import io.github.pointertrace.siglet.parser.NodeChecker;
 import io.github.pointertrace.siglet.parser.YamlParser;
 import io.github.pointertrace.siglet.api.ProcessorContext;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.adapter.trace.ProtoSpanAdapter;
 import io.github.pointertrace.siglet.container.config.siglet.ExampleJarsInfo;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;

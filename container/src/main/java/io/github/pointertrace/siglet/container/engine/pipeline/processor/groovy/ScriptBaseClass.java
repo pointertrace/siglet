@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy;
 
-import io.github.pointertrace.siglet.api.Result;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.container.adapter.metric.ProtoMetricAdapter;
 import io.github.pointertrace.siglet.container.adapter.trace.ProtoSpanAdapter;

@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.adapter.metric;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.metric.Data;
 import io.github.pointertrace.siglet.container.adapter.Adapter;
 import io.github.pointertrace.siglet.container.adapter.AdapterConfig;

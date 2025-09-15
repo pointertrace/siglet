@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.YamlParser;
 import io.github.pointertrace.siglet.parser.located.Location;

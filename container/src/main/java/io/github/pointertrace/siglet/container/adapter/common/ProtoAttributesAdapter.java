@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.adapter.common;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.Attributes;
 import io.github.pointertrace.siglet.container.adapter.*;
 import io.opentelemetry.proto.common.v1.KeyValue;

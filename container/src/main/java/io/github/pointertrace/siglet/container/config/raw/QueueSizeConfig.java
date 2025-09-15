@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 
 public interface QueueSizeConfig {
 

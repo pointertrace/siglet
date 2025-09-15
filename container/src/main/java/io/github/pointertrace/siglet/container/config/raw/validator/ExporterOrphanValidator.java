@@ -1,10 +1,9 @@
 package io.github.pointertrace.siglet.container.config.raw.validator;
 
 import io.github.pointertrace.siglet.parser.Describable;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.raw.BaseConfig;
 import io.github.pointertrace.siglet.container.config.raw.LocatedString;
-import io.github.pointertrace.siglet.container.config.raw.ProcessorConfig;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 
 import java.util.Map;

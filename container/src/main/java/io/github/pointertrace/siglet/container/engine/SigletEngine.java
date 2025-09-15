@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.engine;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.*;
 import io.github.pointertrace.siglet.container.engine.exporter.Exporters;
 import io.github.pointertrace.siglet.container.engine.pipeline.Pipeline;

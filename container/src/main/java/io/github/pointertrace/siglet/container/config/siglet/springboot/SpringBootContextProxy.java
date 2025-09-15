@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.container.config.siglet.springboot;
 
 import io.github.pointertrace.siglet.parser.NodeCheckerFactory;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 
 import java.io.Closeable;
 import java.util.ArrayList;

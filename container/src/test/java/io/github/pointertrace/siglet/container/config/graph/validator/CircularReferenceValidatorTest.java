@@ -1,12 +1,11 @@
 package io.github.pointertrace.siglet.container.config.graph.validator;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.graph.Graph;
 import io.github.pointertrace.siglet.container.config.graph.GraphFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
-import io.github.pointertrace.siglet.container.config.raw.validator.ExporterOrphanValidator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

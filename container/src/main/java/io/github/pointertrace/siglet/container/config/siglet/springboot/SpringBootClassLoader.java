@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.siglet.springboot;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import org.springframework.boot.loader.launch.Archive;
 import org.springframework.boot.loader.launch.LaunchedClassLoader;
 

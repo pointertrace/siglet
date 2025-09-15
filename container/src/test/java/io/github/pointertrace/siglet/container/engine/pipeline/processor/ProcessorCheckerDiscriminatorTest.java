@@ -3,12 +3,10 @@ package io.github.pointertrace.siglet.container.engine.pipeline.processor;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.NodeChecker;
 import io.github.pointertrace.siglet.parser.YamlParser;
-import io.github.pointertrace.siglet.container.SigletError;
-import io.github.pointertrace.siglet.container.config.raw.PipelineConfig;
+import io.github.pointertrace.siglet.api.SigletError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static io.github.pointertrace.siglet.container.config.ConfigCheckFactory.pipelineChecker;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProcessorCheckerDiscriminatorTest {

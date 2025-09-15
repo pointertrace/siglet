@@ -1,11 +1,10 @@
 package io.github.pointertrace.siglet.container.engine.pipeline.processor.siglet;
 
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.raw.ProcessorConfig;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.container.config.graph.SignalType;
-import io.github.pointertrace.siglet.container.config.siglet.parser.SigletConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ConfigDefinition;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorType;

@@ -10,7 +10,7 @@ import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.ResultFactory;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.siglet.SpanletContextClassloaderSetter;
 import io.github.pointertrace.siglet.container.config.siglet.parser.SigletConfig;
 import org.junit.jupiter.api.Test;

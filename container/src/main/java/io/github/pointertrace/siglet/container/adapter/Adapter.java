@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.container.adapter;
 
 import com.google.protobuf.Message;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 
 import java.util.HashMap;
 import java.util.List;

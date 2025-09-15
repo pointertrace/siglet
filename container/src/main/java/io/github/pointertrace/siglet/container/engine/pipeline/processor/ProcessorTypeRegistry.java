@@ -1,9 +1,8 @@
 package io.github.pointertrace.siglet.container.engine.pipeline.processor;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.container.config.siglet.SigletBundle;
-import io.github.pointertrace.siglet.container.config.siglet.parser.SigletConfig;
 import io.github.pointertrace.siglet.container.engine.Context;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.action.SpanletGroovyActionProcessorType;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.filter.SpanletGroovyFilterProcessorType;

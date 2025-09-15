@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.config.siglet.springboot;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 
 import java.io.File;
 import java.io.IOException;

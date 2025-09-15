@@ -1,8 +1,6 @@
 package io.github.pointertrace.siglet.container.engine.pipeline.processor.groovy.router;
 
-import io.github.pointertrace.siglet.container.SigletError;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ConfigDefinition;
-import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCreator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorType;
 
 public abstract class BaseGroovyRouterProcessorType implements ProcessorType {

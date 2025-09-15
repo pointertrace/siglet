@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.container;
+package io.github.pointertrace.siglet.api;
 
 public class SigletError extends RuntimeException {
 

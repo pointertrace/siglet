@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.container.adapter;
 
 import com.google.protobuf.ByteString;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.metric.AggregationTemporality;
 import io.github.pointertrace.siglet.api.signal.trace.SpanKind;
 import io.github.pointertrace.siglet.api.signal.trace.StatusCode;

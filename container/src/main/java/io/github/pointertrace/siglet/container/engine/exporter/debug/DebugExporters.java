@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.engine.exporter.debug;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 
 import java.util.*;

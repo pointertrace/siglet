@@ -1,19 +1,59 @@
 package io.github.pointertrace.siglet.api.signal;
 
+/**
+ * Defines an event
+ */
 public interface Event {
 
-    long getTimeUnixNano() ;
+    /**
+     * Returns the event timestamp in nanoseconds.
+     *
+     * @return event timestamp in nanoseconds.
+     */
+    long getTimeUnixNano();
 
-    Event setTimeUnixNano(long timeUnixNano) ;
+    /**
+     * Sets the event timestamp in nanoseconds.
+     *
+     * @param timeUnixNano timestamp in nanoseconds.
+     * @return current event
+     */
+    Event setTimeUnixNano(long timeUnixNano);
 
-    String getName() ;
+    /**
+     * Returns event name.
+     *
+     * @return event name.
+     */
+    String getName();
 
-    Event setName(String name) ;
+    /**
+     * Sets the event name.
+     *
+     * @param name event name.
+     * @return current event.
+     */
+    Event setName(String name);
 
-    int getDroppedAttributesCount() ;
+    /**
+     * Returns the number of dropped attributes.
+     *
+     * @return number of dropped attributes.
+     */
+    int getDroppedAttributesCount();
 
-    Event setDroppedAttributesCount(int droppedAttributesCount) ;
+    /**
+     * Sets the number of dropped attributes.
+     *
+     * @param droppedAttributesCount number of dropped attributes.
+     * @return current instance of {@code Event}.
+     */
+    Event setDroppedAttributesCount(int droppedAttributesCount);
 
-    Attributes getAttributes() ;
+    /**
+     * Returns the attribute list.
+     * @return attribute list.
+     */
+    Attributes getAttributes();
 
 }

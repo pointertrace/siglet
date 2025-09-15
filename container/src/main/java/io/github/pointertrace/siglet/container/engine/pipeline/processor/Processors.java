@@ -1,9 +1,6 @@
 package io.github.pointertrace.siglet.container.engine.pipeline.processor;
 
-import io.github.pointertrace.siglet.container.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.container.config.raw.ProcessorConfig;
-import io.github.pointertrace.siglet.container.config.raw.ProcessorKind;
 import io.github.pointertrace.siglet.container.engine.Context;
 
 import java.util.HashMap;

@@ -2,20 +2,17 @@ package io.github.pointertrace.siglet.container.config.siglet.springboot;
 
 import io.github.pointertrace.siglet.api.ProcessorContext;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.adapter.trace.ProtoSpanAdapter;
 import io.github.pointertrace.siglet.container.config.siglet.ExampleJarsInfo;
 import io.github.pointertrace.siglet.container.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;
-import io.github.pointertrace.siglet.container.config.siglet.fatjar.FatJarSigletBundleLoader;
-import io.github.pointertrace.siglet.container.config.siglet.parser.SigletConfig;
 import io.github.pointertrace.siglet.container.eventloop.processor.ProcessorContextImpl;
 import io.github.pointertrace.siglet.container.eventloop.processor.result.ResultFactoryImpl;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.NodeChecker;
 import io.github.pointertrace.siglet.parser.YamlParser;
 import io.opentelemetry.proto.trace.v1.Span;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.loader.net.protocol.Handlers;
@@ -23,8 +20,6 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.jar.JarFile;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNull;

@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.engine.receiver;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.container.config.raw.DebugReceiverConfig;
 import io.github.pointertrace.siglet.container.config.raw.GrpcReceiverConfig;

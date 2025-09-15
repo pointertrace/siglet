@@ -4,7 +4,7 @@ import io.github.pointertrace.siglet.parser.NodeChecker;
 import io.github.pointertrace.siglet.parser.NodeCheckerFactory;
 import io.github.pointertrace.siglet.api.Processor;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.SignalType;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.container.config.siglet.SpanletContextClassloaderSetter;

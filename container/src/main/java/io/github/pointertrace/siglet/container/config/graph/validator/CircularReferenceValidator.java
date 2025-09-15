@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.container.config.graph.validator;
 
 import io.github.pointertrace.siglet.parser.Describable;
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.*;
 
 import java.util.*;

@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.container.eventloop.processor;
 
-import io.github.pointertrace.siglet.container.SigletError;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.ProcessorContext;
 import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.Signal;
