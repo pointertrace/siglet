@@ -79,7 +79,8 @@ class ActionGrpcSpanletTest {
         String config = """
                 receivers:
                 - grpc: receiver
-                  address: localhost:4317
+                  config:
+                    address: localhost:4317
                 exporters:
                 - grpc: exporter
                   address: localhost:4318

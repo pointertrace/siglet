@@ -1,6 +1,7 @@
 package io.github.pointertrace.siglet.container.config.raw;
 
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
+import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.YamlParser;
 import io.github.pointertrace.siglet.parser.located.Location;
@@ -22,7 +23,7 @@ class RawConfigTest {
     }
 
     @Test
-    void getValue() throws Exception {
+    void getValue() {
 
 
         var yaml = """
@@ -33,9 +34,11 @@ class RawConfigTest {
                   metric-object-pool-size: 4
                 receivers:
                 - grpc: first receiver
-                  address: localhost:8080
+                  config:
+                    address: localhost:8080
                 - grpc: second receiver
-                  address: localhost:8081
+                  config:
+                    address: localhost:8081
                 exporters:
                 - grpc: first exporter
                   address: localhost:8080
@@ -55,7 +58,7 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        rawConfigChecker(new ProcessorTypeRegistry()).check(node);
+        rawConfigChecker(new ReceiverTypeRegistry(), new ProcessorTypeRegistry()).check(node);
 
         Object conf = node.getValue();
 
@@ -85,7 +88,7 @@ class RawConfigTest {
         List<ExporterConfig> exporters = rawConfig.getExporters();
         assertNotNull(exporters);
         assertEquals(2, exporters.size());
-        assertEquals(Location.of(11,1), rawConfig.getExportersLocation());
+        assertEquals(Location.of(13,1), rawConfig.getExportersLocation());
 
         assertEquals("first exporter", exporters.getFirst().getName());
         assertEquals("second exporter", exporters.get(1).getName());
@@ -93,7 +96,7 @@ class RawConfigTest {
         List<PipelineConfig> pipelines = rawConfig.getPipelines();
         assertNotNull(pipelines);
         assertEquals(1, pipelines.size());
-        assertEquals(Location.of(16,1), rawConfig.getPipelinesLocation());
+        assertEquals(Location.of(18,1), rawConfig.getPipelinesLocation());
 
         assertEquals("pipeline name",pipelines.getFirst().getName());
 
@@ -111,9 +114,11 @@ class RawConfigTest {
                   metric-object-pool-size: 4
                 receivers:
                 - grpc: first receiver
-                  address: localhost:8080
+                  config:
+                    address: localhost:8080
                 - grpc: second receiver
-                  address: localhost:8081
+                  config:
+                    address: localhost:8081
                 exporters:
                 - grpc: first exporter
                   address: localhost:8080
@@ -132,7 +137,7 @@ class RawConfigTest {
 
         Node node = configParser.parse(yaml);
 
-        rawConfigChecker(new ProcessorTypeRegistry()).check(node);
+        rawConfigChecker(new ReceiverTypeRegistry(), new ProcessorTypeRegistry()).check(node);
 
         Object conf = node.getValue();
 
@@ -140,41 +145,45 @@ class RawConfigTest {
         RawConfig rawConfig = assertInstanceOf(RawConfig.class, conf);
 
         String expected = """
-                (1:1)  RawConfig:
-                  (1:1)  GlobalConfig
-                    (2:15)  queue-size: 1
-                    (3:21)  thread-pool-size: 2
-                    (4:26)  span-object-pool-size: 3
-                    (5:28)  metric-object-pool-size: 4
-                  (6:1)  receivers:
-                    (7:3)  GrpcReceiverConfig
-                      (7:9)  name: first receiver
-                      (8:12)  address: localhost/127.0.0.1:8080
-                    (9:3)  GrpcReceiverConfig
-                      (9:9)  name: second receiver
-                      (10:12)  address: localhost/127.0.0.1:8081
-                  (11:1)  exporters:
-                    (12:3)  GrpcExporterConfig
-                      (12:9)  name: first exporter
-                      (13:12)  address: localhost/127.0.0.1:8080
-                    (14:3)  GrpcExporterConfig
-                      (14:9)  name: second exporter
-                      (15:12)  address: localhost/127.0.0.1:8081
-                  (16:1)  pipelines:
-                    (17:3)  PipelineConfig:
-                      (17:9)  name: pipeline name
-                      (18:9)  from: first receiver
-                      (19:10)  start:
-                        (19:10)  spanlet name
-                      (20:3)  processors:
-                        (21:5)  processorConfig:
-                          (21:28)  name: spanlet name
-                          (21:5)  type: spanlet-groovy-action
-                          (22:9)  to:
-                            (22:9)  first exporter
-                          (23:5) config:
-                            (23:5)  groovyActionConfig:
-                              (24:15)  action: action-value""";
+            (1:1)  RawConfig:
+              (1:1)  GlobalConfig
+                (2:15)  queue-size: 1
+                (3:21)  thread-pool-size: 2
+                (4:26)  span-object-pool-size: 3
+                (5:28)  metric-object-pool-size: 4
+              (6:1)  receivers:
+                (7:3)  receiverConfig:
+                  (7:9)  name: first receiver
+                  (7:3)  type: grpc
+                  (8:3)  config: (OtelGrpcReceiverConfig)
+                    (9,14)  address: localhost/127.0.0.1:8080
+                (10:3)  receiverConfig:
+                  (10:9)  name: second receiver
+                  (10:3)  type: grpc
+                  (11:3)  config: (OtelGrpcReceiverConfig)
+                    (12,14)  address: localhost/127.0.0.1:8081
+              (13:1)  exporters:
+                (14:3)  GrpcExporterConfig
+                  (14:9)  name: first exporter
+                  (15:12)  address: localhost/127.0.0.1:8080
+                (16:3)  GrpcExporterConfig
+                  (16:9)  name: second exporter
+                  (17:12)  address: localhost/127.0.0.1:8081
+              (18:1)  pipelines:
+                (19:3)  PipelineConfig:
+                  (19:9)  name: pipeline name
+                  (20:9)  from: first receiver
+                  (21:10)  start:
+                    (21:10)  spanlet name
+                  (22:3)  processors:
+                    (23:5)  processorConfig:
+                      (23:28)  name: spanlet name
+                      (23:5)  type: spanlet-groovy-action
+                      (24:9)  to:
+                        (24:9)  first exporter
+                      (25:5) config:
+                        (25:5)  groovyActionConfig:
+                          (26:15)  action: action-value""";
 
         assertEquals(expected, rawConfig.describe());
 

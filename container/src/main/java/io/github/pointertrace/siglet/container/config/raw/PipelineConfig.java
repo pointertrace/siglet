@@ -113,8 +113,7 @@ public class PipelineConfig extends BaseConfig {
 
         sb.append(Describable.prefix(level + 1));
         sb.append(sigletsLocation.describe());
-        sb.append("  processors:");
-        sb.append("\n");
+        sb.append("  processors:\n");
         for (ProcessorConfig processorConfig : processors) {
             sb.append(processorConfig.describe(level + 2));
         }

@@ -2,11 +2,10 @@ package io.github.pointertrace.siglet.container.engine.receiver;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.container.config.raw.DebugReceiverConfig;
 import io.github.pointertrace.siglet.container.config.raw.GrpcReceiverConfig;
 import io.github.pointertrace.siglet.container.engine.Context;
 import io.github.pointertrace.siglet.container.engine.receiver.debug.DebugReceiver;
-import io.github.pointertrace.siglet.container.engine.receiver.grpc.GrpcReceiver;
+import io.github.pointertrace.siglet.container.engine.receiver.grpc.OtelGrpcReceiver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,19 +19,8 @@ public class Receivers {
         return receiverRegistry.get(name);
     }
 
-    public  Receiver create(Context context, ReceiverNode node) {
-        String name = node.getConfig().getName();
-        if (receiverRegistry.containsKey(name)) {
-            throw new SigletError("Receiver with name " + name + " already exists");
-        }
-        if (node.getConfig() instanceof GrpcReceiverConfig) {
-            return receiverRegistry.put(name, new GrpcReceiver(context, node));
-        } else if (node.getConfig() instanceof DebugReceiverConfig) {
-            return receiverRegistry.put(name, new DebugReceiver(node));
-        } else {
-            throw new SigletError(String.format("Cannot create receiver for config type %s",
-                    node.getConfig().getClass().getName()));
-        }
+    public  Receiver create(Context context, ReceiverNode receiverNode) {
+            return receiverRegistry.put(receiverNode.getName(),context.createReceiver(receiverNode));
     }
 
     public void forEach(Consumer<Receiver> receiverConsumer) {

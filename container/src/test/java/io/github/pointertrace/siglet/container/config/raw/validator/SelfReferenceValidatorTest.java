@@ -4,6 +4,7 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
+import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,8 @@ class SelfReferenceValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
+                new ProcessorTypeRegistry());
 
         SigletError e = assertThrows(SigletError.class, () -> selfReferenceValidator.validate(rawConfig));
 
@@ -78,9 +80,10 @@ class SelfReferenceValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ProcessorTypeRegistry());
+        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
+                new ProcessorTypeRegistry());
 
-         selfReferenceValidator.validate(rawConfig);
+        selfReferenceValidator.validate(rawConfig);
 
     }
 }

@@ -3,6 +3,8 @@ package io.github.pointertrace.siglet.container.config;
 import io.github.pointertrace.siglet.container.config.raw.*;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCheckerDiscriminator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
+import io.github.pointertrace.siglet.container.engine.receiver.ReceiverCheckerDiscriminator;
+import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import io.github.pointertrace.siglet.parser.NodeChecker;
 
 import java.util.Set;
@@ -54,26 +56,7 @@ public class ConfigCheckFactory {
     public static final String PIPELINES_PROP = "pipelines";
 
 
-    public static NodeChecker receiversChecker() {
 
-        return array(alternative(grpcReceiverChecker(), debugReceiverChecker()));
-
-    }
-
-    public static NodeChecker grpcReceiverChecker() {
-        return strictObject(GrpcReceiverConfig::new,
-                requiredProperty(GrpcReceiverConfig::setName, GrpcReceiverConfig::setNameLocation,
-                        GRPC_PROP, text()),
-                requiredProperty(GrpcReceiverConfig::setAddress, GrpcReceiverConfig::setAddressLocation,
-                        ADDRESS_PROP, text(inetSocketAddress()))
-        );
-    }
-
-    public static NodeChecker debugReceiverChecker() {
-        return strictObject(DebugReceiverConfig::new,
-                requiredProperty(DebugReceiverConfig::setName, DebugReceiverConfig::setNameLocation, DEBUG_PROP, text())
-        );
-    }
 
     public static NodeChecker grpcExportersChecker() {
         return array(alternative(grpcExporterChecker(), debugExporterChecker()));
@@ -116,10 +99,26 @@ public class ConfigCheckFactory {
         );
     }
 
+    public static NodeChecker receiversChecker(ReceiverTypeRegistry receiverTypeRegistry) {
+        return array(receiverChecker(receiverTypeRegistry));
+    }
+
+    public static Set<String> getReceiverProperties() {
+        return Set.of(CONFIG_PROP);
+    }
+
+    public static NodeChecker receiverChecker(ReceiverTypeRegistry receiverTypeRegistry) {
+        return strictObject(ReceiverConfig::new,
+                optionalDynamicKeyProperty(ReceiverConfig::setType,ReceiverConfig::setTypeLocation,
+                        ReceiverConfig::setName,ReceiverConfig::setNameLocation,
+                        receiverTypeRegistry.getReceiverTypesNames(),text()),
+                requiredDynamicProperty(CONFIG_PROP, ReceiverConfig::setConfigLocation,
+                        new ReceiverCheckerDiscriminator(receiverTypeRegistry)));
+    }
+
     public static Set<String> getProcessorProperties() {
         return Set.of(TO_PROP, CONFIG_PROP, QUEUE_SIZE_PROP, THREAD_POOL_SIZE_PROP);
     }
-
     public static NodeChecker processorChecker(ProcessorTypeRegistry processorTypeRegistry) {
         return strictObject(ProcessorConfig::new,
                 optionalDynamicKeyProperty(ProcessorConfig::setType,ProcessorConfig::setTypeLocation,
@@ -161,12 +160,13 @@ public class ConfigCheckFactory {
         );
     }
 
-    public static NodeChecker rawConfigChecker(ProcessorTypeRegistry processorTypeRegistry) {
+    public static NodeChecker rawConfigChecker(ReceiverTypeRegistry receiverTypeRegistry,
+                                               ProcessorTypeRegistry processorTypeRegistry) {
         return strictObject(RawConfig::new,
                 optionalProperty(RawConfig::setGlobalConfig, RawConfig::setGlobalConfigLocation, GLOBAL_CONFIG_PROP,
                         globalConfigChecker()),
                 requiredProperty(RawConfig::setReceivers, RawConfig::setReceiversLocation, RECEIVERS_PROP,
-                        receiversChecker()),
+                        receiversChecker(receiverTypeRegistry)),
                 optionalProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,
                         grpcExportersChecker()),
                 requiredProperty(RawConfig::setPipelines, RawConfig::setPipelinesLocation, PIPELINES_PROP,

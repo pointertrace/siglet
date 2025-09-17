@@ -87,6 +87,7 @@ public class RawConfig extends BaseConfig {
         sb.append("\n");
         for (ReceiverConfig receiver : receivers) {
             sb.append(receiver.describe(level + 2));
+            sb.append("\n");
         }
 
         sb.append(Describable.prefix(level + 1));

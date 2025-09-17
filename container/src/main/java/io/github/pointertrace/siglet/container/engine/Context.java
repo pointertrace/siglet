@@ -3,13 +3,11 @@ package io.github.pointertrace.siglet.container.engine;
 import io.github.pointertrace.siglet.container.adapter.pool.MetricObjectPool;
 import io.github.pointertrace.siglet.container.adapter.pool.SpanObjectPool;
 import io.github.pointertrace.siglet.container.config.Config;
-import io.github.pointertrace.siglet.container.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.container.config.graph.Graph;
-import io.github.pointertrace.siglet.container.config.graph.GraphFactory;
-import io.github.pointertrace.siglet.container.config.graph.ProcessorNode;
+import io.github.pointertrace.siglet.container.config.graph.*;
 import io.github.pointertrace.siglet.container.config.raw.GrpcExporterConfig;
 import io.github.pointertrace.siglet.container.config.raw.ProcessorKind;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.Processor;
+import io.github.pointertrace.siglet.container.engine.receiver.Receiver;
 
 public class Context {
 
@@ -38,6 +36,10 @@ public class Context {
 
     public Processor createProcessor(ProcessorNode processorNode) {
         return config.getProcessorTypes().create(this, processorNode);
+    }
+
+    public Receiver createReceiver(ReceiverNode receiverNode) {
+        return config.getReceiverTypeRegistry().create(this, receiverNode);
     }
 
 

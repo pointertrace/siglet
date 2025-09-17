@@ -38,7 +38,6 @@ public class ProcessorTypeRegistry {
 
     public void register(SigletBundle sigletBundle) {
         sigletBundle.definitions().forEach(sd -> register(new SigletProcessorType(sd)));
-        ;
     }
 
     public Processor create(Context context, ProcessorNode node) {

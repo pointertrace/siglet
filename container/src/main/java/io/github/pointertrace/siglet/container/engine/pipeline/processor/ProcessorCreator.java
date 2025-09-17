@@ -5,6 +5,6 @@ import io.github.pointertrace.siglet.container.engine.Context;
 
 public interface ProcessorCreator {
 
-    Processor create(Context context, ProcessorNode node);
+    Processor create(Context context, ProcessorNode processorNode);
 
 }

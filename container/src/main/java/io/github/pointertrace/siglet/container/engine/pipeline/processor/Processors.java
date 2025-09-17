@@ -9,29 +9,29 @@ import java.util.function.Consumer;
 
 public class Processors {
 
-    private final Map<String, Processor> namedProcessors = new HashMap<>();
+    private final Map<String, Processor> processorRegistry = new HashMap<>();
 
     public Processor create(Context context, ProcessorNode processorNode) {
-        return namedProcessors.put(processorNode.getName(), context.createProcessor(processorNode));
+        return processorRegistry.put(processorNode.getName(), context.createProcessor(processorNode));
     }
 
-    public Processor getDestination(String name) {
-        return namedProcessors.values().stream()
+    public Processor getProcessor(String name) {
+        return processorRegistry.values().stream()
                 .filter(processor -> processor.getName().equals(name))
                 .findFirst()
                 .orElse(null);
     }
 
     public void start() {
-        namedProcessors.values().forEach(Processor::start);
+        processorRegistry.values().forEach(Processor::start);
     }
 
     public void stop() {
-        namedProcessors.values().forEach(Processor::stop);
+        processorRegistry.values().forEach(Processor::stop);
 
     }
 
     public void forEach(Consumer<Processor> processorConsumer) {
-        namedProcessors.values().forEach(processorConsumer);
+        processorRegistry.values().forEach(processorConsumer);
     }
 }

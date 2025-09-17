@@ -5,6 +5,7 @@ import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.container.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.container.config.graph.SignalType;
 import io.github.pointertrace.siglet.container.config.raw.GrpcReceiverConfig;
+import io.github.pointertrace.siglet.container.config.raw.ReceiverConfig;
 import io.github.pointertrace.siglet.container.engine.Context;
 import io.github.pointertrace.siglet.container.engine.SignalDestination;
 import io.github.pointertrace.siglet.container.engine.State;
@@ -16,11 +17,9 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class GrpcReceiver implements Receiver {
+public class OtelGrpcReceiver implements Receiver {
 
     private final ReceiverNode receiverNode;
-
-    private final GrpcReceiverConfig grpcReceiverConfig;
 
     private State state = State.CREATED;
 
@@ -34,12 +33,16 @@ public class GrpcReceiver implements Receiver {
 
     private final Context context;
 
-    public GrpcReceiver(Context context, ReceiverNode receiverNode) {
+    public OtelGrpcReceiver(Context context, ReceiverNode receiverNode) {
         this.context = context;
         this.receiverNode = receiverNode;
-        this.grpcReceiverConfig = (GrpcReceiverConfig) receiverNode.getConfig();
-
-        serverBuilder = NettyServerBuilder.forAddress(grpcReceiverConfig.getAddress());
+        ReceiverConfig receiverConfig = receiverNode.getConfig();
+        if (receiverConfig.getConfig() instanceof OtelGrpcReceiverConfig otelGrpcReceiverConfig) {
+            serverBuilder =
+                    NettyServerBuilder.forAddress(otelGrpcReceiverConfig.getAddress());
+        } else {
+            throw new SigletError("Receiver config is not of type " + OtelGrpcReceiverConfig.class.getName());
+        }
     }
 
 
@@ -100,7 +103,7 @@ public class GrpcReceiver implements Receiver {
             serverBuilder.addService(metricService);
         } else {
             throw new SigletError(String.format("Cannot connect %s to %s because it does not support any of the " +
-                            "following signal types: %s", destination.getName(), getName(),
+                                                "following signal types: %s", destination.getName(), getName(),
                     destination.getSignalCapabilities().stream()
                             .map(SignalType::name)
                             .collect(Collectors.joining(", "))));

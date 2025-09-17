@@ -18,7 +18,7 @@ public interface Resource {
      * Sets the number of dropped attributes
      *
      * @param droppedAttributesCount Number of dropped attributes
-     * @return Resource
+     * @return current instance of {@code Resource}
      */
     Resource setDroppedAttributesCount(int droppedAttributesCount);
 

@@ -150,12 +150,9 @@ public class ProcessorConfig extends BaseConfig implements QueueSizeConfig, Thre
             sb.append("\n");
         }
 
-        sb.append(Describable.prefix(level + 1));
-        sb.append(getConfigLocation().describe());
-
-        if (getConfig() == null) {
-            sb.append("  config: null");
-        } else {
+        if (getConfig() != null) {
+            sb.append(Describable.prefix(level + 1));
+            sb.append(getConfigLocation().describe());
             sb.append(" config:\n");
             if (getConfig() instanceof Describable describableConfig) {
                 sb.append(describableConfig.describe(level + 2));
