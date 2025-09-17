@@ -3,6 +3,7 @@ package io.github.pointertrace.siglet.container.config.raw.validator;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ class ExporterOrphanValidatorTest {
                 """;
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
-                new ProcessorTypeRegistry());
+                new ProcessorTypeRegistry(), new ExporterTypeRegistry());
 
         SigletError e = assertThrows(SigletError.class, () -> exporterOrphanValidator.validate(rawConfig));
 
@@ -83,7 +84,7 @@ class ExporterOrphanValidatorTest {
                 """;
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
-                new ProcessorTypeRegistry());
+                new ProcessorTypeRegistry(), new ExporterTypeRegistry());
 
         exporterOrphanValidator.validate(rawConfig);
 
@@ -115,7 +116,7 @@ class ExporterOrphanValidatorTest {
                 """;
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
-                new ProcessorTypeRegistry());
+                new ProcessorTypeRegistry(), new ExporterTypeRegistry());
 
         exporterOrphanValidator.validate(rawConfig);
 

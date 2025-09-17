@@ -12,13 +12,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Set;
 
-public class GrpcMetricDestination implements SignalDestination {
+public class OtelGrpcMetricDestination implements SignalDestination {
 
-    private static final Logger LOGGER = LogManager.getLogger(GrpcMetricDestination.class);
+    private static final Logger LOGGER = LogManager.getLogger(OtelGrpcMetricDestination.class);
 
     private final MetricsServiceGrpc.MetricsServiceBlockingStub metricServiceStub;
 
-    public GrpcMetricDestination(MetricsServiceGrpc.MetricsServiceBlockingStub metricServiceStub) {
+    public OtelGrpcMetricDestination(MetricsServiceGrpc.MetricsServiceBlockingStub metricServiceStub) {
         this.metricServiceStub = metricServiceStub;
     }
 

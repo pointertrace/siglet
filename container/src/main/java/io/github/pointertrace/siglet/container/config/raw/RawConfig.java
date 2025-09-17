@@ -64,8 +64,6 @@ public class RawConfig extends BaseConfig {
                 .forEach(processorConfig -> processorConfig.setRawConfig(this));
 
         getExporters().stream()
-                .filter(GrpcExporterConfig.class::isInstance)
-                .map(GrpcExporterConfig.class::cast)
                 .forEach(exporterConfig -> exporterConfig.setRawConfig(this));
 
     }

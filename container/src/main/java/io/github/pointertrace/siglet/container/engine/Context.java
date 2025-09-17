@@ -4,8 +4,8 @@ import io.github.pointertrace.siglet.container.adapter.pool.MetricObjectPool;
 import io.github.pointertrace.siglet.container.adapter.pool.SpanObjectPool;
 import io.github.pointertrace.siglet.container.config.Config;
 import io.github.pointertrace.siglet.container.config.graph.*;
-import io.github.pointertrace.siglet.container.config.raw.GrpcExporterConfig;
-import io.github.pointertrace.siglet.container.config.raw.ProcessorKind;
+import io.github.pointertrace.siglet.container.config.raw.ExporterConfig;
+import io.github.pointertrace.siglet.container.engine.exporter.Exporter;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.container.engine.receiver.Receiver;
 
@@ -42,6 +42,9 @@ public class Context {
         return config.getReceiverTypeRegistry().create(this, receiverNode);
     }
 
+    public Exporter createExporter(ExporterNode exporterNode) {
+        return config.getExporterTypeRegistry().create(this, exporterNode);
+    }
 
     // todo verificar quais são spanlets
     private int getSpanObjectPoolSize() {
@@ -56,9 +59,9 @@ public class Context {
                 getGraph().getNodeRegistry().stream()
                         .filter(ExporterNode.class::isInstance)
                         .map(ExporterNode.class::cast)
-                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
+                        .filter(exporterNode -> exporterNode.getConfig() instanceof ExporterConfig)
                         .map(ExporterNode::getConfig)
-                        .map(GrpcExporterConfig.class::cast)
+                        .map(ExporterConfig.class::cast)
                         .mapToInt(grpcExporterConfig -> grpcExporterConfig.getQueueSizeConfig().getQueueSize())
                         .sum();
     }
@@ -76,9 +79,9 @@ public class Context {
                 getGraph().getNodeRegistry().stream()
                         .filter(ExporterNode.class::isInstance)
                         .map(ExporterNode.class::cast)
-                        .filter(exporterNode -> exporterNode.getConfig() instanceof GrpcExporterConfig)
+                        .filter(exporterNode -> exporterNode.getConfig() instanceof ExporterConfig)
                         .map(ExporterNode::getConfig)
-                        .map(GrpcExporterConfig.class::cast)
+                        .map(ExporterConfig.class::cast)
                         .mapToInt(grpcExporterConfig -> grpcExporterConfig.getQueueSizeConfig().getQueueSize())
                         .sum();
     }

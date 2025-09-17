@@ -15,12 +15,12 @@ public class Receivers {
 
     private final Map<String, Receiver> receiverRegistry = new HashMap<>();
 
-    public  Receiver getReceiver(String name) {
+    public Receiver getReceiver(String name) {
         return receiverRegistry.get(name);
     }
 
-    public  Receiver create(Context context, ReceiverNode receiverNode) {
-            return receiverRegistry.put(receiverNode.getName(),context.createReceiver(receiverNode));
+    public Receiver create(Context context, ReceiverNode receiverNode) {
+        return receiverRegistry.put(receiverNode.getName(), context.createReceiver(receiverNode));
     }
 
     public void forEach(Consumer<Receiver> receiverConsumer) {

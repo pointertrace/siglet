@@ -83,7 +83,8 @@ class ActionGrpcSpanletTest {
                     address: localhost:4317
                 exporters:
                 - grpc: exporter
-                  address: localhost:4318
+                  config:
+                    address: localhost:4318
                 pipelines:
                 - name: pipeline
                   from: receiver

@@ -1,15 +1,16 @@
-package io.github.pointertrace.siglet.container.config.raw;
+package io.github.pointertrace.siglet.container.engine.exporter.grpc;
 
-import io.github.pointertrace.siglet.parser.Describable;
 import io.github.pointertrace.siglet.api.SigletError;
+import io.github.pointertrace.siglet.container.config.raw.*;
+import io.github.pointertrace.siglet.parser.Describable;
 import io.github.pointertrace.siglet.parser.located.Location;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
 
-public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfig {
+public class OtelGrpcExporterConfig implements QueueSizeConfig, ExporterConfigSetter, Describable {
 
-    private RawConfig rawConfig;
+    private ExporterConfig exporterConfig;
 
     private InetSocketAddress address;
 
@@ -26,14 +27,6 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
     private Integer queueSize;
 
     private Location queueSizeLocation;
-
-    public RawConfig getRawConfig() {
-        return rawConfig;
-    }
-
-    public void setRawConfig(RawConfig rawConfig) {
-        this.rawConfig = rawConfig;
-    }
 
     public InetSocketAddress getAddress() {
         return address;
@@ -62,19 +55,13 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
     @Override
     public String describe(int level) {
         StringBuilder sb = new StringBuilder(Describable.prefix(level));
-        sb.append(getLocation().describe());
-        sb.append("  GrpcExporterConfig\n");
-
-        sb.append(super.describe(level + 1));
-
-        sb.append(Describable.prefix(level + 1));
         sb.append(addressLocation.describe());
         sb.append("  address: ");
         sb.append(address);
         sb.append("\n");
 
         if (batchSizeInSignals != null) {
-            sb.append(Describable.prefix(level + 1));
+            sb.append(Describable.prefix(level));
             sb.append(batchSizeInSignalsLocation.describe());
             sb.append("  batch-size-in-signal: ");
             sb.append(batchSizeInSignals);
@@ -82,7 +69,7 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
         }
 
         if (batchTimeoutInMillis != null) {
-            sb.append(Describable.prefix(level + 1));
+            sb.append(Describable.prefix(level));
             sb.append(batchTimeoutInMillisLocation.describe());
             sb.append("  batch-timeout-in-millis: ");
             sb.append(batchTimeoutInMillis);
@@ -90,7 +77,7 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
         }
 
         if (queueSize != null) {
-            sb.append(Describable.prefix(level + 1));
+            sb.append(Describable.prefix(level));
             sb.append(queueSizeLocation.describe());
             sb.append("  queue-size: ");
             sb.append(queueSize);
@@ -140,11 +127,23 @@ public class GrpcExporterConfig extends ExporterConfig implements QueueSizeConfi
         this.queueSizeLocation = queueSizeLocation;
     }
 
+    @Override
+    public void setExporterConfig(ExporterConfig exporterConfig) {
+        this.exporterConfig = exporterConfig;
+    }
+
 
     public QueueSizeConfig getQueueSizeConfig() {
-        if (rawConfig == null) {
+        if (exporterConfig.getRawConfig() == null) {
             throw new SigletError("rawConfig is null");
         }
-        return rawConfig.getGlobalConfigQueueSize().chain(QueueSizeConfig.of(this));
+        return exporterConfig.getRawConfig().getGlobalConfigQueueSize().chain(QueueSizeConfig.of(this));
+    }
+
+    public ThreadPoolSizeConfig getThreadPoolSizeConfig() {
+        if (exporterConfig.getRawConfig() == null) {
+            throw new SigletError("rawConfig is null");
+        }
+        return exporterConfig.getRawConfig().getGlobalConfigThreadPoolSize().chain(ThreadPoolSizeConfig.of(this));
     }
 }

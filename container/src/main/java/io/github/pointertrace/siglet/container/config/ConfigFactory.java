@@ -3,6 +3,7 @@ package io.github.pointertrace.siglet.container.config;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.config.raw.validator.ComposedValidator;
 import io.github.pointertrace.siglet.container.config.siglet.SigletBundle;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import io.github.pointertrace.siglet.parser.Node;
@@ -21,13 +22,14 @@ public class ConfigFactory {
     }
 
     public RawConfig createRawConfig(String yaml, ReceiverTypeRegistry receiverTypeRegistry,
-                                     ProcessorTypeRegistry processorTypeRegistry) {
+                                     ProcessorTypeRegistry processorTypeRegistry,
+                                     ExporterTypeRegistry exporterTypeRegistry) {
 
         YamlParser yamlParser = new YamlParser();
 
         Node node = yamlParser.parse(yaml);
 
-        rawConfigChecker(receiverTypeRegistry, processorTypeRegistry).check(node);
+        rawConfigChecker(receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry).check(node);
 
         RawConfig rawConfig = node.getValue(RawConfig.class);
         rawConfig.afterSetValues();
@@ -38,18 +40,21 @@ public class ConfigFactory {
 
     public Config create(String yaml, List<SigletBundle> sigletBundles) {
 
+        ReceiverTypeRegistry receiverTypeRegistry = new ReceiverTypeRegistry();
+
         ProcessorTypeRegistry processorTypeRegistry = new ProcessorTypeRegistry();
 
-        ReceiverTypeRegistry receiverTypeRegistry = new ReceiverTypeRegistry();
+        ExporterTypeRegistry exporterTypeRegistry = new ExporterTypeRegistry();
+
 
         sigletBundles.forEach(processorTypeRegistry::register);
 
-        RawConfig rawConfig = createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry);
+        RawConfig rawConfig = createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
 
         composedValidator.validate(rawConfig);
 
-        return new Config(createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry), sigletBundles,
-                receiverTypeRegistry, processorTypeRegistry);
+        return new Config(createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry),
+                sigletBundles, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
     }
 
 }

@@ -6,7 +6,6 @@ import io.github.pointertrace.siglet.container.adapter.metric.ProtoMetricAdapter
 import io.github.pointertrace.siglet.container.adapter.trace.ProtoSpanAdapter;
 import io.github.pointertrace.siglet.container.config.graph.ExporterNode;
 import io.github.pointertrace.siglet.container.config.graph.SignalType;
-import io.github.pointertrace.siglet.container.config.raw.GrpcExporterConfig;
 import io.github.pointertrace.siglet.container.engine.Context;
 import io.github.pointertrace.siglet.container.engine.State;
 import io.github.pointertrace.siglet.container.engine.exporter.Exporter;
@@ -21,7 +20,7 @@ import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 
 import java.util.Set;
 
-public class GrpcExporter implements Exporter {
+public class OtelGrpcExporter implements Exporter {
 
     private final ExporterNode node;
 
@@ -31,12 +30,12 @@ public class GrpcExporter implements Exporter {
 
     private State state = State.RUNNING;
 
-    public GrpcExporter(Context context, ExporterNode node) {
+    public OtelGrpcExporter(Context context, ExporterNode node) {
         this.node = node;
-        GrpcExporterConfig config = (GrpcExporterConfig) node.getConfig();
+        OtelGrpcExporterConfig config = (OtelGrpcExporterConfig) node.getConfig().getConfig();
         spanAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-span",
-                config.getQueueSizeConfig().getQueueSize(),
+                node.getConfig().getQueueSizeConfig().getQueueSize(),
                 config.getBatchTimeoutInMillis(),
                 config.getBatchSizeInSignals(),
                 span -> SpanAccumulator.accumulateSpans(context, span));
@@ -44,7 +43,7 @@ public class GrpcExporter implements Exporter {
 
         metricAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-metric",
-                config.getQueueSizeConfig().getQueueSize(),
+                node.getConfig().getQueueSizeConfig().getQueueSize(),
                 config.getBatchTimeoutInMillis(),
                 config.getBatchSizeInSignals(),
                 metric -> MetricAccumulator.accumulateMetrics(context, metric));
@@ -76,8 +75,8 @@ public class GrpcExporter implements Exporter {
                 .forAddress(getConfig().getAddress())
                 .usePlaintext();
 
-        metricAccumulator.connect(new GrpcMetricDestination(MetricsServiceGrpc.newBlockingStub(builder.build())));
-        spanAccumulator.connect(new GrpcSpanDestination(TraceServiceGrpc.newBlockingStub(builder.build())));
+        metricAccumulator.connect(new OtelGrpcMetricDestination(MetricsServiceGrpc.newBlockingStub(builder.build())));
+        spanAccumulator.connect(new OtelGrpcSpanDestination(TraceServiceGrpc.newBlockingStub(builder.build())));
         spanAccumulator.start();
         metricAccumulator.start();
         state = State.RUNNING;
@@ -101,8 +100,8 @@ public class GrpcExporter implements Exporter {
         return node.getName();
     }
 
-    public GrpcExporterConfig getConfig() {
-        return (GrpcExporterConfig) node.getConfig();
+    public OtelGrpcExporterConfig getConfig() {
+        return (OtelGrpcExporterConfig) node.getConfig().getConfig();
     }
 
     @Override

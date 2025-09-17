@@ -8,6 +8,7 @@ import io.github.pointertrace.siglet.container.config.raw.RawConfig;
 import io.github.pointertrace.siglet.container.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.container.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.container.config.siglet.parser.SigletConfig;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 
@@ -32,8 +33,10 @@ public class Config {
 
     private final ProcessorTypeRegistry processorTypeRegistry;
 
+    private final ExporterTypeRegistry exporterTypeRegistry;
+
     public Config(RawConfig rawConfig, List<SigletBundle> sigletBundles,ReceiverTypeRegistry receiverTypeRegistry,
-                  ProcessorTypeRegistry processorTypeRegistry) {
+                  ProcessorTypeRegistry processorTypeRegistry, ExporterTypeRegistry exporterTypeRegistry) {
         this.rawConfig = rawConfig;
         this.sigletRegistry = sigletBundles.stream()
                 .flatMap(sb -> sb.definitions().stream())
@@ -41,6 +44,7 @@ public class Config {
 
         this.receiverTypeRegistry = receiverTypeRegistry;
         this.processorTypeRegistry = processorTypeRegistry;
+        this.exporterTypeRegistry = exporterTypeRegistry;
         this.globalConfig = rawConfig.getGlobalConfig() == null ? new GlobalConfig() : rawConfig.getGlobalConfig();
     }
 
@@ -63,6 +67,11 @@ public class Config {
     public ReceiverTypeRegistry getReceiverTypeRegistry() {
         return receiverTypeRegistry;
     }
+
+    public ExporterTypeRegistry getExporterTypeRegistry() {
+        return exporterTypeRegistry;
+    }
+
     public RawConfig getRawConfig() {
         return rawConfig;
     }

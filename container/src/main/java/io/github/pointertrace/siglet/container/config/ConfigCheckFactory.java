@@ -1,6 +1,8 @@
 package io.github.pointertrace.siglet.container.config;
 
 import io.github.pointertrace.siglet.container.config.raw.*;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterCheckerDiscriminator;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorCheckerDiscriminator;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.receiver.ReceiverCheckerDiscriminator;
@@ -27,16 +29,6 @@ public class ConfigCheckFactory {
 
     public static final String METRIC_OBJECT_POOL_SIZE_PROP = "metric-object-pool-size";
 
-    public static final String GRPC_PROP = "grpc";
-
-    public static final String ADDRESS_PROP = "address";
-
-    public static final String BATCH_SIZE_IN_SIGNAL_PROP = "batch-size-in-signals";
-
-    public static final String BATCH_TIMEOUT_IN_MILLIS_PROP = "batch-timeout-in-millis";
-
-    public static final String DEBUG_PROP = "debug";
-
     public static final String TO_PROP = "to";
 
     public static final String CONFIG_PROP = "config";
@@ -58,26 +50,6 @@ public class ConfigCheckFactory {
 
 
 
-    public static NodeChecker grpcExportersChecker() {
-        return array(alternative(grpcExporterChecker(), debugExporterChecker()));
-    }
-
-    public static NodeChecker grpcExporterChecker() {
-        return strictObject(GrpcExporterConfig::new,
-                requiredProperty(GrpcExporterConfig::setName, GrpcExporterConfig::setNameLocation,
-                        GRPC_PROP, text()),
-                requiredProperty(GrpcExporterConfig::setAddress, GrpcExporterConfig::setAddressLocation,
-                        ADDRESS_PROP, text(inetSocketAddress())),
-                optionalProperty(GrpcExporterConfig::setBatchSizeInSignals,
-                        GrpcExporterConfig::setBatchSizeInSignalsLocation, BATCH_SIZE_IN_SIGNAL_PROP,
-                        numberInt()),
-                optionalProperty(GrpcExporterConfig::setBatchTimeoutInMillis,
-                        GrpcExporterConfig::setBatchTimeoutInMillisLocation,
-                        BATCH_TIMEOUT_IN_MILLIS_PROP, numberInt()),
-                optionalProperty(GrpcExporterConfig::setQueueSize, GrpcExporterConfig::setQueueSizeLocation,
-                        QUEUE_SIZE_PROP, numberInt()));
-    }
-
     public static NodeChecker globalConfigChecker() {
         return strictObject(GlobalConfig::new,
                 optionalProperty(GlobalConfig::setQueueSize, GlobalConfig::setQueueSizeLocation,
@@ -92,11 +64,21 @@ public class ConfigCheckFactory {
                         numberInt()));
     }
 
-    public static NodeChecker debugExporterChecker() {
-        return strictObject(DebugExporterConfig::new,
-                requiredProperty(DebugExporterConfig::setName, DebugExporterConfig::setNameLocation,
-                        DEBUG_PROP, text())
-        );
+    public static Set<String> getExporterProperties() {
+        return Set.of(CONFIG_PROP);
+    }
+
+    public static NodeChecker exportersChecker(ExporterTypeRegistry exporterTypeRegistry) {
+        return array(exporterChecker(exporterTypeRegistry));
+    }
+
+    public static NodeChecker exporterChecker(ExporterTypeRegistry exporterTypeRegistry) {
+        return strictObject(ExporterConfig::new,
+                optionalDynamicKeyProperty(ExporterConfig::setType, ExporterConfig::setTypeLocation,
+                        ExporterConfig::setName, ExporterConfig::setNameLocation,
+                        exporterTypeRegistry.getExporterTypesNames(), text()),
+                requiredDynamicProperty(CONFIG_PROP, ExporterConfig::setConfigLocation,
+                        new ExporterCheckerDiscriminator(exporterTypeRegistry)));
     }
 
     public static NodeChecker receiversChecker(ReceiverTypeRegistry receiverTypeRegistry) {
@@ -109,9 +91,9 @@ public class ConfigCheckFactory {
 
     public static NodeChecker receiverChecker(ReceiverTypeRegistry receiverTypeRegistry) {
         return strictObject(ReceiverConfig::new,
-                optionalDynamicKeyProperty(ReceiverConfig::setType,ReceiverConfig::setTypeLocation,
-                        ReceiverConfig::setName,ReceiverConfig::setNameLocation,
-                        receiverTypeRegistry.getReceiverTypesNames(),text()),
+                optionalDynamicKeyProperty(ReceiverConfig::setType, ReceiverConfig::setTypeLocation,
+                        ReceiverConfig::setName, ReceiverConfig::setNameLocation,
+                        receiverTypeRegistry.getReceiverTypesNames(), text()),
                 requiredDynamicProperty(CONFIG_PROP, ReceiverConfig::setConfigLocation,
                         new ReceiverCheckerDiscriminator(receiverTypeRegistry)));
     }
@@ -119,11 +101,12 @@ public class ConfigCheckFactory {
     public static Set<String> getProcessorProperties() {
         return Set.of(TO_PROP, CONFIG_PROP, QUEUE_SIZE_PROP, THREAD_POOL_SIZE_PROP);
     }
+
     public static NodeChecker processorChecker(ProcessorTypeRegistry processorTypeRegistry) {
         return strictObject(ProcessorConfig::new,
-                optionalDynamicKeyProperty(ProcessorConfig::setType,ProcessorConfig::setTypeLocation,
-                       ProcessorConfig::setName,ProcessorConfig::setNameLocation,
-                        processorTypeRegistry.getProcessorTypesNames(),text()),
+                optionalDynamicKeyProperty(ProcessorConfig::setType, ProcessorConfig::setTypeLocation,
+                        ProcessorConfig::setName, ProcessorConfig::setNameLocation,
+                        processorTypeRegistry.getProcessorTypesNames(), text()),
                 alternativeRequiredProperty(TO_PROP,
                         requiredProperty(ProcessorConfig::setTo, ProcessorConfig::setToLocation,
                                 TO_PROP, array(text(new ProcessorDestinationTransformer()))),
@@ -161,14 +144,15 @@ public class ConfigCheckFactory {
     }
 
     public static NodeChecker rawConfigChecker(ReceiverTypeRegistry receiverTypeRegistry,
-                                               ProcessorTypeRegistry processorTypeRegistry) {
+                                               ProcessorTypeRegistry processorTypeRegistry,
+                                               ExporterTypeRegistry exporterTypeRegistry) {
         return strictObject(RawConfig::new,
                 optionalProperty(RawConfig::setGlobalConfig, RawConfig::setGlobalConfigLocation, GLOBAL_CONFIG_PROP,
                         globalConfigChecker()),
                 requiredProperty(RawConfig::setReceivers, RawConfig::setReceiversLocation, RECEIVERS_PROP,
                         receiversChecker(receiverTypeRegistry)),
                 optionalProperty(RawConfig::setExporters, RawConfig::setExportersLocation, EXPORTERS_PROP,
-                        grpcExportersChecker()),
+                        exportersChecker(exporterTypeRegistry)),
                 requiredProperty(RawConfig::setPipelines, RawConfig::setPipelinesLocation, PIPELINES_PROP,
                         pipelinesChecker(processorTypeRegistry)));
     }

@@ -33,11 +33,11 @@ public class ReceiverTypeRegistry {
     }
 
     public Receiver create(Context context, ReceiverNode receiverNode) {
-        ReceiverType processorType = definitions.get(receiverNode.getConfig().getType());
-        if (processorType == null) {
+        ReceiverType receiverType = definitions.get(receiverNode.getConfig().getType());
+        if (receiverType == null) {
             throw new SigletError("Receiver type " + receiverNode.getConfig().getType() + " not found");
         }
-        return processorType.getReceiverCreator().create(context, receiverNode);
+        return receiverType.getReceiverCreator().create(context, receiverNode);
     }
 
 

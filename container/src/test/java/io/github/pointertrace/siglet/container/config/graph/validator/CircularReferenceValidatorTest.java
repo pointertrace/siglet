@@ -6,6 +6,7 @@ import io.github.pointertrace.siglet.container.config.ConfigFactory;
 import io.github.pointertrace.siglet.container.config.graph.Graph;
 import io.github.pointertrace.siglet.container.config.graph.GraphFactory;
 import io.github.pointertrace.siglet.container.config.raw.RawConfig;
+import io.github.pointertrace.siglet.container.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.container.engine.receiver.ReceiverTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,7 +120,7 @@ class CircularReferenceValidatorTest {
                 """;
 
         RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
-                new ProcessorTypeRegistry());
+                new ProcessorTypeRegistry(), new ExporterTypeRegistry());
 
         Config config = configFactory.create(configTxt);
 

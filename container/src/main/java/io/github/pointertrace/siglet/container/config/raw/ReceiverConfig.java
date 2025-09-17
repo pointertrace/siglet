@@ -35,6 +35,9 @@ public class ReceiverConfig extends BaseConfig {
 
     public void setConfig(Object config) {
         this.config = config;
+        if (config instanceof ReceiverConfigSetter receiverConfigSetter) {
+            receiverConfigSetter.setReceiverConfig(this);
+        }
     }
 
     public Location getConfigLocation() {
