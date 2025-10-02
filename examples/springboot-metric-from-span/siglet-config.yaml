@@ -1,0 +1,15 @@
+receivers:
+  - grpc: receiver
+    config:
+      address: 0.0.0.0:8081
+exporters:
+  - grpc: exporter
+    config:
+      address: otel-lgtm:4317
+pipelines:
+  - name: pipeline
+    from: receiver
+    start: metric-from-span-spanlet
+    processors:
+      - springboot-metric-from-span-spanlet-example: metric-from-span-spanlet
+        to: metric-destination:exporter

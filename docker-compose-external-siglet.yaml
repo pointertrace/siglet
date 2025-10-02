@@ -1,9 +1,0 @@
-version: '3.7'
-
-services:
-  external-siglet:
-    image: 42eeee8f0294
-    command: ["--file=/opt/siglet-config.yaml", "--siglet=/opt/SimpleSpanlet.jar"]
-    volumes:
-      - ./siglet-config-external-siglet.yaml:/opt/siglet-config.yaml
-      - ./src/test/resources/SimpleSpanlet-1.0-SNAPSHOT.jar:/opt/SimpleSpanlet.jar

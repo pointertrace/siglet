@@ -7,7 +7,7 @@
     <groupId>io.github.pointertrace.siglet</groupId>
     <artifactId>siglet-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>siglet-parent</name>
+    <name>siglet parent pom</name>
     <packaging>pom</packaging>
     <description>Parent pom for Siglet Container</description>
 
@@ -32,10 +32,11 @@
     </licenses>
     <modules>
         <module>test-bundle</module>
-        <module>assembly-plugin</module>
         <module>api</module>
         <module>parser</module>
-        <module>container</module>
+        <module>implementation</module>
+        <module>assembly-plugin</module>
+        <module>examples</module>
     </modules>
     <distributionManagement>
         <snapshotRepository>

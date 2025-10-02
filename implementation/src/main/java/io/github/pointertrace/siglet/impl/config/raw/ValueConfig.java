@@ -1,0 +1,26 @@
+package io.github.pointertrace.siglet.impl.config.raw;
+
+
+import io.github.pointertrace.siglet.parser.Describable;
+import io.github.pointertrace.siglet.parser.located.Location;
+
+public class ValueConfig<T> extends BaseConfig {
+
+    private final T value;
+
+    public ValueConfig(Location location, T value) {
+        setLocation(location);
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    @Override
+    public String describe(int level) {
+        return Describable.prefix(level) + getLocation().describe() + (value != null ?
+                "  " + value.getClass().getSimpleName() + "  (" + value + ")" :
+                "null");
+    }
+}

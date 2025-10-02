@@ -7,4 +7,6 @@ public interface NumberDataPoints {
     NumberDataPoint get(int i);
 
     void remove(int i);
+
+    NumberDataPoint add();
 }

@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Siglet API</name>
-    <description>API to implement the idea of java servlet but for opentelemetry singals</description>
+    <description>API to implement siglets</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

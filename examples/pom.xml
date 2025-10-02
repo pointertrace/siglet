@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.pointertrace.siglet.container.test.bundle</groupId>
+    <artifactId>siglet-examples</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>examples</name>
+    <description>Siglet Examples</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <modules>
+        <module>fatjar-suffix-spanlet</module>
+        <module>fatjar-metric-from-span-spanlet</module>
+        <module>springboot-suffix-spanlet</module>
+        <module>springboot-metric-from-span</module>
+        <!--
+        <module>fatjar-metric-from-span</module>
+        <module>springboot-metric-from-span</module>
+        -->
+    </modules>
+</project>

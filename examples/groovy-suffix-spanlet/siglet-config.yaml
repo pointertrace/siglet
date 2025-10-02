@@ -1,0 +1,18 @@
+receivers:
+  - grpc: receiver
+    config:
+      address: 0.0.0.0:8081
+exporters:
+  - grpc: exporter
+    config:
+      address: otel-lgtm:4317
+pipelines:
+  - name: pipeline
+    from: receiver
+    start: suffix-spanlet
+    processors:
+      - spanlet-groovy-action: suffix-spanlet
+        to: exporter
+        thread-pool-size: 1
+        config:
+          action: signal.name = signal.name + "-added-suffix-groovy"

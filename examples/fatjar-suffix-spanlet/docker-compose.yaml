@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+    otel-lgtm:
+      container_name: grafana
+      image: grafana/otel-lgtm:latest
+      ports:
+        - "3000:3000"
+      environment:
+        - ENABLE_LOGS_ALL=true
+    siglet:
+      container_name: siglet
+      image: siglet:nightly
+      command: --config=/opt/siglet-config.yaml --siglet=/opt/spanlet.jar
+      ports:
+        - "8081:8081"
+      volumes:
+        - ${JAR_PATH}:/opt/spanlet.jar
+        - ./siglet-config.yaml:/opt/siglet-config.yaml
+      depends_on:
+        - otel-lgtm

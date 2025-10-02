@@ -7,4 +7,6 @@ public interface SummaryDataPoints {
     SummaryDataPoint get(int i);
 
     void remove(int i);
+
+    SummaryDataPoint add();
 }

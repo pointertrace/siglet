@@ -1,0 +1,5 @@
+siglets:
+  - name: fatjar-metric-from-span-spanlet-example
+    siglet-class: io.github.pointertrace.siglet.container.example.bundle.fatjar.metricfromspan.siglet.MetricFromSpanSpanlet
+    checker-factory-class: io.github.pointertrace.siglet.container.example.bundle.fatjar.metricfromspan.parser.MetricFromSpanConfigCheckerFactory
+    description: generate metrics from spans
