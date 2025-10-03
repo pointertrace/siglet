@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.github.pointertrace.siglet.example</groupId>
     <artifactId>springboot-metric-from-span-spanlet</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>example - metric from span springboot spanlet</name>
     <description>Spanlet bundled as springboot application that generates metrics derived from a span</description>
     <url/>
@@ -29,15 +29,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.pointertrace.siglet</groupId>
+            <groupId>io.github.pointertrace.siglet.api</groupId>
             <artifactId>siglet-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.pointertrace.siglet</groupId>
+            <groupId>io.github.pointertrace.siglet.parser</groupId>
             <artifactId>siglet-parser</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

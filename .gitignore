@@ -2,3 +2,4 @@ tempo-data
 target
 .idea
 *.iml
+**/pom.xml.versionsBackup

@@ -4,9 +4,15 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>io.github.pointertrace.siglet</groupId>
+        <artifactId>siglet-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <groupId>io.github.pointertrace.siglet.container.test.bundle</groupId>
-    <artifactId>siglet-examples</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>siglet-examples-parent</artifactId>
     <packaging>pom</packaging>
     <name>examples</name>
     <description>Siglet Examples</description>
@@ -22,10 +28,6 @@
         <module>fatjar-metric-from-span-spanlet</module>
         <module>springboot-suffix-spanlet</module>
         <module>springboot-metric-from-span</module>
-        <!--
-        <module>fatjar-metric-from-span</module>
-        <module>springboot-metric-from-span</module>
-        -->
     </modules>
     <build>
         <plugins>
