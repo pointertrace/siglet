@@ -39,7 +39,7 @@ class SigletBundleTest {
 
             assertNotNull(sigletBundle);
             assertTrue(sigletBundle.id().startsWith("fatjar:"));
-            assertTrue(sigletBundle.id().endsWith("fatjar-suffix-spanlet-test-1.0.0-SNAPSHOT.jar"));
+            assertTrue(sigletBundle.id().endsWith("fatjar-suffix-spanlet-test.jar"));
 
             assertNotNull(sigletBundle.definitions());
             assertEquals(1, sigletBundle.definitions().size());
@@ -76,7 +76,7 @@ class SigletBundleTest {
 
             assertNotNull(sigletBundle);
             assertTrue(sigletBundle.id().startsWith("springboot-uberjar:"));
-            assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-test-1.0.0-SNAPSHOT.jar"));
+            assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-test.jar"));
             assertNotNull(sigletBundle.definitions());
             assertEquals(1, sigletBundle.definitions().size());
             assertNotNull(sigletBundle.definitions().getFirst());

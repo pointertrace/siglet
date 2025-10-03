@@ -15,7 +15,7 @@ services:
       ports:
         - "8081:8081"
       volumes:
-        - ${JAR_PATH}:/opt/spanlet.jar
+        - ./target/springboot-suffix-spanlet.jar:/opt/spanlet.jar
         - ./siglet-config.yaml:/opt/siglet-config.yaml
       depends_on:
         - otel-lgtm

@@ -52,7 +52,7 @@ class SpringbootConfigLoaderTest {
 
         try (SigletBundle sigletBundle = springBootBundleLoader.load(sigletSpringBootFile)) {
             assertTrue(sigletBundle.id().startsWith("springboot-uberjar:"));
-            assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-test-1.0.0-SNAPSHOT.jar"));
+            assertTrue(sigletBundle.id().endsWith("springboot-suffix-spanlet-test.jar"));
 
             assertEquals(1, sigletBundle.definitions().size());
 
