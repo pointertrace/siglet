@@ -27,7 +27,7 @@
         <module>fatjar-suffix-spanlet</module>
         <module>fatjar-metric-from-span-spanlet</module>
         <module>springboot-suffix-spanlet</module>
-        <module>springboot-metric-from-span</module>
+        <module>springboot-metric-from-span-spanlet</module>
     </modules>
     <build>
         <plugins>
