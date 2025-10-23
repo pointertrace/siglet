@@ -3,3 +3,5 @@ target
 .idea
 *.iml
 **/pom.xml.versionsBackup
+!mvnw
+.mvn
