@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ls -la
+
 JAR_FILE=$(ls target/siglet-implementation*.jar | head -n 1)
 
 if [ -z "$JAR_FILE" ]; then
