@@ -3,5 +3,5 @@ target
 .idea
 *.iml
 **/pom.xml.versionsBackup
-!mvnw
-.mvn
+.mvn/timing.properties
+.mvn/wrapper/maven-*.bin.zip
