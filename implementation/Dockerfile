@@ -1,6 +1,7 @@
 FROM openjdk:24-slim
+ARG JAR_FILE
 WORKDIR /opt
-COPY target/siglet-*.jar /opt/siglet.jar
+COPY $JAR_FILE /opt/siglet.jar
 RUN addgroup --system siglet && adduser --system siglet --ingroup siglet
 RUN chown -R siglet:siglet /opt
 USER siglet:siglet

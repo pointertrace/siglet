@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR_FILE=$(ls target/siglet-implementation*.jar | head -n 1)
+JAR_FILE=$(ls target/*.jar | grep -vE '(-sources|-javadoc)\.jar$')
 
 if [ -z "$JAR_FILE" ]; then
     echo "Siglet implementation jar not found in target"
@@ -17,5 +17,4 @@ else
         VERSION="$FILENAME"
     fi
 fi
-
-docker build . -t  pointertrace/siglet:${VERSION}
+docker build . -t  pointertrace/siglet:${VERSION} --build-arg JAR_FILE=$JAR_FILE

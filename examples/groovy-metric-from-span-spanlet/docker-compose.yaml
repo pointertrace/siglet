@@ -10,7 +10,7 @@ services:
         - ENABLE_LOGS_ALL=true
     siglet:
       container_name: siglet
-      image: siglet:nightly
+      image: pointertrace/siglet:nightly
       command: --config=/opt/siglet-config.yaml
       ports:
         - "8081:8081"
