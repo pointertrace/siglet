@@ -18,4 +18,4 @@ else
     fi
 fi
 
-docker build . -t  pointertrace/siglet:${VERSION}
+docker push pointertrace/siglet:${VERSION}
