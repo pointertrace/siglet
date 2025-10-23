@@ -46,6 +46,6 @@ jobs:
           username: ${{secrets.DOCKERHUB_USER}}
           password: ${{secrets.DOCKERHUB_PASSWORD}}
       - name: Create container
-        run: ./implementation/build-docker-container.sh
+        run: cd implementation && ./build-docker-container.sh
       - name: Push container
-        run: ./implementation/push-docker-container.sh
+        run: cd implementation && ./push-docker-container.sh
