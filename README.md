@@ -1,6 +1,6 @@
 # Siglet
 
-![project logo](siglet.png)
+![project logo](./siglet.png)
 
 ---
 
