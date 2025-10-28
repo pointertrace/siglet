@@ -22,10 +22,10 @@ Complete examples can be found [here](examples/README.md).
 ## Project Modules
 
 ### **API**
-An API that must be implemented in order to create a siglet application
+An API that must be implemented to create a siglet application
 
 ### **Implementation**
-The engine that execute pipelines and loads siglets
+The engine that executes pipelines and loads siglets
 
 ### **Parser**
 Yaml parser
