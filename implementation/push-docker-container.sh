@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAR_FILE=$(ls target/siglet-implementation*.jar | head -n 1)
+JAR_FILE=$(ls target/siglet*.jar | head -n 1)
 
 if [ -z "$JAR_FILE" ]; then
     echo "Siglet implementation jar not found in target"
