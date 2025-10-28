@@ -1,6 +1,6 @@
 # Siglet
 
-<img src="siglet.png" alt="project logo">
+![project logo](siglet.png)
 
 ---
 
