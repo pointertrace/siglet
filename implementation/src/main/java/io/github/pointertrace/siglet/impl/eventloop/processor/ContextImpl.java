@@ -38,7 +38,7 @@ public class ContextImpl<T> implements Context<T> {
     }
 
     @Override
-    public ProtoMetricAdapter newGauge(Signal currentSignal) {
+    public ProtoMetricAdapter newGauge(Signal baseSignal) {
 
         io.opentelemetry.proto.metrics.v1.Gauge gauge = io.opentelemetry.proto.metrics.v1.Gauge.newBuilder()
                 .build();
@@ -47,8 +47,8 @@ public class ContextImpl<T> implements Context<T> {
                 .setGauge(gauge)
                 .build();
 
-        Resource resource = getResource(currentSignal);
-        InstrumentationScope instrumentationScope = getInstrumentationScope(currentSignal);
+        Resource resource = getResource(baseSignal);
+        InstrumentationScope instrumentationScope = getInstrumentationScope(baseSignal);
 
         ProtoMetricAdapter metricAdapter = new ProtoMetricAdapter();
         metricAdapter.recycle(metric,resource,instrumentationScope);
@@ -62,7 +62,7 @@ public class ContextImpl<T> implements Context<T> {
     }
 
     @Override
-    public ProtoMetricAdapter newSum(Signal currentSignal) {
+    public ProtoMetricAdapter newSum(Signal baseSignal) {
 
         io.opentelemetry.proto.metrics.v1.Sum sum = io.opentelemetry.proto.metrics.v1.Sum.newBuilder()
                 .build();

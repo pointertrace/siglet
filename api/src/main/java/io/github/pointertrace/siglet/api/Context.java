@@ -5,11 +5,9 @@ import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Defines siglet context. The context allows for the siglets to manage attributes
- * and to get the configuration informed when the siglet is configured
+ * Represents a context that provides configuration and attributes, as well as methods to create metric signals.
  *
- *
- * @param <T> Type of configuration
+ * @param <T> The type of configuration object associated with this context.
  */
 public interface Context<T> {
 
@@ -27,12 +25,37 @@ public interface Context<T> {
      */
     T getConfig();
 
-    Metric newGauge(Signal currentSignal);
+    /**
+     * Creates new Gauge metric signal coping information such as Resource and Instrumentation Scope from baseSignal.
+     *
+     * @param baseSignal Signal to get information from
+     *
+     * @return Gauge metric signal
+     */
+    Metric newGauge(Signal baseSignal);
 
+    /**
+     * Creates new gauge metric signal.
+     *
+     * @return Gauge Metric signal
+     */
     Metric newGauge();
 
-    Metric newSum(Signal currentSignal);
+    /**
+     * Creates new sum metric signal coping information such as Resource and Instrumentation Scope from
+     * baseSignal.
+     *
+     * @param baseSignal Signal to get information from
+     *
+     * @return Sum Metric signal
+     */
+    Metric newSum(Signal baseSignal);
 
+    /**
+     * Creates new sum metric signal.
+     *
+     * @return Sum Metric signal
+     */
     Metric newSum();
 
 }
