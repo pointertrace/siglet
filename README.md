@@ -21,10 +21,10 @@ Complete examples can be found [here](examples/README.md).
 
 ## Project Modules
 
-### **API**
+### [**API**](api/README.md)
 An API that must be implemented to create a siglet application
 
-### **Implementation**
+### [**Implementation**](implementation/README.md)
 The engine that executes pipelines and loads siglets
 
 ### **Parser**
@@ -33,5 +33,5 @@ Yaml parser
 ### **Assembly Plugin**
 Siglet assembly config to create fat jar siglet applications
 
-### **Examples**
+### [**Examples**](examples/README.md)
 Complete siglet examples
