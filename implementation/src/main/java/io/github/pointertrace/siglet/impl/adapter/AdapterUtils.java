@@ -160,7 +160,8 @@ public class AdapterUtils {
             case CLIENT -> Span.SpanKind.SPAN_KIND_CLIENT;
             case PRODUCER -> Span.SpanKind.SPAN_KIND_PRODUCER;
             case CONSUMER -> Span.SpanKind.SPAN_KIND_CONSUMER;
-            case OTHER -> null;
+            case UNSPECIFIED -> Span.SpanKind.SPAN_KIND_UNSPECIFIED;
+            case UNRECOGNIZED -> Span.SpanKind.UNRECOGNIZED;
         };
     }
 

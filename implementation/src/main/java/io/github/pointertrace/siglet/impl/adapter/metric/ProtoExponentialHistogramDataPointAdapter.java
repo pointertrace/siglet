@@ -93,7 +93,7 @@ public class ProtoExponentialHistogramDataPointAdapter extends Adapter<Exponenti
     }
 
     @Override
-    public double getZeoThreshold() {
+    public double getZeroThreshold() {
         return getValue(ExponentialHistogramDataPoint::getZeroThreshold,
                 ExponentialHistogramDataPoint.Builder::getZeroThreshold);
     }

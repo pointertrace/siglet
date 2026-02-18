@@ -6,86 +6,78 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Defines an attribute list.
+ * Represents a collection of key-value attributes associated with a signal.
  */
 public interface Attributes {
 
-
     /**
-     * Checks if the attribute list contains {@code key}.
+     * Checks if the attribute set contains {@code key}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the list contains key and {@code false} if not.
+     * @param key key to be checked.
+     * @return {@code true} if the set contains key, {@code false} otherwise.
      */
     boolean containsKey(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code String}.
+     * Checks if the attribute set contains {@code key} and value is a {@code String}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code String} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a {@code String}, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isString(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code boolean}.
+     * Checks if the attribute set contains {@code key} and value is a {@code boolean}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code boolean} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a {@code boolean}, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isBoolean(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code long}.
+     * Checks if the attribute set contains {@code key} and value is a {@code long}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code long} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a {@code long}, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isLong(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code double}.
+     * Checks if the attribute set contains {@code key} and value is a {@code double}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code double} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a {@code double}, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isDouble(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code array}.
+     * Checks if the attribute set contains {@code key} and value is an array.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code array} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is an array, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isArray(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code KeyValueList}.
+     * Checks if the attribute set contains {@code key} and value is a {@code KeyValueList}.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code KeyValueList} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a {@code KeyValueList}, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isKeyValueList(String key);
 
     /**
-     * Checks if the attribute list contains {@code key} and value
-     * is a {@code ByteArray}.
+     * Checks if the attribute set contains {@code key} and value is a byte array.
      *
-     * @param key to be checked.
-     * @return {@code true} if the value is {@code ByteArray} and {@code false} if not.
-     * @throws SigletError if list does not contain {@code key}.
+     * @param key key to be checked.
+     * @return {@code true} if the value is a byte array, {@code false} otherwise.
+     * @throws SigletError if the set does not contain {@code key}.
      */
     boolean isByteArray(String key);
 
@@ -94,7 +86,7 @@ public interface Attributes {
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it is not a {@code String}.
+     * @throws SigletError if the set does not contain {@code key} or it is not a {@code String}.
      */
     String getAsString(String key);
 
@@ -103,7 +95,7 @@ public interface Attributes {
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it is not a {@code boolean}.
+     * @throws SigletError if the set does not contain {@code key} or it is not a {@code boolean}.
      */
     boolean getAsBoolean(String key);
 
@@ -112,26 +104,25 @@ public interface Attributes {
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it is not a {@code long}.
+     * @throws SigletError if the set does not contain {@code key} or it is not a {@code long}.
      */
     long getAsLong(String key);
 
     /**
-     * Gets a {@code dobule} attribute.
+     * Gets a {@code double} attribute.
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it is not a {@code double}.
+     * @throws SigletError if the set does not contain {@code key} or it is not a {@code double}.
      */
     double getAsDouble(String key);
 
     /**
-     * Gets a {@code array} attribute.
+     * Gets an array attribute.
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it
-     * is not a {@code array}.
+     * @throws SigletError if the set does not contain {@code key} or it is not an array.
      */
     Object[] getAsArray(String key);
 
@@ -140,7 +131,7 @@ public interface Attributes {
      *
      * @param key attribute key.
      * @return attribute value.
-     * @throws SigletError if list does not contain {@code key} or it is not a {@code KeyValueList}.
+     * @throws SigletError if the set does not contain {@code key} or it is not a {@code KeyValueList}.
      */
     List<Map.Entry<String,Object>> getAsKeyValueList(String key);
 
@@ -181,7 +172,7 @@ public interface Attributes {
     Attributes set(String key, double value);
 
     /**
-     * Sets or substitutes a {@code array} attribute.
+     * Sets or substitutes an array attribute.
      *
      * @param key attribute key.
      * @param value attribute value.
@@ -199,7 +190,7 @@ public interface Attributes {
     Attributes set(String key, List<? extends Map.Entry<String, Object>> value);
 
     /**
-     * Sets or substitutes a {@code byteArray} attribute.
+     * Sets or substitutes a byte array attribute.
      *
      * @param key attribute key.
      * @param value attribute value.
@@ -208,11 +199,11 @@ public interface Attributes {
     Attributes set(String key, byte[] value);
 
     /**
-     * Remove an attribute by its key.
+     * Removes an attribute by its key.
      *
      * @param key attribute key.
      * @return current instance of {@code Attributes}.
-     * @throws SigletError if attribute does not exist with {@code key}.
+     * @throws SigletError if the attribute does not exist with {@code key}.
      */
     Attributes remove(String key);
 }

@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.api;
 
 /**
- * Base interface for a signal that can be processed by a { @Link Processor}
+ * Base interface for a signal that can be processed by a {@link Processor}.
  */
 public interface Signal {
 

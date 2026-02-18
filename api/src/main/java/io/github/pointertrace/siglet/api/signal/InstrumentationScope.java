@@ -1,19 +1,21 @@
 package io.github.pointertrace.siglet.api.signal;
 
+import io.github.pointertrace.siglet.api.Signal;
+
 /**
- * Defines the instrumentation scope associated the { @Link Signal }
+ * Defines the instrumentation scope associated with a {@link Signal}.
  */
 public interface InstrumentationScope {
 
     /**
-     * Returns instrumentation scope name.
+     * Returns the instrumentation scope name.
      *
      * @return instrumentation scope name.
      */
     String getName();
 
     /**
-     * Sets instrumentation scope name.
+     * Sets the instrumentation scope name.
      *
      * @param name instrumentation scope name.
      * @return current instance of {@code InstrumentationScope}.
@@ -21,16 +23,16 @@ public interface InstrumentationScope {
     InstrumentationScope setName(String name);
 
     /**
-     * Returns instrumentation scope version.
+     * Returns the instrumentation scope version.
      *
      * @return instrumentation scope version.
      */
     String getVersion();
 
     /**
-     * Sets instrumentation scope version.
+     * Sets the instrumentation scope version.
      *
-     * @param version Instrumentation scope version.
+     * @param version instrumentation scope version.
      * @return current instance of {@code InstrumentationScope}.
      */
     InstrumentationScope setVersion(String version);
@@ -51,7 +53,7 @@ public interface InstrumentationScope {
     InstrumentationScope setDroppedAttributesCount(int droppedAttributesCount);
 
     /**
-     * Return the attribute list.
+     * Returns the attribute list.
      *
      * @return attribute list.
      */

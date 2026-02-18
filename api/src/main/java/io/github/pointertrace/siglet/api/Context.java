@@ -26,35 +26,32 @@ public interface Context<T> {
     T getConfig();
 
     /**
-     * Creates new Gauge metric signal coping information such as Resource and Instrumentation Scope from baseSignal.
+     * Creates a new Gauge metric signal, copying information such as Resource and Instrumentation Scope from {@code baseSignal}.
      *
-     * @param baseSignal Signal to get information from
-     *
-     * @return Gauge metric signal
+     * @param baseSignal Signal to get information from.
+     * @return Gauge metric signal.
      */
     Metric newGauge(Signal baseSignal);
 
     /**
-     * Creates new gauge metric signal.
+     * Creates a new Gauge metric signal.
      *
-     * @return Gauge Metric signal
+     * @return Gauge metric signal.
      */
     Metric newGauge();
 
     /**
-     * Creates new sum metric signal coping information such as Resource and Instrumentation Scope from
-     * baseSignal.
+     * Creates a new Sum metric signal, copying information such as Resource and Instrumentation Scope from {@code baseSignal}.
      *
-     * @param baseSignal Signal to get information from
-     *
-     * @return Sum Metric signal
+     * @param baseSignal Signal to get information from.
+     * @return Sum metric signal.
      */
     Metric newSum(Signal baseSignal);
 
     /**
-     * Creates new sum metric signal.
+     * Creates a new Sum metric signal.
      *
-     * @return Sum Metric signal
+     * @return Sum metric signal.
      */
     Metric newSum();
 

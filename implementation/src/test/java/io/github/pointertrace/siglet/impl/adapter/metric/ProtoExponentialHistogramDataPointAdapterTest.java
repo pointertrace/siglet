@@ -92,7 +92,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
         assertEquals(1, protoExponentialHistogramDataPointAdapter.getFlags());
         assertEquals(2, protoExponentialHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(3, protoExponentialHistogramDataPointAdapter.getStartTimeUnixNano());
-        assertEquals(4, protoExponentialHistogramDataPointAdapter.getZeoThreshold());
+        assertEquals(4, protoExponentialHistogramDataPointAdapter.getZeroThreshold());
         assertEquals(5, protoExponentialHistogramDataPointAdapter.getZeroCount());
         assertEquals(6, protoExponentialHistogramDataPointAdapter.getScale());
         assertEquals(7, protoExponentialHistogramDataPointAdapter.getCount());
@@ -145,7 +145,7 @@ class ProtoExponentialHistogramDataPointAdapterTest {
         assertEquals(10, protoExponentialHistogramDataPointAdapter.getFlags());
         assertEquals(20, protoExponentialHistogramDataPointAdapter.getTimeUnixNano());
         assertEquals(30, protoExponentialHistogramDataPointAdapter.getStartTimeUnixNano());
-        assertEquals(40, protoExponentialHistogramDataPointAdapter.getZeoThreshold());
+        assertEquals(40, protoExponentialHistogramDataPointAdapter.getZeroThreshold());
         assertEquals(50, protoExponentialHistogramDataPointAdapter.getZeroCount());
         assertEquals(60, protoExponentialHistogramDataPointAdapter.getScale());
         assertEquals(70, protoExponentialHistogramDataPointAdapter.getCount());
