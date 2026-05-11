@@ -15,7 +15,7 @@ The goal of this project is to adapt the idea of **Java Servlets** to **OpenTele
 
 A **siglet** is a lightweight application that implements the Siglet API and is packaged as a self-contained bundle with all its dependencies (e.g., a fat JAR or a Spring Boot uber JAR).
 
-To run a siglet, you create a pipeline and load it into the Siglet implementation.
+To run a siglet, you create a pipelineDescriptor and load it into the Siglet implementation.
 
 Complete examples can be found [here](examples/README.md).
 
@@ -25,7 +25,7 @@ Complete examples can be found [here](examples/README.md).
 An API that must be implemented to create a siglet application
 
 ### [**Implementation**](implementation/README.md)
-The engine that executes pipelines and loads siglets
+The engine that executes pipelineDescriptors and loads siglets
 
 ### **Parser**
 Yaml parser

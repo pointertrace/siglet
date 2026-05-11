@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl;
 
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.ContextFactory;
 import io.github.pointertrace.siglet.impl.engine.SigletEngine;
 import org.slf4j.Logger;
@@ -36,9 +36,9 @@ public class Siglet {
 
         ContextFactory contextFactory = new ContextFactory();
 
-        Context context = contextFactory.create(configTxt, sigletBundles);
+        SigletContext sigletContext = contextFactory.create(configTxt, sigletBundles);
 
-        sigletEngine = new SigletEngine(context);
+        sigletEngine = new SigletEngine(sigletContext);
 
         sigletEngine.start();
 

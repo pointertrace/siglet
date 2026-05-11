@@ -1,14 +1,14 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline;
 
 import io.github.pointertrace.siglet.impl.config.graph.PipelineNode;
-import io.github.pointertrace.siglet.impl.engine.EngineElement;
+import io.github.pointertrace.siglet.impl.engine.Component;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Pipeline implements EngineElement {
+public class Pipeline implements Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Pipeline.class);
 

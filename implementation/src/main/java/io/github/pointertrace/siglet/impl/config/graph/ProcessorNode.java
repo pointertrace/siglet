@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
-import io.github.pointertrace.siglet.impl.config.raw.ProcessorConfig;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
+import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +13,9 @@ public final class ProcessorNode extends BaseNode {
 
     private PipelineNode pipeline;
 
-    private Processor processor;
+    private io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor processor;
 
-    ProcessorNode(ProcessorConfig item) {
+    public ProcessorNode(ProcessorDescriptor item) {
         super(item);
     }
 
@@ -39,12 +38,12 @@ public final class ProcessorNode extends BaseNode {
 
 
     @Override
-    public ProcessorConfig getConfig() {
-        return (ProcessorConfig) super.getConfig();
+    public ProcessorDescriptor getDescription() {
+        return (ProcessorDescriptor) super.getDescription();
     }
 
     public Map<String, String> getDestinationMappings() {
-        return getConfig().getTo().stream()
+        return getDescription().getTo().stream()
                 .filter(t -> t.getValue().contains(":"))
                 .collect(Collectors.toMap(t -> t.getValue().split(":")[0], t -> t.getValue().split(":")[1]));
     }

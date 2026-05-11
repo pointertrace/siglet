@@ -1,8 +1,9 @@
 package io.github.pointertrace.siglet.impl.config.siglet.springboot;
 
+import io.github.pointertrace.siglet.api.SigletConfigFactory;
+import io.github.pointertrace.siglet.api.SigletConfigParserFactory;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.parser.NodeCheckerFactory;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -39,7 +40,18 @@ public class SpringBootContextProxy implements Closeable {
         }
     }
 
-    public NodeCheckerFactory getNodeCheckerFactory(String className) {
+    public SigletConfigParserFactory<?> getConfigParserFactory(String className) {
+        if (springContext != null && started) {
+            return withContextClassLoader(classLoader, className, cn -> {
+                Class<?> nodeCheckerClass = onClass(cn, classLoader).get();
+                return on(springContext).call("getBean", nodeCheckerClass).get();
+            });
+        } else {
+            throw new SigletError("Spring context has not been started yet");
+        }
+    }
+
+    public SigletConfigFactory<?> getConfigFactory(String className) {
         if (springContext != null && started) {
             return withContextClassLoader(classLoader, className, cn -> {
                 Class<?> nodeCheckerClass = onClass(cn, classLoader).get();

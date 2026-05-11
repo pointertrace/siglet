@@ -68,9 +68,9 @@ public class SigletStarter implements Runnable {
             if (sigletPaths != null) {
                 for (Path path : sigletPaths) {
                     SigletBundle sigletBundle = SigletBundle.load(path.toFile());
-                    LOGGER.info("loaded siglet bundle:{}", sigletBundle.id());
-                    sigletBundle.definitions().forEach(def -> {
-                        LOGGER.info("  name:{}, class:{}", def.getSigletConfig().name(),def.getSigletConfig().sigletClassName());
+                    LOGGER.info("loaded siglet bundle:{}", sigletBundle.getId());
+                    sigletBundle.getDefinitions().forEach(def -> {
+                        LOGGER.info("  name:{}", def.getName());
                     });
                     sigletBundles.add(sigletBundle);
                 }

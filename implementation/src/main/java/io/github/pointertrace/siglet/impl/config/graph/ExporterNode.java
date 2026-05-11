@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
-import io.github.pointertrace.siglet.impl.config.raw.ExporterConfig;
+import io.github.pointertrace.siglet.impl.config.descriptor.ExporterDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ public final class ExporterNode extends BaseNode {
 
     private List<BaseNode> from = new ArrayList<>();
 
-    public ExporterNode(ExporterConfig exporterConfig) {
-        super(exporterConfig);
+    public ExporterNode(ExporterDescriptor exporterDescriptor) {
+        super(exporterDescriptor);
     }
 
     public List<BaseNode> getFrom() {
@@ -22,8 +22,8 @@ public final class ExporterNode extends BaseNode {
     }
 
     @Override
-    public ExporterConfig getConfig() {
-        return (ExporterConfig) super.getConfig();
+    public ExporterDescriptor getDescription() {
+        return (ExporterDescriptor) super.getDescription();
     }
 
 }

@@ -1,25 +1,26 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.debug;
 
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ConfigDefinition;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverCreator;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
-import io.github.pointertrace.siglet.parser.schema.EmptyPropertyChecker;
 
-public class DebugReceiverType implements ReceiverType {
+public class DebugReceiverType implements ReceiverType<Void> {
 
 
     @Override
-    public String getName() {
+    public String getType() {
         return "debug";
     }
 
     @Override
-    public ConfigDefinition getConfigDefinition() {
-        return () -> new EmptyPropertyChecker("config");
+    public ConfigurationFactory<Void> getConfigurationFactory() {
+        return ConfigurationFactory.of();
     }
 
     @Override
-    public ReceiverCreator getReceiverCreator() {
+    public ComponentCreator<ReceiverNode> getComponentCreator() {
         return (context, node) -> new DebugReceiver(node);
     }
 

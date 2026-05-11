@@ -21,7 +21,7 @@ public class Pipelines {
         if (pipelineRegistry.containsKey(node.getName())) {
             throw new SigletError("Pipeline with name " + node.getName() + " already exists");
         }
-        return pipelineRegistry.put(node.getConfig().getName(), new Pipeline(node));
+        return pipelineRegistry.put(node.getDescription().getName().getValue(), new Pipeline(node));
     }
 
     public SignalDestination getDestination(String name) {

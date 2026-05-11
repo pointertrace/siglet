@@ -4,22 +4,18 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.siglet.BundleLoader;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
-import io.github.pointertrace.siglet.impl.config.siglet.parser.SigletConfig;
-import io.github.pointertrace.siglet.impl.config.siglet.parser.SigletConfigParser;
-import io.github.pointertrace.siglet.impl.config.siglet.parser.SigletsConfig;
+import io.github.pointertrace.siglet.impl.config.siglet.configfile.SigletConfigFile;
 import org.springframework.boot.loader.launch.Archive;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SpringBootBundleLoader implements BundleLoader {
 
     private static final String CONFIG_FILE_ENTRY = "BOOT-INF/classes/siglet-config.yaml";
 
-    private final SigletConfigParser sigletConfigParser = new SigletConfigParser();
 
     public SigletBundle load(File file) {
 
@@ -41,12 +37,14 @@ public class SpringBootBundleLoader implements BundleLoader {
             String startClassName = SpringBootStartClassReader.read(file);
             SpringBootContextProxy springBootContextProxy = new SpringBootContextProxy(classLoader, startClassName);
 
-            List<SigletDefinition> sigletsDefinitions = new ArrayList<>();
-            for(SigletConfig sigletConfig : parseSigletConfig(classLoader).sigletsConfig()) {
-                sigletsDefinitions.add(new SpringBootSigletDefinition(springBootContextProxy, sigletConfig));
-            }
+            SigletConfigFile sigletConfigFile = parseSigletConfig(classLoader);
+
             springBootContextProxy.start();
-            return new SigletBundle(classLoader.getName(),sigletsDefinitions ,springBootContextProxy);
+
+            List<? extends SigletDefinition> sigletsDefinitions = sigletConfigFile.getSigletDefinitions().stream()
+                    .map(config-> new SpringBootSigletDefinition(springBootContextProxy, config))
+                    .toList();
+            return new SigletBundle(classLoader.getName(),sigletsDefinitions, springBootContextProxy);
 
         } catch (Exception e) {
             throw new SigletError(String.format("Error load springBoot uberjar %s. %s",file.getAbsolutePath(),
@@ -55,10 +53,10 @@ public class SpringBootBundleLoader implements BundleLoader {
     }
 
 
-    private SigletsConfig parseSigletConfig(ClassLoader classLoader) {
+    private SigletConfigFile parseSigletConfig(ClassLoader classLoader) {
 
-        String sigletConfigFile = read(classLoader.getResourceAsStream(CONFIG_FILE_ENTRY), Path.of("test"));
-        return sigletConfigParser.parse(sigletConfigFile);
+        String yamlConfigFile = read(classLoader.getResourceAsStream(CONFIG_FILE_ENTRY), Path.of("test"));
+        return SigletConfigFile.parse(yamlConfigFile);
 
     }
 

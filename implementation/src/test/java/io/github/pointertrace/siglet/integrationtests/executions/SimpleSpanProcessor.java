@@ -11,19 +11,19 @@ public class SimpleSpanProcessor {
 
         var config = """
                 receivers:
-                  - grpc: receiver
+                  - grpc: receiverDescriptor
                     address: localhost:8080
                 exporters:
-                  - grpc: exporter
+                  - grpc: exporterDescriptor
                     address: localhost:4317
-                pipelines:
-                  - name: trace-pipeline
-                    from: receiver
+                pipelineDescriptors:
+                  - name: trace-pipelineDescriptor
+                    from: receiverDescriptor
                     start: print spanId
-                    processors:
+                    processorDescriptors:
                       - name: print spanId
                         kind: spanlet
-                        to: exporter
+                        to: exporterDescriptor
                         type: groovy-action
                         thread-pool-size: 1
                         config:

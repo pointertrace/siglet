@@ -2,11 +2,13 @@ package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.api.signal.metric.Metric;
+import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
 import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedMetrics;
@@ -18,8 +20,6 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 
-import java.util.Set;
-
 public class OtelGrpcExporter implements Exporter {
 
     private final ExporterNode node;
@@ -30,23 +30,24 @@ public class OtelGrpcExporter implements Exporter {
 
     private State state = State.RUNNING;
 
-    public OtelGrpcExporter(Context context, ExporterNode node) {
+    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Span.class, Metric.class);
+
+    public OtelGrpcExporter(SigletContext sigletContext, ExporterNode node) {
         this.node = node;
-        OtelGrpcExporterConfig config = (OtelGrpcExporterConfig) node.getConfig().getConfig();
+        OtelGrpcExporterConfig config = (OtelGrpcExporterConfig) node.getDescription().getConfig();
         spanAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-span",
-                node.getConfig().getQueueSizeConfig().getQueueSize(),
-                config.getBatchTimeoutInMillis(),
-                config.getBatchSizeInSignals(),
-                span -> SpanAccumulator.accumulateSpans(context, span));
-
+                ((OtelGrpcExporterConfig) node.getDescription().getConfig()).getQueueSize().getValue().intValue(),
+                config.getBatchTimeoutInMillis().getValue().intValue(),
+                config.getBatchSizeInSignals().getValue().intValue(),
+                span -> SpanAccumulator.accumulateSpans(sigletContext, span));
 
         metricAccumulator = new TimeoutAccumulatorEventLoop(
                 node.getName() + "-metric",
-                node.getConfig().getQueueSizeConfig().getQueueSize(),
-                config.getBatchTimeoutInMillis(),
-                config.getBatchSizeInSignals(),
-                metric -> MetricAccumulator.accumulateMetrics(context, metric));
+                ((OtelGrpcExporterConfig) node.getDescription().getConfig()).getQueueSize().getValue().intValue(),
+                config.getBatchTimeoutInMillis().getValue().intValue(),
+                config.getBatchSizeInSignals().getValue().intValue(),
+                metric -> MetricAccumulator.accumulateMetrics(sigletContext, metric));
 
     }
 
@@ -63,16 +64,17 @@ public class OtelGrpcExporter implements Exporter {
         return true;
     }
 
+
     @Override
-    public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.SPAN, SignalType.METRIC);
+    public SignalCapabilities getIncomingCapabilities() {
+        return signalCapabilities;
     }
 
     @Override
     public synchronized void start() {
         state = State.STARTING;
         NettyChannelBuilder builder = NettyChannelBuilder
-                .forAddress(getConfig().getAddress())
+                .forAddress(getConfig().getAddress().getInetSocketAddress())
                 .usePlaintext();
 
         metricAccumulator.connect(new OtelGrpcMetricDestination(MetricsServiceGrpc.newBlockingStub(builder.build())));
@@ -101,7 +103,7 @@ public class OtelGrpcExporter implements Exporter {
     }
 
     public OtelGrpcExporterConfig getConfig() {
-        return (OtelGrpcExporterConfig) node.getConfig().getConfig();
+        return (OtelGrpcExporterConfig) node.getDescription().getConfig();
     }
 
     @Override

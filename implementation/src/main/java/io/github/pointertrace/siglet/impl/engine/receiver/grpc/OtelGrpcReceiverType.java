@@ -1,29 +1,33 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.impl.config.raw.ReceiverConfig;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ConfigDefinition;
-import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverCreator;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
+import io.github.pointertrace.siglet.impl.config.descriptor.InetSocketAddressTransform;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
 
-import static io.github.pointertrace.siglet.parser.schema.SchemaFactory.*;
+import java.util.List;
 
-public class OtelGrpcReceiverType implements ReceiverType {
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
+
+public class OtelGrpcReceiverType implements ReceiverType<OtelGrpcReceiverConfig> {
 
     @Override
-    public String getName() {
+    public String getType() {
         return "grpc";
     }
 
     @Override
-    public ConfigDefinition getConfigDefinition() {
-        return () -> requiredProperty(ReceiverConfig::setConfig, ReceiverConfig::setConfigLocation, "config",
-                strictObject(OtelGrpcReceiverConfig::new,
-                        requiredProperty(OtelGrpcReceiverConfig::setAddress, OtelGrpcReceiverConfig::setAddressLocation,
-                                "address", text(inetSocketAddress()))));
+    public ConfigurationFactory<OtelGrpcReceiverConfig> getConfigurationFactory() {
+        return ConfigurationFactory.of(
+                List.of(
+                        property("address",OtelGrpcReceiverConfig::setAddress,string().transform(new InetSocketAddressTransform()))
+                ),OtelGrpcReceiverConfig.class
+        );
     }
 
     @Override
-    public ReceiverCreator getReceiverCreator() {
+    public ComponentCreator<ReceiverNode> getComponentCreator() {
         return (context, receiverNode) -> new OtelGrpcReceiver(context, receiverNode);
     }
 }

@@ -3,7 +3,7 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.accumulator;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class MetricAccumulator {
     }
 
 
-    public static AccumulatedMetrics accumulateMetrics(Context context, List<Signal> signals) {
+    public static AccumulatedMetrics accumulateMetrics(SigletContext sigletContext, List<Signal> signals) {
         MetricsAccumulator metricsAccumulator = new MetricsAccumulator();
         StringBuilder sb = new StringBuilder("Aggregated Metrics[");
         signals.forEach(signal -> {
@@ -22,7 +22,7 @@ public class MetricAccumulator {
                 metricsAccumulator.add(protoMetricAdapter.getUpdated(),
                         protoMetricAdapter.getUpdatedInstrumentationScope(),
                         protoMetricAdapter.getUpdatedResource());
-                context.getMetricObjectPool().recycle(protoMetricAdapter);
+//                context.getMetricObjectPool().recycle(protoMetricAdapter);
             } else {
                 throw new SigletError(String.format("Can only aggregate spans but signal %s is %s", signal.getId(),
                         signal.getClass().getName()));

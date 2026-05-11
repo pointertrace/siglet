@@ -1,7 +1,8 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.eventloop.MapSignalDestination;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
+import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class TimeoutAccumulatorEventLoopTest {
 
     public AtomicInteger aggregatorIdGenerator;
 
-    private MapSignalDestination destination;
+    private MockSignalDestination destination;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +44,8 @@ class TimeoutAccumulatorEventLoopTest {
 
         aggregatorIdGenerator = new AtomicInteger(1);
 
-        destination = new MapSignalDestination("final");
+        destination = new MockSignalDestination("final", SignalCapabilities.of(SignalMock.class));
+
 
     }
 

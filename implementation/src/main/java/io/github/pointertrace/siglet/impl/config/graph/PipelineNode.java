@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
-import io.github.pointertrace.siglet.impl.config.raw.PipelineConfig;
+import io.github.pointertrace.siglet.impl.config.descriptor.PipelineDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,8 @@ public final class PipelineNode extends BaseNode {
 
     private List<ProcessorNode> start = new ArrayList<>();
 
-    public PipelineNode(PipelineConfig pipelineConfig) {
-        super(pipelineConfig);
+    public PipelineNode(PipelineDescriptor pipelineDescriptorConfig) {
+        super(pipelineDescriptorConfig);
     }
 
     public List<ReceiverNode> getFrom() {
@@ -32,12 +32,8 @@ public final class PipelineNode extends BaseNode {
     }
 
     @Override
-    public PipelineConfig getConfig() {
-        return (PipelineConfig) super.getConfig();
-    }
-
-    public SignalType getSignal() {
-        return getStart().getFirst().getConfig().getSignalType();
+    public PipelineDescriptor getDescription() {
+        return (PipelineDescriptor) super.getDescription();
     }
 
 }

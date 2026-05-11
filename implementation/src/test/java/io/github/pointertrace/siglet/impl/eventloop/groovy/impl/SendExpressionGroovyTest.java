@@ -3,8 +3,9 @@ package io.github.pointertrace.siglet.impl.eventloop.groovy.impl;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
 import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.BaseGroovyActionProcessor;
-import io.github.pointertrace.siglet.impl.eventloop.MapSignalDestination;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.GroovyActionProcessor;
+import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
 import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultFactoryImpl;
 import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultImpl;
@@ -125,8 +126,8 @@ class SendExpressionGroovyTest {
                 """;
 
 
-        BaseGroovyActionProcessor.GroovyActionBaseEventloopProcessor<Object> processor =
-                new BaseGroovyActionProcessor.GroovyActionBaseEventloopProcessor<>(
+        GroovyActionProcessor.GroovyActionBaseGroovyProcessor<Object> processor =
+                new GroovyActionProcessor.GroovyActionBaseGroovyProcessor<>(
                         new ContextImpl<>(new Object()),
                         ResultFactoryImpl.INSTANCE,
                         spanScript
@@ -134,8 +135,12 @@ class SendExpressionGroovyTest {
 
         ResultImpl result = (ResultImpl) processor.process(spanAdapter);
 
-        MapSignalDestination defaultDestination = new MapSignalDestination("default");
-        MapSignalDestination metricDestination = new MapSignalDestination("metric");
+        MockSignalDestination defaultDestination = new MockSignalDestination("default",
+                SignalCapabilities.of(io.github.pointertrace.siglet.api.signal.trace.Span.class));
+
+        MockSignalDestination metricDestination = new MockSignalDestination("metric",
+                SignalCapabilities.of(io.github.pointertrace.siglet.api.signal.trace.Span.class));
+
         result.dispatch(Map.of(), spanAdapter, List.of(defaultDestination, metricDestination));
 
         assertEquals(1, defaultDestination.signals.size());

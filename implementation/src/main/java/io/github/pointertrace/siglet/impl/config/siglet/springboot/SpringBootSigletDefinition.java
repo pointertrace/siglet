@@ -1,46 +1,73 @@
 package io.github.pointertrace.siglet.impl.config.siglet.springboot;
 
 import io.github.pointertrace.siglet.api.Siglet;
-import io.github.pointertrace.siglet.api.SigletError;
+import io.github.pointertrace.siglet.api.SigletConfigFactory;
+import io.github.pointertrace.siglet.api.SigletConfigParserFactory;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
-import io.github.pointertrace.siglet.impl.config.siglet.parser.SigletConfig;
-import io.github.pointertrace.siglet.parser.NodeChecker;
+import io.github.pointertrace.siglet.impl.config.siglet.configfile.SigletConfigFile;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 
 public class SpringBootSigletDefinition implements SigletDefinition {
 
     private final SpringBootContextProxy springBootContextProxy;
 
-    private final SigletConfig sigletConfig;
+    private final SigletConfigFile.SigletConfigFileDefinition sigletConfigFileDefinition;
 
-    public SpringBootSigletDefinition(SpringBootContextProxy springBootContextProxy, SigletConfig sigletConfig) {
+    private final Siglet<?> processor;
+
+    private final SigletConfigParserFactory<?> configParserFactory;
+
+    private final SigletConfigFactory<?> configFactory;
+
+    public SpringBootSigletDefinition(SpringBootContextProxy springBootContextProxy,
+                                      SigletConfigFile.SigletConfigFileDefinition sigletConfigFileDefinition) {
         this.springBootContextProxy = springBootContextProxy;
-        this.sigletConfig = sigletConfig;
+        this.sigletConfigFileDefinition = sigletConfigFileDefinition;
+        this.processor = getProcessor();
+        this.configFactory = getConfigFactory();
+        this.configParserFactory = getConfigParserFactory();
     }
 
-    @Override
-    public SigletConfig getSigletConfig() {
-        return sigletConfig;
-    }
-
-    @Override
-    public Siglet createProcessor() {
-        return springBootContextProxy.getProcessor(sigletConfig.sigletClassName());
-    }
-
-    @Override
-    public NodeChecker createConfigChecker() {
-        return springBootContextProxy.getNodeCheckerFactory(sigletConfig.configCheckerFactoryClassName()).create();
-    }
-
-    @Override
-    public SignalType getSignalType() {
-        Siglet siglet = createProcessor();
-        if (siglet instanceof Spanlet<?>) {
-            return SignalType.SPAN;
+    private SigletConfigParserFactory<?> getConfigParserFactory() {
+        if (sigletConfigFileDefinition.getConfigParserFactoryClassName() != null) {
+            return springBootContextProxy.getConfigParserFactory(sigletConfigFileDefinition.getConfigParserFactoryClassName().getValue());
         } else {
-            throw new SigletError(String.format("%s is not a spanlet", siglet.getClass().getName()));
+            return null;
         }
     }
+
+    private SigletConfigFactory<?> getConfigFactory() {
+        if (sigletConfigFileDefinition.getConfigFactoryClassName() != null) {
+            return springBootContextProxy.getConfigFactory(sigletConfigFileDefinition.getConfigFactoryClassName().getValue());
+        } else {
+            return null;
+        }
+    }
+
+    private Siglet<?> getProcessor() {
+        return springBootContextProxy.getProcessor(sigletConfigFileDefinition.getSigletClassName().getValue());
+    }
+
+    @Override
+    public String getName() {
+        return sigletConfigFileDefinition.getName().getValue();
+    }
+
+    @Override
+    public Spanlet<?> createProcessor() {
+        return (Spanlet<?>) processor;
+    }
+
+    @Override
+    public ConfigurationFactory<?> createConfigurationFactory() {
+        if (configFactory != null) {
+            return ConfigurationFactory.of(configFactory);
+        } else if (configParserFactory != null) {
+            return ConfigurationFactory.of(configParserFactory);
+        } else {
+            return ConfigurationFactory.of();
+        }
+    }
+
 }

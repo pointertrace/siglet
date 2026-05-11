@@ -4,6 +4,6 @@ import io.github.pointertrace.siglet.api.Context;
 
 public interface ProcessorFactory<T> {
 
-    BaseEventloopProcessor<T> create(Context<T> context);
+    BaseProcessor<T> create(Context<T> context);
 
 }

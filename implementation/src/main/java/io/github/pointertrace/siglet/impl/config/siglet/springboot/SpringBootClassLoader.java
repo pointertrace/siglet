@@ -34,6 +34,8 @@ public class SpringBootClassLoader extends LaunchedClassLoader {
 
     public static SpringBootClassLoader of(Archive root, ClassLoader parent) {
 
+        Objects.requireNonNull(root, "Archive must not be null");
+        Objects.requireNonNull(parent, "Parent classloader must not be null");
 
         try {
             Set<URL> urls = root.getClassPathUrls(entry -> {
@@ -55,7 +57,7 @@ public class SpringBootClassLoader extends LaunchedClassLoader {
                                     URL[] urls,
                                     ClassLoader parent) {
         super(exploded, rootArchive, urls, parent);
-        this.name = "springboot-uberjar:" + rootArchive.toString();
+        this.name = rootArchive != null ? "springboot-uberjar:" + rootArchive.toString() : "springboot-local";
     }
 
     private static boolean shouldBeParentFirst(String className) {

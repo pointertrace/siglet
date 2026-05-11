@@ -23,16 +23,16 @@ class FilterSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiver
+                - debug: receiverDescriptor
                 exporters:
-                - debug: exporter
-                pipelines:
-                - name: pipeline
-                  from: receiver
+                - debug: exporterDescriptor
+                pipelineDescriptors:
+                - name: pipelineDescriptor
+                  from: receiverDescriptor
                   start: spanlet
-                  processors:
+                  processorDescriptors:
                   - spanlet-groovy-filter: spanlet
-                    to: exporter
+                    to: exporterDescriptor
                     config:
                       expression: |
                         signal.name.startsWith("prefix")
@@ -52,7 +52,7 @@ class FilterSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter));
+        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(firstSpanAdapter));
 
         Span secondSpan = Span.newBuilder()
                 .setName("span-name")
@@ -60,14 +60,14 @@ class FilterSpanletTest {
                 .setSpanId(AdapterUtils.spanId(2))
                 .build();
         ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter));
+        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(secondSpanAdapter));
 
         siglet.stop();
 
 
-        List<ProtoSpanAdapter> exporter = DebugExporters.INSTANCE.get("exporter", ProtoSpanAdapter.class);
-        assertEquals(1, exporter.size());
-        assertEquals(firstSpanAdapter, exporter.getFirst());
+        List<ProtoSpanAdapter> exporterDescriptor = DebugExporters.INSTANCE.get("exporterDescriptor", ProtoSpanAdapter.class);
+        assertEquals(1, exporterDescriptor.size());
+        assertEquals(firstSpanAdapter, exporterDescriptor.getFirst());
     }
 
     @Test
@@ -76,19 +76,19 @@ class FilterSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiver
+                - debug: receiverDescriptor
                 exporters:
-                - debug: first-exporter
-                - debug: second-exporter
-                pipelines:
-                - name: pipeline
-                  from: receiver
+                - debug: first-exporterDescriptor
+                - debug: second-exporterDescriptor
+                pipelineDescriptors:
+                - name: pipelineDescriptor
+                  from: receiverDescriptor
                   start: spanlet
-                  processors:
+                  processorDescriptors:
                   - spanlet-groovy-filter: spanlet
                     to:
-                    - first-exporter
-                    - second-exporter
+                    - first-exporterDescriptor
+                    - second-exporterDescriptor
                     config:
                       expression: |
                         signal.name.startsWith("prefix")
@@ -104,22 +104,22 @@ class FilterSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiverDescriptor").send(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder().setName("span-name").build();
         ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiverDescriptor").send(secondSpanAdapter);
 
         siglet.stop();
 
-        // first exporter
-        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporter", ProtoSpanAdapter.class);
+        // first exporterDescriptor
+        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
         assertEquals(1, firstExporter.size());
         assertEquals("prefix-span-name", firstExporter.getFirst().getName());
 
 
-        // second exporter
-        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("first-exporter", ProtoSpanAdapter.class);
+        // second exporterDescriptor
+        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
         assertEquals(1, secondExporter.size());
         assertEquals("prefix-span-name", secondExporter.getFirst().getName());
     }

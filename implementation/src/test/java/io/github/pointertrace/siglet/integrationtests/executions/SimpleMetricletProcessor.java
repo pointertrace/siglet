@@ -1,32 +1,29 @@
 package io.github.pointertrace.siglet.integrationtests.executions;
 
 import io.github.pointertrace.siglet.impl.Siglet;
-import io.github.pointertrace.siglet.parser.YamlParser;
 
 public class SimpleMetricletProcessor {
 
 
     public static void main(String[] args) throws Exception {
 
-        YamlParser configParser = new YamlParser();
-
         var configFile = """
                 receivers:
-                - grpc: receiver
+                - grpc: receiverDescriptor
                   address: localhost:4317
                   otelSignalType: metric
                 exporters:
-                - grpc: exporter
+                - grpc: exporterDescriptor
                   address: localhost:4317
                   batchSizeInSignals: 3
-                pipelines:
-                - metric: simple pipeline
-                  from: receiver
+                pipelineDescriptors:
+                - metric: simple pipelineDescriptor
+                  from: receiverDescriptor
                   start: first metriclet
-                  pipeline:
+                  pipelineDescriptor:
                   - metriclet: first metriclet
-                    to: exporter
-                    type: baseEventloopProcessor
+                    to: exporterDescriptor
+                    type: baseProcessor
                     config:
                       action: >
                         metric.setName("prefix-" + metric.getName())

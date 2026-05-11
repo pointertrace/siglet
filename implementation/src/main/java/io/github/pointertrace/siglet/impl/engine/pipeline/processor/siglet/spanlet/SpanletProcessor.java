@@ -2,56 +2,51 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.span
 
 import io.github.pointertrace.siglet.api.Context;
 import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
-import io.github.pointertrace.siglet.impl.eventloop.processor.ProcessorEventloop;
+import io.github.pointertrace.siglet.impl.eventloop.processor.Eventloop;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ProcessorFactory;
 
 import java.util.Map;
-import java.util.Set;
 
 public class SpanletProcessor implements Processor {
 
     private ProcessorNode node;
 
 
-    private final ProcessorEventloop<Object> processorEventloop;
+    private final Eventloop<Object> eventloop;
 
-    public SpanletProcessor(io.github.pointertrace.siglet.impl.engine.Context context, ProcessorNode node, Spanlet<Object> spanlet) {
+    public SpanletProcessor(SigletContext sigletContext, ProcessorNode node, Spanlet<?> spanlet) {
+        this(node.getName(), spanlet, node.getDescription().getConfig(),
+                sigletContext.getConfig().getQueueSize(node.getDescription()) ,
+                sigletContext.getConfig().getThreadPoolSize(node.getDescription()), node.getDestinationMappings());
         this.node = node;
-        Object config = node.getConfig().getConfig();
-        ContextImpl<Object> ctx = new ContextImpl<>(config);
-
-        processorEventloop = new ProcessorEventloop<>(
-                node.getName(),
-                createProcessorFactory(spanlet),
-                ctx,
-                node.getConfig().getSignalType(),
-                node.getConfig().getQueueSizeConfig().getQueueSize(),
-                node.getConfig().getThreadPoolSizeConfig().getThreadPoolSize(),
-                node.getDestinationMappings());
     }
 
-    // TODO remover para depender apenas do node out de um adapter node->config
-    public SpanletProcessor(String name, Spanlet spanlet, Object config, int queueCapacity, int threadPoolSize,
+    public SpanletProcessor(String name, Spanlet<?> spanlet, Object config, int queueCapacity, int threadPoolSize,
                             Map<String, String> destinationMappings) {
 
         ContextImpl<Object> ctx = new ContextImpl<>(config);
-        processorEventloop = new ProcessorEventloop<>(name, createProcessorFactory(spanlet), ctx,
-                SignalType.SPAN, queueCapacity, threadPoolSize, destinationMappings);
+        eventloop = new Eventloop<Object>(name, createProcessorFactory(spanlet), ctx,
+                SignalCapabilities.of(Span.class), SignalCapabilities.of(Span.class), queueCapacity, threadPoolSize,
+                destinationMappings);
     }
 
-    private static <T> ProcessorFactory<T> createProcessorFactory(Spanlet<T> spanlet) {
-        return ctx -> new ModifiedSpanBaseEventloopProcessor<>(ctx, spanlet);
+    @SuppressWarnings("unchecked")
+    private static ProcessorFactory<Object> createProcessorFactory(Spanlet<?> spanlet) {
+        Spanlet<Object> typedSpanlet = (Spanlet<Object>) spanlet;
+        return ctx -> new BaseSpanletProcessor<>(ctx, typedSpanlet);
     }
 
     public Context<Object> getContext() {
-        return processorEventloop.getContext();
+        return eventloop.getContext();
     }
 
     @Override
@@ -60,42 +55,42 @@ public class SpanletProcessor implements Processor {
     }
 
     @Override
-    public SignalType getSignalType() {
-        return SignalType.SPAN;
-    }
-
-    @Override
     public void start() {
-        processorEventloop.start();
+        eventloop.start();
     }
 
     @Override
     public void stop() {
-        processorEventloop.stop();
+        eventloop.stop();
     }
 
     @Override
     public State getState() {
-        return processorEventloop.getState();
+        return eventloop.getState();
     }
 
     @Override
     public String getName() {
-        return processorEventloop.getName();
+        return eventloop.getName();
     }
 
     @Override
     public boolean send(Signal signal) {
-        return processorEventloop.send(signal);
+        return eventloop.send(signal);
     }
 
     @Override
-    public Set<SignalType> getSignalCapabilities() {
-        return processorEventloop.getSignalCapabilities();
+    public SignalCapabilities getIncomingCapabilities() {
+        return SignalCapabilities.of(Span.class);
     }
 
     @Override
     public void connect(SignalDestination destination) {
-        processorEventloop.connect(destination);
+        eventloop.connect(destination);
+    }
+
+    @Override
+    public SignalCapabilities getOutgoingCapabilities() {
+        return SignalCapabilities.of(Span.class);
     }
 }

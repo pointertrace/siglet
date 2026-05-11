@@ -1,87 +1,70 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.router;
 
 
-import io.github.pointertrace.siglet.parser.Describable;
-import io.github.pointertrace.siglet.parser.located.Located;
-import io.github.pointertrace.siglet.parser.located.Location;
+import io.github.pointertrace.siglet.api.SigletError;
+import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.ValidatableConfig;
+import io.github.pointertrace.siglet.parser.StringValue;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class GroovyRouterConfig implements Located, Describable {
+public class GroovyRouterConfig implements ValidatableConfig<ProcessorDescriptor> {
 
-    private Location location;
+    private List<RouteConfig> routes;
 
-    private List<RouteConfig> routeConfigs;
-
-    private Location routesLocation;
-
-    private String defaultRoute;
-
-    private Location defaultRouteLocation;
+    private StringValue defaultRoute;
 
     public List<RouteConfig> getRoutes() {
-        return routeConfigs;
+        return routes;
     }
 
     public void setRoutes(List<RouteConfig> routeConfigs) {
-        this.routeConfigs = routeConfigs;
+        this.routes = routeConfigs;
     }
 
-    public void setDefaultRoute(String defaultRoute) {
+    public void setDefaultRoute(StringValue defaultRoute) {
         this.defaultRoute = defaultRoute;
     }
 
-    public String getDefaultRoute() {
+    public StringValue getDefaultRoute() {
         return defaultRoute;
     }
 
-    public Location getDefaultRouteLocation() {
-        return defaultRouteLocation;
-    }
-
-    public void setDefaultRouteLocation(Location defaultRouteLocation) {
-        this.defaultRouteLocation = defaultRouteLocation;
-    }
-
-    public Location getRoutesLocation() {
-        return routesLocation;
-    }
-
-    public void setRoutesLocation(Location routesLocation) {
-        this.routesLocation = routesLocation;
-    }
 
     @Override
-    public String describe(int level) {
-        StringBuilder sb = new StringBuilder(Describable.prefix(level));
-        sb.append(getLocation().describe());
-        sb.append("  groovyRouterConfig:");
-        sb.append("\n");
+    public void validate(ProcessorDescriptor descriptor) {
+        Set<String> destinations = descriptor.getTo().stream()
+                .map(StringValue::getValue)
+                .collect(Collectors.toSet());
 
-        sb.append(Describable.prefix(level + 1));
-        sb.append(getRoutesLocation().describe());
-        sb.append("  routes:\n");
-        for (RouteConfig routeConfig : getRoutes()) {
-            sb.append(routeConfig.describe(level + 2));
-            sb.append("\n");
+        Set<String> routes = this.routes.stream()
+                .map(RouteConfig::getTo)
+                .map(StringValue::getValue)
+                .collect(Collectors.toSet());
+        routes.add(defaultRoute.getValue());
+
+        Set<String> inDestinationsNotInRoutes = new HashSet<>(destinations);
+        inDestinationsNotInRoutes.removeAll(routes);
+
+        Set<String> inRoutesNotInDestinations = new HashSet<>(routes);
+        inRoutesNotInDestinations.removeAll(destinations);
+
+        Set<String> errors = new HashSet<>();
+        if (!inDestinationsNotInRoutes.isEmpty()) {
+            errors.add(String.format("some destinations defined in 'to' (%s) that are not defined as a route",
+                    String.join(",", inDestinationsNotInRoutes)));
         }
-
-        sb.append(Describable.prefix(level + 1));
-        sb.append(getDefaultRouteLocation().describe());
-        sb.append("  defaultRoute: ");
-        sb.append(getDefaultRoute());
-
-        return sb.toString();
-
-    }
-
-    @Override
-    public Location getLocation() {
-        return location;
-    }
-
-    @Override
-    public void setLocation(Location location) {
-        this.location = location;
+        if (!inRoutesNotInDestinations.isEmpty()) {
+            errors.add(String.format("some routes (%s) that are not defined as processor destination defined in 'to'",
+                    String.join(",", inRoutesNotInDestinations)));
+        }
+        if (!errors.isEmpty()) {
+            throw new SigletError(String.format("The processor '%s' at (%s:%s) has %s",
+                    descriptor.getName().getValue(), descriptor.getLocation().getLine(),
+                    descriptor.getLocation().getColumn(), String.join(" and ", errors)));
+        }
     }
 }

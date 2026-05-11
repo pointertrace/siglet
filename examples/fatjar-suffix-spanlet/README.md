@@ -55,7 +55,7 @@ bash docker-compose down
   - Ensure the build completed successfully and there is a file matching:
     - target/fatjar-suffix-spanlet.jar
 - Ports already in use:
-  - Ensure ports 3000 (Grafana) and 8081 (OTLP receiver) are free.
+  - Ensure ports 3000 (Grafana) and 8081 (OTLP receiverDescriptor) are free.
 - telemetrygen not found:
   - Install [telemetrygen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd
     /telemetrygent) or update generate-trace.sh to use a different trace generator available on your system.

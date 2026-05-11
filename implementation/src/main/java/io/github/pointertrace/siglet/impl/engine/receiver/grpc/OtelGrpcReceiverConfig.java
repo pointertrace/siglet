@@ -1,41 +1,16 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.parser.Describable;
-import io.github.pointertrace.siglet.parser.located.Location;
+import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAddress;
 
-import java.net.InetSocketAddress;
+public class OtelGrpcReceiverConfig {
 
-public class OtelGrpcReceiverConfig implements Describable {
+    private LocatedInetSocketAddress address;
 
-    private InetSocketAddress address;
-
-    private Location addressLocation;
-
-
-    public InetSocketAddress getAddress() {
+    public LocatedInetSocketAddress getAddress() {
         return address;
     }
 
-    public void setAddress(InetSocketAddress address) {
+    public void setAddress(LocatedInetSocketAddress address) {
         this.address = address;
     }
-
-    public Location getAddressLocation() {
-        return addressLocation;
-    }
-
-    public void setAddressLocation(Location addressLocation) {
-        this.addressLocation = addressLocation;
-    }
-
-    @Override
-    public String describe(int level) {
-        StringBuilder sb = new StringBuilder(Describable.prefix(level));
-        sb.append(getAddressLocation());
-        sb.append("  address: ");
-        sb.append(getAddress());
-
-        return sb.toString();
-    }
-
 }

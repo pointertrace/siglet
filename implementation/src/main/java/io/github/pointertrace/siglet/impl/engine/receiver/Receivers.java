@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.receiver;
 
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +19,8 @@ public class Receivers {
         return receiverRegistry.get(name);
     }
 
-    public Receiver create(Context context, ReceiverNode receiverNode) {
-        return receiverRegistry.put(receiverNode.getName(), context.createReceiver(receiverNode));
+    public Receiver create(SigletContext sigletContext, ReceiverNode receiverNode) {
+        return receiverRegistry.put(receiverNode.getName(), sigletContext.createReceiver(receiverNode));
     }
 
     public void forEach(Consumer<Receiver> receiverConsumer) {

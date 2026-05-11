@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
@@ -18,12 +17,12 @@ import java.util.List;
 
 public class OtelGrpcMetricService extends MetricsServiceGrpc.MetricsServiceImplBase {
 
-    private final Context context;
+    private final SigletContext sigletContext;
 
     private final List<SignalDestination> metricDestinations = new ArrayList<>();
 
-    public OtelGrpcMetricService(Context context) {
-        this.context = context;
+    public OtelGrpcMetricService(SigletContext sigletContext) {
+        this.sigletContext = sigletContext;
     }
 
 
@@ -36,9 +35,9 @@ public class OtelGrpcMetricService extends MetricsServiceGrpc.MetricsServiceImpl
                 for (Metric metric : scopeMetrics.getMetricsList()) {
                     if (metric.hasGauge()) {
                         for (SignalDestination destination : metricDestinations) {
-                                ProtoMetricAdapter protoMetricAdapter =
-                                        context.getMetricObjectPool().get(metric, instrumentationScope, resource);
-                                destination.send(protoMetricAdapter);
+//                                ProtoMetricAdapter protoMetricAdapter =
+//                                        context.getMetricObjectPool().get(metric, instrumentationScope, resource);
+//                                destination.send(protoMetricAdapter);
                         }
                     }
                 }

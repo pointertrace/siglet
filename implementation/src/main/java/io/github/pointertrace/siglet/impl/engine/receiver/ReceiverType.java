@@ -1,13 +1,9 @@
 package io.github.pointertrace.siglet.impl.engine.receiver;
 
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ConfigDefinition;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
+import io.github.pointertrace.siglet.impl.engine.ComponentType;
 
-public interface ReceiverType {
+public interface ReceiverType<T> extends ComponentType<T, ReceiverNode> {
 
-    String getName();
-
-    ConfigDefinition getConfigDefinition();
-
-    ReceiverCreator getReceiverCreator();
 
 }

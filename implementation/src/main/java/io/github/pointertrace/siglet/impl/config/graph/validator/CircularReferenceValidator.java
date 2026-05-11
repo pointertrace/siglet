@@ -21,7 +21,7 @@ public class CircularReferenceValidator implements GraphValidator {
 
         if (!circularReferences.isEmpty()) {
             throw new SigletError(circularReferences.stream()
-                    .map(circularReference -> Describable.prefix(2) + circularReference)
+                    .map(circularReference -> "    " + circularReference)
                     .collect(Collectors.joining("\n", "There are circular references:\n",
                             "")));
         }
@@ -61,11 +61,11 @@ public class CircularReferenceValidator implements GraphValidator {
         switch (node) {
             case PipelineNode pipelineNode -> {
                 return path + String.format("-> pipeline [%s] at %s", pipelineNode.getName(),
-                        pipelineNode.getConfig().getLocation());
+                        pipelineNode.getDescription().getLocation().print());
             }
             case ProcessorNode processorNode -> {
                 return path + String.format("-> processor [%s] at %s", processorNode.getName(),
-                        processorNode.getConfig().getLocation());
+                        processorNode.getDescription().getLocation().print());
             }
             case ExporterNode exporterNode -> {
                 return path;

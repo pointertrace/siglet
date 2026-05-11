@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.exporter;
 
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,8 @@ public class Exporters {
     }
 
 
-    public Exporter create(Context context, ExporterNode exporterNode) {
-        return exporterRegistry.put(exporterNode.getName(), context.createExporter(exporterNode));
+    public Exporter create(SigletContext sigletContext, ExporterNode exporterNode) {
+        return exporterRegistry.put(exporterNode.getName(), sigletContext.createExporter(exporterNode));
     }
 
     public void start() {

@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.github.pointertrace.siglet.parser</groupId>
             <artifactId>siglet-parser</artifactId>
-            <version>${project.version}</version>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

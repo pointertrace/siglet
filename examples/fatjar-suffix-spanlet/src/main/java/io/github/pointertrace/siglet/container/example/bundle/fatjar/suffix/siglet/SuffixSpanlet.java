@@ -5,6 +5,7 @@ import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.ResultFactory;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
+import io.github.pointertrace.siglet.container.example.bundle.fatjar.suffix.config.SuffixSpanletConfig;
 
 /**
  * SuffixSpanlet is an implementation of the Spanlet interface. It processes span signals by appending

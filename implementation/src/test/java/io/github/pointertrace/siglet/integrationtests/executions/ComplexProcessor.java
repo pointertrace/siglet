@@ -8,25 +8,25 @@ public class ComplexProcessor {
 
         var config = """
                 receivers:
-                - grpc: trace-receiver
+                - grpc: trace-receiverDescriptor
                   address: localhost:8081
                   otelSignalType: trace
-                - grpc: metric-receiver
+                - grpc: metric-receiverDescriptor
                   address: localhost:8081
                   otelSignalType: metric
                 exporters:
-                - grpc: exporter
+                - grpc: exporterDescriptor
                   address: localhost:4317
-                pipelines:
-                - trace: trace-pipeline
-                  from: trace-receiver
+                pipelineDescriptors:
+                - trace: trace-pipelineDescriptor
+                  from: trace-receiverDescriptor
                   start: alteracao nome span wicket
-                  pipeline:
+                  pipelineDescriptor:
                   - spanlet: alteracao nome span wicket
                     to:
                     - trace aggregator
-                    - exporter
-                    type: baseEventloopProcessor
+                    - exporterDescriptor
+                    type: baseProcessor
                     config:
                       action: |
                         when { thisSignal.attributes.containsKey("br.gov.bcb.trace.wicket.page") } then {
@@ -42,7 +42,7 @@ public class ComplexProcessor {
                       inactive-timeout-millis: 15000
                   - tracelet: imprime
                     to: drop
-                    type: baseEventloopProcessor
+                    type: baseProcessor
                     config:
                       action: |
                         println ""

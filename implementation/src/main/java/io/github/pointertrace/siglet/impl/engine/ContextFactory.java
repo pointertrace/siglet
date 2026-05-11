@@ -8,10 +8,10 @@ import java.util.List;
 
 public class ContextFactory {
 
-    public Context create(String configTxt, List<SigletBundle> sigletsBundles) {
+    public SigletContext create(String configTxt, List<SigletBundle> sigletsBundles) {
         ConfigFactory configFactory = new ConfigFactory();
         Config config = configFactory.create(configTxt, sigletsBundles);
         // todo incluir os object pools
-        return new Context(config, null, null);
+        return new SigletContext(config);
     }
 }

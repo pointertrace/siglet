@@ -10,10 +10,10 @@ import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MetricFromSpanSpanlet implements Spanlet<Void> {
+public class MetricFromSpanSpanlet implements Spanlet<MetricFromSpanConfig> {
 
     @Override
-    public Result span(Span span, Context<Void> context, ResultFactory resultFactory) {
+    public Result span(Span span, Context<MetricFromSpanConfig> context, ResultFactory resultFactory) {
 
         Metric metric = context.newGauge(span);
 
@@ -24,7 +24,7 @@ public class MetricFromSpanSpanlet implements Spanlet<Void> {
                 .getDataPoints().add()
                 .setAsLong(span.getEndTimeUnixNano() - span.getStartTimeUnixNano())
                 .setTimeUnixNano(span.getStartTimeUnixNano())
-                .getAttributes().set("span-name", span.getName());
+                .getAttributes().set("span-name", span.getName()).set("extra",context.getConfig().getExtra());
 
         return resultFactory.proceed().andSend(metric, "metric-destination");
     }

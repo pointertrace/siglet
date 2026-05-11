@@ -1,30 +1,45 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.router;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorCreator;
+import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
+import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;
 
-public class SpanletGroovyRouterProcessorType extends BaseGroovyRouterProcessorType {
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
+
+public class SpanletGroovyRouterProcessorType implements ProcessorType<GroovyRouterConfig> {
 
     @Override
-    public String getName() {
+    public String getType() {
         return "spanlet-groovy-router";
     }
 
     @Override
-    public ProcessorCreator getProcessorCreator() {
-        return  (context, node) -> {
-            if (node.getConfig().getConfig() instanceof GroovyRouterConfig) {
-                return new SpanletGroovyRouterProcessor(context, node);
+    public ConfigurationFactory<GroovyRouterConfig> getConfigurationFactory() {
+        return ConfigurationFactory.of(
+                List.of(property("default", GroovyRouterConfig::setDefaultRoute, stringValueObject()),
+                        property("routes", GroovyRouterConfig::setRoutes,
+                                array(ArrayList::new, arrayItem(List::add, object(RouteConfig::new)
+                                       .addProperty(property("to", RouteConfig::setTo, stringValueObject()))
+                                        .addProperty(property("when", RouteConfig::setWhen, stringValueObject()))))
+                        )
+                ), GroovyRouterConfig.class);
+    }
+
+    @Override
+    public ComponentCreator<ProcessorNode> getComponentCreator() {
+        return (context, node) -> {
+            if (node.getDescription().getConfig() instanceof GroovyRouterConfig) {
+                return new GroovyRouterProcessor(context, node);
             } else {
                 throw new SigletError(String.format("for groovy action type config must be a %s",
-                        node.getConfig().getConfig().getClass().getName()));
+                        node.getDescription().getConfig().getClass().getName()));
             }
         };
     }
 
-    @Override
-    public SignalType getSignalType() {
-        return SignalType.SPAN;
-    }
 }

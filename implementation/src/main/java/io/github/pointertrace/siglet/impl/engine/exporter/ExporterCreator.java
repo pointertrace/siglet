@@ -1,9 +1,8 @@
 package io.github.pointertrace.siglet.impl.engine.exporter;
 
-import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
+import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
 
-public interface ExporterCreator {
+public interface ExporterCreator extends ComponentCreator<ReceiverNode> {
 
-    Exporter create(Context context, ExporterNode exporterNode);
 }

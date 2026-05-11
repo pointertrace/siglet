@@ -1,12 +1,12 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.api.signal.metric.Metric;
+import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
-import io.github.pointertrace.siglet.impl.config.raw.GrpcReceiverConfig;
-import io.github.pointertrace.siglet.impl.config.raw.ReceiverConfig;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receiver;
@@ -15,7 +15,6 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class OtelGrpcReceiver implements Receiver {
 
@@ -31,15 +30,17 @@ public class OtelGrpcReceiver implements Receiver {
 
     private OtelGrpcTraceService spanService;
 
-    private final Context context;
+    private final SigletContext sigletContext;
 
-    public OtelGrpcReceiver(Context context, ReceiverNode receiverNode) {
-        this.context = context;
+    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Span.class, Metric.class);
+
+    public OtelGrpcReceiver(SigletContext sigletContext, ReceiverNode receiverNode) {
+        this.sigletContext = sigletContext;
         this.receiverNode = receiverNode;
-        ReceiverConfig receiverConfig = receiverNode.getConfig();
-        if (receiverConfig.getConfig() instanceof OtelGrpcReceiverConfig otelGrpcReceiverConfig) {
+        ReceiverDescriptor receiverDescriptor = receiverNode.getDescription();
+        if (receiverDescriptor.getConfig() instanceof OtelGrpcReceiverConfig otelGrpcReceiverConfig) {
             serverBuilder =
-                    NettyServerBuilder.forAddress(otelGrpcReceiverConfig.getAddress());
+                    NettyServerBuilder.forAddress(otelGrpcReceiverConfig.getAddress().getInetSocketAddress());
         } else {
             throw new SigletError("Receiver config is not of type " + OtelGrpcReceiverConfig.class.getName());
         }
@@ -55,7 +56,6 @@ public class OtelGrpcReceiver implements Receiver {
             throw new SigletError("Error starting grpc server " + server + ", " + e.getMessage(), e);
         }
         state = State.RUNNING;
-
     }
 
 
@@ -78,10 +78,6 @@ public class OtelGrpcReceiver implements Receiver {
         return receiverNode.getName();
     }
 
-    public Class<? extends Signal> getSignalType(ReceiverNode node) {
-        return ((GrpcReceiverConfig) node.getConfig()).getSignal().getBaseType();
-    }
-
     @Override
     public ReceiverNode getNode() {
         return receiverNode;
@@ -89,24 +85,24 @@ public class OtelGrpcReceiver implements Receiver {
 
     @Override
     public void connect(SignalDestination destination) {
-        if (destination.getSignalCapabilities().contains(SignalType.SPAN)) {
+        signalCapabilities.checkCompatibility(destination.getIncomingCapabilities());
+        if (destination.getIncomingCapabilities().isAbleToHandle(Span.class)) {
             if (spanService == null) {
-                spanService = new OtelGrpcTraceService(context);
+                spanService = new OtelGrpcTraceService(sigletContext);
             }
             spanService.addDestination(destination);
             serverBuilder.addService(spanService);
-        } else if (destination.getSignalCapabilities().contains(SignalType.METRIC)) {
+        } else if (destination.getIncomingCapabilities().isAbleToHandle(Metric.class)) {
             if (metricService == null) {
-                metricService = new OtelGrpcMetricService(context);
+                metricService = new OtelGrpcMetricService(sigletContext);
             }
             metricService.addDestination(destination);
             serverBuilder.addService(metricService);
-        } else {
-            throw new SigletError(String.format("Cannot connect %s to %s because it does not support any of the " +
-                                                "following signal types: %s", destination.getName(), getName(),
-                    destination.getSignalCapabilities().stream()
-                            .map(SignalType::name)
-                            .collect(Collectors.joining(", "))));
         }
+    }
+
+    @Override
+    public SignalCapabilities getOutgoingCapabilities() {
+        return signalCapabilities;
     }
 }

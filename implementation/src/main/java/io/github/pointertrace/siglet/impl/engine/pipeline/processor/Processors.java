@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor;
 
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +15,8 @@ public class Processors {
 
     private final Map<String, Processor> processorRegistry = new HashMap<>();
 
-    public Processor create(Context context, ProcessorNode processorNode) {
-        return processorRegistry.put(processorNode.getName(), context.createProcessor(processorNode));
+    public Processor create(SigletContext sigletContext, ProcessorNode processorNode) {
+        return processorRegistry.put(processorNode.getName(), sigletContext.createProcessor(processorNode));
     }
 
     public Processor getProcessor(String name) {

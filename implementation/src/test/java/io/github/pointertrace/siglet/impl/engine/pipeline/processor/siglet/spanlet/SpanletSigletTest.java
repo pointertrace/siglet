@@ -7,7 +7,8 @@ import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
-import io.github.pointertrace.siglet.impl.eventloop.MapSignalDestination;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
+import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -20,14 +21,14 @@ class SpanletSigletTest {
     @Test
     void process() {
 
-        SpanletTest modifiableSpanlet = new SpanletTest();
+        SpanletTest spanlet = new SpanletTest();
 
         SpanletConfig config = new SpanletConfig("prefix-");
 
-        SpanletProcessor spanletEventLoop = new SpanletProcessor("prefix",
-                modifiableSpanlet,config,5,1, Map.of());
+        SpanletProcessor spanletEventLoop = new SpanletProcessor("prefix", spanlet,config,5,1, Map.of());
 
-        MapSignalDestination finalDestination = new MapSignalDestination("final");
+        MockSignalDestination finalDestination = new MockSignalDestination("final",
+                SignalCapabilities.of(Span.class));
 
         spanletEventLoop.connect(finalDestination);
 

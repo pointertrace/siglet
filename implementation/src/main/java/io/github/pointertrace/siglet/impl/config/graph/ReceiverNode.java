@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
-import io.github.pointertrace.siglet.impl.config.raw.ReceiverConfig;
+import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public final class ReceiverNode extends BaseNode {
 
     private List<PipelineNode> to = new ArrayList<>();
 
-    public ReceiverNode(ReceiverConfig item) {
+    public ReceiverNode(ReceiverDescriptor item) {
         super(item);
     }
 
@@ -22,8 +22,8 @@ public final class ReceiverNode extends BaseNode {
     }
 
     @Override
-    public ReceiverConfig getConfig() {
-        return (ReceiverConfig) super.getConfig();
+    public ReceiverDescriptor getDescription() {
+        return (ReceiverDescriptor) super.getDescription();
     }
 
 }

@@ -1,18 +1,13 @@
 package io.github.pointertrace.siglet.impl.config.siglet;
 
-import io.github.pointertrace.siglet.api.Siglet;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
-import io.github.pointertrace.siglet.impl.config.siglet.parser.SigletConfig;
-import io.github.pointertrace.siglet.parser.NodeChecker;
+import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 
 public interface SigletDefinition {
-    
-    SigletConfig getSigletConfig();
 
-    Siglet createProcessor();
+    String getName();
 
-    NodeChecker createConfigChecker();
+    Spanlet<?> createProcessor();
 
-    SignalType getSignalType();
-
+    ConfigurationFactory<?> createConfigurationFactory();
 }

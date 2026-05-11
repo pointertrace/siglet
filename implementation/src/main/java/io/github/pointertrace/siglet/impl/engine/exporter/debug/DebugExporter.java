@@ -2,17 +2,17 @@ package io.github.pointertrace.siglet.impl.engine.exporter.debug;
 
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
-
-import java.util.Set;
 
 public class DebugExporter implements Exporter {
 
     private volatile State state = State.CREATED;
 
     private final ExporterNode node;
+
+    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Signal.class);
 
     public DebugExporter(ExporterNode node) {
         this.node = node;
@@ -26,8 +26,8 @@ public class DebugExporter implements Exporter {
     }
 
     @Override
-    public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.SPAN, SignalType.METRIC);
+    public SignalCapabilities getIncomingCapabilities() {
+        return signalCapabilities;
     }
 
     @Override

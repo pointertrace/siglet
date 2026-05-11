@@ -10,7 +10,7 @@ import io.github.pointertrace.siglet.api.ResultFactory;
  *
  * @param <T> the type of configuration used by this spanlet.
  */
-public interface Spanlet<T> extends Siglet {
+public interface Spanlet<T> extends Siglet<T> {
 
     /**
      * Processes a span signal and produces a result.

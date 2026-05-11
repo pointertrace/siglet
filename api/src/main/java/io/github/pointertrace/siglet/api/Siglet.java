@@ -5,5 +5,5 @@ package io.github.pointertrace.siglet.api;
  *
  * @author osvaldo.pina@gmail.com
  */
-public interface Siglet {
+public interface Siglet<T> {
 }

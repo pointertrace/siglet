@@ -1,17 +1,24 @@
 package io.github.pointertrace.siglet.impl.config;
 
-import io.github.pointertrace.siglet.impl.config.raw.RawConfig;
-import io.github.pointertrace.siglet.impl.config.raw.validator.ComposedValidator;
+import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.validator.ComposedValidator;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
+import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
+import io.github.pointertrace.siglet.impl.engine.ComponentType;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterTypeRegistry;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.spanlet.SpanletProcessorType;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverTypeRegistry;
+import io.github.pointertrace.siglet.parser.Factory;
 import io.github.pointertrace.siglet.parser.Node;
-import io.github.pointertrace.siglet.parser.YamlParser;
+import io.github.pointertrace.siglet.parser.Parser;
+import io.github.pointertrace.siglet.parser.Schema;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static io.github.pointertrace.siglet.impl.config.ConfigCheckFactory.rawConfigChecker;
 
 public class ConfigFactory {
 
@@ -19,23 +26,6 @@ public class ConfigFactory {
 
     public Config create(String yaml) {
         return create(yaml, List.of());
-    }
-
-    public RawConfig createRawConfig(String yaml, ReceiverTypeRegistry receiverTypeRegistry,
-                                     ProcessorTypeRegistry processorTypeRegistry,
-                                     ExporterTypeRegistry exporterTypeRegistry) {
-
-        YamlParser yamlParser = new YamlParser();
-
-        Node node = yamlParser.parse(yaml);
-
-        rawConfigChecker(receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry).check(node);
-
-        RawConfig rawConfig = node.getValue(RawConfig.class);
-        rawConfig.afterSetValues();
-        rawConfig.setSignalType(processorTypeRegistry);
-
-        return rawConfig;
     }
 
     public Config create(String yaml, List<SigletBundle> sigletBundles) {
@@ -46,15 +36,16 @@ public class ConfigFactory {
 
         ExporterTypeRegistry exporterTypeRegistry = new ExporterTypeRegistry();
 
+        processorTypeRegistry.registerAll(
+                sigletBundles.stream()
+                        .flatMap(sb -> sb.getDefinitions().stream())
+                        .<ProcessorType<?>>map(sd -> new SpanletProcessorType(sd)).toList());
 
-        sigletBundles.forEach(processorTypeRegistry::register);
+        YamlDescriptor yamlDescriptor = YamlDescriptor.parse(yaml, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
 
-        RawConfig rawConfig = createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
+        composedValidator.validate(yamlDescriptor);
 
-        composedValidator.validate(rawConfig);
-
-        return new Config(createRawConfig(yaml, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry),
-                sigletBundles, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
+        return new Config(yamlDescriptor, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
     }
 
 }

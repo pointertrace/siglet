@@ -1,23 +1,23 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
 
-import io.github.pointertrace.siglet.impl.config.raw.BaseConfig;
+import io.github.pointertrace.siglet.impl.config.descriptor.BaseDescriptor;
 
 public abstract sealed class BaseNode permits ReceiverNode, PipelineNode, ProcessorNode, ExporterNode {
 
 
-    private final BaseConfig config;
+    private final BaseDescriptor descriptor;
 
-    protected BaseNode(BaseConfig config) {
-        this.config = config;
+    protected BaseNode(BaseDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
     public String getName() {
-        return config.getName();
+        return descriptor.getName().getValue();
     }
 
 
-    public BaseConfig getConfig() {
-        return config;
+    public BaseDescriptor getDescription() {
+        return descriptor;
     }
 }

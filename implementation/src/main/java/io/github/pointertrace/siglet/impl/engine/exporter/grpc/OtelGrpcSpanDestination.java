@@ -1,7 +1,8 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
+import io.github.pointertrace.siglet.api.signal.trace.Span;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedSpans;
 import io.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess;
@@ -9,8 +10,6 @@ import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Set;
 
 public class OtelGrpcSpanDestination implements SignalDestination {
 
@@ -54,7 +53,8 @@ public class OtelGrpcSpanDestination implements SignalDestination {
     }
 
     @Override
-    public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.SPAN);
+    public SignalCapabilities getIncomingCapabilities() {
+        return SignalCapabilities.of(Span.class);
     }
+
 }

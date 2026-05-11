@@ -1,7 +1,6 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
@@ -18,12 +17,12 @@ import java.util.List;
 
 public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase {
 
-    private final Context context;
+    private final SigletContext sigletContext;
 
     private final List<SignalDestination> spanDestinations = new ArrayList<>();
 
-    public OtelGrpcTraceService(Context context) {
-        this.context = context;
+    public OtelGrpcTraceService(SigletContext sigletContext) {
+        this.sigletContext = sigletContext;
     }
 
     @Override
@@ -34,9 +33,9 @@ public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase 
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
                     for (SignalDestination destination : spanDestinations) {
-                        ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
-                                instrumentationScope, resource);
-                        destination.send(protoSpanAdapter);
+//                        ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
+//                                instrumentationScope, resource);
+//                        destination.send(protoSpanAdapter);
                     }
                 }
             }

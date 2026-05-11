@@ -9,7 +9,7 @@ import io.github.pointertrace.siglet.impl.engine.receiver.Receivers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SigletEngine implements EngineElement {
+public class SigletEngine implements Component {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigletEngine.class);
 
@@ -21,15 +21,15 @@ public class SigletEngine implements EngineElement {
 
     private final Pipelines pipelines = new Pipelines();
 
-    public SigletEngine(Context context) {
+    public SigletEngine(SigletContext sigletContext) {
 
-        Graph graph = context.getGraph();
+        Graph graph = sigletContext.getGraph();
 
         // TODO move to a factory
         graph.getNodeRegistry().stream()
                 .filter(ExporterNode.class::isInstance)
                 .map(ExporterNode.class::cast)
-                .forEach(exporterNode -> exporters.create(context, exporterNode));
+                .forEach(exporterNode -> exporters.create(sigletContext, exporterNode));
 
         graph.getNodeRegistry().stream()
                 .filter(PipelineNode.class::isInstance)
@@ -45,13 +45,13 @@ public class SigletEngine implements EngineElement {
                     if (pipeline == null) {
                         throw new SigletError(String.format("Could not find pipeline named %s", pipelineName));
                     }
-                    pipeline.getProcessors().create(context, sigletNode);
+                    pipeline.getProcessors().create(sigletContext, sigletNode);
                 });
 
         graph.getNodeRegistry().stream()
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
-                .forEach(receiverNode -> receivers.create(context, receiverNode));
+                .forEach(receiverNode -> receivers.create(sigletContext, receiverNode));
         connect();
 
     }
@@ -83,6 +83,11 @@ public class SigletEngine implements EngineElement {
 
     }
 
+
+    @Override
+    public BaseNode getNode() {
+        return null;
+    }
 
     @Override
     public void start() {

@@ -5,6 +5,7 @@ import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.ResultFactory;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
+import io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.config.SuffixSpanletConfig;
 import org.springframework.stereotype.Component;
 
 @Component

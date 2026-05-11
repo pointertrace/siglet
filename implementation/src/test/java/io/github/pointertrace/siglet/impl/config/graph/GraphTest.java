@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.ContextFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,12 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GraphTest {
 
-    private Context context;
-
-    private ContextFactory contextFactory;
-
     private Graph graph;
-
 
     @BeforeEach
     void setUp() {
@@ -38,10 +33,10 @@ class GraphTest {
                 """;
 
 
-        contextFactory = new ContextFactory();
-        context = contextFactory.create(config, List.of());
+        ContextFactory contextFactory = new ContextFactory();
+        SigletContext sigletContext = contextFactory.create(config, List.of());
 
-        graph = context.getGraph();
+        graph = sigletContext.getGraph();
     }
 
 
@@ -54,7 +49,7 @@ class GraphTest {
 
         ReceiverNode receiverNode = assertInstanceOf(ReceiverNode.class, node);
 
-        assertEquals("receiver", receiverNode.getConfig().getName());
+        assertEquals("receiver", receiverNode.getDescription().getName().getValue());
 
     }
 
@@ -72,7 +67,7 @@ class GraphTest {
         ReceiverNode receiverNode = graph.getNodeByNameAndType("receiver", ReceiverNode.class);
         assertNotNull(receiverNode);
 
-        assertEquals("receiver", receiverNode.getConfig().getName());
+        assertEquals("receiver", receiverNode.getDescription().getName().getValue());
     }
 
     @Test
@@ -101,10 +96,10 @@ class GraphTest {
         assertNotNull(nodes);
         assertEquals(2, nodes.size());
         ReceiverNode receiverNode = assertInstanceOf(ReceiverNode.class, nodes.getFirst());
-        assertEquals("receiver", receiverNode.getConfig().getName());
+        assertEquals("receiver", receiverNode.getDescription().getName().getValue());
 
         PipelineNode pipelineNode = assertInstanceOf(PipelineNode.class, nodes.get(1));
-        assertEquals("pipeline", pipelineNode.getConfig().getName());
+        assertEquals("pipeline", pipelineNode.getDescription().getName().getValue());
 
     }
 
@@ -126,7 +121,7 @@ class GraphTest {
         assertNotNull(receiverNodes);
         assertEquals(1, receiverNodes.size());
         ReceiverNode receiverNode = receiverNodes.getFirst();
-        assertEquals("receiver", receiverNode.getConfig().getName());
+        assertEquals("receiver", receiverNode.getDescription().getName().getValue());
 
     }
 

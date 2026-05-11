@@ -3,7 +3,7 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.accumulator;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.Context;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class SpanAccumulator {
     private SpanAccumulator() {
     }
 
-    public static AccumulatedSpans accumulateSpans(Context context, List<Signal> signals) {
+    public static AccumulatedSpans accumulateSpans(SigletContext sigletContext, List<Signal> signals) {
         SpansAccumulator spansAccumulator = new SpansAccumulator();
         StringBuilder sb = new StringBuilder("Aggregated Spans[");
         signals.forEach(signal -> {
@@ -20,7 +20,7 @@ public class SpanAccumulator {
                 sb.append(protoSpanAdapter.getSpanId());
                 spansAccumulator.add(protoSpanAdapter.getUpdated(), protoSpanAdapter.getUpdatedInstrumentationScope(),
                         protoSpanAdapter.getUpdatedResource());
-                context.getSpanObjectPool().recycle(protoSpanAdapter);
+//                context.getSpanObjectPool().recycle(protoSpanAdapter);
             } else {
                 throw new SigletError(String.format("Can only aggregate spans but signal %s is %s", signal.getId(),
                         signal.getClass().getName()));

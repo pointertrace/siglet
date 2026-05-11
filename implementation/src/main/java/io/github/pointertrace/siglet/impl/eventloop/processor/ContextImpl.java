@@ -21,6 +21,9 @@ public class ContextImpl<T> implements Context<T> {
         this.config = config;
     }
 
+    public ContextImpl() {
+        this(null);
+    }
 
     @Override
     public ConcurrentMap<String, Object> getAttributes() {

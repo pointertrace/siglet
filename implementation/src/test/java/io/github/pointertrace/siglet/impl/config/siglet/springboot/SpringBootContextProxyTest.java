@@ -2,7 +2,6 @@ package io.github.pointertrace.siglet.impl.config.siglet.springboot;
 
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.config.siglet.ExampleJarsInfo;
-import io.github.pointertrace.siglet.parser.NodeCheckerFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.loader.launch.Archive;
 
@@ -37,8 +36,8 @@ class SpringBootContextProxyTest {
             assertInstanceOf(Spanlet.class, springBootContextProxy.getProcessor(
                     "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.siglet.SuffixSpanlet"));
 
-            assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
-                    "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.parser.SuffixConfigChecker"));
+//            assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
+//                    "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.parser.SuffixConfigChecker"));
 
             assertEquals("Hello World", getHelloWorldFromHttp());
         }

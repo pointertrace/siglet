@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>io.github.pointertrace.siglet.parser</groupId>
-    <artifactId>siglet-parser</artifactId>
+    <artifactId>siglet-parser-old</artifactId>
     <packaging>jar</packaging>
     <name>Siglet Parser</name>
     <description>A parser and validator for yaml files</description>

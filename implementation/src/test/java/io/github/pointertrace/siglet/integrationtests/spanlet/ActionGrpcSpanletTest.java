@@ -88,8 +88,7 @@ class ActionGrpcSpanletTest {
                 pipelines:
                 - name: pipeline
                   from: receiver
-                  start:
-                  - spanlet
+                  start: spanlet
                   processors:
                   - spanlet-groovy-action: spanlet
                     to: exporter
@@ -105,7 +104,7 @@ class ActionGrpcSpanletTest {
 
         generateSignals();
 
-        Thread.sleep(300);
+        Thread.sleep(30000);
 
         siglet.stop();
 

@@ -2,8 +2,11 @@ package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.config.graph.SignalType;
-import io.github.pointertrace.siglet.impl.engine.EngineElement;
+import io.github.pointertrace.siglet.api.signal.metric.Metric;
+import io.github.pointertrace.siglet.api.signal.trace.Span;
+import io.github.pointertrace.siglet.impl.config.graph.BaseNode;
+import io.github.pointertrace.siglet.impl.engine.Component;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
@@ -12,15 +15,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-public class TimeoutAccumulatorEventLoop implements SignalDestination,
-        EngineElement {
+public class TimeoutAccumulatorEventLoop implements SignalDestination, Component {
 
     private static final Logger LOGGER = LogManager.getLogger(TimeoutAccumulatorEventLoop.class);
 
@@ -60,8 +61,8 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination,
     }
 
     @Override
-    public Set<SignalType> getSignalCapabilities() {
-        return Set.of(SignalType.SPAN, SignalType.METRIC);
+    public SignalCapabilities getIncomingCapabilities() {
+        return SignalCapabilities.of(Span.class, Metric.class);
     }
 
     @Override
@@ -75,6 +76,11 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination,
             throw new SigletError("Cannot connect if state is not created");
         }
         next.add(destination);
+    }
+
+    @Override
+    public BaseNode getNode() {
+        return null;
     }
 
     @Override

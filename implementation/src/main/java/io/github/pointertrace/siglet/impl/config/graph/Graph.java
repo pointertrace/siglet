@@ -1,7 +1,8 @@
 package io.github.pointertrace.siglet.impl.config.graph;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.config.raw.*;
+import io.github.pointertrace.siglet.impl.config.descriptor.*;
+import io.github.pointertrace.siglet.parser.StringValue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,21 +13,21 @@ public class Graph {
 
     private final Map<String, BaseNode> nodeRegistry = new HashMap<>();
 
-    public void addItem(BaseConfig config) {
-        switch (config) {
-            case ReceiverConfig receiver -> nodeRegistry.put(receiver.getName(),
-                    new ReceiverNode(receiver));
+    public void addDescriptor(BaseDescriptor descriptor) {
+        switch (descriptor) {
+            case ReceiverDescriptor receiverDescriptor -> nodeRegistry.put(receiverDescriptor.getName().getValue(),
+                    new ReceiverNode(receiverDescriptor));
 
-            case ExporterConfig exporter -> nodeRegistry.put(exporter.getName(),
-                    new ExporterNode(exporter));
+            case ExporterDescriptor exporterDescriptor -> nodeRegistry.put(exporterDescriptor.getName().getValue(),
+                    new ExporterNode(exporterDescriptor));
 
-            case PipelineConfig pipeline -> nodeRegistry.put(pipeline.getName(),
-                    new PipelineNode(pipeline));
+            case PipelineDescriptor pipelineDescriptor -> nodeRegistry.put(pipelineDescriptor.getName().getValue(),
+                    new PipelineNode(pipelineDescriptor));
 
-            case ProcessorConfig siglet -> nodeRegistry.put(siglet.getName(),
+            case ProcessorDescriptor siglet -> nodeRegistry.put(siglet.getName().getValue(),
                     new ProcessorNode(siglet));
 
-            default -> throw new SigletError("Could not add config item type " + config.getClass().getName());
+            default -> throw new SigletError("Could not add config item type " + descriptor.getClass().getName());
         }
     }
 
@@ -73,19 +74,19 @@ public class Graph {
             switch (node) {
 
                 case ProcessorNode processorNode -> {
-                    processorNode.setTo(getNodesByName(processorNode.getConfig().getToNames()));
-                    processorNode.setPipeline(getNodeByNameAndType(processorNode.getConfig().getPipeline(), PipelineNode.class));
+                    processorNode.setTo(getNodesByName(processorNode.getDescription().getTo().stream().map(StringValue::getValue).toList()));
+                    processorNode.setPipeline(getNodeByNameAndType(processorNode.getDescription().getPipelineName(), PipelineNode.class));
                 }
                 case PipelineNode pipelineNode -> {
-                    pipelineNode.getFrom().add(getNodeByNameAndType(pipelineNode.getConfig().getFrom(), ReceiverNode.class));
-                    pipelineNode.getStart().addAll(getNodesByNameAndType(pipelineNode.getConfig().getStartNames(),
+                    pipelineNode.getFrom().add(getNodeByNameAndType(pipelineNode.getDescription().getFrom().getValue(), ReceiverNode.class));
+                    pipelineNode.getStart().addAll(getNodesByNameAndType(pipelineNode.getDescription().getStart().stream().map(StringValue::getValue).toList(),
                             ProcessorNode.class));
                 }
                 case ReceiverNode receiverNode -> {
                     receiverNode.getTo().addAll(nodeRegistry.values().stream()
                             .filter(PipelineNode.class::isInstance)
                             .map(PipelineNode.class::cast)
-                            .filter(p -> p.getConfig().getFrom().equals(receiverNode.getName()))
+                            .filter(p -> p.getDescription().getFrom().getValue().equals(receiverNode.getName()))
                             .map(BaseNode::getName)
                             .map(name -> getNodeByNameAndType(name, PipelineNode.class))
                             .toList());
@@ -93,7 +94,7 @@ public class Graph {
                 case ExporterNode exporterNode -> exporterNode.getFrom().addAll(nodeRegistry.values().stream()
                         .filter(ProcessorNode.class::isInstance)
                         .map(ProcessorNode.class::cast)
-                        .filter(s -> s.getConfig().getToNames().contains(exporterNode.getName()))
+                        .filter(s -> s.getDescription().getTo().stream().map(StringValue::getValue).toList().contains(exporterNode.getName()))
                         .map(BaseNode::getName)
                         .map(name -> getNodeByNameAndType(name, ProcessorNode.class))
                         .toList());

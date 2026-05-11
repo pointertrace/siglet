@@ -9,40 +9,40 @@ public class TraceToMetricProcessor {
 
         var config = """
                 receivers:
-                - grpc: trace-receiver
+                - grpc: trace-receiverDescriptor
                   address: localhost:8080
                   otelSignalType: trace
-                - grpc: metric-receiver
+                - grpc: metric-receiverDescriptor
                   address: localhost:8080
                   otelSignalType: metric
                 exporters:
-                - grpc: exporter
+                - grpc: exporterDescriptor
                   address: localhost:4317
-                pipelines:
-                - trace: trace-pipeline
-                  from: trace-receiver
+                pipelineDescriptors:
+                - trace: trace-pipelineDescriptor
+                  from: trace-receiverDescriptor
                   start: spanlet
-                  pipeline:
+                  pipelineDescriptor:
                   - spanlet: spanlet
-                    to: exporter
-                    type: baseEventloopProcessor
+                    to: exporterDescriptor
+                    type: baseProcessor
                     config:
                       action: |
                         println "span spanId=" + thisSignal.getSpanId()
-                        to "metric-receiver" send newGauge {
+                        to "metric-receiverDescriptor" send newGauge {
                           name "derivated metric"
                           unit "tests per second"
                           dataPoint {
                             value 1000
                           }
                         }
-                - metric: metric-pipeline
-                  from: metric-receiver
+                - metric: metric-pipelineDescriptor
+                  from: metric-receiverDescriptor
                   start: metriclet
-                  pipeline:
+                  pipelineDescriptor:
                   - metriclet: metriclet
-                    to: exporter
-                    type: baseEventloopProcessor
+                    to: exporterDescriptor
+                    type: baseProcessor
                     config:
                       action: |
                         println "metric name=" + thisSignal.getName()

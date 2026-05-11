@@ -1,8 +1,9 @@
 package io.github.pointertrace.siglet.impl.eventloop.result;
 
 import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
-import io.github.pointertrace.siglet.impl.eventloop.MapSignalDestination;
+import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.github.pointertrace.siglet.impl.eventloop.processor.result.SignalRoute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SignalRouteConfigTest {
 
-    private MapSignalDestination firstDestination;
+    private MockSignalDestination firstDestination;
 
-    private MapSignalDestination secondDestination;
+    private MockSignalDestination secondDestination;
 
-    private MapSignalDestination mappedFirstDestination;
+    private MockSignalDestination mappedFirstDestination;
 
-    private MapSignalDestination mappedSecondDestination;
+    private MockSignalDestination mappedSecondDestination;
 
     private SignalMock processSignal;
 
@@ -31,13 +32,13 @@ class SignalRouteConfigTest {
     @BeforeEach
     void setUp() {
 
-        firstDestination = new MapSignalDestination("first");
+        firstDestination = new MockSignalDestination("first", SignalCapabilities.of(SignalMock.class));
 
-        secondDestination = new MapSignalDestination("second");
+        secondDestination = new MockSignalDestination("second", SignalCapabilities.of(SignalMock.class));
 
-        mappedFirstDestination = new MapSignalDestination("mapped-first");
+        mappedFirstDestination = new MockSignalDestination("mapped-first", SignalCapabilities.of(SignalMock.class));
 
-        mappedSecondDestination = new MapSignalDestination("mapped-second");
+        mappedSecondDestination = new MockSignalDestination("mapped-second", SignalCapabilities.of(SignalMock.class));
 
         processSignal = new SignalMock(1);
 
@@ -67,7 +68,7 @@ class SignalRouteConfigTest {
 
         assertEquals(1, secondDestination.getSize());
         assertTrue(secondDestination.has("1"));
-        assertEquals(processSignal, secondDestination.get("1", SignalMock.class ));
+        assertEquals(processSignal, secondDestination.get("1", SignalMock.class));
     }
 
     @Test

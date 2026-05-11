@@ -1,14 +1,9 @@
 package io.github.pointertrace.siglet.impl.config.graph.validator;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.config.Config;
-import io.github.pointertrace.siglet.impl.config.ConfigFactory;
+import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.Graph;
 import io.github.pointertrace.siglet.impl.config.graph.GraphFactory;
-import io.github.pointertrace.siglet.impl.config.raw.RawConfig;
-import io.github.pointertrace.siglet.impl.engine.exporter.ExporterTypeRegistry;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
-import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverTypeRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,16 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CircularReferenceValidatorTest {
 
-    private ConfigFactory configFactory;
-
     private GraphFactory graphFactory;
 
     private CircularReferenceValidator circularReferenceValidator;
 
     @BeforeEach
     void setUp() {
-
-        configFactory = new ConfigFactory();
 
         graphFactory = new GraphFactory();
 
@@ -37,7 +28,7 @@ class CircularReferenceValidatorTest {
     @Test
     void validate_circularReferenceProcessorToProcessor() {
 
-        String configTxt = """
+        String yaml = """
                 receivers:
                 - debug: receiver
                 pipelines:
@@ -55,9 +46,9 @@ class CircularReferenceValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        Config config = configFactory.create(configTxt);
+        YamlDescriptor yamlDescriptor = YamlDescriptor.parse(yaml);
 
-        Graph graph = graphFactory.create(config);
+        Graph graph = graphFactory.create(yamlDescriptor);
 
         SigletError e = assertThrows(SigletError.class, () -> circularReferenceValidator.validate(graph));
 
@@ -71,7 +62,7 @@ class CircularReferenceValidatorTest {
     @Test
     void validate_circularReferenceProcessorToPipeline() {
 
-        String configTxt = """
+        String yaml = """
                 receivers:
                 - debug: receiver
                 pipelines:
@@ -89,11 +80,12 @@ class CircularReferenceValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        Config config = configFactory.create(configTxt);
+        YamlDescriptor yamlDescriptor = YamlDescriptor.parse(yaml);
 
-        Graph graph = graphFactory.create(config);
+        Graph graph = graphFactory.create(yamlDescriptor);
 
         SigletError e = assertThrows(SigletError.class, () -> circularReferenceValidator.validate(graph));
+
 
         assertEquals("""
                        There are circular references:
@@ -104,7 +96,7 @@ class CircularReferenceValidatorTest {
 
     @Test
     void validate() {
-        String configTxt = """
+        String yaml = """
                 receivers:
                 - debug: receiver
                 exporters:
@@ -120,12 +112,9 @@ class CircularReferenceValidatorTest {
                       action: signal.name = signal.name +"-suffix"
                 """;
 
-        RawConfig rawConfig = configFactory.createRawConfig(configTxt, new ReceiverTypeRegistry(),
-                new ProcessorTypeRegistry(), new ExporterTypeRegistry());
+        YamlDescriptor yamlDescriptor = YamlDescriptor.parse(yaml);
 
-        Config config = configFactory.create(configTxt);
-
-        Graph graph = graphFactory.create(config);
+        Graph graph = graphFactory.create(yamlDescriptor);
 
         circularReferenceValidator.validate(graph);
 

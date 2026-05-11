@@ -1,9 +1,11 @@
 package io.github.pointertrace.siglet.api.signal.trace;
 
+import io.github.pointertrace.siglet.api.Signal;
+
 /**
  * Represents a collection of spans that share the same trace ID.
  */
-public interface Trace {
+public interface Trace extends Signal {
 
     /**
      * Returns the high 64 bits of the trace ID.

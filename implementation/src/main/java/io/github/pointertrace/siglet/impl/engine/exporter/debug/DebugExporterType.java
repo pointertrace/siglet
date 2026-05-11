@@ -1,25 +1,26 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.debug;
 
+import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterCreator;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterType;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ConfigDefinition;
-import io.github.pointertrace.siglet.parser.schema.EmptyPropertyChecker;
 
-public class DebugExporterType implements ExporterType {
+public class DebugExporterType implements ExporterType<Void> {
 
 
     @Override
-    public String getName() {
+    public String getType() {
         return "debug";
     }
 
     @Override
-    public ConfigDefinition getConfigDefinition() {
-        return () -> new EmptyPropertyChecker("config");
+    public ConfigurationFactory<Void> getConfigurationFactory() {
+        return ConfigurationFactory.of();
     }
 
     @Override
-    public ExporterCreator getExporterCreator() {
+    public ComponentCreator<ExporterNode> getComponentCreator() {
         return (context, node) -> new DebugExporter(node);
     }
 
