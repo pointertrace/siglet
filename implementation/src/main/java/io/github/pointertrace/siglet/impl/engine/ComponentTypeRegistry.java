@@ -15,7 +15,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.string;
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.stringValueObject;
 
 public class ComponentTypeRegistry<T extends ComponentType<?, ?>> {

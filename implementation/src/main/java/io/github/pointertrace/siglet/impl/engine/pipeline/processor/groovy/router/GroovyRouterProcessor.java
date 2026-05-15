@@ -1,10 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.router;
 
 import groovy.lang.Script;
-import io.github.pointertrace.siglet.api.Context;
-import io.github.pointertrace.siglet.api.Result;
-import io.github.pointertrace.siglet.api.ResultFactory;
-import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.api.*;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
@@ -23,7 +20,7 @@ public class GroovyRouterProcessor implements Processor {
 
     private ProcessorNode node;
 
-    private final Eventloop<Void> eventloop;
+    private final Eventloop<Void> eventLoop;
 
     GroovyRouterProcessor(SigletContext sigletContext, ProcessorNode node) {
         this(node.getName(), getConfig(node).getDefaultRoute().getValue(), getConfig(node).getRoutes(),
@@ -36,7 +33,7 @@ public class GroovyRouterProcessor implements Processor {
     GroovyRouterProcessor(String name, String defaultRoute, List<RouteConfig> routes, SignalCapabilities signalCapabilities,
                           int queueCapacity, int threadPoolSize) {
         ContextImpl<Void> ctx = new ContextImpl<>(null);
-        this.eventloop = new Eventloop<>(name, createProcessorFactory(defaultRoute, routes),
+        this.eventLoop = new Eventloop<>(name, createProcessorFactory(defaultRoute, routes),
                 ctx, signalCapabilities, signalCapabilities, queueCapacity, threadPoolSize);
     }
 
@@ -55,47 +52,53 @@ public class GroovyRouterProcessor implements Processor {
 
     @Override
     public void start() {
-        eventloop.start();
+        eventLoop.start();
     }
 
     public Context<Void> getContext() {
-        return eventloop.getContext();
+        return eventLoop.getContext();
     }
 
     @Override
     public void stop() {
-        eventloop.stop();
+        eventLoop.stop();
     }
 
     @Override
     public State getState() {
-        return eventloop.getState();
+        return eventLoop.getState();
     }
 
     @Override
     public String getName() {
-        return eventloop.getName();
+        return eventLoop.getName();
     }
 
     @Override
     public boolean send(Signal signal) {
-        return eventloop.send(signal);
+        return eventLoop.send(signal);
     }
 
     @Override
     public SignalCapabilities getIncomingCapabilities() {
-        return eventloop.getIncomingCapabilities();
+        return eventLoop.getIncomingCapabilities();
     }
 
     @Override
     public void connect(SignalDestination destination) {
-        eventloop.getOutgoingCapabilities().checkCompatibility(destination.getIncomingCapabilities());
-        eventloop.connect(destination);
+        if (! eventLoop.getOutgoingCapabilities().isAbleToSend(destination.getIncomingCapabilities())) {
+            throw new SigletError(String.format("Cannot connect processor [%s] to [%s] because they have incompatible " +
+                            "signal capabilities. Processor generates [%s] and destination expects [%s]",
+                    eventLoop.getName(), destination.getName(), eventLoop.getOutgoingCapabilities().print(),
+                    destination.getIncomingCapabilities().print()));
+        }
+
+        eventLoop.connect(destination);
     }
 
     @Override
     public SignalCapabilities getOutgoingCapabilities() {
-        return eventloop.getOutgoingCapabilities();
+        return eventLoop.getOutgoingCapabilities();
     }
 
     private static class GroovyRouterBaseGroovyProcessor<T> extends BaseGroovyProcessor<T> {

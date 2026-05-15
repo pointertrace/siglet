@@ -2,8 +2,8 @@ package io.github.pointertrace.siglet.impl.eventloop.processor;
 
 import io.github.pointertrace.siglet.api.Context;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.resource.v1.Resource;
@@ -41,7 +41,7 @@ public class ContextImpl<T> implements Context<T> {
     }
 
     @Override
-    public ProtoMetricAdapter newGauge(Signal baseSignal) {
+    public MetricAdapter newGauge(Signal baseSignal) {
 
         io.opentelemetry.proto.metrics.v1.Gauge gauge = io.opentelemetry.proto.metrics.v1.Gauge.newBuilder()
                 .build();
@@ -53,10 +53,8 @@ public class ContextImpl<T> implements Context<T> {
         Resource resource = getResource(baseSignal);
         InstrumentationScope instrumentationScope = getInstrumentationScope(baseSignal);
 
-        ProtoMetricAdapter metricAdapter = new ProtoMetricAdapter();
-        metricAdapter.recycle(metric,resource,instrumentationScope);
+        return new MetricAdapter(metric,resource,instrumentationScope);
 
-        return metricAdapter;
     }
 
     @Override
@@ -65,7 +63,7 @@ public class ContextImpl<T> implements Context<T> {
     }
 
     @Override
-    public ProtoMetricAdapter newSum(Signal baseSignal) {
+    public MetricAdapter newSum(Signal baseSignal) {
 
         io.opentelemetry.proto.metrics.v1.Sum sum = io.opentelemetry.proto.metrics.v1.Sum.newBuilder()
                 .build();
@@ -76,16 +74,13 @@ public class ContextImpl<T> implements Context<T> {
 
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoMetricAdapter metricAdapter = new ProtoMetricAdapter();
-        metricAdapter.recycle(metric,resource,instrumentationScope);
-
-        return metricAdapter;
+        return new MetricAdapter(metric,resource,instrumentationScope);
     }
 
     private Resource getResource(Signal signal) {
-        if (signal instanceof ProtoSpanAdapter span) {
+        if (signal instanceof SpanAdapter span) {
             return span.getUpdatedResource().toBuilder().build();
-        } else if (signal instanceof ProtoMetricAdapter metric) {
+        } else if (signal instanceof MetricAdapter metric) {
             return metric.getUpdatedResource().toBuilder().build();
         } else {
             return Resource.newBuilder().build();
@@ -94,10 +89,10 @@ public class ContextImpl<T> implements Context<T> {
 
 
     private InstrumentationScope getInstrumentationScope(Signal signal) {
-        if (signal instanceof ProtoSpanAdapter span) {
-            return span.getUpdatedInstrumentationScope().toBuilder().build();
-        } else if (signal instanceof ProtoMetricAdapter metric) {
-            return metric.getUpdatedInstrumentationScope().toBuilder().build();
+        if (signal instanceof SpanAdapter span) {
+            return span.getUpdatedScope().toBuilder().build();
+        } else if (signal instanceof MetricAdapter metric) {
+            return metric.getUpdatedScope().toBuilder().build();
         } else {
             return InstrumentationScope.newBuilder().build();
         }

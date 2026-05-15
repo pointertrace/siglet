@@ -7,8 +7,6 @@ import io.github.pointertrace.siglet.parser.Location;
 import io.github.pointertrace.siglet.parser.Schema;
 
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.integerValueObject;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.property;
 
 public class GlobalConfigDescriptor implements Locatable {
 

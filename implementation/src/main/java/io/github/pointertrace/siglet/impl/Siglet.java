@@ -1,8 +1,8 @@
 package io.github.pointertrace.siglet.impl;
 
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.ContextFactory;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SigletEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

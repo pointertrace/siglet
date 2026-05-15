@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.api.adapter
 
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter
 import io.opentelemetry.proto.common.v1.KeyValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,7 +12,7 @@ class ProtoAttributesAdapterGroovyTest {
 
     private List<KeyValue> protoAttributes
 
-    private ProtoAttributesAdapter protoAttributesAdapter
+    private AttributesAdapter protoAttributesAdapter
 
     @BeforeEach
     void setUp() {
@@ -56,8 +56,7 @@ class ProtoAttributesAdapterGroovyTest {
                 .setValue(AdapterUtils.objectToAnyValue(new byte[]{0, 1, 2}))
                 .build())
 
-        protoAttributesAdapter = new ProtoAttributesAdapter()
-        protoAttributesAdapter.recycle(protoAttributes)
+        protoAttributesAdapter = new AttributesAdapter(protoAttributes);
     }
 
 

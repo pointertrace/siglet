@@ -56,7 +56,6 @@ class ComponentTypeRegistryTest {
                 .addProperty(componentTypeRegistry.<DescriptionMock>getPropertySwitchSchema(DescriptionMock::setName,
                         DescriptionMock::setType));
 
-        System.out.println(schema.describe());
         Node parsed = Parser.DEFAULT.parse(yaml);
 
         Factory factory = schema.validate(parsed);

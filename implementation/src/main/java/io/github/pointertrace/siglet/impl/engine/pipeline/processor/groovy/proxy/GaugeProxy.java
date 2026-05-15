@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 
 import groovy.lang.Closure;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ public class GaugeProxy extends MetricProxy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GaugeProxy.class);
 
-    public GaugeProxy(Signal signal, ProtoMetricAdapter metricAdapter) {
+    public GaugeProxy(Signal signal, MetricAdapter metricAdapter) {
         super(signal, metricAdapter);
         //  TODO check if metric is gauge
     }

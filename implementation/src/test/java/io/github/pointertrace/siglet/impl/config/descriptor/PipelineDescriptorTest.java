@@ -226,7 +226,7 @@ class PipelineDescriptorTest {
         var config = """
                 name: pipeline
                 from: receiver
-                start:
+                start: []
                 processors:
                   - spanlet-groovy-action: processor
                     config:

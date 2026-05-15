@@ -4,7 +4,6 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.descriptor.BaseDescriptor;
 import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

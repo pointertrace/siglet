@@ -3,13 +3,13 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 import groovy.lang.Closure;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.trace.SpanKind;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 
 public class SpanProxy extends BaseProxy {
 
-    private final ProtoSpanAdapter spanAdapter;
+    private final SpanAdapter spanAdapter;
 
-    public SpanProxy(Signal signal, ProtoSpanAdapter spanAdapter) {
+    public SpanProxy(Signal signal, SpanAdapter spanAdapter) {
         super(signal);
         this.spanAdapter = spanAdapter;
     }

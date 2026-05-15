@@ -1,10 +1,10 @@
 package io.github.pointertrace.siglet.impl.eventloop.groovy.impl;
 
 import groovy.lang.Script;
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoNumberDataPointAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.NumberDataPointAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.Compiler;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -21,7 +21,7 @@ class GaugeGroovyTest {
     private Resource resource;
     private InstrumentationScope instrumentationScope;
     private Compiler compiler;
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
 
     @BeforeEach
@@ -47,7 +47,7 @@ class GaugeGroovyTest {
                 .setName("span name")
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
         compiler = new Compiler();
 
@@ -85,7 +85,7 @@ class GaugeGroovyTest {
         Script script = compiler.compile(gaugeScript);
         compiler.prepareScript(script, spanAdapter, null);
 
-        ProtoMetricAdapter newGauge = (ProtoMetricAdapter) script.run();
+        MetricAdapter newGauge = (MetricAdapter) script.run();
 
 
         assertTrue(newGauge.hasGauge());
@@ -96,13 +96,13 @@ class GaugeGroovyTest {
         assertEquals(2, newGauge.getGauge().getDataPoints().getSize());
 
         // first data point
-        ProtoNumberDataPointAdapter numberDataPoint = newGauge.getGauge().getDataPoints().get(0);
+        NumberDataPointAdapter numberDataPoint = newGauge.getGauge().getDataPoints().get(0);
         assertNotNull(numberDataPoint);
         assertEquals(100, numberDataPoint.getAsLong());
         assertEquals(10, numberDataPoint.getTimeUnixNano());
         assertEquals(1, numberDataPoint.getFlags());
 
-        ProtoAttributesAdapter attributesAdapter = numberDataPoint.getAttributes();
+        AttributesAdapter attributesAdapter = numberDataPoint.getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(3, numberDataPoint.getAttributes().getSize());
         assertEquals("first attribute value", attributesAdapter.getAsString("first attribute key"));
@@ -110,7 +110,7 @@ class GaugeGroovyTest {
         assertEquals("new first attribute value", attributesAdapter.getAsString("third attribute key"));
 
         assertSame(resource, newGauge.getUpdatedResource());
-        assertSame(instrumentationScope, newGauge.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, newGauge.getUpdatedScope());
 
 
         // second datapoint
@@ -128,6 +128,6 @@ class GaugeGroovyTest {
 
         // resource and instrumentation scope
         assertSame(resource, newGauge.getUpdatedResource());
-        assertSame(instrumentationScope, newGauge.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, newGauge.getUpdatedScope());
     }
 }

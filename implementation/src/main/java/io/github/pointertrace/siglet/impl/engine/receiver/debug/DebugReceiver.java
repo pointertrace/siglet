@@ -47,7 +47,7 @@ public class DebugReceiver implements Receiver {
 
     @Override
     public void connect(SignalDestination signalDestination) {
-        signalCapabilities.checkCompatibility(signalDestination.getIncomingCapabilities());
+        signalCapabilities.isAbleToSend(signalDestination.getIncomingCapabilities());
         destinations.add(signalDestination);
     }
 

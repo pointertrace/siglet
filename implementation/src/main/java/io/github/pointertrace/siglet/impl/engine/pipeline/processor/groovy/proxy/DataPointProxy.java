@@ -3,18 +3,18 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 import groovy.lang.Closure;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoNumberDataPointAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.NumberDataPointAdapter;
 
 public class DataPointProxy extends BaseProxy {
 
-    private final ProtoNumberDataPointAdapter dataPointAdapter;
-    private final ProtoMetricAdapter metricAdapter;
+    private final NumberDataPointAdapter dataPointAdapter;
+    private final MetricAdapter metricAdapter;
 
     private final boolean allowDoubleAsValue;
 
-    public DataPointProxy(Signal signal, ProtoMetricAdapter metricAdapter,
-                          ProtoNumberDataPointAdapter dataPointAdapter,
+    public DataPointProxy(Signal signal, MetricAdapter metricAdapter,
+                          NumberDataPointAdapter dataPointAdapter,
                           boolean allowDoubleAsValue) {
         super(signal);
         this.metricAdapter = metricAdapter;

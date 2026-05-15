@@ -4,9 +4,9 @@ import groovy.lang.Closure;
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.Compiler;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.ScriptBaseClass;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.proxy.NumberDataPointAttributesProxy;
@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AttributesGroovyTest {
 
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
-    private ProtoMetricAdapter metricAdapter;
+    private MetricAdapter metricAdapter;
 
     private Compiler compiler;
 
@@ -96,9 +96,9 @@ class AttributesGroovyTest {
                         .build())
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
-        metricAdapter = new ProtoMetricAdapter().recycle(metric, resource, instrumentationScope);
+        metricAdapter = new MetricAdapter(metric, resource, instrumentationScope);
 
         compiler = new Compiler(AttributesBaseScript.class);
         AttributesBaseScript.spanAdapter = spanAdapter;
@@ -121,7 +121,7 @@ class AttributesGroovyTest {
         script.run();
 
 
-        ProtoAttributesAdapter attributesAdapter = spanAdapter.getAttributes();
+        AttributesAdapter attributesAdapter = spanAdapter.getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(3, spanAdapter.getAttributes().getSize());
         assertEquals("span name", attributesAdapter.getAsString("attribute from span"));
@@ -145,7 +145,7 @@ class AttributesGroovyTest {
         compiler.prepareScript(script, spanAdapter, null);
         script.run();
 
-        ProtoAttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().get(0).getAttributes();
+        AttributesAdapter attributesAdapter = metricAdapter.getGauge().getDataPoints().get(0).getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(4, attributesAdapter.getSize());
         assertEquals("metric name", attributesAdapter.getAsString("attribute from metric"));
@@ -156,8 +156,8 @@ class AttributesGroovyTest {
 
     public abstract static class AttributesBaseScript extends ScriptBaseClass {
 
-        private static ProtoSpanAdapter spanAdapter;
-        private static ProtoMetricAdapter metricAdapter;
+        private static SpanAdapter spanAdapter;
+        private static MetricAdapter metricAdapter;
 
         public void spanAttributes(Closure<Void> closure) {
             closure.setDelegate(new SpanAttributesProxy(new SignalMock(), spanAdapter));

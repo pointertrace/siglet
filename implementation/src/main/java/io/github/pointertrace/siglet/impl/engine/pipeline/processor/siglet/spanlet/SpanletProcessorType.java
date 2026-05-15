@@ -2,7 +2,6 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.span
 
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
-import io.github.pointertrace.siglet.impl.config.siglet.fatjar.FatJarSigletDefinition;
 import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;

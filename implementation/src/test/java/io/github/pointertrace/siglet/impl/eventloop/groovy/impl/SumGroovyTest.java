@@ -1,10 +1,10 @@
 package io.github.pointertrace.siglet.impl.eventloop.groovy.impl;
 
 import groovy.lang.Script;
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoNumberDataPointAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.NumberDataPointAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.Compiler;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -21,7 +21,7 @@ class SumGroovyTest {
     private Resource resource;
     private InstrumentationScope instrumentationScope;
     private Compiler compiler;
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
 
     @BeforeEach
@@ -47,7 +47,7 @@ class SumGroovyTest {
                 .setName("span name")
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span,resource,instrumentationScope);
+        spanAdapter = new SpanAdapter(span,resource,instrumentationScope);
 
         compiler = new Compiler();
 
@@ -79,7 +79,7 @@ class SumGroovyTest {
 
 
 
-        ProtoMetricAdapter newSum = (ProtoMetricAdapter) script.run();
+        MetricAdapter newSum = (MetricAdapter) script.run();
 
         assertTrue(newSum.hasSum());
         assertEquals("sum name span name", newSum.getName());
@@ -87,12 +87,12 @@ class SumGroovyTest {
         assertEquals("sum unit", newSum.getUnit());
 
         assertEquals(1, newSum.getSum().getDataPoints().getSize());
-        ProtoNumberDataPointAdapter numberDataPoint = newSum.getSum().getDataPoints().get(0);
+        NumberDataPointAdapter numberDataPoint = newSum.getSum().getDataPoints().get(0);
         assertNotNull(numberDataPoint);
         assertEquals(50,numberDataPoint.getAsLong());
         assertEquals(5,numberDataPoint.getFlags());
 
-        ProtoAttributesAdapter attributesAdapter = numberDataPoint.getAttributes();
+        AttributesAdapter attributesAdapter = numberDataPoint.getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(2, numberDataPoint.getAttributes().getSize());
         assertEquals("first attribute value",attributesAdapter.getAsString("first attribute key") );
@@ -101,6 +101,6 @@ class SumGroovyTest {
 
         // resource and instrumentation scope
         assertSame(resource, newSum.getUpdatedResource());
-        assertSame(instrumentationScope, newSum.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, newSum.getUpdatedScope());
     }
 }

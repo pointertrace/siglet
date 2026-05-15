@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.integrationtests.bundle;
 
 import io.github.pointertrace.siglet.api.Context;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.config.siglet.ExampleJarsInfo;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
@@ -14,6 +14,8 @@ import io.github.pointertrace.siglet.parser.Factory;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.Schema;
 import io.github.pointertrace.siglet.parser.impl.YamlParser;
+import io.opentelemetry.proto.common.v1.InstrumentationScope;
+import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,14 +32,14 @@ public class FatJarBundleTest {
 
     private FatJarBundleLoader fatJarBundleLoader;
 
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
     @BeforeEach
     void setUp() {
         fatJarBundleLoader = new FatJarBundleLoader();
 
-        spanAdapter = new ProtoSpanAdapter();
-        spanAdapter.recycle(Span.newBuilder().setName("name").build(),null,null);
+        spanAdapter = new SpanAdapter(Span.newBuilder().setName("name").build(), Resource.newBuilder().build(),
+                InstrumentationScope.newBuilder().build());
     }
 
 

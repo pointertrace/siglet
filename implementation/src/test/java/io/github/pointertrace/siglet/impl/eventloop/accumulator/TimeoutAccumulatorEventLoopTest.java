@@ -1,240 +1,209 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import io.github.pointertrace.siglet.impl.engine.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Disabled
 class TimeoutAccumulatorEventLoopTest {
 
-    private SignalMock signal1;
+    @Test
+    void send_whenNotRunning_throwsEventLoopError() {
+        TimeoutAccumulatorEventLoop eventLoop = new TimeoutAccumulatorEventLoop(
+                "acc",
+                10,
+                100,
+                2,
+                passThroughAccumulator(),
+                (maxSize, accumulator, destinations, deadline) -> new TrackingBuffer(0)
+        );
 
-    private SignalMock signal2;
-
-    private SignalMock signal3;
-
-    private SignalMock signal4;
-
-    private TimeoutAccumulatorEventLoop timeoutAccumulatorEventLoop;
-
-    public AtomicInteger aggregatorIdGenerator;
-
-    private MockSignalDestination destination;
-
-    @BeforeEach
-    void setUp() {
-
-        signal1 = new SignalMock(1);
-
-        signal2 = new SignalMock(2);
-
-        signal3 = new SignalMock(3);
-
-        signal4 = new SignalMock(4);
-
-        aggregatorIdGenerator = new AtomicInteger(1);
-
-        destination = new MockSignalDestination("final", SignalCapabilities.of(SignalMock.class));
-
-
+        assertThrows(EventLoopError.class, () -> eventLoop.send(new SignalMock("1")));
+        assertEquals(State.CREATED, eventLoop.getState());
     }
-
 
     @Test
-    void aggregate_oneByOneMaxSize() {
+    void connect_whenRunning_throwsSigletError() {
+        TimeoutAccumulatorEventLoop eventLoop = new TimeoutAccumulatorEventLoop(
+                "acc",
+                10,
+                100,
+                2,
+                passThroughAccumulator(),
+                (maxSize, accumulator, destinations, deadline) -> new TrackingBuffer(0)
+        );
 
-        AtomicInteger count = new AtomicInteger(1);
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            eventLoop.start();
+            assertEquals(State.RUNNING, eventLoop.getState());
+            assertThrows(SigletError.class, () -> eventLoop.connect(new NoopDestination("dest")));
+            eventLoop.stop();
+        });
 
-        timeoutAccumulatorEventLoop = new TimeoutAccumulatorEventLoop("test", 1000, 2, 1,
-                AggregatedSignalMock::new);
-
-        timeoutAccumulatorEventLoop.connect(destination);
-        timeoutAccumulatorEventLoop.start();
-
-        assertTrue(timeoutAccumulatorEventLoop.send(signal1));
-        assertTrue(timeoutAccumulatorEventLoop.send(signal2));
-
-        timeoutAccumulatorEventLoop.stop();
-
-        assertEquals(2, destination.getSize());
-
-        assertTrue(destination.has("1"));
-        assertTrue(destination.get("1", AggregatedSignalMock.class).has(1));
-
-        assertTrue(destination.has("2"));
-        assertTrue(destination.get("2", AggregatedSignalMock.class).has(2));
-
-
+        assertEquals(State.STOPPED, eventLoop.getState());
     }
-//
-//    @Test
-//    void aggregate_oneByOneTimeout() throws InterruptedException {
-//
-//        AtomicInteger count = new AtomicInteger(1);
-//
-//        timeoutAggregator = new TimeoutAggregator<>("test", 100, 2,
-//                10, TimeoutAggregatorTest::aggregate, s -> {
-//            List<SignalMock> ns = new ArrayList<>(s);
-//            ns.sort(Comparator.comparingInt(a -> a.id));
-//            aggregated.put(count.getAndIncrement(), ns);
-//        });
-//
-//        timeoutAggregator.start();
-//
-//        assertTrue(timeoutAggregator.offer(signal1));
-//        Thread.sleep(200);
-//
-//        assertTrue(timeoutAggregator.offer(signal2));
-//        Thread.sleep(200);
-//
-//        timeoutAggregator.stop();
-//
-//        assertEquals(2, aggregated.size());
-//
-//        assertEquals(1, aggregated.get(1).size());
-//        assertEquals(1, aggregated.get(1).getFirst().id);
-//
-//        assertEquals(1, aggregated.get(2).size());
-//        assertEquals(2, aggregated.get(2).getFirst().id);
-//
-//    }
-//
-//    @Test
-//    void aggregate_twoMaxSize() throws InterruptedException {
-//
-//        AtomicInteger count = new AtomicInteger(1);
-//
-//        timeoutAggregator = new TimeoutAggregator<>("test", 100, 4,
-//                2, TimeoutAggregatorTest::aggregate, s -> {
-//            List<SignalMock> ns = new ArrayList<>(s);
-//            ns.sort(Comparator.comparingInt(a -> a.id));
-//            aggregated.put(count.getAndIncrement(), ns);
-//        });
-//
-//        timeoutAggregator.start();
-//
-//        assertTrue(timeoutAggregator.offer(signal1));
-//        assertTrue(timeoutAggregator.offer(signal2));
-//        assertTrue(timeoutAggregator.offer(signal3));
-//        assertTrue(timeoutAggregator.offer(signal4));
-//        timeoutAggregator.stop();
-//
-//        assertEquals(2, aggregated.size());
-//        System.out.println(aggregated);
-//
-//        assertEquals(2, aggregated.get(1).size());
-//        assertEquals(1, aggregated.get(1).getFirst().id);
-//        assertEquals(2, aggregated.get(1).get(1).id);
-//
-//        assertEquals(2, aggregated.get(2).size());
-//        assertEquals(3, aggregated.get(2).getFirst().id);
-//        assertEquals(4, aggregated.get(2).get(1).id);
-//
-//    }
-//
-//    @Test
-//    void aggregate_twoTimeout() throws InterruptedException {
-//
-//        AtomicInteger count = new AtomicInteger(1);
-//
-//        timeoutAggregator = new TimeoutAggregator<>("test", 100, 2,
-//                5, TimeoutAggregatorTest::aggregate, AggregatedSignalMock::new s -> {
-//            List<SignalMock> ns = new ArrayList<>(s);
-//            ns.sort(Comparator.comparingInt(a -> a.id));
-//            aggregated.put(count.getAndIncrement(), ns);
-//        });
-//
-//        timeoutAggregator.start();
-//
-//        assertTrue(timeoutAggregator.offer(signal1));
-//        Thread.sleep(60);
-//
-//
-//        assertTrue(timeoutAggregator.offer(signal2));
-//        Thread.sleep(60);
-//
-//        assertTrue(timeoutAggregator.offer(signal3));
-//        Thread.sleep(60);
-//
-//        assertTrue(timeoutAggregator.offer(signal4));
-//        Thread.sleep(60);
-//
-//        timeoutAggregator.stop();
-//
-//        assertEquals(2, aggregated.size());
-//
-//        assertEquals(2, aggregated.get(1).size());
-//        assertEquals(1, aggregated.get(1).getFirst().id);
-//        assertEquals(2, aggregated.get(1).get(1).id);
-//
-//        assertEquals(2, aggregated.get(2).size());
-//        assertEquals(3, aggregated.get(2).getFirst().id);
-//        assertEquals(4, aggregated.get(2).get(1).id);
-//
-//    }
 
-    private static class SignalMock implements Signal {
+    @Test
+    void start_send_stop_addsSignalsToBufferAndFlushes() {
+        TrackingBuffer trackingBuffer = new TrackingBuffer(2);
 
-        private final int id;
+        TimeoutAccumulatorEventLoop eventLoop = new TimeoutAccumulatorEventLoop(
+                "acc",
+                10,
+                100,
+                2,
+                passThroughAccumulator(),
+                (maxSize, accumulator, destinations, deadline) -> trackingBuffer
+        );
 
-        private SignalMock(int id) {
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            eventLoop.start();
+
+            assertTrue(eventLoop.send(new SignalMock("1")));
+            assertTrue(eventLoop.send(new SignalMock("2")));
+
+            assertTrue(trackingBuffer.awaitAdds(500));
+
+            eventLoop.stop();
+        });
+
+        assertEquals(List.of("1", "2"), trackingBuffer.addedSignalIds);
+        assertEquals(1, trackingBuffer.flushCalls);
+        assertEquals(State.STOPPED, eventLoop.getState());
+    }
+
+    @Test
+    void stop_withoutSignals_stillFlushesBuffer() {
+        TrackingBuffer trackingBuffer = new TrackingBuffer(0);
+
+        TimeoutAccumulatorEventLoop eventLoop = new TimeoutAccumulatorEventLoop(
+                "acc",
+                10,
+                100,
+                2,
+                passThroughAccumulator(),
+                (maxSize, accumulator, destinations, deadline) -> trackingBuffer
+        );
+
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            eventLoop.start();
+            eventLoop.stop();
+        });
+
+        assertTrue(trackingBuffer.addedSignalIds.isEmpty());
+        assertEquals(1, trackingBuffer.flushCalls);
+    }
+
+    private Function<Signal[], Signal> passThroughAccumulator() {
+        return signals -> signals[0];
+    }
+
+    private static final class SignalMock implements Signal {
+        private final String id;
+
+        private SignalMock(String id) {
             this.id = id;
         }
 
         @Override
         public String getId() {
-            return "" + id;
-        }
-
-        @Override
-        public String toString() {
-            return "SignalMock[" + id + "]";
+            return id;
         }
     }
 
-    private class AggregatedSignalMock implements Signal {
+    private static final class NoopDestination implements SignalDestination {
+        private final String name;
 
-        private final int id;
-
-        private final List<Signal> signals;
-
-        private AggregatedSignalMock(List<Signal> signals) {
-            this.signals = signals;
-            this.id = aggregatorIdGenerator.getAndIncrement();
-        }
-
-        public boolean has(int signalMockId) {
-            return signals.stream()
-                    .map(SignalMock.class::cast)
-                    .anyMatch(signalMock -> signalMock.id == signalMockId);
+        private NoopDestination(String name) {
+            this.name = name;
         }
 
         @Override
-        public String getId() {
-            return signals.stream()
-                    .map(SignalMock.class::cast)
-                    .map(SignalMock::getId)
-                    .collect(Collectors.joining(",", "[", "]"));
+        public String getName() {
+            return name;
         }
 
         @Override
-        public String toString() {
-            return signals.stream()
-                    .map(SignalMock.class::cast)
-                    .map(SignalMock::getId)
-                    .collect(Collectors.joining(",", "AggregatedSignalMock[", "]"));
+        public boolean send(Signal signal) {
+            return true;
         }
 
+        @Override
+        public SignalCapabilities getIncomingCapabilities() {
+            return SignalCapabilities.of(SignalMock.class);
+        }
     }
 
+    private static final class TrackingBuffer extends Buffer {
+
+        private final CountDownLatch addsLatch;
+        private final List<String> addedSignalIds = Collections.synchronizedList(new ArrayList<>());
+        private volatile int flushCalls;
+
+        private TrackingBuffer(int expectedAdds) {
+            super(1, passThroughSignal(), List.of(new NoopDestination("ignored")), new PassiveDeadline());
+            this.addsLatch = new CountDownLatch(expectedAdds);
+        }
+
+        @Override
+        public void add(Signal signal) {
+            addedSignalIds.add(signal.getId());
+            addsLatch.countDown();
+        }
+
+        @Override
+        public void flush() {
+            flushCalls++;
+        }
+
+        private boolean awaitAdds(long timeoutMillis) throws InterruptedException {
+            return addsLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        }
+
+        private static Function<Signal[], Signal> passThroughSignal() {
+            return signals -> signals.length == 0 ? new SignalMock("empty") : signals[0];
+        }
+    }
+
+    private static final class PassiveDeadline implements Deadline {
+        @Override
+        public void start() {
+        }
+
+        @Override
+        public void reset() {
+        }
+
+        @Override
+        public boolean isExpired() {
+            return false;
+        }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+        @Override
+        public long remainingNanos() {
+            return Long.MAX_VALUE;
+        }
+    }
 }
+

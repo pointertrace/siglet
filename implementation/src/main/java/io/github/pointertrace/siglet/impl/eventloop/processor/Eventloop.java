@@ -182,7 +182,7 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
 
     public void connect(SignalDestination signalDestination) {
         checkState(State.CREATED);
-        outgoingCapabilities.checkCompatibility(signalDestination.getIncomingCapabilities());
+        outgoingCapabilities.isAbleToSend(signalDestination.getIncomingCapabilities());
         next.add(signalDestination);
     }
 

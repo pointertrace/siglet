@@ -4,9 +4,9 @@ import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.signal.trace.SpanKind;
 import io.github.pointertrace.siglet.api.signal.trace.StatusCode;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoStatusAdapter;
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.StatusAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.Compiler;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -25,7 +25,7 @@ class SpanGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
     private Compiler compiler;
 
     @BeforeEach
@@ -74,7 +74,7 @@ class SpanGroovyTest {
                 ))
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
         compiler = new Compiler();
     }
@@ -120,11 +120,11 @@ class SpanGroovyTest {
         assertEquals(80, spanAdapter.getStartTimeUnixNano());
         assertEquals(90, spanAdapter.getEndTimeUnixNano());
 
-        ProtoStatusAdapter statusAdapter = spanAdapter.getStatus();
+        StatusAdapter statusAdapter = spanAdapter.getStatus();
         assertEquals(StatusCode.OK, statusAdapter.getCode());
         assertEquals("status message", statusAdapter.getStatusMessage());
 
-        ProtoAttributesAdapter attributesAdapter = spanAdapter.getAttributes();
+        AttributesAdapter attributesAdapter = spanAdapter.getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(2, spanAdapter.getAttributes().getSize());
         assertEquals("new first attribute value", attributesAdapter.getAsString("first attribute key"));
@@ -132,7 +132,7 @@ class SpanGroovyTest {
 
         // resource and instrumentation scope
         assertSame(resource, spanAdapter.getUpdatedResource());
-        assertSame(instrumentationScope, spanAdapter.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, spanAdapter.getUpdatedScope());
     }
 
     @Test
@@ -180,10 +180,10 @@ class SpanGroovyTest {
         assertEquals(88, spanAdapter.getStartTimeUnixNano());
         assertEquals(99, spanAdapter.getEndTimeUnixNano());
 
-        ProtoStatusAdapter statusAdapter = spanAdapter.getStatus();
+        StatusAdapter statusAdapter = spanAdapter.getStatus();
         assertEquals("new status message", statusAdapter.getStatusMessage());
 
-        ProtoAttributesAdapter attributesAdapter = spanAdapter.getAttributes();
+        AttributesAdapter attributesAdapter = spanAdapter.getAttributes();
         assertNotNull(attributesAdapter);
         assertEquals(2, spanAdapter.getAttributes().getSize());
         assertEquals("new first attribute value", attributesAdapter.getAsString("first attribute key"));
@@ -191,6 +191,6 @@ class SpanGroovyTest {
 
         // resource and instrumentation scope
         assertSame(resource, spanAdapter.getUpdatedResource());
-        assertSame(instrumentationScope, spanAdapter.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, spanAdapter.getUpdatedScope());
     }
 }

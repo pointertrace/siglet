@@ -1,18 +1,18 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.proxy;
 
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 
 public class SpanAttributesProxy extends AttributesProxy {
 
-    private final ProtoSpanAdapter protoSpanAdapter;
+    private final SpanAdapter protoSpanAdapter;
 
-    public SpanAttributesProxy(Signal signal, ProtoSpanAdapter protoSpanAdapter) {
-        super(signal, protoSpanAdapter.getAttributes());
-        this.protoSpanAdapter = protoSpanAdapter;
+    public SpanAttributesProxy(Signal signal, SpanAdapter spanAdapter) {
+        super(signal, spanAdapter.getAttributes());
+        this.protoSpanAdapter = spanAdapter;
     }
 
-    public ProtoSpanAdapter getSpan() {
+    public SpanAdapter getSpan() {
         return protoSpanAdapter;
     }
 

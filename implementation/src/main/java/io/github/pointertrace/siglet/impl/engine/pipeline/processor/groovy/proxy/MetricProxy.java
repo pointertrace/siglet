@@ -1,13 +1,13 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.proxy;
 
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
 
 public class MetricProxy extends BaseProxy {
 
-    protected final ProtoMetricAdapter metricAdapter;
+    protected final MetricAdapter metricAdapter;
 
-    public MetricProxy(Signal signal, ProtoMetricAdapter metricAdapter) {
+    public MetricProxy(Signal signal, MetricAdapter metricAdapter) {
         super(signal);
         this.metricAdapter = metricAdapter;
     }
@@ -24,7 +24,7 @@ public class MetricProxy extends BaseProxy {
         metricAdapter.setUnit(unit);
     }
 
-    public ProtoMetricAdapter getMetric() {
+    public MetricAdapter getMetric() {
         return metricAdapter;
     }
 

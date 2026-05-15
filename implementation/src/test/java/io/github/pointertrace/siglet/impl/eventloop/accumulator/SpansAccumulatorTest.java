@@ -1,12 +1,15 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
+import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.SpansAccumulator;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
+import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -19,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 
-@Disabled
 class SpansAccumulatorTest {
 
     private Resource resource1;
@@ -34,18 +36,11 @@ class SpansAccumulatorTest {
 
     private Span span2;
 
-    private Metric metric1;
+    private Span span3;
 
-    private Metric metric2;
+    private Span span4;
 
-    private ProtoSpanAdapter protoSpanAdapter1;
-
-    private ProtoSpanAdapter protoSpanAdapter2;
-
-    private ProtoMetricAdapter protoMetricAdapter1;
-
-    private ProtoMetricAdapter protoMetricAdapter2;
-
+    private SpansAccumulator spansAccumulator;
 
     @BeforeEach
     void setUp() {
@@ -69,219 +64,134 @@ class SpansAccumulatorTest {
 
         span2 = Span.newBuilder().setName("span2").build();
 
-        metric1 = Metric.newBuilder()
-                .setName("metric1")
-                .build();
+        span3 = Span.newBuilder().setName("span3").build();
 
-        metric2 = Metric.newBuilder()
-                .setName("metric2")
-                .build();
+        span4 = Span.newBuilder().setName("span4").build();
 
-//        signalsAggregator = new SignalsAggregator();
+
+        spansAccumulator = new SpansAccumulator();
 
     }
 
     @Test
     void add_span_sameResource_sameInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
+        spansAccumulator.add(span1, instrumentationScope1, resource1);
+        spansAccumulator.add(span2, instrumentationScope1, resource1);
+        spansAccumulator.add(span3, instrumentationScope1, resource1);
+        spansAccumulator.add(span4, instrumentationScope1, resource1);
 
-        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource1, instrumentationScope1);
+        ExportTraceServiceRequest request = spansAccumulator.getExportTraceServiceRequest();
+        checkPath(request, resource1, instrumentationScope1, span1);
+        checkPath(request, resource1, instrumentationScope1, span2);
+        checkPath(request, resource1, instrumentationScope1, span3);
+        checkPath(request, resource1, instrumentationScope1, span4);
 
-//        signalsAggregator.add(protoSpanAdapter1);
-//        signalsAggregator.add(protoSpanAdapter2);
-
-        List<ResourceSpans> resourceSpansList = new ArrayList<>();
-
-//        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
-//
-        assertEquals(1, resourceSpansList.size());
-
-        ResourceSpans resourceSpans = resourceSpansList.getFirst();
-
-        assertSame(resource1, resourceSpans.getResource());
-
-        assertEquals(1, resourceSpans.getScopeSpansList().size());
-        assertSame(instrumentationScope1, resourceSpans.getScopeSpansList().getFirst().getScope());
-
-
-        assertEquals(2, resourceSpans.getScopeSpansList().getFirst().getSpansList().size());
-        assertSame(span1, resourceSpans.getScopeSpansList().getFirst().getSpansList().getFirst());
-        assertSame(span2, resourceSpans.getScopeSpansList().getFirst().getSpansList().get(1));
+        checkResourceCount(request, 1);
+        checkInstrumentationScopeCount(request, resource1, 1);
+        checkSpanCount(request, resource1, instrumentationScope1, 4);
 
     }
 
     @Test
     void add_span_sameResource_twoInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
+        spansAccumulator.add(span1, instrumentationScope1, resource1);
+        spansAccumulator.add(span2, instrumentationScope1, resource1);
+        spansAccumulator.add(span3, instrumentationScope2, resource1);
+        spansAccumulator.add(span4, instrumentationScope2, resource1);
 
-        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource1, instrumentationScope2);
 
-//        signalsAggregator.add(protoSpanAdapter1);
-//        signalsAggregator.add(protoSpanAdapter2);
+        ExportTraceServiceRequest request = spansAccumulator.getExportTraceServiceRequest();
+        checkPath(request, resource1, instrumentationScope1, span1);
+        checkPath(request, resource1, instrumentationScope1, span2);
+        checkPath(request, resource1, instrumentationScope2, span3);
+        checkPath(request, resource1, instrumentationScope2, span4);
 
-        List<ResourceSpans> resourceSpansList = new ArrayList<>();
+        checkResourceCount(request, 1);
 
-//        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
+        checkInstrumentationScopeCount(request, resource1, 2);
+        checkSpanCount(request, resource1, instrumentationScope1, 2);
 
-        assertEquals(1, resourceSpansList.size());
-
-        ResourceSpans resourceSpans = resourceSpansList.getFirst();
-
-        assertSame(resource1, resourceSpans.getResource());
-
-        assertEquals(2, resourceSpans.getScopeSpansList().size());
-
-        assertSame(instrumentationScope1, resourceSpans.getScopeSpansList().getFirst().getScope());
-        assertEquals(1, resourceSpans.getScopeSpansList().getFirst().getSpansList().size());
-        assertSame(span1, resourceSpans.getScopeSpansList().getFirst().getSpansList().getFirst());
-
-        assertSame(instrumentationScope2, resourceSpans.getScopeSpansList().get(1).getScope());
-        assertEquals(1, resourceSpans.getScopeSpansList().get(1).getSpansList().size());
-        assertSame(span2, resourceSpans.getScopeSpansList().get(1).getSpansList().getFirst());
-
+        checkInstrumentationScopeCount(request, resource1, 2);
+        checkSpanCount(request, resource1, instrumentationScope2, 2);
     }
 
     @Test
     void add_span_twoResource_twoInstrumentation() {
 
-        protoSpanAdapter1 = new ProtoSpanAdapter().recycle(span1, resource1, instrumentationScope1);
-
-        protoSpanAdapter2 = new ProtoSpanAdapter().recycle(span2, resource2, instrumentationScope2);
-
-//        signalsAggregator.add(protoSpanAdapter1);
-//        signalsAggregator.add(protoSpanAdapter2);
-
-        List<ResourceSpans> resourceSpansList = new ArrayList<>();
-
-//        signalsAggregator.consumeSpansBuilder(mb -> resourceSpansList.add(mb.build()));
-
-        assertEquals(2, resourceSpansList.size());
-
-        ResourceSpans resourceSpans1 = resourceSpansList.getFirst();
-
-        assertSame(resource1, resourceSpans1.getResource());
-
-        assertEquals(1, resourceSpans1.getScopeSpansList().size());
-
-        assertSame(instrumentationScope1, resourceSpans1.getScopeSpansList().getFirst().getScope());
-        assertEquals(1, resourceSpans1.getScopeSpansList().getFirst().getSpansList().size());
-        assertSame(span1, resourceSpans1.getScopeSpansList().getFirst().getSpansList().getFirst());
 
 
-        ResourceSpans resourceSpans2 = resourceSpansList.get(1);
+        spansAccumulator.add(span1, instrumentationScope1, resource1);
+        spansAccumulator.add(span2, instrumentationScope1, resource2);
+        spansAccumulator.add(span3, instrumentationScope2, resource1);
+        spansAccumulator.add(span4, instrumentationScope2, resource2);
 
-        assertSame(resource2, resourceSpans2.getResource());
 
-        assertEquals(1, resourceSpans2.getScopeSpansList().size());
+        ExportTraceServiceRequest request = spansAccumulator.getExportTraceServiceRequest();
+        checkPath(request, resource1, instrumentationScope1, span1);
+        checkPath(request, resource2, instrumentationScope1, span2);
+        checkPath(request, resource1, instrumentationScope2, span3);
+        checkPath(request, resource2, instrumentationScope2, span4);
 
-        assertSame(instrumentationScope2, resourceSpans2.getScopeSpansList().getFirst().getScope());
-        assertEquals(1, resourceSpans2.getScopeSpansList().getFirst().getSpansList().size());
-        assertSame(span2, resourceSpans2.getScopeSpansList().getFirst().getSpansList().getFirst());
+        checkResourceCount(request, 2);
+
+        checkInstrumentationScopeCount(request, resource1, 2);
+        checkSpanCount(request, resource1, instrumentationScope1, 1);
+        checkSpanCount(request, resource1, instrumentationScope2, 1);
+
+        checkInstrumentationScopeCount(request, resource2, 2);
+        checkSpanCount(request, resource2, instrumentationScope1, 1);
+        checkSpanCount(request, resource2, instrumentationScope2, 1);
+
+
+
 
     }
 
 
-    @Test
-    void add_metric_sameResource_sameInstrumentation() {
+    private void checkPath(ExportTraceServiceRequest request, Resource resource, InstrumentationScope scope, Span span) {
+        ResourceSpans resourceSpans = request.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource().equals(resource))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("resource not found!"));
 
-        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
+        ScopeSpans scopeSpans = resourceSpans.getScopeSpansList().stream()
+                .filter(ss -> ss.getScope().equals(scope))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("scope not found!"));
 
-        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource1, instrumentationScope1);
-
-//        signalsAggregator.add(protoMetricAdapter1);
-//        signalsAggregator.add(protoMetricAdapter2);
-
-        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
-
-//        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
-
-        assertEquals(1, resourceMetricsList.size());
-
-        ResourceMetrics resourceMetrics = resourceMetricsList.getFirst();
-
-        assertSame(resource1, resourceMetrics.getResource());
-
-        assertEquals(1, resourceMetrics.getScopeMetricsList().size());
-        assertSame(instrumentationScope1, resourceMetrics.getScopeMetricsList().getFirst().getScope());
-
-
-        assertEquals(2, resourceMetrics.getScopeMetricsList().getFirst().getMetricsList().size());
-        assertSame(metric1, resourceMetrics.getScopeMetricsList().getFirst().getMetricsList().getFirst());
-        assertSame(metric2, resourceMetrics.getScopeMetricsList().getFirst().getMetricsList().get(1));
+        Span foundSpan = scopeSpans.getSpansList().stream()
+                .filter(s -> s.equals(span))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("span not found!"));
 
     }
 
-    @Test
-    void add_metric_sameResource_twoInstrumentation() {
 
-        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
-
-        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource1, instrumentationScope2);
-
-//        signalsAggregator.add(protoMetricAdapter2);
-//        signalsAggregator.add(protoMetricAdapter2);
-
-        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
-
-//        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
-
-        assertEquals(1, resourceMetricsList.size());
-
-        ResourceMetrics resourceMetrics = resourceMetricsList.getFirst();
-
-        assertSame(resource1, resourceMetrics.getResource());
-
-        assertEquals(2, resourceMetrics.getScopeMetricsList().size());
-
-        assertSame(instrumentationScope1, resourceMetrics.getScopeMetricsList().getFirst().getScope());
-        assertEquals(1, resourceMetrics.getScopeMetricsList().getFirst().getMetricsList().size());
-        assertSame(metric1, resourceMetrics.getScopeMetricsList().getFirst().getMetricsList().getFirst());
-
-        assertSame(instrumentationScope2, resourceMetrics.getScopeMetricsList().get(1).getScope());
-        assertEquals(1, resourceMetrics.getScopeMetricsList().get(1).getMetricsList().size());
-        assertSame(metric2, resourceMetrics.getScopeMetricsList().get(1).getMetricsList().getFirst());
-
+    private void checkResourceCount(ExportTraceServiceRequest request, int resourceCount) {
+        assertEquals(resourceCount, request.getResourceSpansList().size());
     }
 
-    @Test
-    void add_metric_twoResource_twoInstrumentation() {
+    private void checkInstrumentationScopeCount(ExportTraceServiceRequest request, Resource resource, int scopeCount) {
 
-        protoMetricAdapter1 = new ProtoMetricAdapter().recycle(metric1, resource1, instrumentationScope1);
-
-        protoMetricAdapter2 = new ProtoMetricAdapter().recycle(metric2, resource2, instrumentationScope2);
-
-//        signalsAggregator.add(protoMetricAdapter1);
-//        signalsAggregator.add(protoMetricAdapter2);
-
-        List<ResourceMetrics> resourceMetricsList = new ArrayList<>();
-
-//        signalsAggregator.consumeMetricsBuilder(mb -> resourceMetricsList.add(mb.build()));
-
-        assertEquals(2, resourceMetricsList.size());
-
-        ResourceMetrics resourceMetrics1 = resourceMetricsList.getFirst();
-
-        assertSame(resource1, resourceMetrics1.getResource());
-
-        assertEquals(1, resourceMetrics1.getScopeMetricsList().size());
-
-        assertSame(instrumentationScope1, resourceMetrics1.getScopeMetricsList().getFirst().getScope());
-        assertEquals(1, resourceMetrics1.getScopeMetricsList().getFirst().getMetricsList().size());
-        assertSame(metric1, resourceMetrics1.getScopeMetricsList().getFirst().getMetricsList().getFirst());
-
-
-        ResourceMetrics resourceMetrics2 = resourceMetricsList.get(1);
-
-        assertSame(resource2, resourceMetrics2.getResource());
-
-        assertEquals(1, resourceMetrics2.getScopeMetricsList().size());
-
-        assertSame(instrumentationScope2, resourceMetrics2.getScopeMetricsList().getFirst().getScope());
-        assertEquals(1, resourceMetrics2.getScopeMetricsList().getFirst().getMetricsList().size());
-        assertSame(metric2, resourceMetrics2.getScopeMetricsList().getFirst().getMetricsList().getFirst());
-
+        assertEquals(scopeCount, request.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource() == resource)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("resource not found!"))
+                .getScopeSpansList().size());
     }
 
+    private void checkSpanCount(ExportTraceServiceRequest request, Resource resource, InstrumentationScope scope, int spanCount) {
+
+        assertEquals(spanCount,  request.getResourceSpansList().stream()
+                .filter(rs -> rs.getResource() == resource)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("resource not found!"))
+                .getScopeSpansList().stream()
+                .filter(ss -> ss.getScope() == scope)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("scope not found!"))
+                .getSpansList().size());
+    }
 }

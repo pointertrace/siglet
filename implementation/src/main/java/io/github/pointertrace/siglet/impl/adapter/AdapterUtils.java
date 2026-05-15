@@ -114,7 +114,9 @@ public class AdapterUtils {
             case String s -> AnyValue.newBuilder().setStringValue(s).build();
             case Boolean b -> AnyValue.newBuilder().setBoolValue(b).build();
             case Long l -> AnyValue.newBuilder().setIntValue(l).build();
+            case Integer i -> AnyValue.newBuilder().setIntValue(i.longValue()).build();
             case Double d -> AnyValue.newBuilder().setDoubleValue(d).build();
+            case Float f -> AnyValue.newBuilder().setDoubleValue(f.doubleValue()).build();
             case Object[] a -> {
                 ArrayValue.Builder avBuilder = ArrayValue.newBuilder();
                 for (Object o : a) {
@@ -123,22 +125,28 @@ public class AdapterUtils {
                 yield AnyValue.newBuilder().setArrayValue(avBuilder.build()).build();
             }
             case List<?> l -> {
-                KeyValueList.Builder kvLstBld = KeyValueList.newBuilder();
-                for (Object o : l) {
-                    if (o instanceof Map.Entry<?, ?> e) {
-                        kvLstBld.addValues(KeyValue.newBuilder()
-                                .setKey(e.getKey().toString())
-                                .setValue(objectToAnyValue(e.getValue()))
-                                .build());
-                    } else {
-                        throw new SigletError("list item must be a Map.Entry!");
+                if (!l.isEmpty() && l.get(0) instanceof Map.Entry) {
+                    KeyValueList.Builder kvLstBld = KeyValueList.newBuilder();
+                    for (Object o : l) {
+                        if (o instanceof Map.Entry<?, ?> e) {
+                            kvLstBld.addValues(KeyValue.newBuilder()
+                                    .setKey(e.getKey().toString())
+                                    .setValue(objectToAnyValue(e.getValue()))
+                                    .build());
+                        }
                     }
+                    yield AnyValue.newBuilder().setKvlistValue(kvLstBld.build()).build();
+                } else {
+                    ArrayValue.Builder avBuilder = ArrayValue.newBuilder();
+                    for (Object o : l) {
+                        avBuilder.addValues(objectToAnyValue(o));
+                    }
+                    yield AnyValue.newBuilder().setArrayValue(avBuilder.build()).build();
                 }
-                yield AnyValue.newBuilder().setKvlistValue(kvLstBld.build()).build();
             }
             case byte[] b -> AnyValue.newBuilder().setBytesValue(ByteString.copyFrom(b)).build();
             case null -> AnyValue.newBuilder().build();
-            default -> throw new SigletError(value.getClass().getSimpleName() + "is not a valid attriute type!");
+            default -> throw new SigletError(value.getClass().getSimpleName() + " is not a valid attribute type!");
         };
     }
 

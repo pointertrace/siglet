@@ -4,8 +4,8 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
@@ -55,8 +55,10 @@ public class OtelGrpcExporter implements Exporter {
     @Override
     public boolean send(Signal signal) {
         switch (signal) {
-            case ProtoSpanAdapter protoSpanAdapter -> spanAccumulator.send(protoSpanAdapter);
-            case ProtoMetricAdapter protoMetricAdapter -> metricAccumulator.send(protoMetricAdapter);
+            case SpanAdapter spanAdapter -> {
+                spanAccumulator.send(spanAdapter);
+            }
+            case MetricAdapter metricAdapter -> metricAccumulator.send(metricAdapter);
             default -> throw new SigletError(String.format("Can only export signals of types %s or %s and not %s.",
                     AccumulatedSpans.class.getName(), AccumulatedMetrics.class.getName(),
                     signal.getClass().getName()));

@@ -4,8 +4,8 @@ import groovy.lang.Closure;
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.Expression;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.proxy.GaugeProxy;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.proxy.SpanProxy;
@@ -28,13 +28,12 @@ public abstract class ScriptBaseClass extends Script {
         BindingUtils.setResult(getBinding(), ResultImpl.proceed(destination));
     }
 
-    public ProtoMetricAdapter newGauge(Closure<Void> closure) {
+    public MetricAdapter newGauge(Closure<Void> closure) {
 
         Metric gauge = Metric.newBuilder()
                 .setGauge(Gauge.newBuilder())
                 .build();
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(gauge, getResource(),
-                getInstrumentationScope());
+        MetricAdapter newMetric = new MetricAdapter(gauge, getResource(), getInstrumentationScope());
         GaugeProxy gaugeProxy = new GaugeProxy(BindingUtils.getSignal(getBinding()), newMetric);
         closure.setDelegate(gaugeProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
@@ -42,13 +41,13 @@ public abstract class ScriptBaseClass extends Script {
         return newMetric;
     }
 
-    public ProtoMetricAdapter newSum(Closure<Void> closure) {
+    public MetricAdapter newSum(Closure<Void> closure) {
 
         Metric sum = Metric.newBuilder()
                 .setSum(Sum.newBuilder())
                 .build();
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(sum, getResource(), getInstrumentationScope());
-        newMetric.sum();
+        MetricAdapter newMetric = new MetricAdapter(sum, getResource(), getInstrumentationScope());
+//        newMetric.sum();
         SumProxy sumProxy = new SumProxy(BindingUtils.getSignal(getBinding()), newMetric);
         closure.setDelegate(sumProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
@@ -56,12 +55,12 @@ public abstract class ScriptBaseClass extends Script {
         return newMetric;
     }
 
-    public ProtoMetricAdapter newHistogram(Closure<Void> closure) {
+    public MetricAdapter newHistogram(Closure<Void> closure) {
         Metric histogram = Metric.newBuilder()
                 .setHistogram(Histogram.newBuilder())
                 .build();
-        ProtoMetricAdapter newMetric = new ProtoMetricAdapter().recycle(histogram, getResource(), getInstrumentationScope());
-        newMetric.sum();
+        MetricAdapter newMetric = new MetricAdapter(histogram, getResource(), getInstrumentationScope());
+//        newMetric.sum();
         SumProxy sumProxy = new SumProxy(BindingUtils.getSignal(getBinding()), newMetric);
         closure.setDelegate(sumProxy);
         closure.setResolveStrategy(Closure.DELEGATE_ONLY);
@@ -80,7 +79,7 @@ public abstract class ScriptBaseClass extends Script {
     public void span(Closure<Void> closure) {
 
         Signal signal = BindingUtils.getSignal(getBinding());
-        if (!(signal instanceof ProtoSpanAdapter spanAdapter)) {
+        if (!(signal instanceof SpanAdapter spanAdapter)) {
             throw new SigletError(String.format("Intrinsic groovy signal %s is not a span!", signal));
         }
         SpanProxy spanProxy = new SpanProxy(spanAdapter, spanAdapter);
@@ -93,10 +92,10 @@ public abstract class ScriptBaseClass extends Script {
 
         Signal signal = BindingUtils.getSignal(getBinding());
         switch (signal) {
-            case ProtoMetricAdapter metricAdapter -> {
+            case MetricAdapter metricAdapter -> {
                 return metricAdapter.getUpdatedResource();
             }
-            case ProtoSpanAdapter spanAdapter -> {
+            case SpanAdapter spanAdapter -> {
                 return spanAdapter.getUpdatedResource();
             }
             case null, default ->
@@ -108,11 +107,11 @@ public abstract class ScriptBaseClass extends Script {
     private InstrumentationScope getInstrumentationScope() {
         Signal signal = BindingUtils.getSignal(getBinding());
         switch (signal) {
-            case ProtoMetricAdapter metricAdapter -> {
-                return metricAdapter.getUpdatedInstrumentationScope();
+            case MetricAdapter metricAdapter -> {
+                return metricAdapter.getUpdatedScope();
             }
-            case ProtoSpanAdapter spanAdapter -> {
-                return spanAdapter.getUpdatedInstrumentationScope();
+            case SpanAdapter spanAdapter -> {
+                return spanAdapter.getUpdatedScope();
             }
             case null, default ->
                     throw new SigletError("Cannot get instrumentation scope from closure variable 'thisSignal' " +

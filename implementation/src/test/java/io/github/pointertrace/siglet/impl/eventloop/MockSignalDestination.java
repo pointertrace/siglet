@@ -6,7 +6,7 @@ import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MockSignalDestination implements SignalDestination {
@@ -15,7 +15,7 @@ public class MockSignalDestination implements SignalDestination {
 
     private final SignalCapabilities signalCapabilities;
 
-    public final Map<String, Signal> signals = new ConcurrentHashMap<>();
+    private final List<Map.Entry<String,Signal>> signals = Collections.synchronizedList(new ArrayList<>());
 
     public MockSignalDestination(String name, SignalCapabilities signalCapabilities) {
         this.name = name;
@@ -29,7 +29,7 @@ public class MockSignalDestination implements SignalDestination {
 
     @Override
     public boolean send(Signal signal) {
-        signals.put(signal.getId(), signal);
+        signals.add(new AbstractMap.SimpleImmutableEntry<>(signal.getId(), signal));
         return true;
     }
 
@@ -39,15 +39,25 @@ public class MockSignalDestination implements SignalDestination {
     }
 
     public <T extends Signal> T get(String id,Class<T> signalType) {
-        Signal signal = signals.get(id);
-        if (signal == null) {
+        return  signals.stream()
+                .filter(e -> e.getKey().equals(id) && signalType.isAssignableFrom(e.getValue().getClass()))
+                .map(Map.Entry::getValue)
+                .map(signalType::cast)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public <T extends Signal> T get(int index,Class<T> signalType) {
+        Map.Entry<String,Signal> entry = signals.get(index);
+        if (entry == null) {
             return null;
         }
-        return signalType.cast(signal);
+        return signalType.cast(entry.getValue());
     }
 
     public boolean has(String id) {
-        return signals.containsKey(id);
+        return signals.stream()
+                .anyMatch(e -> e.getKey().equals(id));
     }
 
     public int getSize() {

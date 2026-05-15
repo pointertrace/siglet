@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.array;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.arrayItem;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.object;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.property;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.stringValueObject;
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
 
 
 public class SigletConfigFile {

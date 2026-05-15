@@ -1,14 +1,15 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.config.descriptor.InetSocketAddressTransform;
-import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
 
 import java.util.List;
 
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.property;
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.string;
 
 public class OtelGrpcReceiverType implements ReceiverType<OtelGrpcReceiverConfig> {
 

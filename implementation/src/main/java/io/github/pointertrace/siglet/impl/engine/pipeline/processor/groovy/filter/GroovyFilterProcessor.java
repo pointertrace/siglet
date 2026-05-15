@@ -3,8 +3,8 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.filt
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.*;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
@@ -104,7 +104,12 @@ public class GroovyFilterProcessor implements Processor {
 
     @Override
     public void connect(SignalDestination destination) {
-        eventLoop.getOutgoingCapabilities().checkCompatibility(destination.getIncomingCapabilities());
+        if (! eventLoop.getOutgoingCapabilities().isAbleToSend(destination.getIncomingCapabilities())) {
+            throw new SigletError(String.format("Cannot connect processor [%s] to [%s] because they have incompatible " +
+                            "signal capabilities. Processor generates [%s] and destination expects [%s]",
+                    eventLoop.getName(), destination.getName(), eventLoop.getOutgoingCapabilities().print(),
+                    destination.getIncomingCapabilities().print()));
+        }
         eventLoop.connect(destination);
     }
 

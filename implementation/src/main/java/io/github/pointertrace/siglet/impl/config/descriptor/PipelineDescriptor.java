@@ -7,17 +7,10 @@ import io.github.pointertrace.siglet.parser.Schema;
 import io.github.pointertrace.siglet.parser.StringValue;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static io.github.pointertrace.siglet.impl.config.descriptor.SchemaBuilderUtils.destinationSchemaBuilder;
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.array;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.arrayItem;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.property;
-import static io.github.pointertrace.siglet.parser.SchemaBuilder.stringValueObject;
 
 public class PipelineDescriptor extends BaseDescriptor {
 

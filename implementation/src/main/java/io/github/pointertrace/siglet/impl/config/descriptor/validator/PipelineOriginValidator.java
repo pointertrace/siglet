@@ -1,7 +1,10 @@
 package io.github.pointertrace.siglet.impl.config.descriptor.validator;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.config.descriptor.*;
+import io.github.pointertrace.siglet.impl.config.descriptor.BaseDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.PipelineDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
 import io.github.pointertrace.siglet.parser.StringValue;
 
 import java.util.Map;

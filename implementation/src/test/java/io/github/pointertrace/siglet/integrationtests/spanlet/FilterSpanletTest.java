@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.integrationtests.spanlet;
 
 import io.github.pointertrace.siglet.impl.Siglet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.exporter.debug.DebugExporters;
 import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceivers;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -23,16 +23,16 @@ class FilterSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiverDescriptor
+                - debug: receiver
                 exporters:
-                - debug: exporterDescriptor
-                pipelineDescriptors:
-                - name: pipelineDescriptor
-                  from: receiverDescriptor
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
                   start: spanlet
-                  processorDescriptors:
+                  processors:
                   - spanlet-groovy-filter: spanlet
-                    to: exporterDescriptor
+                    to: exporter
                     config:
                       expression: |
                         signal.name.startsWith("prefix")
@@ -51,21 +51,21 @@ class FilterSpanletTest {
                         .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(firstSpanAdapter));
+        SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
+        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter));
 
         Span secondSpan = Span.newBuilder()
                 .setName("span-name")
                 .setTraceId(AdapterUtils.traceId(0,1))
                 .setSpanId(AdapterUtils.spanId(2))
                 .build();
-        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(secondSpanAdapter));
+        SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
+        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter));
 
         siglet.stop();
 
 
-        List<ProtoSpanAdapter> exporterDescriptor = DebugExporters.INSTANCE.get("exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> exporterDescriptor = DebugExporters.INSTANCE.get("exporter", SpanAdapter.class);
         assertEquals(1, exporterDescriptor.size());
         assertEquals(firstSpanAdapter, exporterDescriptor.getFirst());
     }
@@ -76,19 +76,19 @@ class FilterSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiverDescriptor
+                - debug: receiver
                 exporters:
-                - debug: first-exporterDescriptor
-                - debug: second-exporterDescriptor
-                pipelineDescriptors:
-                - name: pipelineDescriptor
-                  from: receiverDescriptor
+                - debug: first-exporter
+                - debug: second-exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
                   start: spanlet
-                  processorDescriptors:
+                  processors:
                   - spanlet-groovy-filter: spanlet
                     to:
-                    - first-exporterDescriptor
-                    - second-exporterDescriptor
+                    - first-exporter
+                    - second-exporter
                     config:
                       expression: |
                         signal.name.startsWith("prefix")
@@ -99,27 +99,26 @@ class FilterSpanletTest {
         siglet.start();
 
 
-
         Span firstSpan = Span.newBuilder().setName("prefix-span-name").build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiverDescriptor").send(firstSpanAdapter);
+        SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
+        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder().setName("span-name").build();
-        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiverDescriptor").send(secondSpanAdapter);
+        SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
+        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
 
         siglet.stop();
 
         // first exporterDescriptor
-        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporter", SpanAdapter.class);
         assertEquals(1, firstExporter.size());
         assertEquals("prefix-span-name", firstExporter.getFirst().getName());
 
 
         // second exporterDescriptor
-        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> secondExporter = DebugExporters.INSTANCE.get("second-exporter", SpanAdapter.class);
         assertEquals(1, secondExporter.size());
         assertEquals("prefix-span-name", secondExporter.getFirst().getName());
     }

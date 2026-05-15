@@ -3,11 +3,11 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 import groovy.lang.Closure;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.metric.AggregationTemporality;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
 
 public class SumProxy extends MetricProxy {
 
-    public SumProxy(Signal signal, ProtoMetricAdapter metricAdapter) {
+    public SumProxy(Signal signal, MetricAdapter metricAdapter) {
         super(signal,metricAdapter);
     }
 

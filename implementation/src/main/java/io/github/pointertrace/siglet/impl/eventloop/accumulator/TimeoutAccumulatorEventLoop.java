@@ -10,8 +10,6 @@ import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +21,19 @@ import java.util.function.Function;
 
 public class TimeoutAccumulatorEventLoop implements SignalDestination, Component {
 
-    private static final Logger LOGGER = LogManager.getLogger(TimeoutAccumulatorEventLoop.class);
-
     private final String name;
 
-    private final long timeoutInMillis;
+    private final ArrayBlockingQueue<Signal> queue;
 
     private final int maxSize;
 
-    private final Function<List<Signal>, Signal> accumulatorFunction;
+    private final int timeoutInMillis;
 
-    private final List<SignalDestination> next = new ArrayList<>();
+    private final Function<Signal[], Signal> accumulator;
 
-    private final ArrayBlockingQueue<Signal> queue;
+    private final List<SignalDestination> destinations;
+
+    private final BufferFactory bufferFactory;
 
     private Thread thread;
 
@@ -47,12 +45,19 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination, Component
 
 
     public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                       Function<List<Signal>,Signal> accumulatorFunction) {
+                                       Function<Signal[], Signal> accumulator) {
+        this(name, queueCapacity, timeoutInMillis, maxSize, accumulator, Buffer::new);
+    }
+
+    public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
+                                Function<Signal[], Signal> accumulator, BufferFactory bufferFactory) {
         this.name = name;
-        this.timeoutInMillis = timeoutInMillis;
         this.maxSize = maxSize;
-        this.accumulatorFunction = accumulatorFunction;
+        this.timeoutInMillis = timeoutInMillis;
+        this.accumulator = accumulator;
+        this.destinations = new ArrayList<>();
         this.queue = new ArrayBlockingQueue<>(queueCapacity);
+        this.bufferFactory = bufferFactory;
     }
 
     @Override
@@ -67,15 +72,15 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination, Component
 
     @Override
     public boolean send(Signal signal) {
-        checkState(State.RUNNING);
+        requireState(State.RUNNING);
         return queue.offer(signal);
     }
 
     public void connect(SignalDestination destination) {
         if (getState() != State.CREATED) {
-            throw new SigletError("Cannot connect if state is not created");
+            throw new SigletError("Cannot connect if state is not CREATED");
         }
-        next.add(destination);
+        destinations.add(destination);
     }
 
     @Override
@@ -85,104 +90,65 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination, Component
 
     @Override
     public synchronized void start() {
-        checkState(State.CREATED);
-
-        thread = Thread.ofVirtual().name("aggregator-event-loop:" + name).start(() -> {
-
-            Signal signal;
-            long nextTick = -1;
-            state.set(State.RUNNING);
-            startLatch.countDown();
-            List<Signal> buffer = new ArrayList<>(maxSize);
-            while (true) {
-
-                try {
-                    signal = getNextSignal(nextTick);
-                } catch (InterruptedException e) {
-                    state.set(State.STOPPING);
-                    break;
-                }
-
-                if (signal != null) {
-                    nextTick = processCurrentSignal(buffer, signal, nextTick);
-                } else {
-                    if (!buffer.isEmpty() && System.nanoTime() >= nextTick) {
-                        aggregateAndSend(buffer);
-                        nextTick = -1;
-                    }
-                }
-            }
-            processRemainingSignals(buffer);
-            stopLatch.countDown();
-        });
-
+        requireState(State.CREATED);
+        thread = Thread.ofVirtual().name("accumulator-event-loop:" + name).start(this::runLoop);
         try {
             startLatch.await();
         } catch (InterruptedException e) {
-            throw new SigletError(String.format("Interrupted exception in event loop %s when waiting threads to start ",
-                    name), e);
+            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to start", name), e);
         }
     }
 
-    private long processCurrentSignal(List<Signal> buffer, Signal signal, long nextTick) {
-        buffer.add(signal);
-        if (buffer.size() == maxSize) {
-            aggregateAndSend(buffer);
-            nextTick = -1;
-        } else if (buffer.size() == 1) {
-            nextTick = System.nanoTime() + timeoutInMillis * 1_000_000L;
-        }
-        return nextTick;
-    }
+    private void runLoop() {
+        state.set(State.RUNNING);
+        startLatch.countDown();
+        Buffer buffer = bufferFactory.create(maxSize, accumulator, destinations, Deadline.of(timeoutInMillis));
+        Signal signal;
 
-    private void processRemainingSignals(List<Signal> buffer) {
-        while (!queue.isEmpty()) {
-            queue.drainTo(buffer, maxSize - buffer.size());
-            if (!buffer.isEmpty()) {
-                aggregateAndSend(buffer);
+        while (true) {
+            try {
+                signal = getNextSignal(buffer);
+            } catch (InterruptedException e) {
+                state.set(State.STOPPING);
+                break;
+            }
+            if (signal != null) {
+                buffer.add(signal);
             }
         }
+
+        drainRemainingSignals(buffer);
+        stopLatch.countDown();
     }
 
-    private Signal getNextSignal(long nextTick) throws InterruptedException {
-        if (nextTick < 0) {
+    private Signal getNextSignal(Buffer buffer) throws InterruptedException {
+        if (!buffer.hasActiveDeadline()) {
             return queue.take();
         } else {
-            return queue.poll((nextTick - System.nanoTime()) / 1_000_000, TimeUnit.MILLISECONDS);
+            return queue.poll(buffer.remainingNanos(), TimeUnit.NANOSECONDS);
         }
     }
 
-    private void aggregateAndSend(List<Signal> buffer) {
-        try {
-            Signal aggregated = accumulatorFunction.apply(buffer);
-            for (SignalDestination nextDestination : next) {
-                nextDestination.send(aggregated);
-            }
-        } catch (Error e) {
-            throw e;
-        } catch (Throwable e) {
-            LOGGER.error("exception aggregating and sending signals {}:{}", buffer, e.getMessage(), e);
-        } finally {
-            buffer.clear();
+    private void drainRemainingSignals(Buffer buffer) {
+        List<Signal> remaining = new ArrayList<>();
+        queue.drainTo(remaining);
+        for (Signal signal : remaining) {
+            buffer.add(signal);
         }
+        buffer.flush();
     }
 
     @Override
     public synchronized void stop() {
-        checkState(State.RUNNING);
-
+        requireState(State.RUNNING);
         thread.interrupt();
-
         try {
             stopLatch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SigletError(String.format("InterrupedException in event loop %s when waiting for threads to " +
-                    "start", name));
+            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to stop", name));
         }
-
         state.set(State.STOPPED);
-
     }
 
     @Override
@@ -190,10 +156,14 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination, Component
         return state.get();
     }
 
-    private void checkState(State desiredState) {
-        if (state.get() != desiredState) {
-            throw new EventLoopError(String.format("state should be %s for this operation but it is %s",
-                    desiredState, getState()));
+    private void requireState(State expected) {
+        if (state.get() != expected) {
+            throw new EventLoopError(String.format("Expected state %s but current state is %s", expected, getState()));
         }
+    };
+
+    @FunctionalInterface
+    public static interface BufferFactory  {
+        Buffer create(int maxSize, Function<Signal[], Signal> accumulator, List<SignalDestination> destinations, Deadline deadline);
     }
 }

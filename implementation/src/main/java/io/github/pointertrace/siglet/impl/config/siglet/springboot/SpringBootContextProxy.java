@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.joor.Reflect.on;
 import static org.joor.Reflect.onClass;
@@ -60,6 +61,20 @@ public class SpringBootContextProxy implements Closeable {
         } else {
             throw new SigletError("Spring context has not been started yet");
         }
+    }
+
+    public int getPort() {
+        if (springContext != null && started) {
+            return withContextClassLoader(classLoader, () -> {
+                try {
+                    Object webServer = on(springContext).call("getWebServer").get();
+                    return on(webServer).call("getPort").get();
+                } catch (Exception e) {
+                    return -1;
+                }
+            });
+        }
+        return -1;
     }
 
     public void start() {
@@ -131,9 +146,20 @@ public class SpringBootContextProxy implements Closeable {
 
             return on(springContextBuilderTmp).call("properties", Map.of(
                     "spring.main.banner-mode", "off",
-                    "logging.level.root", "INFO")
+                    "logging.level.root", "INFO",
+                    "server.port", "0")
             ).get();
         });
+    }
+
+    private <T> T withContextClassLoader(ClassLoader springBootClassLoader, Supplier<T> supplier) {
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(springBootClassLoader);
+        try {
+            return supplier.get();
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
+        }
     }
 
     private void withContextClassLoader(ClassLoader springBootClassLoader, Runnable runnable) {

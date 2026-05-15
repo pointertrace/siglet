@@ -2,19 +2,18 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.common.ProtoAttributesAdapter;
+import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
 
 public abstract class AttributesProxy extends BaseProxy {
 
-    private final ProtoAttributesAdapter attributesAdapter;
+    private final AttributesAdapter attributesAdapter;
 
-    protected AttributesProxy(Signal signal, ProtoAttributesAdapter attributesAdapter) {
+    protected AttributesProxy(Signal signal, AttributesAdapter attributesAdapter) {
         super(signal);
         this.attributesAdapter = attributesAdapter;
     }
 
     public void methodMissing(String name, Object args) {
-        // todo chegar o tipo do args
         attributesAdapter.putAt(name, ((Object[]) args)[0]);
     }
 
@@ -26,7 +25,7 @@ public abstract class AttributesProxy extends BaseProxy {
         attributesAdapter.remove(key);
     }
 
-    public ProtoAttributesAdapter getAttributes() {
+    public AttributesAdapter getAttributes() {
         return attributesAdapter;
     }
 

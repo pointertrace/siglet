@@ -1,5 +1,6 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
 import io.grpc.stub.StreamObserver;
@@ -33,9 +34,8 @@ public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase 
                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
                 for (Span span : scopeSpans.getSpansList()) {
                     for (SignalDestination destination : spanDestinations) {
-//                        ProtoSpanAdapter protoSpanAdapter = context.getSpanObjectPool().get(span,
-//                                instrumentationScope, resource);
-//                        destination.send(protoSpanAdapter);
+                        SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
+                        destination.send(spanAdapter);
                     }
                 }
             }

@@ -1,19 +1,12 @@
 package io.github.pointertrace.siglet.impl.config;
 
 import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.Graph;
 import io.github.pointertrace.siglet.impl.config.graph.GraphFactory;
-import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
-import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
-import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverTypeRegistry;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Config {
 

@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.impl.eventloop.groovy.impl;
 
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.Compiler;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -21,7 +21,7 @@ class WhenExpressionGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
     private Compiler compiler;
 
     @BeforeEach
@@ -70,7 +70,7 @@ class WhenExpressionGroovyTest {
                 ))
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
         compiler = new Compiler();
     }

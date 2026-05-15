@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.config.siglet.springboot;
 
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 
 import java.io.File;
 
@@ -10,7 +10,7 @@ class SpringbootConfigLoaderTest {
 
     private File sigletSpringBootFile;
 
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
 //    private YamlParser yamlParser;
 

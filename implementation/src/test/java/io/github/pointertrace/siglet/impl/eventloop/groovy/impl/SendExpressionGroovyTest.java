@@ -1,8 +1,8 @@
 package io.github.pointertrace.siglet.impl.eventloop.groovy.impl;
 
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.metric.ProtoMetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.GroovyActionProcessor;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
@@ -27,7 +27,7 @@ class SendExpressionGroovyTest {
 
     private Resource resource;
     private InstrumentationScope instrumentationScope;
-    private ProtoSpanAdapter spanAdapter;
+    private SpanAdapter spanAdapter;
 
     @BeforeEach
     void setUp() {
@@ -75,7 +75,7 @@ class SendExpressionGroovyTest {
                 ))
                 .build();
 
-        spanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
     }
 
@@ -143,36 +143,29 @@ class SendExpressionGroovyTest {
 
         result.dispatch(Map.of(), spanAdapter, List.of(defaultDestination, metricDestination));
 
-        assertEquals(1, defaultDestination.signals.size());
-        assertNotNull(defaultDestination.signals.get(spanAdapter.getId()));
-        ProtoSpanAdapter actual = assertInstanceOf(ProtoSpanAdapter.class,
-                defaultDestination.signals.get(spanAdapter.getId()));
-
+        assertEquals(1, defaultDestination.getSize());
+        SpanAdapter actual = defaultDestination.get(0,SpanAdapter.class);
         assertEquals("new span name", actual.getName());
-        ProtoMetricAdapter gauge = assertInstanceOf(ProtoMetricAdapter.class,
-                metricDestination.signals.values().stream()
-                        .filter(metric -> metric.getId().contains("gauge"))
-                        .findAny()
-                        .orElseThrow(() -> new IllegalStateException("must have a gauge signal")));
+
+        assertEquals(2, metricDestination.getSize());
+        MetricAdapter gauge = metricDestination.get("gauge name from new span name", MetricAdapter.class);
+        assertNotNull(gauge);
 
         assertTrue(gauge.hasGauge());
-        assertSame(instrumentationScope, gauge.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, gauge.getUpdatedScope());
         assertSame(resource, gauge.getUpdatedResource());
-        assertEquals("gauge name from new span name", gauge.getName());
         assertEquals(1, gauge.getGauge().getDataPoints().getSize());
         assertTrue(gauge.getGauge().getDataPoints().get(0).hasDoubleValue());
         assertEquals(200.20, gauge.getGauge().getDataPoints().get(0).getAsDouble());
         assertEquals(200, gauge.getGauge().getDataPoints().get(0).getTimeUnixNano());
 
 
-        ProtoMetricAdapter sum = assertInstanceOf(ProtoMetricAdapter.class,
-                metricDestination.signals.values().stream()
-                        .filter(metric -> metric.getId().contains("sum"))
-                        .findAny()
-                        .orElseThrow(() -> new IllegalStateException("must be a counter signal")));
+
+        MetricAdapter sum = metricDestination.get("sum name from new span name", MetricAdapter.class);
+        assertNotNull(sum);
 
         assertTrue(sum.hasSum());
-        assertSame(instrumentationScope, sum.getUpdatedInstrumentationScope());
+        assertSame(instrumentationScope, sum.getUpdatedScope());
         assertSame(resource, sum.getUpdatedResource());
         assertEquals("sum name from new span name", sum.getName());
         assertEquals(1, sum.getSum().getDataPoints().getSize());

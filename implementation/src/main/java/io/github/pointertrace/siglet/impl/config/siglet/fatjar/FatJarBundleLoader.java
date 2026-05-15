@@ -5,7 +5,9 @@ import io.github.pointertrace.siglet.impl.config.siglet.BundleLoader;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.impl.config.siglet.configfile.SigletConfigFile;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +23,7 @@ public class FatJarBundleLoader implements BundleLoader {
 
     public SigletBundle load(File file) {
 
-        if (! file.isFile()) {
+        if (!file.isFile()) {
             throw new SigletError(String.format("File %s does not exist or is not a file", file.getAbsolutePath()));
         }
         JarFile jarFile;
@@ -33,18 +35,23 @@ public class FatJarBundleLoader implements BundleLoader {
         if (jarFile.getJarEntry(CONFIG_FILE_ENTRY) == null) {
             return null;
         } else {
-            List<SigletDefinition> sigletsDefinitions = new ArrayList<>();
             FatJarClassLoader fatJarClassLoader = new FatJarClassLoader(jarFile, Thread.currentThread().getContextClassLoader());
             String sigletConfigFile = getSigletConfigFile(fatJarClassLoader);
-            SigletConfigFile sigletsConfig = SigletConfigFile.parse(sigletConfigFile);
-            for (SigletConfigFile.SigletConfigFileDefinition sigletConfigFileDefinition : sigletsConfig.getSigletDefinitions()) {
-                sigletsDefinitions.add(new FatJarSigletDefinition(fatJarClassLoader, sigletConfigFileDefinition));
-            }
-
-            return new SigletBundle("fatjar:" + jarFile.getName(), Collections.unmodifiableList(sigletsDefinitions),
-                   jarFile);
+            return loadFromYaml(sigletConfigFile, fatJarClassLoader, jarFile.getName(), jarFile);
         }
     }
+
+    public static @NonNull SigletBundle loadFromYaml(String sigletConfigFile, ClassLoader classLoader, String name, Closeable jarFile) {
+        List<SigletDefinition> sigletsDefinitions = new ArrayList<>();
+        SigletConfigFile sigletsConfig = SigletConfigFile.parse(sigletConfigFile);
+        for (SigletConfigFile.SigletConfigFileDefinition sigletConfigFileDefinition : sigletsConfig.getSigletDefinitions()) {
+            sigletsDefinitions.add(new FatJarSigletDefinition(classLoader, sigletConfigFileDefinition));
+        }
+
+        return new SigletBundle("fatjar:" + name, Collections.unmodifiableList(sigletsDefinitions),
+                jarFile);
+    }
+
 
     private String getSigletConfigFile(ClassLoader classLoader) {
 

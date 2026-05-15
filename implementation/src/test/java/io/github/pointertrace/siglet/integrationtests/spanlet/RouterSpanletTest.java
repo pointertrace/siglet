@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.integrationtests.spanlet;
 
 import io.github.pointertrace.siglet.impl.Siglet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.exporter.debug.DebugExporters;
 import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceivers;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -22,28 +22,28 @@ class RouterSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiverDescriptor
+                - debug: receiver
                 exporters:
-                - debug: first-exporterDescriptor
-                - debug: second-exporterDescriptor
-                - debug: third-exporterDescriptor
-                pipelineDescriptors:
-                - name: pipelineDescriptor
-                  from: receiverDescriptor
+                - debug: first-exporter
+                - debug: second-exporter
+                - debug: third-exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
                   start: spanlet
-                  processorDescriptors:
+                  processors:
                   - spanlet-groovy-router: spanlet
                     to:
-                    - first-exporterDescriptor
-                    - second-exporterDescriptor
-                    - third-exporterDescriptor
+                    - first-exporter
+                    - second-exporter
+                    - third-exporter
                     config:
-                      default: third-exporterDescriptor
+                      default: third-exporter
                       routes:
                       - when: signal.name == "first"
-                        to: first-exporterDescriptor
+                        to: first-exporter
                       - when: signal.name == "second"
-                        to: second-exporterDescriptor
+                        to: second-exporter
                 """;
 
         Siglet siglet = new Siglet(config);
@@ -57,37 +57,37 @@ class RouterSpanletTest {
                 .build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter firstSpanAdapter = new ProtoSpanAdapter().recycle(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiverDescriptor").send(firstSpanAdapter);
+        SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
+        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0, 1))
                 .setSpanId(AdapterUtils.spanId(2))
                 .setName("second")
                 .build();
-        ProtoSpanAdapter secondSpanAdapter = new ProtoSpanAdapter().recycle(secondSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiverDescriptor").send(secondSpanAdapter);
+        SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
+        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
 
         Span thirdSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0, 1))
                 .setSpanId(AdapterUtils.spanId(3))
                 .setName("third")
                 .build();
-        ProtoSpanAdapter thirdSpanAdapter = new ProtoSpanAdapter().recycle(thirdSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiverDescriptor").send(thirdSpanAdapter);
+        SpanAdapter thirdSpanAdapter = new SpanAdapter(thirdSpan, resource, instrumentationScope);
+        DebugReceivers.INSTANCE.get("receiver").send(thirdSpanAdapter);
 
         siglet.stop();
 
 
-        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporter", SpanAdapter.class);
         assertEquals(1, firstExporter.size());
         assertEquals("first", firstExporter.getFirst().getName());
 
-        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("second-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> secondExporter = DebugExporters.INSTANCE.get("second-exporter", SpanAdapter.class);
         assertEquals(1, secondExporter.size());
         assertEquals("second", secondExporter.getFirst().getName());
 
-        List<ProtoSpanAdapter> thirdExporter = DebugExporters.INSTANCE.get("third-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> thirdExporter = DebugExporters.INSTANCE.get("third-exporter", SpanAdapter.class);
         assertEquals(1, thirdExporter.size());
         assertEquals("third", thirdExporter.getFirst().getName());
     }

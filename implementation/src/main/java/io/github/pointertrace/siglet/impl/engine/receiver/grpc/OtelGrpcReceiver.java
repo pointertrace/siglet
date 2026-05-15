@@ -3,8 +3,8 @@ package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.SignalDestination;
@@ -85,7 +85,8 @@ public class OtelGrpcReceiver implements Receiver {
 
     @Override
     public void connect(SignalDestination destination) {
-        signalCapabilities.checkCompatibility(destination.getIncomingCapabilities());
+        getOutgoingCapabilities().isAbleToSend(destination.getIncomingCapabilities());
+        signalCapabilities.isAbleToSend(destination.getIncomingCapabilities());
         if (destination.getIncomingCapabilities().isAbleToHandle(Span.class)) {
             if (spanService == null) {
                 spanService = new OtelGrpcTraceService(sigletContext);

@@ -2,13 +2,13 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.prox
 
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.trace.StatusCode;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 
 public class SpanStatusProxy extends BaseProxy {
 
-    private final ProtoSpanAdapter spanAdapter;
+    private final SpanAdapter spanAdapter;
 
-    public SpanStatusProxy(Signal signal, ProtoSpanAdapter spanAdapter) {
+    public SpanStatusProxy(Signal signal, SpanAdapter spanAdapter) {
         super(signal);
         this.spanAdapter = spanAdapter;
     }
@@ -21,7 +21,7 @@ public class SpanStatusProxy extends BaseProxy {
         spanAdapter.getStatus().setStatusMessage(message);
     }
 
-    public ProtoSpanAdapter getSpan(){
+    public SpanAdapter getSpan(){
         return spanAdapter;
     }
 

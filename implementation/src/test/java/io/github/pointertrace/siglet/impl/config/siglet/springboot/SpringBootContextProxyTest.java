@@ -29,9 +29,11 @@ class SpringBootContextProxyTest {
         SpringBootClassLoader springBootClassLoader =
                 SpringBootClassLoader.of(archive, SpringBootClassLoader.class.getClassLoader());
 
+        int port;
         try (SpringBootContextProxy springBootContextProxy = new SpringBootContextProxy(springBootClassLoader,
                 SpringBootStartClassReader.read(springBootJarFile))) {
             springBootContextProxy.start();
+            port = springBootContextProxy.getPort();
 
             assertInstanceOf(Spanlet.class, springBootContextProxy.getProcessor(
                     "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.siglet.SuffixSpanlet"));
@@ -39,21 +41,21 @@ class SpringBootContextProxyTest {
 //            assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
 //                    "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.parser.SuffixConfigChecker"));
 
-            assertEquals("Hello World", getHelloWorldFromHttp());
+            assertEquals("Hello World", getHelloWorldFromHttp(port));
         }
 
-        assertThrows(ConnectException.class, this::getHelloWorldFromHttp);
+        assertThrows(ConnectException.class, () -> getHelloWorldFromHttp(port));
 
     }
 
 
-    private String getHelloWorldFromHttp() throws IOException, InterruptedException {
+    private String getHelloWorldFromHttp(int port) throws IOException, InterruptedException {
         // Cria um HttpClient com timeout de 10 segundos
         try (HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()) {
 
             // Cria a requisição GET para a URL
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/hello"))
+                    .uri(URI.create("http://localhost:" + port + "/hello"))
                     .timeout(Duration.ofSeconds(10))
                     .GET()
                     .build();

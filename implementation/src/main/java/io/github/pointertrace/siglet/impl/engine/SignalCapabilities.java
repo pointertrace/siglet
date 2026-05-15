@@ -4,9 +4,7 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class SignalCapabilities {
@@ -25,9 +23,9 @@ public class SignalCapabilities {
     }
 
     public static SignalCapabilities of(String sigletName) {
-        if (sigletName.toLowerCase().contains("spanlet")) {
+        if (sigletName.toLowerCase().contains("span")) {
             return new SignalCapabilities(Span.class);
-        } else if (sigletName.toLowerCase().contains("metriclet")) {
+        } else if (sigletName.toLowerCase().contains("metric")) {
             return new SignalCapabilities(Metric.class);
         }  else {
             throw new SigletError(String.format("Cannot infer signal type for siglet named %s",sigletName));
@@ -53,21 +51,26 @@ public class SignalCapabilities {
 
     public void checkIsAbleToHandle(Class<? extends Signal> signalType) {
         if (! isAbleToHandle(signalType)) {
-            throw new SigletError(String.format("Can only handle signal types %s and signal is type %s for signal %s",
-                    String.join(", ", signalsTypes.stream().map(Class::getSimpleName).toList()),
-                    signalType.getSimpleName(), signalType));
+            throw new SigletError(String.format("Signal type [%s] cannot be handled! Can only handle signal types [%s]",
+                    signalType.getName(),
+                    String.join(", ", signalsTypes.stream().map(Class::getName).toList())));
         }
     }
 
-    public boolean isCompatible(SignalCapabilities other) {
-        return !Collections.disjoint(signalsTypes,other.signalsTypes);
+    public boolean isAbleToSend(SignalCapabilities destinationCapabilities) {
+        for(Class<? extends Signal> incomingSignalType : signalsTypes) {
+            for(Class<? extends Signal> outgoingSignalType : destinationCapabilities.signalsTypes) {
+                if (outgoingSignalType.isAssignableFrom(incomingSignalType)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public void checkCompatibility(SignalCapabilities other) {
-        if (! isCompatible(other)) {
-            throw new SigletError(String.format("The two components are not compatible because there is no intersection between them (%s,%s)",
-                    String.join(", ", signalsTypes.stream().map(Class::getSimpleName).toList()),
-                    String.join(", ", other.signalsTypes.stream().map(Class::getSimpleName).toList())));
-        }
+    public String print() {
+        return String.join(", ", signalsTypes.stream().map(Class::getName).toList());
     }
+
+
 }

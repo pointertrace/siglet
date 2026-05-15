@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.integrationtests.spanlet;
 
 import io.github.pointertrace.siglet.impl.Siglet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.adapter.trace.ProtoSpanAdapter;
+import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.exporter.debug.DebugExporters;
 import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceivers;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -23,16 +23,16 @@ class SpanToMetricActionSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiverDescriptor
+                - debug: receiver
                 exporters:
-                - debug: exporterDescriptor
-                pipelineDescriptors:
-                - name: pipelineDescriptor
-                  from: receiverDescriptor
+                - debug: exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
                   start: spanlet
-                  processorDescriptors:
+                  processors:
                   - spanlet-groovy-action: spanlet
-                    to: exporterDescriptor
+                    to: exporter
                     config:
                       action: |
                         signal.name = signal.name +"-suffix"
@@ -52,13 +52,13 @@ class SpanToMetricActionSpanletTest {
 
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
+        SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
-        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(protoSpanAdapter));
+        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(spanAdapter));
 
         siglet.stop();
 
-        List<ProtoSpanAdapter> signals = DebugExporters.INSTANCE.get("exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> signals = DebugExporters.INSTANCE.get("exporter", SpanAdapter.class);
         assertEquals(1, signals.size());
         assertEquals("span-name-suffix", signals.getFirst().getName());
 
@@ -70,19 +70,19 @@ class SpanToMetricActionSpanletTest {
 
         String config = """
                 receivers:
-                - debug: receiverDescriptor
+                - debug: receiver
                 exporters:
-                - debug: first-exporterDescriptor
-                - debug: second-exporterDescriptor
-                pipelineDescriptors:
-                - name: pipelineDescriptor
-                  from: receiverDescriptor
+                - debug: first-exporter
+                - debug: second-exporter
+                pipelines:
+                - name: pipeline
+                  from: receiver
                   start: spanlet
-                  processorDescriptors:
+                  processors:
                   - spanlet-groovy-action: spanlet
                     to:
-                    - first-exporterDescriptor
-                    - second-exporterDescriptor
+                    - first-exporter
+                    - second-exporter
                     config:
                       action: signal.name = signal.name +"-suffix"
                 """;
@@ -98,19 +98,19 @@ class SpanToMetricActionSpanletTest {
                 .setName("span-name").build();
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
-        ProtoSpanAdapter protoSpanAdapter = new ProtoSpanAdapter().recycle(span, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiverDescriptor").send(protoSpanAdapter));
+        SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
+        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(spanAdapter));
 
         siglet.stop();
 
         // first output
-        List<ProtoSpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> firstExporter = DebugExporters.INSTANCE.get("first-exporter", SpanAdapter.class);
         assertEquals(1, firstExporter.size());
         assertEquals("span-name-suffix", firstExporter.getFirst().getName());
 
 
         // second output
-        List<ProtoSpanAdapter> secondExporter = DebugExporters.INSTANCE.get("first-exporterDescriptor", ProtoSpanAdapter.class);
+        List<SpanAdapter> secondExporter = DebugExporters.INSTANCE.get("second-exporter", SpanAdapter.class);
         assertEquals(1, secondExporter.size());
         assertEquals("span-name-suffix", secondExporter.getFirst().getName());
 
