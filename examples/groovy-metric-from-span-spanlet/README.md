@@ -8,7 +8,6 @@ from span duration.
 - Docker and Docker Compose installed and running
 - Bash shell
 - Java and Maven to build the example JAR
-- [telemetrygen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd/telemetrygent) installed (used by the provided generate-trace.sh script)
 
 ## How to run
 
@@ -48,6 +47,3 @@ bash docker-compose down
 
 - Ports already in use:
   - Ensure ports 3000 (Grafana) and 8081 (OTLP receiverDescriptor) are free.
-- telemetrygen not found:
-  - Install [telemetrygen](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/cmd
-    /telemetrygent) or update generate-trace.sh to use a different trace generator available on your system.

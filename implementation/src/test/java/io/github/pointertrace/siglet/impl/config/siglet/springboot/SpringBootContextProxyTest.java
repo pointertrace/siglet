@@ -37,8 +37,8 @@ class SpringBootContextProxyTest {
 
             assertInstanceOf(Spanlet.class, springBootContextProxy.getProcessor(
                     "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.siglet.SuffixSpanlet"));
-
-//            assertInstanceOf(NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
+// todo acertar!
+//            assertInstanceOf(Optional<NodeCheckerFactory.class, springBootContextProxy.getNodeCheckerFactory(
 //                    "io.github.pointertrace.siglet.impl.test.bundle.springboot.suffix.parser.SuffixConfigChecker"));
 
             assertEquals("Hello World", getHelloWorldFromHttp(port));

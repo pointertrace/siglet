@@ -10,10 +10,7 @@ import io.github.pointertrace.siglet.impl.config.siglet.SpanletContextClassloade
 import io.github.pointertrace.siglet.impl.config.siglet.configfile.SigletConfigFile;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import static org.joor.Reflect.onClass;
 
 public class FatJarSigletDefinition implements SigletDefinition {
 
@@ -89,39 +86,29 @@ public class FatJarSigletDefinition implements SigletDefinition {
     private synchronized Class<? extends Siglet<?>> getProcessorClass() {
         String className = sigletConfigFileDefinition.getSigletClassName().getValue();
         try {
-            Class<?> clazz = Class.forName(className, true, classLoader);
+            Class<?> clazz = onClass(className, classLoader).get();
             checkType(clazz, Spanlet.class);
             return (Class<? extends Siglet<?>>) clazz.asSubclass(Siglet.class);
-        } catch (ClassNotFoundException e) {
-            throw new SigletError((String.format("Class %s not found in jar %s", className, classLoader.toString())));
+        } catch (Exception e) {
+            throw new SigletError((String.format("Class %s not found in jar %s", className, classLoader.toString())), e);
         }
-    }
-
-    private Constructor<?> getNonArgumentConstructor(Class<?> clazz) {
-        return Arrays.stream(clazz.getDeclaredConstructors())
-                .filter(c -> c.getParameterCount() == 0 && Modifier.isPublic(c.getModifiers()))
-                .findAny()
-                .orElseThrow(() -> new SigletError(String.format("Class %s does not have a non-args public " +
-                        "constructor", clazz.getName())));
     }
 
     private <T> Class<? extends T> getClass(String className, Class<T> desiredType) {
         try {
-            Class<?> clazz = Class.forName(className, true, classLoader);
+            Class<?> clazz = onClass(className, classLoader).get();
             checkType(clazz, desiredType);
             return clazz.asSubclass(desiredType);
-        } catch (ClassNotFoundException e) {
-            throw new SigletError(String.format("Class %s not found in jar %s", className, classLoader.toString()));
+        } catch (Exception e) {
+            throw new SigletError(String.format("Class %s not found in jar %s", className, classLoader.toString()), e);
         }
     }
 
     private <T> T createInstance(Class<? extends T> clazz) {
         try {
-            return clazz.cast(getNonArgumentConstructor(clazz).newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
+            return onClass(clazz).create().get();
+        } catch (Exception e) {
             throw new SigletError(String.format("Error creating instance of %s:%s", clazz.getName(), e.getMessage()), e);
-        } catch (InvocationTargetException e) {
-            throw new SigletError(String.format("Error creating instance of %s:%s", clazz.getName(), e.getTargetException().getMessage()), e.getTargetException());
         }
     }
 

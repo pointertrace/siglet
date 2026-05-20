@@ -1,8 +1,9 @@
-FROM openjdk:24-slim
+FROM eclipse-temurin:25
 ARG JAR_FILE
-WORKDIR /opt
-COPY $JAR_FILE /opt/siglet.jar
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY $JAR_FILE /opt/app/siglet.jar
 RUN addgroup --system siglet && adduser --system siglet --ingroup siglet
-RUN chown -R siglet:siglet /opt
+RUN chown -R siglet:siglet /opt/app
 USER siglet:siglet
-ENTRYPOINT ["java","--sun-misc-unsafe-memory-access=allow", "--enable-native-access=ALL-UNNAMED","-jar","/opt/siglet.jar"]
+ENTRYPOINT ["java","--sun-misc-unsafe-memory-access=allow", "--enable-native-access=ALL-UNNAMED","-jar","/opt/app/siglet.jar"]

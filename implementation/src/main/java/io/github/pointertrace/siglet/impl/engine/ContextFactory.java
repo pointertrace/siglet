@@ -11,7 +11,6 @@ public class ContextFactory {
     public SigletContext create(String configTxt, List<SigletBundle> sigletsBundles) {
         ConfigFactory configFactory = new ConfigFactory();
         Config config = configFactory.create(configTxt, sigletsBundles);
-        // todo incluir os object pools
         return new SigletContext(config);
     }
 }

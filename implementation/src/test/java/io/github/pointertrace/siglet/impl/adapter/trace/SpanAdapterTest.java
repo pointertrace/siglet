@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.joor.Reflect.on;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpanAdapterTest {
@@ -90,27 +91,20 @@ class SpanAdapterTest {
 
         SpanAdapter adapter = new SpanAdapter(span, resource, scope);
 
-        // Accessing fields via reflection to verify they are null
+        // Accessing fields via joor to verify they are null
         try {
-            java.lang.reflect.Field resField = SpanAdapter.class.getDeclaredField("resourceAdapter");
-            resField.setAccessible(true);
-            java.lang.reflect.Field scopeField = SpanAdapter.class.getDeclaredField("scopeAdapter");
-            scopeField.setAccessible(true);
-            java.lang.reflect.Field attrField = SpanAdapter.class.getDeclaredField("attributesAdapter");
-            attrField.setAccessible(true);
-
-            org.junit.jupiter.api.Assertions.assertNull(resField.get(adapter), "ResourceAdapter should be null initially");
-            org.junit.jupiter.api.Assertions.assertNull(scopeField.get(adapter), "InstrumentationScopeAdapter should be null initially");
-            org.junit.jupiter.api.Assertions.assertNull(attrField.get(adapter), "AttributesAdapter should be null initially");
+            assertNull(on(adapter).field("resourceAdapter").get(), "ResourceAdapter should be null initially");
+            assertNull(on(adapter).field("scopeAdapter").get(), "InstrumentationScopeAdapter should be null initially");
+            assertNull(on(adapter).field("attributesAdapter").get(), "AttributesAdapter should be null initially");
 
             adapter.getResource();
-            org.junit.jupiter.api.Assertions.assertNotNull(resField.get(adapter), "ResourceAdapter should be initialized after getResource()");
+            assertNotNull(on(adapter).field("resourceAdapter").get(), "ResourceAdapter should be initialized after getResource()");
 
             adapter.getInstrumentationScope();
-            org.junit.jupiter.api.Assertions.assertNotNull(scopeField.get(adapter), "InstrumentationScopeAdapter should be initialized after getInstrumentationScope()");
+            assertNotNull(on(adapter).field("scopeAdapter").get(), "InstrumentationScopeAdapter should be initialized after getInstrumentationScope()");
 
             adapter.getAttributes();
-            org.junit.jupiter.api.Assertions.assertNotNull(attrField.get(adapter), "AttributesAdapter should be initialized after getAttributes()");
+            assertNotNull(on(adapter).field("attributesAdapter").get(), "AttributesAdapter should be initialized after getAttributes()");
 
         } catch (Exception e) {
             throw new RuntimeException(e);

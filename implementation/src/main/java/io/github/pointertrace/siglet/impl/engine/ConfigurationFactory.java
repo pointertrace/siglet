@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.any;
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.object;
+import static org.joor.Reflect.onClass;
 
 public interface ConfigurationFactory<T> {
 
@@ -96,18 +97,12 @@ public interface ConfigurationFactory<T> {
     }
 
     private static <T> Supplier<T> getSupplierForNoArgsConstructor(Class<T> clazz) {
-        try {
-            java.lang.reflect.Constructor<T> ctor = clazz.getDeclaredConstructor();
-            ctor.setAccessible(true);
-            return () -> {
-                try {
-                    return ctor.newInstance();
-                } catch (ReflectiveOperationException e) {
-                    throw new SigletError("Error creating instance of " + clazz.getName() + ": " + e.getMessage(), e);
-                }
-            };
-        } catch (NoSuchMethodException e) {
-            throw new SigletError("Error getting no-args constructor for class " + clazz.getName() + ": " + e.getMessage(), e);
-        }
+        return () -> {
+            try {
+                return onClass(clazz).create().get();
+            } catch (Exception e) {
+                throw new SigletError("Error creating instance of " + clazz.getName() + ": " + e.getMessage(), e);
+            }
+        };
     }
 }

@@ -162,7 +162,6 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
         try {
             if (state.get() == State.RUNNING) {
                 signal = queue.take();
-                // TODO ajustr
                 LOGGER.trace("state {} got signal from take and it is {}", state.get(), signal.getId());
             } else {
                 signal = queue.poll(100, TimeUnit.MILLISECONDS);
