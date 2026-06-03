@@ -1,0 +1,683 @@
+cenarios:
+  empty:
+    siglet-config-yaml: ""
+    error-message: Siglet config file is empty
+
+  no-receivers:
+    siglet-config-yaml:
+      pipelines:
+          - name: pipeline
+            from: receiver
+            start: spanlet
+            processors:
+              - spanlet-groovy-action: spanlet
+                to: exporter
+                config:
+                  action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        (1,1) There must be at least one receiver
+
+  empty-receivers:
+    siglet-config-yaml:
+      receivers:
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          (1,12) Receivers must be an array
+
+  receivers-not-array:
+    siglet-config-yaml:
+      receivers: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          (1,12) Receivers must be an array
+
+
+  receivers-not-array-objects:
+    siglet-config-yaml:
+      receivers:
+        - receiver-name
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          Error in receivers at (2,1):
+            Error in receivers array item at (2,3):
+              (2,3) Receiver must be an object
+
+  receiver-config-not-found:
+    siglet-config-yaml:
+      receivers:
+        - grpc: receiver-name
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          Error in receivers at (2,1):
+            Error in receivers array item at (2,3):
+              Error in receiver at (2,3):
+                (2,3) Missing required property: config
+
+
+
+  receiver-config-not-object:
+    siglet-config-yaml:
+      receivers:
+        - grpc: receiver-name
+          config: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          Error in receivers at (2,1):
+            Error in receivers array item at (2,3):
+              Error in receiver at (2,3):
+                Expecting property 'config' at (3,3):
+                  Expecting object at (3,11):
+                    (3,11) Expected object
+
+  receiver-config-address-not-string:
+    siglet-config-yaml:
+      receivers:
+        - grpc: receiver-name
+          config:
+            address: 1
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in receivers at (1,1):
+          Error in receivers at (2,1):
+            Error in receivers array item at (2,3):
+              Error in receiver at (2,3):
+                Expecting property 'config' at (3,3):
+                  Expecting object at (4,5):
+                    Invalid grpc receiver address at (4,5):
+                      (4,14) Address must be a valid IP:port format
+
+  exporters-not-array:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters: exporter
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          (3,12) Exporters must be an array
+
+  exporters-not-array-objects:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - receiver-name
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              (4,3) Exporter must be an object
+
+  exporter-config-not-found:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter-name
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                (4,3) Missing required property: config
+
+  exporter-config-not-object:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: receiver-name
+          config: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (5,11):
+                    (5,11) Expected object
+
+  exporter-config-invalid-property:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter
+          config:
+            address: localhost:8080
+            invalid-property: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (6,5):
+                    (7,5) Unknown property: invalid-property
+
+  exporter-config-address-not-string:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter
+          config:
+            address: 1
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (6,5):
+                    Invalid grpc exporter address at (6,5):
+                      (6,14) Address must be a valid IP:port format
+
+  exporter-config-batch-size-not-int:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter
+          config:
+            address: localhost:8080
+            batch-size-in-signals: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (6,5):
+                    Invalid batch size at (7,5):
+                      (7,28) Batch size must be a integer
+
+  exporter-config-batch-timeout-not-int:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter
+          config:
+            address: localhost:8080
+            batch-timeout-in-millis: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (6,5):
+                    Invalid batch timeout at (7,5):
+                      (7,30) Batch timeout must be a integer
+
+  exporter-config-queue-size-not-int:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - grpc: exporter
+          config:
+            address: localhost:8080
+            queue-size: value
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in exporters at (3,1):
+          Error in exporters at (4,1):
+            Error in exporters array item at (4,3):
+              Error in exporter at (4,3):
+                Expecting property 'config' at (5,3):
+                  Expecting object at (6,5):
+                    Invalid queue size at (7,5):
+                      (7,17) Queue size must be a integer
+
+  no-pipelines:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+    error-message: |
+      Error in configuration:
+        (1,1) There must be at least one pipeline
+
+  pipelines-not-array:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines: value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          (5,12) Pipelines must be an array
+
+  pipelines-no-name-property:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - start: start-value
+          from: from-value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                (6,3) Missing pipeline 'name' property
+
+  pipelines-name-not-string:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: 1
+          start: start-value
+          from: from-value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Invalid pipeline name property at (6,3):
+                  (6,9) Pipeline name must be a string
+
+  pipelines-no-start-property:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          from: from-value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Expecting Destination (start property) at (6,3)
+
+
+  pipelines-start-not-string:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: 1
+          from: from-value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                (7,3) Destination (start property) must be a string or a list of strings
+
+
+  pipelines-no-from-property:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                (6,3) Missing pipeline 'from' property
+
+
+  pipelines-from-property-not-string:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: 1
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Invalid pipeline from property at (8,3):
+                  (8,9) Pipeline from must be a string
+
+  no-processors:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                (6,3) There must be an array with at least one processor
+
+
+  processors-not-array:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors: value
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  (9,15) Processors must be an array
+
+  processors-invalid-processor-type:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors:
+            - invalid: spanlet
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  Error in processors at (10,3):
+                    Error in processor at (10,5):
+                      Expecting object at (10,5):
+                        (10,5) to have one of ('spanlet-groovy-filter','spanlet-groovy-action','spanlet-groovy-router') as property
+
+  processors-no-config:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors:
+            - spanlet-groovy-action: spanlet
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  Error in processors at (10,3):
+                    Error in processor at (10,5):
+                      Expecting object at (10,5):
+                        (10,5) Missing required property: config
+
+
+  processors-queue-size-not-int:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors:
+            - spanlet-groovy-action: spanlet
+              queue-size: value
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  Error in processors at (10,3):
+                    Error in processor at (10,5):
+                      Expecting object at (10,5):
+                        Invalid queue-size property at (11,5):
+                          (11,17) Queue size must be a integer
+
+  processors-thread-pool-size-not-int:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors:
+            - spanlet-groovy-action: spanlet
+              thread-pool-size: value
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  Error in processors at (10,3):
+                    Error in processor at (10,5):
+                      Expecting object at (10,5):
+                        Invalid thread-pool-size property at (11,5):
+                          (11,23) Thread pool size must be a integer
+
+  processors-destination:
+    siglet-config-yaml:
+      receivers:
+        - debug: receiver
+      exporters:
+        - debug: exporter
+      pipelines:
+        - name: pipeline
+          start: start
+          from: from
+          processors:
+            - spanlet-groovy-action: spanlet
+              config:
+                action: signal.name = signal.name +"-suffix"
+              to: 1
+    error-message: |
+      Error in configuration:
+        Error in pipelines at (5,1):
+          Error in pipelines at (6,1):
+            Error in pipelines array item at (6,3):
+              Error in pipeline at (6,3):
+                Error in processors at (9,3):
+                  Error in processors at (10,3):
+                    Error in processor at (10,5):
+                      (13,5) Destination (to property) must be a string or a list of strings
+

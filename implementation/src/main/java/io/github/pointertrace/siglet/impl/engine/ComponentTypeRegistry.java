@@ -99,4 +99,5 @@ public class ComponentTypeRegistry<T extends ComponentType<?, ?>> {
             throw new IllegalArgumentException("Setter inválido", e);
         }
     }
+
 }

@@ -1,0 +1,213 @@
+cenarios:
+  empty:
+    siglet-config-yaml: ""
+    error-message: Siglet config file is empty
+
+  no-siglets:
+    siglet-config-yaml:
+      invalid-key: invalid-value
+    error-message: |
+      Error in siglets definitions:
+        (1,1) Could not find siglets property
+
+
+  siglets-not-object-array:
+    siglet-config-yaml:
+      siglets: invalid-value
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          (1,10) siglets property must be an array
+
+  siglets-not-object:
+    siglet-config-yaml:
+      siglets:
+        - invalid-key: invalid-value
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                (2,3) Siglet must have a name property
+
+  siglet-object-missing-name:
+    siglet-config-yaml:
+      siglets:
+        - description: sample description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                (2,3) Siglet must have a name property
+     
+     
+
+  siglet-object-name-not-string:
+    siglet-config-yaml:
+      siglets:
+        - name: 1
+          description: sample description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Invalid siglet name at (2,3):
+                  (2,9) Siglet name must be a string
+
+  siglet-object-missing-siglet-class:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: sample description
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                (2,3) Siglet must have a siglet-class property
+
+  siglet-object-siglet-class-not-string:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          siglet-class: 1
+          description: sample description
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Invalid siglet siglet-class at (3,3):
+                  (3,17) siglet siglet-class must be a string
+
+  siglet-object-missing-description:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                (2,3) Siglet must have a description property
+
+  siglet-object-siglet-description-not-string:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: 1
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-parser-factory-class: io.github.pointertrace.siglet.SampleConfigParserFactory
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Invalid siglet description at (3,3):
+                  (3,16) Siglet description must be a string
+
+  siglet-object-siglet-config-parser-factory-class-not-string:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-parser-factory-class: 1
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Invalid siglet config-parser-factory-class at (5,3):
+                  (5,32) Siglet config-parser-factory-class must be a string
+
+  siglet-object-siglet-config-factory-class-not-string:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-factory-class: 1
+          destinations:
+            - first
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Invalid siglet config-factory-class at (5,3):
+                  (5,25) Siglet config-factory-class must be a string
+
+  siglet-object-siglet-detination-not-array:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-factory-class: any-class-name
+          destinations: destination
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Error in siglet destinations at (6,3):
+                  (6,17) Siglet destinations must be an array
+
+  siglet-object-siglet-detination-not-array-of-strings:
+    siglet-config-yaml:
+      siglets:
+        - name: name
+          description: description
+          siglet-class: io.github.pointertrace.siglet.SampleSpanlet
+          config-factory-class: any-class-name
+          destinations:
+            - destination
+            - destination
+            - destination
+            - destination
+            - 1
+    error-message: |
+      Error in siglets definitions:
+        Error in siglets property:
+          Error in siglet object array:
+            Error in siglet array item:
+              Error in siglet at (2,3):
+                Error in siglet destinations at (6,3):
+                  Error in siglets destination array at (7,3):
+                    Error in siglets destination array item at (11,5):
+                      (11,5) Siglet destination must be a string

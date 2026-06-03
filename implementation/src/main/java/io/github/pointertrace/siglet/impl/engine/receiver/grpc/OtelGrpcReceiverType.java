@@ -22,7 +22,8 @@ public class OtelGrpcReceiverType implements ReceiverType<OtelGrpcReceiverConfig
     public ConfigurationFactory<OtelGrpcReceiverConfig> getConfigurationFactory() {
         return ConfigurationFactory.of(
                 List.of(
-                        property("address",OtelGrpcReceiverConfig::setAddress,string().transform(new InetSocketAddressTransform()))
+                        property("address",OtelGrpcReceiverConfig::setAddress,string().transform(new InetSocketAddressTransform()).customErrorMessage("#location Address must be a valid IP:port format"))
+                                .customErrorMessage("Invalid grpc receiver address at #location:","")
                 ),OtelGrpcReceiverConfig.class
         );
     }

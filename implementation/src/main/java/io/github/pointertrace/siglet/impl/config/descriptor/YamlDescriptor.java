@@ -1,13 +1,11 @@
 package io.github.pointertrace.siglet.impl.config.descriptor;
 
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.descriptor.validator.ComposedValidator;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverTypeRegistry;
-import io.github.pointertrace.siglet.parser.Factory;
-import io.github.pointertrace.siglet.parser.Node;
-import io.github.pointertrace.siglet.parser.Parser;
-import io.github.pointertrace.siglet.parser.Schema;
+import io.github.pointertrace.siglet.parser.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +63,24 @@ public class YamlDescriptor {
                 .addOptionalProperty(property("global", YamlDescriptor::setGlobalConfig,
                         GlobalConfigDescriptor.descriptorSchemaBuilder()))
                 .addProperty(property("receivers", YamlDescriptor::setReceivers, array(ArrayList::new,
-                        arrayItem(List::add, ReceiverDescriptor.descriptorSchemaBuilder(receiverTypeRegistry)))))
+                        arrayItem(List::add, ReceiverDescriptor.descriptorSchemaBuilder(receiverTypeRegistry)
+                                .customErrorMessage("Error in receiver at #location:", "#location Receiver must be an object"))
+                                .customErrorMessage("Error in receivers array item at #location:"))
+                        .customErrorMessage("Error in receivers at #location:", "#location Receivers must be an array"))
+                        .customErrorMessage("Error in receivers at #location:", "#location There must be at least one receiver"))
                 .addProperty(property("pipelines", YamlDescriptor::setPipelines, array(ArrayList::new,
-                        arrayItem(List::add, PipelineDescriptor.descriptorSchemaBuilder(processorRegistry)))))
+                        arrayItem(List::add, PipelineDescriptor.descriptorSchemaBuilder(processorRegistry)
+                                .customErrorMessage("Error in pipeline at #location:", "#location Pipeline must be an object"))
+                                .customErrorMessage("Error in pipelines array item at #location:"))
+                        .customErrorMessage("Error in pipelines at #location:", "#location Pipelines must be an array")
+                ).customErrorMessage("Error in pipelines at #location:", "#location There must be at least one pipeline"))
                 .addOptionalProperty(property("exporters", YamlDescriptor::setExporters, array(ArrayList::new,
-                        arrayItem(List::add, ExporterDescriptor.descriptorSchemaBuilder(exporterRegistry)))));
+                        arrayItem(List::add, ExporterDescriptor.descriptorSchemaBuilder(exporterRegistry)
+                                .customErrorMessage("Error in exporter at #location:", "#location Exporter must be an object"))
+                                .customErrorMessage("Error in exporters array item at #location:"))
+                        .customErrorMessage("Error in exporters at #location:", "#location Exporters must be an array"))
+                        .customErrorMessage("Error in exporters at #location:", "#location There must be at least one exporter"))
+                .customErrorMessage("Error in configuration:");
     }
 
     public static YamlDescriptor parse(String yaml) {
@@ -78,10 +89,17 @@ public class YamlDescriptor {
 
     public static YamlDescriptor parse(String yaml, ReceiverTypeRegistry receiverTypeRegistry,
                                        ProcessorTypeRegistry processorRegistry, ExporterTypeRegistry exporterRegistry) {
-        Node node = Parser.DEFAULT.parse(yaml);
-        Schema schema = descriptorSchemaBuilder(receiverTypeRegistry, processorRegistry, exporterRegistry).build();
-        Factory factory = schema.validate(node);
-        return  factory.create(YamlDescriptor.class);
+        if (yaml == null || yaml.isBlank()) {
+            throw new SigletError("Siglet config file is empty");
+        }
+        try {
+            Node node = Parser.DEFAULT.parse(yaml);
+            Schema schema = descriptorSchemaBuilder(receiverTypeRegistry, processorRegistry, exporterRegistry).build();
+            Factory factory = schema.validate(node);
+            return factory.create(YamlDescriptor.class);
+        } catch (SchemaException e) {
+            throw new SigletError(e.getMessage(), e);
+        }
 
     }
 
@@ -95,7 +113,6 @@ public class YamlDescriptor {
         validate(yamlDescriptor);
         return yamlDescriptor;
     }
-
 
 
     public void afterSetValues() {

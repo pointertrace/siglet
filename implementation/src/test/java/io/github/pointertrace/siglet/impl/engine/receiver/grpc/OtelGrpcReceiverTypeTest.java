@@ -59,8 +59,7 @@ class OtelGrpcReceiverTypeTest {
         OtelGrpcReceiverConfig config = new OtelGrpcReceiverConfig();
         InetSocketAddress inetSocketAddress = InetSocketAddress.createUnresolved("127.0.0.1",4317);
 
-        LocatedInetSocketAddress locatedInetSocketAddress = new LocatedInetSocketAddress();
-        locatedInetSocketAddress.setInetSocketAddress(inetSocketAddress);
+        LocatedInetSocketAddress locatedInetSocketAddress = new LocatedInetSocketAddress(inetSocketAddress, Location.of(1,10));
 
         config.setAddress(locatedInetSocketAddress);
 

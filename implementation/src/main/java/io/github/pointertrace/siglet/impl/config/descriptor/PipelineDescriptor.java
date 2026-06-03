@@ -59,11 +59,15 @@ public class PipelineDescriptor extends BaseDescriptor {
     }
     public static Schema.Builder<?,PipelineDescriptor> descriptorSchemaBuilder(ProcessorTypeRegistry registry) {
         return object(PipelineDescriptor::new)
-                .addProperty(property("name", PipelineDescriptor::setName, stringValueObject()))
-                .addOptionalProperty(property("from", PipelineDescriptor::setFrom, stringValueObject()))
+                .addProperty(property("name", PipelineDescriptor::setName, stringValueObject().customErrorMessage("#location Pipeline name must be a string"))
+                        .customErrorMessage("Invalid pipeline name property at #location:","#location Missing pipeline 'name' property"))
+                .addProperty(optionalProperty("from", PipelineDescriptor::setFrom, stringValueObject().customErrorMessage("#location Pipeline from must be a string"))
+                        .customErrorMessage("Invalid pipeline from property at #location:","#location Missing pipeline 'from' property"))
                 .addProperty(destinationSchemaBuilder("start", PipelineDescriptor::setStart))
                 .addProperty(property("processors", PipelineDescriptor::setProcessors, array(ArrayList::new,
-                        arrayItem(List::add, ProcessorDescriptor.descriptorSchemaBuilder(registry)))));
+                        arrayItem(List::add, ProcessorDescriptor.descriptorSchemaBuilder(registry)).customErrorMessage("Error in processor at #location:","")).customErrorMessage("Error in processors at #location:", "#location Processors must be an array"))
+                        .customErrorMessage("Error in processors at #location:", "#location There must be an array with at least one processor")
+                );
     }
 
 }

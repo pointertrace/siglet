@@ -23,12 +23,12 @@ public class OtelGrpcExporterType implements ExporterType<OtelGrpcExporterConfig
         return ConfigurationFactory.of(
                 List.of(
                         property("address", OtelGrpcExporterConfig::setAddress,
-                                string().transform(new InetSocketAddressTransform())),
+                                string().transform(new InetSocketAddressTransform()).customErrorMessage("#location Address must be a valid IP:port format")).customErrorMessage("Invalid grpc exporter address at #location:",""),
                         optionalProperty("batch-size-in-signals", OtelGrpcExporterConfig::setBatchSizeInSignals,
-                                integerValueObject()),
+                                integerValueObject().customErrorMessage("#location Batch size must be a integer")).customErrorMessage("Invalid batch size at #location:",""),
                         optionalProperty("batch-timeout-in-millis", OtelGrpcExporterConfig::setBatchTimeoutInMillis,
-                                integerValueObject()),
-                        optionalProperty("queue-size", OtelGrpcExporterConfig::setQueueSize, integerValueObject())),
+                                integerValueObject().customErrorMessage("#location Batch timeout must be a integer")).customErrorMessage("Invalid batch timeout at #location:",""),
+                        optionalProperty("queue-size", OtelGrpcExporterConfig::setQueueSize, integerValueObject().customErrorMessage("#location Queue size must be a integer")).customErrorMessage("Invalid queue size at #location:","")),
                 OtelGrpcExporterConfig.class
         );
     }

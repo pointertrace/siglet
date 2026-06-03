@@ -66,8 +66,10 @@ public class ProcessorDescriptor extends ConfigurableDescriptor {
     public static Schema.Builder<?, ProcessorDescriptor> descriptorSchemaBuilder(ProcessorTypeRegistry registry) {
         return object(ProcessorDescriptor::new)
                 .addProperty(registry.getPropertySwitchSchema(ProcessorDescriptor::setName, ProcessorDescriptor::setType))
-                .addOptionalProperty(property("queue-size", ProcessorDescriptor::setQueueSize, integerValueObject()))
-                .addOptionalProperty(property("thread-pool-size", ProcessorDescriptor::setThreadPoolSize, integerValueObject()))
+                .addOptionalProperty(property("queue-size", ProcessorDescriptor::setQueueSize, integerValueObject()
+                        .customErrorMessage("#location Queue size must be a integer")).customErrorMessage("Invalid queue-size property at #location:", ""))
+                .addOptionalProperty(property("thread-pool-size", ProcessorDescriptor::setThreadPoolSize, integerValueObject()
+                        .customErrorMessage("#location Thread pool size must be a integer")).customErrorMessage("Invalid thread-pool-size property at #location:", ""))
                 .addOptionalProperty(SchemaBuilderUtils.destinationSchemaBuilder("to", ProcessorDescriptor::setTo));
     }
 

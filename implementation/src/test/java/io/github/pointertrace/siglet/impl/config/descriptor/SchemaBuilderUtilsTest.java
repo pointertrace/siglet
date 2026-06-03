@@ -11,6 +11,27 @@ import static org.junit.jupiter.api.Assertions.*;
 class SchemaBuilderUtilsTest {
 
     @Test
+    void no_destination() {
+
+        String yaml = """
+                property: value
+                """;
+
+        Node node = Parser.DEFAULT.parse(yaml);
+
+        Schema.Builder<?, Destination> builder = object(Destination::new)
+                .addProperty(property("property", Destination::setProperty, string()))
+                .addProperty(SchemaBuilderUtils.destinationSchemaBuilder("to", Destination::setTo));
+
+
+        SchemaException sigletError = assertThrows(SchemaException.class, () -> builder.build().validate(node));
+
+        assertEquals("Expecting object at (1,1):\n  Expecting Destination (to property) at (1,1)", sigletError.getMessage().trim());
+
+
+    }
+
+    @Test
     void destination_array() {
 
         String yaml = """
@@ -79,7 +100,7 @@ class SchemaBuilderUtilsTest {
 
         SchemaException sigletError = assertThrows(SchemaException.class, () -> builder.build().validate(node));
 
-        assertEquals("(2,5) Destination (to property) must be a string or a list of strings", sigletError.getMessage().trim());
+        assertEquals("(2,1) Destination (to property) must be a string or a list of strings", sigletError.getMessage().trim());
 
     }
 
@@ -101,7 +122,7 @@ class SchemaBuilderUtilsTest {
 
         SchemaException sigletError = assertThrows(SchemaException.class, () -> builder.build().validate(node));
 
-        assertEquals("(3,1) Destination (to property) must be a string or a list of strings", sigletError.getMessage().trim());
+        assertEquals("(2,1) Destination (to property) must be a string or a list of strings", sigletError.getMessage().trim());
 
     }
 
