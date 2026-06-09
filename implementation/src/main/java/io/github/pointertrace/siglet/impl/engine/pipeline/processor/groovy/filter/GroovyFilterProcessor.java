@@ -5,10 +5,7 @@ import io.github.pointertrace.siglet.api.*;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.BaseGroovyProcessor;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
@@ -27,16 +24,17 @@ public class GroovyFilterProcessor implements Processor {
         this(node.getName(), getConfig(node).getExpression(),
                 SignalCapabilities.of(node.getDescription().getType().getValue()),
                 sigletContext.getConfig().getQueueSize(node.getDescription()),
-                sigletContext.getConfig().getThreadPoolSize(node.getDescription()));
+                sigletContext.getConfig().getThreadPoolSize(node.getDescription()),
+                sigletContext.getSigletMetrics());
         this.node = node;
     }
 
     GroovyFilterProcessor(String name, String expression, SignalCapabilities signalCapabilities,
-                          int queueCapacity, int threadPoolSize) {
+                          int queueCapacity, int threadPoolSize, SigletMetrics sigletMetrics) {
         ContextImpl<Void> ctx = new ContextImpl<>(null);
         eventLoop = new Eventloop<>(name, createProcessorFactory(expression), ctx,
                 signalCapabilities, signalCapabilities,
-                queueCapacity, threadPoolSize);
+                queueCapacity, threadPoolSize, sigletMetrics);
     }
 
     private static GroovyFilterConfig getConfig(ProcessorNode node) {

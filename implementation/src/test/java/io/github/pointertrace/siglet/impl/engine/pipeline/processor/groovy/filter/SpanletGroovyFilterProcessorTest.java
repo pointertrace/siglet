@@ -6,6 +6,7 @@ import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -21,6 +22,8 @@ class SpanletGroovyFilterProcessorTest {
     private MockSignalDestination destination;
 
     private SpanAdapter spanAdapter;
+
+    private SigletMetrics sigletMetrics;
 
 
     @BeforeEach
@@ -38,8 +41,9 @@ class SpanletGroovyFilterProcessorTest {
 
         InstrumentationScope scope = InstrumentationScope.newBuilder().setName("scope").build();
 
-
         spanAdapter = new SpanAdapter(span, resource, scope);
+
+        sigletMetrics = new SigletMetrics();
 
     }
 
@@ -47,7 +51,8 @@ class SpanletGroovyFilterProcessorTest {
     void process_match() {
 
         GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "signal.name == 'span-name'", SignalCapabilities.of(Span.class), 1, 1);
+                "filter", "signal.name == 'span-name'", SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         groovyFilterProcessor.connect(destination);
 
@@ -68,7 +73,8 @@ class SpanletGroovyFilterProcessorTest {
     void process_nonMatch() {
 
         GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "signal.name == 'other-span-name'", SignalCapabilities.of(Span.class), 1, 1);
+                "filter", "signal.name == 'other-span-name'", SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         groovyFilterProcessor.connect(destination);
 
@@ -88,7 +94,7 @@ class SpanletGroovyFilterProcessorTest {
 
 
         GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "true", SignalCapabilities.of(Span.class), 1, 1);
+                "filter", "true", SignalCapabilities.of(Span.class), 1, 1, sigletMetrics);
 
         SigletError ex = assertThrows(SigletError.class, () ->
                 groovyFilterProcessor.connect(new MockSignalDestination("mock", SignalCapabilities.of(Metric.class))));

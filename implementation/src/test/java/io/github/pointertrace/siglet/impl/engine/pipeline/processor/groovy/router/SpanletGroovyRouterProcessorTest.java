@@ -9,6 +9,7 @@ import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.engine.Component;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.github.pointertrace.siglet.parser.*;
@@ -28,6 +29,8 @@ class SpanletGroovyRouterProcessorTest {
     private MockSignalDestination route1SignalDestination;
 
     private SpanAdapter spanAdapter;
+
+    private SigletMetrics sigletMetrics;
 
     @BeforeEach
     public void setUp() {
@@ -49,6 +52,8 @@ class SpanletGroovyRouterProcessorTest {
 
         spanAdapter = new SpanAdapter(span, resource, scope);
 
+        sigletMetrics = new SigletMetrics();
+
     }
 
     @Test
@@ -60,7 +65,7 @@ class SpanletGroovyRouterProcessorTest {
         List<RouteConfig> routes = List.of(routeConfig);
 
         GroovyRouterProcessor groovyRouterProcessor = new GroovyRouterProcessor("route", "default",
-                routes, SignalCapabilities.of(Span.class), 1, 1);
+                routes, SignalCapabilities.of(Span.class), 1, 1, sigletMetrics);
 
         groovyRouterProcessor.connect(defaultSignalDestination);
         groovyRouterProcessor.connect(route1SignalDestination);
@@ -88,7 +93,7 @@ class SpanletGroovyRouterProcessorTest {
         List<RouteConfig> routes = List.of(routeConfig);
 
         GroovyRouterProcessor groovyRouterProcessor = new GroovyRouterProcessor("route", "default",
-                routes, SignalCapabilities.of(Span.class), 1, 1);
+                routes, SignalCapabilities.of(Span.class), 1, 1, sigletMetrics);
 
         groovyRouterProcessor.connect(defaultSignalDestination);
         groovyRouterProcessor.connect(route1SignalDestination);
@@ -117,7 +122,7 @@ class SpanletGroovyRouterProcessorTest {
         List<RouteConfig> routes = List.of(routeConfig);
 
         GroovyRouterProcessor groovyRouterProcessor = new GroovyRouterProcessor("route", "default",
-                routes, SignalCapabilities.of(Span.class), 1, 1);
+                routes, SignalCapabilities.of(Span.class), 1, 1, sigletMetrics);
 
 
         SigletError ex = assertThrows(SigletError.class, () ->

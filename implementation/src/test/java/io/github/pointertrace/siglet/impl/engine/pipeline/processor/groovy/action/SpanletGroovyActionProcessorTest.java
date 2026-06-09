@@ -9,6 +9,7 @@ import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.engine.Component;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.github.pointertrace.siglet.parser.*;
@@ -26,6 +27,8 @@ class SpanletGroovyActionProcessorTest {
     private MockSignalDestination otherDestination;
 
     private SpanAdapter spanAdapter;
+
+    private SigletMetrics sigletMetrics;
 
     @BeforeEach
     public void setUp() {
@@ -47,6 +50,8 @@ class SpanletGroovyActionProcessorTest {
 
         spanAdapter = new SpanAdapter(span, resource, scope);
 
+        sigletMetrics = new SigletMetrics();
+
     }
 
     @Test
@@ -58,7 +63,8 @@ class SpanletGroovyActionProcessorTest {
                 """;
 
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1);
+        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         groovyActionProcessor.connect(defaultDestination);
 
@@ -86,7 +92,8 @@ class SpanletGroovyActionProcessorTest {
                   drop()
                 """;
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1);
+        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         groovyActionProcessor.connect(defaultDestination);
 
@@ -112,7 +119,8 @@ class SpanletGroovyActionProcessorTest {
                   proceed("other")
                 """;
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1);
+        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         groovyActionProcessor.connect(defaultDestination);
         groovyActionProcessor.connect(otherDestination);
@@ -143,7 +151,8 @@ class SpanletGroovyActionProcessorTest {
                   proceed("other")
                 """;
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1);
+        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
+                sigletMetrics);
 
         SigletError ex = assertThrows(SigletError.class, () ->
                 groovyActionProcessor.connect(new MockSignalDestination("mock", SignalCapabilities.of(Metric.class))));

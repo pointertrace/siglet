@@ -5,6 +5,7 @@ import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
+import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -29,6 +30,8 @@ class SpanletTest {
 
     private SpanAdapter spanAdapter;
 
+    private SigletMetrics sigletMetrics;
+
     @BeforeEach
     public void setUp() {
 
@@ -51,14 +54,16 @@ class SpanletTest {
 
         spanAdapter = new SpanAdapter(span, resource, scope);
 
-    }
+        sigletMetrics = new SigletMetrics();
 
+    }
 
 
     @Test
     public void process() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanlet(), config,1,1, Map.of());
+        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanlet(), config, 1, 1,
+                new SigletMetrics(), Map.of());
 
         spanletProcessor.connect(defaultDestination);
 
@@ -80,7 +85,7 @@ class SpanletTest {
     @Test
     public void process_drop() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanletDrop(), config,1,1, Map.of());
+        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanletDrop(), config, 1, 1,sigletMetrics, Map.of());
 
         spanletProcessor.connect(defaultDestination);
 
@@ -100,7 +105,7 @@ class SpanletTest {
     public void process_proceedToDestination() {
 
         SpanletProcessor spanletProcessor = new SpanletProcessor("processor",
-                new PrefixSpanletProceedToDestination(), config,1,1, Map.of());
+                new PrefixSpanletProceedToDestination(), config, 1, 1,sigletMetrics, Map.of());
 
         spanletProcessor.connect(defaultDestination);
         spanletProcessor.connect(otherDestination);
@@ -125,8 +130,8 @@ class SpanletTest {
     public void process_proceedToDestinationMapping() {
 
         SpanletProcessor spanletProcessor = new SpanletProcessor("processor",
-                new PrefixSpanletProceedToDestinationMapped(), config,1,1,
-                Map.of("other-mapping","other"));
+                new PrefixSpanletProceedToDestinationMapped(), config, 1, 1,sigletMetrics,
+                Map.of("other-mapping", "other"));
 
         spanletProcessor.connect(defaultDestination);
         spanletProcessor.connect(otherDestination);
@@ -146,6 +151,7 @@ class SpanletTest {
         assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
         assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
     }
+
     public static class PrefixSpanlet implements Spanlet<Config> {
 
         @Override
@@ -189,6 +195,7 @@ class SpanletTest {
             return resultFactory.proceed("other-mapping");
         }
     }
+
     public static class Config {
 
         private String prefix;

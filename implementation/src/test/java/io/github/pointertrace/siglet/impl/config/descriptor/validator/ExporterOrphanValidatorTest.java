@@ -55,10 +55,13 @@ class ExporterOrphanValidatorTest {
     void validate() {
 
         String yaml = """
+                global:
+                  internal-metrics-exporter: internal-metrics
                 receivers:
                 - debug: receiver
                 exporters:
                 - debug: exporter
+                - debug: internal-metrics
                 pipelines:
                 - name: other-pipeline
                   from: receiver

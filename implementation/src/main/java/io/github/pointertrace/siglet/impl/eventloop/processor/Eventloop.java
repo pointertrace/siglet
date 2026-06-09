@@ -4,12 +4,10 @@ import io.github.pointertrace.siglet.api.Context;
 import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.SignalSource;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
 import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultImpl;
+import io.micrometer.core.instrument.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +29,8 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
 
     private final int threadPoolSize;
 
+    private final SigletMetrics sigletMetrics;
+
     private final AtomicReference<State> state = new AtomicReference<>(State.CREATED);
 
     private final ArrayBlockingQueue<Signal> queue;
@@ -43,20 +43,23 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
 
     private List<SignalDestination> next = new ArrayList<>();
 
+    private Timer sigletTimer;
+
     private final SignalCapabilities incomingCapabilities;
 
     private final SignalCapabilities outgoingCapabilities;
 
     public Eventloop(String name, ProcessorFactory<C> processorFactory,
                      Context<C> context, SignalCapabilities incomingCapabilities,
-                     SignalCapabilities outgoingCapabilities, int queueSize, int threadPoolSize) {
-        this(name, processorFactory, context, incomingCapabilities, outgoingCapabilities, queueSize, threadPoolSize, Map.of());
+                     SignalCapabilities outgoingCapabilities, int queueSize, int threadPoolSize, SigletMetrics sigletMetrics) {
+        this(name, processorFactory, context, incomingCapabilities, outgoingCapabilities, queueSize,
+                threadPoolSize, Map.of(), sigletMetrics);
     }
 
     public Eventloop(String name, ProcessorFactory<C> processorFactory,
                      Context<C> context, SignalCapabilities incomingCapabilities,
                      SignalCapabilities outgoingCapabilities, int queueSize, int threadPoolSize,
-                     Map<String, String> destinationMappings) {
+                     Map<String, String> destinationMappings, SigletMetrics sigletMetrics) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name can't be null or empty");
         }
@@ -73,6 +76,7 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
         this.incomingCapabilities = incomingCapabilities;
         this.outgoingCapabilities = outgoingCapabilities;
         this.destinationMappings.putAll(destinationMappings);
+        this.sigletMetrics = sigletMetrics;
     }
 
     public String getName() {
@@ -90,6 +94,10 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
 
     public synchronized void start() {
         checkState(State.CREATED);
+
+        sigletTimer = sigletMetrics.createTimer("siglet.eventloop.duration", "Siglet execution duration",
+                Map.of("name", name));
+
 
         state.set(State.STARTING);
         LOGGER.info("starting event loop {}", name);
@@ -124,10 +132,9 @@ public class Eventloop<C> implements SignalSource, SignalDestination {
         while (true) {
             Signal signal = getNextSignal();
             if (signal != null) {
-                long starts = System.nanoTime();
                 try {
                     long start = System.nanoTime();
-                    Result result = baseProcessor.process(signal);
+                    Result result = sigletTimer.record(() -> baseProcessor.process(signal));
                     long duration = System.nanoTime() - start;
                     LOGGER.trace("signal {} processed in event loop {} took {} nanos", signal::getId,
                             this::getName, () -> duration);

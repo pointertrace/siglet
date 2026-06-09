@@ -3,6 +3,117 @@ cenarios:
     siglet-config-yaml: ""
     error-message: Siglet config file is empty
 
+  empty-global-config:
+    siglet-config-yaml:
+      global:
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (1,9):
+            (1,9) Expected object
+
+
+  global-config-invalid-property:
+    siglet-config-yaml:
+      global:
+        invalid-property: value
+      receivers:
+        debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            (2,3) Unknown property: invalid-property
+
+
+
+  global-config-queue-size-not-int:
+    siglet-config-yaml:
+      global:
+        queue-size: value
+      receivers:
+        debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            Invalid queue size at (2,3)
+              (2,15) Queue size must be a integer
+
+
+  global-config-thread-pool-size-not-int:
+    siglet-config-yaml:
+      global:
+        thread-pool-size: value
+      receivers:
+        debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            Invalid thread pool size at (2,3)
+              (2,21) Thread pool size must be a integer
+
+
+  global-config-internal-metrics-exporter-not-string:
+    siglet-config-yaml:
+      global:
+        internal-metrics-exporter: 1
+      receivers:
+        debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            Invalid internal metrics exporter at (2,3)
+              (2,30) Internal metrics exporter must be a string
+
+
   no-receivers:
     siglet-config-yaml:
       pipelines:
@@ -472,24 +583,6 @@ cenarios:
             Error in pipelines array item at (6,3):
               Error in pipeline at (6,3):
                 (7,3) Destination (start property) must be a string or a list of strings
-
-
-  pipelines-no-from-property:
-    siglet-config-yaml:
-      receivers:
-        - debug: receiver
-      exporters:
-        - debug: exporter
-      pipelines:
-        - name: pipeline
-          start: start
-    error-message: |
-      Error in configuration:
-        Error in pipelines at (5,1):
-          Error in pipelines at (6,1):
-            Error in pipelines array item at (6,3):
-              Error in pipeline at (6,3):
-                (6,3) Missing pipeline 'from' property
 
 
   pipelines-from-property-not-string:

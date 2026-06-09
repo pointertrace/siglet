@@ -31,6 +31,8 @@ public class SigletEngine implements Component {
                 .map(ExporterNode.class::cast)
                 .forEach(exporterNode -> exporters.create(sigletContext, exporterNode));
 
+
+
         graph.getNodeRegistry().stream()
                 .filter(PipelineNode.class::isInstance)
                 .map(PipelineNode.class::cast)

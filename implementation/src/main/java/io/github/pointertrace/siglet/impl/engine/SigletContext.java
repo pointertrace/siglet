@@ -17,6 +17,8 @@ public class SigletContext {
 
     private final GraphFactory graphFactory = new GraphFactory();
 
+    private final SigletMetrics sigletMetrics = new SigletMetrics();
+
     public SigletContext(Config config) {
         this.config = config;
     }
@@ -52,6 +54,10 @@ public class SigletContext {
 
     public Config getConfig() {
         return config;
+    }
+
+    public SigletMetrics getSigletMetrics() {
+        return sigletMetrics;
     }
 
 }

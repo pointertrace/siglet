@@ -61,7 +61,7 @@ public class PipelineDescriptor extends BaseDescriptor {
         return object(PipelineDescriptor::new)
                 .addProperty(property("name", PipelineDescriptor::setName, stringValueObject().customErrorMessage("#location Pipeline name must be a string"))
                         .customErrorMessage("Invalid pipeline name property at #location:","#location Missing pipeline 'name' property"))
-                .addProperty(optionalProperty("from", PipelineDescriptor::setFrom, stringValueObject().customErrorMessage("#location Pipeline from must be a string"))
+                .addOptionalProperty(optionalProperty("from", PipelineDescriptor::setFrom, stringValueObject().customErrorMessage("#location Pipeline from must be a string"))
                         .customErrorMessage("Invalid pipeline from property at #location:","#location Missing pipeline 'from' property"))
                 .addProperty(destinationSchemaBuilder("start", PipelineDescriptor::setStart))
                 .addProperty(property("processors", PipelineDescriptor::setProcessors, array(ArrayList::new,

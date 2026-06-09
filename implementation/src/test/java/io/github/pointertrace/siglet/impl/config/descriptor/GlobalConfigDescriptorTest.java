@@ -1,9 +1,11 @@
 package io.github.pointertrace.siglet.impl.config.descriptor;
 
 import io.github.pointertrace.siglet.parser.*;
+import io.github.pointertrace.siglet.parser.impl.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class GlobalConfigDescriptorTest {
 

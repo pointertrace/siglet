@@ -3,10 +3,7 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.rout
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.*;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.BaseGroovyProcessor;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
@@ -26,15 +23,16 @@ public class GroovyRouterProcessor implements Processor {
         this(node.getName(), getConfig(node).getDefaultRoute().getValue(), getConfig(node).getRoutes(),
                 SignalCapabilities.of(node.getDescription().getType().getValue()),
                 sigletContext.getConfig().getQueueSize(node.getDescription()),
-                sigletContext.getConfig().getThreadPoolSize(node.getDescription()));
+                sigletContext.getConfig().getThreadPoolSize(node.getDescription()),
+                sigletContext.getSigletMetrics());
         this.node = node;
     }
 
     GroovyRouterProcessor(String name, String defaultRoute, List<RouteConfig> routes, SignalCapabilities signalCapabilities,
-                          int queueCapacity, int threadPoolSize) {
+                          int queueCapacity, int threadPoolSize, SigletMetrics sigletMetrics) {
         ContextImpl<Void> ctx = new ContextImpl<>(null);
-        this.eventLoop = new Eventloop<>(name, createProcessorFactory(defaultRoute, routes),
-                ctx, signalCapabilities, signalCapabilities, queueCapacity, threadPoolSize);
+        this.eventLoop = new Eventloop<>(name, createProcessorFactory(defaultRoute, routes), ctx, signalCapabilities,
+                signalCapabilities, queueCapacity, threadPoolSize, sigletMetrics);
     }
 
     private static GroovyRouterConfig getConfig(ProcessorNode node) {

@@ -5,10 +5,7 @@ import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
 import io.github.pointertrace.siglet.impl.eventloop.processor.Eventloop;
@@ -26,17 +23,18 @@ public class SpanletProcessor implements Processor {
     public SpanletProcessor(SigletContext sigletContext, ProcessorNode node, Spanlet<?> spanlet) {
         this(node.getName(), spanlet, node.getDescription().getConfig(),
                 sigletContext.getConfig().getQueueSize(node.getDescription()) ,
-                sigletContext.getConfig().getThreadPoolSize(node.getDescription()), node.getDestinationMappings());
+                sigletContext.getConfig().getThreadPoolSize(node.getDescription()),sigletContext.getSigletMetrics(),
+                node.getDestinationMappings());
         this.node = node;
     }
 
     public SpanletProcessor(String name, Spanlet<?> spanlet, Object config, int queueCapacity, int threadPoolSize,
-                            Map<String, String> destinationMappings) {
+                            SigletMetrics sigletMetrics, Map<String, String> destinationMappings) {
 
         ContextImpl<Object> ctx = new ContextImpl<>(config);
         eventloop = new Eventloop<Object>(name, createProcessorFactory(spanlet), ctx,
                 SignalCapabilities.of(Span.class), SignalCapabilities.of(Span.class), queueCapacity, threadPoolSize,
-                destinationMappings);
+                destinationMappings, sigletMetrics);
     }
 
     @SuppressWarnings("unchecked")

@@ -4,10 +4,12 @@ import io.github.pointertrace.siglet.api.Context;
 import io.github.pointertrace.siglet.api.Result;
 import io.github.pointertrace.siglet.api.ResultFactory;
 import io.github.pointertrace.siglet.api.Signal;
+import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultFactoryImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -15,6 +17,13 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EventloopTest {
+
+    private SigletMetrics sigletMetrics;
+
+    @BeforeEach
+    public void setUp() {
+        sigletMetrics = new SigletMetrics();
+    }
 
     @Test
     void process() {
@@ -24,7 +33,8 @@ class EventloopTest {
         Context<MultiplyConfig> context = new ContextImpl<>(new MultiplyConfig(2, "final"));
 
         Eventloop<MultiplyConfig> eventLoop = new Eventloop<>("event-loop", processorFactory,
-                context, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 3, 5);
+                context, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 3, 5,
+                sigletMetrics);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
@@ -69,14 +79,14 @@ class EventloopTest {
         Context<MultiplyConfig> contextFirst = new ContextImpl<>(new MultiplyConfig(2, "second"));
 
         Eventloop<MultiplyConfig> firstEventloop = new Eventloop<>("first", processorFactory,
-                contextFirst,SignalCapabilities.of(ValueSignal.class),SignalCapabilities.of(ValueSignal.class), 3, 5);
+                contextFirst, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 3, 5, sigletMetrics);
 
         Context<MultiplyConfig> contextSecond = new ContextImpl<>(new MultiplyConfig(5, "final"));
 
         Eventloop<MultiplyConfig> secondEventLoop = new Eventloop<>("second", processorFactory,
-                contextSecond, SignalCapabilities.of(ValueSignal.class),SignalCapabilities.of(ValueSignal.class), 3, 5);
+                contextSecond, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 3, 5, sigletMetrics);
 
-        MockSignalDestination destination = new MockSignalDestination("destination",SignalCapabilities.of(ValueSignal.class));
+        MockSignalDestination destination = new MockSignalDestination("destination", SignalCapabilities.of(ValueSignal.class));
 
         firstEventloop.connect(secondEventLoop);
 
@@ -121,7 +131,8 @@ class EventloopTest {
         Context<MultiplyConfig> context = new ContextImpl<>(new MultiplyConfig(10, "final"));
 
         Eventloop<MultiplyConfig> eventLoop = new Eventloop<>("test", processorFactory,
-                context, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 100_000, 5);
+                context, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 100_000, 5,
+                sigletMetrics);
 
         assertEquals(State.CREATED, eventLoop.getState());
 
@@ -159,8 +170,9 @@ class EventloopTest {
 
         ProcessorFactory<Void> processorFactory = ThrowExceptionBaseProcessor::new;
 
-        Eventloop<Void> eventLoop = new Eventloop<Void>("test", processorFactory,
-                context,SignalCapabilities.of(ValueSignal.class) ,SignalCapabilities.of(ValueSignal.class), 10, 5);
+        Eventloop<Void> eventLoop = new Eventloop<>("test", processorFactory,
+                context, SignalCapabilities.of(ValueSignal.class), SignalCapabilities.of(ValueSignal.class), 10, 5,
+                sigletMetrics);
 
         eventLoop.start();
 

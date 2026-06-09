@@ -14,7 +14,7 @@ import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
 
 public class YamlDescriptor {
 
-    private GlobalConfigDescriptor globalConfigDescriptor;
+    private GlobalConfigDescriptor globalConfigDescriptor = new GlobalConfigDescriptor();
 
     private List<ReceiverDescriptor> receiverDescriptors = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class YamlDescriptor {
 
         return object(YamlDescriptor::new)
                 .addOptionalProperty(property("global", YamlDescriptor::setGlobalConfig,
-                        GlobalConfigDescriptor.descriptorSchemaBuilder()))
+                        GlobalConfigDescriptor.descriptorSchemaBuilder()).customErrorMessage("Error in global configuration:", ""))
                 .addProperty(property("receivers", YamlDescriptor::setReceivers, array(ArrayList::new,
                         arrayItem(List::add, ReceiverDescriptor.descriptorSchemaBuilder(receiverTypeRegistry)
                                 .customErrorMessage("Error in receiver at #location:", "#location Receiver must be an object"))

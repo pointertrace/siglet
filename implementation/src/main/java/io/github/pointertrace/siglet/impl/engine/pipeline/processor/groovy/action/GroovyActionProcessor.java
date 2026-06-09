@@ -3,10 +3,7 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.acti
 import groovy.lang.Script;
 import io.github.pointertrace.siglet.api.*;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.BaseGroovyProcessor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.BindingUtils;
@@ -28,15 +25,16 @@ public class GroovyActionProcessor implements Processor {
         this(node.getName(), getConfig(node).getAction(),
                 SignalCapabilities.of(node.getDescription().getType().getValue()),
                 sigletContext.getConfig().getQueueSize(node.getDescription()),
-                sigletContext.getConfig().getThreadPoolSize(node.getDescription()));
+                sigletContext.getConfig().getThreadPoolSize(node.getDescription()),
+                sigletContext.getSigletMetrics());
         this.node = node;
     }
 
     GroovyActionProcessor(String name, String action, SignalCapabilities signalCapabilities,
-                          int queueCapacity, int threadPoolSize) {
+                          int queueCapacity, int threadPoolSize, SigletMetrics sigletMetrics) {
         ContextImpl<Void> ctx = new ContextImpl<>(null);
         eventLoop = new Eventloop<>(name, createProcessorFactory(action), ctx,
-                signalCapabilities, signalCapabilities, queueCapacity, threadPoolSize);
+                signalCapabilities, signalCapabilities, queueCapacity, threadPoolSize, sigletMetrics);
     }
 
     private static GroovyActionConfig getConfig(ProcessorNode node) {
