@@ -1,63 +1,29 @@
 package io.github.pointertrace.siglet.impl.engine;
 
 import io.github.pointertrace.siglet.impl.config.Config;
-import io.github.pointertrace.siglet.impl.config.graph.*;
+import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
+import io.github.pointertrace.siglet.impl.config.graph.Graph;
+import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
+import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
+import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.engine.event.EventListener;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
-import io.github.pointertrace.siglet.impl.engine.exporter.ExporterType;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receiver;
-import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
 
-public class SigletContext {
+public interface SigletContext {
 
-    private final Config config;
+    Graph getGraph();
 
-    private Graph graph;
+    Processor createProcessor(ProcessorNode processorNode);
 
-    private final GraphFactory graphFactory = new GraphFactory();
+    Receiver createReceiver(ReceiverNode receiverNode);
 
-    private final SigletMetrics sigletMetrics = new SigletMetrics();
+    Exporter createExporter(ExporterNode exporterNode);
 
-    public SigletContext(Config config) {
-        this.config = config;
-    }
+    Config getConfig();
 
-    public Graph getGraph() {
-        if (graph == null) {
-            graph = graphFactory.create(config.getYamlDescriptor());
-        }
-        return graph;
-    }
+    void addEventListener(EventListener eventListener);
 
-    public Processor createProcessor(ProcessorNode processorNode) {
-        ProcessorType<?> processorType = config.getProcessorTypeRegistry()
-                .get(processorNode.getDescription().getType().getValue());
-        // todo remover esse cast
-        return (Processor) processorType.getComponentCreator().create(this, processorNode);
-    }
-
-
-    public Receiver createReceiver(ReceiverNode receiverNode) {
-        ReceiverType<?> receiverType = config.getReceiverTypeRegistry()
-                .get(receiverNode.getDescription().getType().getValue());
-        // todo remover esse cast
-        return (Receiver) receiverType.getComponentCreator().create(this, receiverNode);
-    }
-
-    public Exporter createExporter(ExporterNode exporterNode) {
-        ExporterType<?> exporterType = config.getExporterTypeRegistry()
-                .get(exporterNode.getDescription().getType().getValue());
-        // todo remover esse cast
-        return (Exporter) exporterType.getComponentCreator().create(this, exporterNode);
-    }
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public SigletMetrics getSigletMetrics() {
-        return sigletMetrics;
-    }
-
+    EventBus getEventBus();
 }

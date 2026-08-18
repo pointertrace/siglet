@@ -4,6 +4,7 @@ import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.engine.ContextFactory;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SigletEngine;
+import io.github.pointertrace.siglet.impl.engine.metric.MetricEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

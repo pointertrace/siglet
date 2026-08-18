@@ -91,10 +91,51 @@ cenarios:
               (2,21) Thread pool size must be a integer
 
 
-  global-config-internal-metrics-exporter-not-string:
+  global-config-internal-metrics-endpoint-url-not-string:
     siglet-config-yaml:
       global:
-        internal-metrics-exporter: 1
+        internal-metrics-endpoint-url: 1
+      receivers:
+        - debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            Invalid internal metrics endpoint url at (2,3)
+              (2,34) Internal metrics endpoint url must be a string
+
+
+  global-config-internal-metrics-endpoint-url-not-valid-url:
+    siglet-config-yaml:
+      global:
+        internal-metrics-endpoint-url: not-a-url
+      receivers:
+        - debug: receiver
+      pipelines:
+        - name: pipeline
+          from: receiver
+          start: spanlet
+          processors:
+            - spanlet-groovy-action: spanlet
+              to: exporter
+              config:
+                action: signal.name = signal.name +"-suffix"
+    error-message: |
+      (2,34) must be a valid URL format
+
+  global-config-internal-metrics-export-interval-not-int:
+    siglet-config-yaml:
+      global:
+        internal-metrics-export-interval-millis: value
       receivers:
         debug: receiver
       pipelines:
@@ -110,8 +151,9 @@ cenarios:
       Error in configuration:
         Error in global configuration:
           Expecting object at (2,3):
-            Invalid internal metrics exporter at (2,3)
-              (2,30) Internal metrics exporter must be a string
+            Invalid internal metrics export interval at (2,3)
+              (2,44) Internal metrics export interval must be a integer
+
 
 
   no-receivers:

@@ -79,10 +79,10 @@ class SpanletDestinationMappingTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter firstSpanAdapter = new SpanAdapter(spanA, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(firstSpanAdapter);
 
         SpanAdapter secondSpanAdapter = new SpanAdapter(spanB, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(secondSpanAdapter);
 
         siglet.stop();
 

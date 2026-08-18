@@ -9,8 +9,8 @@ import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.impl.config.siglet.springboot.SpringBootBundleLoader;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
-import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
-import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultFactoryImpl;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ContextImpl;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 import io.github.pointertrace.siglet.parser.Factory;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.Schema;
@@ -76,7 +76,7 @@ public class SpringBootBundleTest {
 
             Context<Object> context = new ContextImpl<>(config.getConfig());
 
-            springBootSuffixSpanlet.span(spanAdapter, context, ResultFactoryImpl.INSTANCE);
+            springBootSuffixSpanlet.span(spanAdapter, context, ResultFactoryImpl.getInstance());
 
             assertEquals("name-a-suffix-springboot-uberjar", spanAdapter.getName());
 

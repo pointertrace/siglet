@@ -37,7 +37,7 @@ public class ConfigFactory {
 
         composedValidator.validate(yamlDescriptor);
 
-        return new Config(yamlDescriptor, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
+        return new ConfigImpl(yamlDescriptor, receiverTypeRegistry, processorTypeRegistry, exporterTypeRegistry);
     }
 
 }

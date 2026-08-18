@@ -12,7 +12,7 @@ import java.util.List;
 
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.*;
 
-public class ProcessorDescriptor extends ConfigurableDescriptor {
+public class ProcessorDescriptor extends ConfigurableDescriptor implements ThreadPoolSizeDescriptor, QueueSizeDescriptor {
 
     private List<StringValue> to = new ArrayList<>();
 

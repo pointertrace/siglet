@@ -9,16 +9,15 @@ import java.util.Set;
 
 public class SignalCapabilities {
 
-    private final Set<Class<? extends Signal>> signalsTypes;
-
+    private final Set<Class<?>> signalsTypes;
 
     @SafeVarargs
-    private SignalCapabilities(Class<? extends Signal> ...signalsTypes) {
+    private SignalCapabilities(Class<?> ...signalsTypes) {
         this.signalsTypes = Set.of(signalsTypes);
     }
 
     @SafeVarargs
-    public static SignalCapabilities of(Class<? extends Signal> ...signals) {
+    public static SignalCapabilities of(Class<?> ...signals) {
         return new SignalCapabilities(signals);
     }
 
@@ -32,12 +31,12 @@ public class SignalCapabilities {
         }
     }
 
-    public boolean isAbleToHandle(Signal signal) {
+    public boolean isAbleToHandle(Object signal) {
         return isAbleToHandle(signal.getClass());
     }
 
-    public boolean isAbleToHandle(Class<? extends Signal> signalType) {
-        for(Class<? extends Signal> signalClass : signalsTypes) {
+    public boolean isAbleToHandle(Class<?> signalType) {
+        for(Class<?> signalClass : signalsTypes) {
             if(signalClass.isAssignableFrom(signalType)) {
                 return true;
             }
@@ -45,11 +44,11 @@ public class SignalCapabilities {
         return false;
     }
 
-    public void checkIsAbleToHandle(Signal signal) {
+    public void checkIsAbleToHandle(Object signal) {
         checkIsAbleToHandle(signal.getClass());
     }
 
-    public void checkIsAbleToHandle(Class<? extends Signal> signalType) {
+    public void checkIsAbleToHandle(Class<?> signalType) {
         if (! isAbleToHandle(signalType)) {
             throw new SigletError(String.format("Signal type [%s] cannot be handled! Can only handle signal types [%s]",
                     signalType.getName(),
@@ -58,8 +57,8 @@ public class SignalCapabilities {
     }
 
     public boolean isAbleToSend(SignalCapabilities destinationCapabilities) {
-        for(Class<? extends Signal> incomingSignalType : signalsTypes) {
-            for(Class<? extends Signal> outgoingSignalType : destinationCapabilities.signalsTypes) {
+        for(Class<?> incomingSignalType : signalsTypes) {
+            for(Class<?> outgoingSignalType : destinationCapabilities.signalsTypes) {
                 if (outgoingSignalType.isAssignableFrom(incomingSignalType)) {
                     return true;
                 }

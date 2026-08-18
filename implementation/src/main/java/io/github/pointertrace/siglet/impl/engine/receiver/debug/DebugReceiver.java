@@ -1,76 +1,38 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.debug;
 
-import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
-import io.github.pointertrace.siglet.impl.engine.receiver.Receiver;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.SignalEmitterFunction;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSource;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceImpl;
+import io.github.pointertrace.siglet.impl.engine.receiver.BaseReceiver;
 
-import java.util.ArrayList;
-import java.util.List;
+public class DebugReceiver extends BaseReceiver {
 
-public class DebugReceiver implements Receiver {
+    private SignalEmitterFunction signalEmitter;
 
-    private volatile State state = State.CREATED;
-
-    private final List<SignalDestination> destinations = new ArrayList<>();
-
-    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Signal.class);
-
-    private final ReceiverNode node;
-
-    public DebugReceiver(ReceiverNode node) {
-        this.node = node;
+    public DebugReceiver(SigletContext sigletContext, ReceiverNode node) {
+        super(sigletContext, node);
         DebugReceivers.INSTANCE.add(this);
     }
 
     @Override
-    public void start() {
-        state = State.RUNNING;
+    public void doStart() {
     }
 
     @Override
-    public void stop() {
-        state = State.STOPPED;
+    public void doStop() {
+    }
+
+    public void receive(Object signal) {
+        signalEmitter.emit(signal, SignalDestination.ALL);
     }
 
     @Override
-    public State getState() {
-        return state;
-    }
-
-    @Override
-    public String getName() {
-        return node.getName();
-    }
-
-    @Override
-    public void connect(SignalDestination signalDestination) {
-        signalCapabilities.isAbleToSend(signalDestination.getIncomingCapabilities());
-        destinations.add(signalDestination);
-    }
-
-    @Override
-    public SignalCapabilities  getOutgoingCapabilities() {
-        return signalCapabilities;
-    }
-
-    public boolean send(Signal signal) {
-        for (SignalDestination destination : destinations) {
-            if (signalCapabilities.isAbleToHandle(signal)) {
-                if (!destination.send(signal)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
-
-    @Override
-    public ReceiverNode getNode() {
-        return node;
+    public SignalSource getSignalSource() {
+        SignalSource signalSource = new SignalSourceImpl(this);
+        this.signalEmitter = signalSource.getSignalEmitterFunction();
+        return signalSource;
     }
 }

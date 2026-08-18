@@ -58,7 +58,7 @@ class RouterSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0, 1))
@@ -66,7 +66,7 @@ class RouterSpanletTest {
                 .setName("second")
                 .build();
         SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(secondSpanAdapter);
 
         Span thirdSpan = Span.newBuilder()
                 .setTraceId(AdapterUtils.traceId(0, 1))
@@ -74,7 +74,7 @@ class RouterSpanletTest {
                 .setName("third")
                 .build();
         SpanAdapter thirdSpanAdapter = new SpanAdapter(thirdSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(thirdSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(thirdSpanAdapter);
 
         siglet.stop();
 

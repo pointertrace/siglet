@@ -13,14 +13,20 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class DebugReceiverTypeTest {
 
     private DebugReceiverType debugReceiverType;
 
+    private SigletContext sigletContext;
+
     @BeforeEach
     public void setUp() {
+
         debugReceiverType = new DebugReceiverType();
+        sigletContext = mock(SigletContext.class);
+
     }
 
     @Test
@@ -43,7 +49,7 @@ class DebugReceiverTypeTest {
 
 
 
-        assertInstanceOf(DebugReceiver.class, debugReceiverType.getComponentCreator().create(null, receiverNode));
+        assertInstanceOf(DebugReceiver.class, debugReceiverType.getComponentCreator().create(sigletContext, receiverNode));
     }
 
     public static class ReceiverDescriptorMock extends ReceiverDescriptor {

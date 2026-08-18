@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
 import io.github.pointertrace.siglet.impl.config.descriptor.InetSocketAddressTransform;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
+import io.github.pointertrace.siglet.impl.engine.component.config.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterType;
 

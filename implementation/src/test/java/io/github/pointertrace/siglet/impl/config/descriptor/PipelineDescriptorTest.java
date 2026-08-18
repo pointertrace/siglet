@@ -2,8 +2,8 @@ package io.github.pointertrace.siglet.impl.config.descriptor;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.GroovyActionConfig;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.filter.GroovyFilterConfig;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.action.GroovyActionConfig;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.filter.GroovyFilterConfig;
 import io.github.pointertrace.siglet.parser.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

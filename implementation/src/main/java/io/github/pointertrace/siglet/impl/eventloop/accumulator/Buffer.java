@@ -1,37 +1,31 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
+import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 
-public class Buffer {
+public class Buffer<IN, OUT> {
 
-    private final int capacity;
+    protected final int capacity;
+    protected final IN[] ins;
+    protected final Function<IN[], OUT> transformerFunction;
+    protected final EmitterFunction<OUT> signalEmitterFunction;
+    protected final Deadline deadline;
+    protected int index;
 
-    private int index;
-
-    private final Signal[] signals;
-
-    private final Function<Signal[], Signal> accumulator;
-
-    private final List<SignalDestination> destinations;
-
-    private final Deadline deadline;
-
-    public Buffer(int capacity, Function<Signal[], Signal> accumulator, List<SignalDestination> destinations, Deadline deadline) {
+    public Buffer(int capacity,Deadline deadline, Class<IN> inType, Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction) {
         this.capacity = capacity;
         this.index = 0;
-        this.signals = new Signal[capacity];
-        this.accumulator = accumulator;
-        this.destinations = destinations;
+        this.ins = (IN[]) Array.newInstance(inType, capacity);
+        this.transformerFunction = transformerFunction;
+        this.signalEmitterFunction = signalEmitterFunction;
         this.deadline = deadline;
     }
 
-    public void add(Signal signal) {
-        signals[index++] = signal;
+    public void add(IN in) {
+        ins[index++] = in;
         if (index == 1) {
             deadline.start();
         }
@@ -54,13 +48,16 @@ public class Buffer {
         }
     }
 
-    private void aggregateAndDispatch() {
-        Signal aggregatedSignal = accumulator.apply(Arrays.copyOf(signals, index));
-        for (SignalDestination destination : destinations) {
-            destination.send(aggregatedSignal);
-        }
+    public void aggregateAndDispatch() {
+        IN[] copied = Arrays.copyOf(ins, index);
+        OUT transformed = transformerFunction.apply(copied);
+        signalEmitterFunction.emit(transformed);
         index = 0;
         deadline.reset();
+    }
+
+    public int size() {
+        return index;
     }
 
 }

@@ -40,7 +40,7 @@ public class SigletConfigFile {
                                                     property("destinations", SigletConfigFileDefinition::setDestinations,
                                                             array(ArrayList::new, arrayItem(List::add, stringValueObject().customErrorMessage("#location Siglet destination must be a string")
                                                                     ).customErrorMessage("Error in siglets destination array item at #location:")
-                                                            ).customErrorMessage("Error in siglets destination array at #location:","#location Siglet destinations must be an array")
+                                                            ).customErrorMessage("Error in siglets destination array at #location:", "#location Siglet destinations must be an array")
                                                     ).customErrorMessage("Error in siglet destinations at #location:")
                                             )
                             ).customErrorMessage("Error in siglet array item:")
@@ -72,9 +72,6 @@ public class SigletConfigFile {
 
             return sigletConfigFile;
         } catch (SchemaException e) {
-            System.out.println("SchemaException message: " + e.getMessage());
-            System.out.println("SchemaException class source: " +
-                    e.getClass().getProtectionDomain().getCodeSource().getLocation());
             throw new SigletError(e.getMessage(), e);
         }
 

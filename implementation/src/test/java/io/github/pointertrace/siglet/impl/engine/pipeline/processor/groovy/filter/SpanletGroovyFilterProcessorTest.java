@@ -1,35 +1,51 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.filter;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
-import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
+import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.SignalEmitterFunction;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorConfigCreationUtils;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.GroovyProcessor;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.filter.SpanletGroovyFilterProcessorType;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SpanletGroovyFilterProcessorTest {
 
-    private MockSignalDestination destination;
+    private Span actualDefaultSignal;
+
+    private String actualDefaultDestination;
 
     private SpanAdapter spanAdapter;
 
-    private SigletMetrics sigletMetrics;
+    private SpanletGroovyFilterProcessorType processorType;
+
+    private final SignalEmitterFunction emitterFunction = (signal, destination) -> {
+
+        if (SignalDestination.isAll(destination) || SignalDestination.isDrop(destination) || destination.equals("default")) {
+            actualDefaultSignal = (Span) signal;
+            actualDefaultDestination = destination;
+        } else {
+            throw new SigletError("Unknown destination: " + destination);
+        }
 
 
+    };
     @BeforeEach
     public void setUp() {
 
-        destination = new MockSignalDestination("default", SignalCapabilities.of(Span.class));
+        actualDefaultSignal = null;
+
+        actualDefaultDestination = null;
 
         io.opentelemetry.proto.trace.v1.Span span = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setName("span-name")
@@ -43,67 +59,74 @@ class SpanletGroovyFilterProcessorTest {
 
         spanAdapter = new SpanAdapter(span, resource, scope);
 
-        sigletMetrics = new SigletMetrics();
+        processorType = new SpanletGroovyFilterProcessorType();
 
     }
 
     @Test
     void process_match() {
 
-        GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "signal.name == 'span-name'", SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
+        String config = """
+                spanlet-groovy-filter: filter
+                config:
+                  expression: signal.name == 'span-name'
+                to: default
+                """;
 
-        groovyFilterProcessor.connect(destination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils.createProcessorDescriptor(config);
 
-        groovyFilterProcessor.start();
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
 
-        groovyFilterProcessor.send(spanAdapter);
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
 
-        groovyFilterProcessor.stop();
+        GroovyProcessor groovyProcessor = assertInstanceOf(GroovyProcessor.class,
+                processorType.getComponentCreator().create(sigletContext, processorNode));
 
-        assertEquals(1, destination.getSize());
+        groovyProcessor.setSignalEmitterFunction(emitterFunction);
 
-        Span processedSpan = destination.get(0, Span.class);
+        groovyProcessor.start();
 
-        assertEquals("span-name", processedSpan.getName());
+        groovyProcessor.receive(spanAdapter);
+
+        groovyProcessor.stop();
+
+
+        assertEquals(SignalDestination.ALL, actualDefaultDestination);
+
+        assertNotNull(actualDefaultSignal);
+        assertEquals("span-name", actualDefaultSignal.getName());
     }
 
     @Test
     void process_nonMatch() {
 
-        GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "signal.name == 'other-span-name'", SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
+        String config = """
+                spanlet-groovy-filter: filter
+                config:
+                  expression: signal.name == 'other-span-name'
+                to: default
+                """;
 
-        groovyFilterProcessor.connect(destination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils.createProcessorDescriptor(config);
 
-        groovyFilterProcessor.connect(destination);
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
 
-        groovyFilterProcessor.start();
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
 
-        groovyFilterProcessor.send(spanAdapter);
+        GroovyProcessor groovyProcessor = assertInstanceOf(GroovyProcessor.class,
+                processorType.getComponentCreator().create(sigletContext, processorNode));
 
-        groovyFilterProcessor.stop();
+        groovyProcessor.setSignalEmitterFunction(emitterFunction);
 
-        assertEquals(0, destination.getSize());
+        groovyProcessor.start();
+
+        groovyProcessor.receive(spanAdapter);
+
+        groovyProcessor.stop();
+
+        assertEquals(SignalDestination.DROP,actualDefaultDestination);
+        assertEquals(spanAdapter, actualDefaultSignal);
+
     }
-
-    @Test
-    void checkCompatibility() {
-
-
-        GroovyFilterProcessor groovyFilterProcessor = new GroovyFilterProcessor(
-                "filter", "true", SignalCapabilities.of(Span.class), 1, 1, sigletMetrics);
-
-        SigletError ex = assertThrows(SigletError.class, () ->
-                groovyFilterProcessor.connect(new MockSignalDestination("mock", SignalCapabilities.of(Metric.class))));
-
-        assertEquals("Cannot connect processor [filter] to [mock] because they have incompatible signal " +
-                        "capabilities. Processor generates [io.github.pointertrace.siglet.api.signal.trace.Span] and " +
-                        "destination expects [io.github.pointertrace.siglet.api.signal.metric.Metric]",
-                ex.getMessage());
-    }
-
 
 }

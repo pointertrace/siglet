@@ -1,57 +1,51 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.debug;
 
-import io.github.pointertrace.siglet.api.Signal;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.State;
-import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationImpl;
+import io.github.pointertrace.siglet.impl.engine.exporter.BaseExporter;
 
-public class DebugExporter implements Exporter {
+import java.util.ArrayList;
+import java.util.List;
 
-    private volatile State state = State.CREATED;
+public class DebugExporter extends BaseExporter {
 
-    private final ExporterNode node;
 
-    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Signal.class);
+    List<Object> signals = new ArrayList<>();
 
-    public DebugExporter(ExporterNode node) {
-        this.node = node;
+    private final SignalDestination signalDestination;
+
+
+    public DebugExporter(SigletContext sigletContext, ExporterNode node) {
+        super(sigletContext, node);
+
         DebugExporters.INSTANCE.addExporter(node.getName());
+        signalDestination = new SignalDestinationImpl(this, this::receive);
     }
 
     @Override
-    public boolean send(Signal signal) {
+    protected void doStart() {
+    }
+
+    @Override
+    protected void doStop() {
+    }
+
+    @Override
+    public SignalDestination getSignalDestination() {
+        return signalDestination;
+    }
+
+    private boolean receive(Object signal) {
         DebugExporters.INSTANCE.addSignal(getName(), signal);
         return true;
     }
 
-    @Override
-    public SignalCapabilities getIncomingCapabilities() {
-        return signalCapabilities;
-    }
-
-    @Override
-    public void start() {
-        state = State.RUNNING;
-    }
-
-    @Override
-    public void stop() {
-        state = State.STOPPED;
-    }
-
-    @Override
-    public State getState() {
-        return state;
-    }
-
-    @Override
-    public String getName() {
-        return node.getName();
-    }
-
-    @Override
-    public ExporterNode getNode() {
-        return node;
+    private <T> List<T> getSignals(Class<T> type) {
+        return signals.stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .toList();
     }
 }

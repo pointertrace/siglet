@@ -1,0 +1,20 @@
+global:
+  internal-metrics-endpoint-url: http://otel-lgtm:4318/v1/metrics
+  internal-metrics-export-interval-millis: 1000
+receivers:
+  - grpc: receiver
+    config:
+      address: 0.0.0.0:8081
+exporters:
+  - grpc: exporter
+    config:
+      address: trace-generator:8082
+pipelines:
+  - name: pipeline
+    from: receiver
+    start: suffix-spanlet
+    processors:
+      - fatjar-suffix-spanlet-example: suffix-spanlet
+        to: exporter
+        config:
+          suffix: -added-suffix

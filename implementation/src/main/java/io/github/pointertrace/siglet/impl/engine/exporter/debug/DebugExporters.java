@@ -10,25 +10,25 @@ public class DebugExporters {
     public static final DebugExporters INSTANCE = new DebugExporters();
     public static final String EXPORTER_NOT_FOUND = "Cannot find debug exporter named %s";
 
-    private final Map<String, List<Signal>> exportedSignals = new HashMap<>();
+    private final Map<String, List<Object>> exportedSignals = new HashMap<>();
 
     private DebugExporters() {
     }
 
     protected synchronized void addExporter(String exporter) {
-        exportedSignals.put(exporter, Collections.synchronizedList(new ArrayList<Signal>()));
+        exportedSignals.put(exporter, Collections.synchronizedList(new ArrayList<>()));
     }
 
-    public synchronized void addSignal(String exporter, Signal signal) {
-        List<Signal> signals = exportedSignals.get(exporter);
+    public synchronized void addSignal(String exporter, Object signal) {
+        List<Object> signals = exportedSignals.get(exporter);
         if (signals == null) {
             throw new SigletError(String.format(EXPORTER_NOT_FOUND, exporter));
         }
         signals.add(signal);
     }
 
-    public synchronized <T extends Signal> List<T> get(String exporter, Class<T> signalType) {
-        List<Signal> signals = exportedSignals.get(exporter);
+    public synchronized <T> List<T> get(String exporter, Class<T> signalType) {
+        List<Object> signals = exportedSignals.get(exporter);
         if (signals == null) {
             throw new SigletError(String.format(EXPORTER_NOT_FOUND, exporter));
         }
@@ -37,8 +37,8 @@ public class DebugExporters {
                 .map(signalType::cast).toList();
     }
 
-    public synchronized List<Signal> get(String exporter) {
-        List<Signal> signals = exportedSignals.get(exporter);
+    public synchronized List<Object> get(String exporter) {
+        List<Object> signals = exportedSignals.get(exporter);
         if (signals == null) {
             throw new SigletError(String.format(EXPORTER_NOT_FOUND, exporter));
         }

@@ -1,46 +1,71 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.spanlet;
 
-import io.github.pointertrace.siglet.api.*;
+import io.github.pointertrace.siglet.api.Context;
+import io.github.pointertrace.siglet.api.Result;
+import io.github.pointertrace.siglet.api.ResultFactory;
+import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Spanlet;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
+import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
+import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
+import io.github.pointertrace.siglet.impl.engine.component.SignalEmitterFunction;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorConfigCreationUtils;
 import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import java.util.List;
 
+import static io.github.pointertrace.siglet.parser.SchemaBuilder.property;
 import static io.github.pointertrace.siglet.parser.SchemaBuilder.string;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SpanletTest {
 
+    private Span actualDefaultSignal;
 
-    private Config config;
+    private String actualDefaultDestination;
 
-    private MockSignalDestination defaultDestination;
+    private Span actualOtherSignal;
 
-    private MockSignalDestination otherDestination;
+    private String actualOtherDestination;
 
     private SpanAdapter spanAdapter;
 
-    private SigletMetrics sigletMetrics;
+    private final SignalEmitterFunction emitterFunction = (signal, destination) -> {
+
+        if (SignalDestination.isAll(destination) || SignalDestination.isDrop(destination) || destination.equals("default")) {
+            actualDefaultSignal = (Span) signal;
+            actualDefaultDestination = destination;
+        } else if (destination.equals("other")) {
+            actualOtherSignal = (Span) signal;
+            actualOtherDestination = destination;
+        } else {
+            throw new SigletError("Unknown destination: " + destination);
+        }
+
+
+    };
+
 
     @BeforeEach
     public void setUp() {
 
-        config = new Config();
-        config.setPrefix("prefix-");
+        actualDefaultSignal = null;
 
-        defaultDestination = new MockSignalDestination("default", SignalCapabilities.of(Span.class));
+        actualDefaultDestination = null;
 
-        otherDestination = new MockSignalDestination("other", SignalCapabilities.of(Span.class));
+        actualOtherSignal = null;
+
+        actualOtherDestination = null;
 
         io.opentelemetry.proto.trace.v1.Span span = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setName("span-name")
@@ -54,30 +79,42 @@ class SpanletTest {
 
         spanAdapter = new SpanAdapter(span, resource, scope);
 
-        sigletMetrics = new SigletMetrics();
-
     }
-
 
     @Test
     public void process() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanlet(), config, 1, 1,
-                new SigletMetrics(), Map.of());
+        String config = """
+                prefix-spanlet: spanlet
+                config:
+                  prefix: prefix-
+                to: default
+                """;
 
-        spanletProcessor.connect(defaultDestination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils
+                .createProcessorDescriptor(config, "prefix-spanlet", new PrefixSpanlet(), configurationFactoryCreator());
+
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
+
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
+
+        SpanletProcessor spanletProcessor = new SpanletProcessor(sigletContext, processorNode,
+                SpanletProcessorType.createSpanletFunction(new PrefixSpanlet()));
+
+        spanletProcessor.setSignalEmitterFunction(emitterFunction);
 
         spanletProcessor.start();
 
-        spanletProcessor.send(spanAdapter);
+        spanletProcessor.receive(spanAdapter);
 
         spanletProcessor.stop();
 
-        assertEquals(1, defaultDestination.getSize());
 
-        Span processedSpan = defaultDestination.get(0, Span.class);
+        assertNull(actualOtherDestination);
+        assertNull(actualOtherSignal);
 
-        assertEquals("prefix-span-name", processedSpan.getName());
+        assertEquals(SignalDestination.ALL, actualDefaultDestination);
+        assertEquals("prefix-span-name", actualDefaultSignal.getName());
         assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
         assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
     }
@@ -85,18 +122,36 @@ class SpanletTest {
     @Test
     public void process_drop() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor", new PrefixSpanletDrop(), config, 1, 1,sigletMetrics, Map.of());
+        String config = """
+                prefix-spanlet-drop: spanlet
+                config:
+                  prefix: prefix-
+                to: default
+                """;
 
-        spanletProcessor.connect(defaultDestination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils
+                .createProcessorDescriptor(config, "prefix-spanlet-drop", new PrefixSpanletDrop(), configurationFactoryCreator());
+
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
+
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
+
+        SpanletProcessor spanletProcessor = new SpanletProcessor(sigletContext, processorNode,
+                SpanletProcessorType.createSpanletFunction(new PrefixSpanletDrop()));
+
+        spanletProcessor.setSignalEmitterFunction(emitterFunction);
 
         spanletProcessor.start();
 
-        spanletProcessor.send(spanAdapter);
+        spanletProcessor.receive(spanAdapter);
 
         spanletProcessor.stop();
 
-        assertEquals(0, defaultDestination.getSize());
+        assertNull(actualOtherDestination);
+        assertNull(actualOtherSignal);
 
+        assertEquals(SignalDestination.DROP, actualDefaultDestination);
+        assertEquals("prefix-span-name", actualDefaultSignal.getName());
         assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
         assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
     }
@@ -104,49 +159,85 @@ class SpanletTest {
     @Test
     public void process_proceedToDestination() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor",
-                new PrefixSpanletProceedToDestination(), config, 1, 1,sigletMetrics, Map.of());
+        String config = """
+                prefix-spanlet-destination: spanlet
+                config:
+                  prefix: prefix-
+                to:
+                  - default
+                  - other
+                """;
 
-        spanletProcessor.connect(defaultDestination);
-        spanletProcessor.connect(otherDestination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils
+                .createProcessorDescriptor(config, "prefix-spanlet-destination",
+                        new PrefixSpanletProceedToDestination(), configurationFactoryCreator());
+
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
+
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
+
+        SpanletProcessor spanletProcessor = new SpanletProcessor(sigletContext, processorNode,
+                SpanletProcessorType.createSpanletFunction(new PrefixSpanletProceedToDestination()));
+
+
+        spanletProcessor.setSignalEmitterFunction(emitterFunction);
 
         spanletProcessor.start();
 
-        spanletProcessor.send(spanAdapter);
+        spanletProcessor.receive(spanAdapter);
 
         spanletProcessor.stop();
 
-        assertEquals(0, defaultDestination.getSize());
-        assertEquals(1, otherDestination.getSize());
+        assertNull(actualDefaultDestination);
+        assertNull(actualDefaultSignal);
 
-        Span processedSpan = otherDestination.get(0, Span.class);
-        assertEquals("prefix-span-name", processedSpan.getName());
-
+        assertEquals("other", actualOtherDestination);
+        assertEquals("prefix-span-name", actualOtherSignal.getName());
         assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
         assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
+
+
     }
 
     @Test
     public void process_proceedToDestinationMapping() {
 
-        SpanletProcessor spanletProcessor = new SpanletProcessor("processor",
-                new PrefixSpanletProceedToDestinationMapped(), config, 1, 1,sigletMetrics,
-                Map.of("other-mapping", "other"));
+        String config = """
+                prefix-spanlet-destination-mapped: spanlet
+                config:
+                  prefix: prefix-
+                to:
+                  - default
+                  - other-mapping:other
+                """;
 
-        spanletProcessor.connect(defaultDestination);
-        spanletProcessor.connect(otherDestination);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils
+                .createProcessorDescriptor(config, "prefix-spanlet-destination-mapped",
+                        new PrefixSpanletProceedToDestinationMapped(), configurationFactoryCreator());
+
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
+
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
+
+        SpanletProcessor spanletProcessor = new SpanletProcessor(sigletContext, processorNode,
+                SpanletProcessorType.createSpanletFunction(new PrefixSpanletProceedToDestinationMapped()));
+
+
+        assertNull(actualDefaultDestination);
+        assertNull(actualDefaultSignal);
+
+        spanletProcessor.setSignalEmitterFunction(emitterFunction);
 
         spanletProcessor.start();
 
-        spanletProcessor.send(spanAdapter);
+        spanletProcessor.receive(spanAdapter);
 
         spanletProcessor.stop();
 
-        assertEquals(0, defaultDestination.getSize());
-        assertEquals(1, otherDestination.getSize());
-
-        Span processedSpan = otherDestination.get(0, Span.class);
-        assertEquals("prefix-span-name", processedSpan.getName());
+        assertEquals("other", actualOtherDestination);
+        assertEquals("prefix-span-name", actualOtherSignal.getName());
+        assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
+        assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
 
         assertTrue(spanletProcessor.getContext().getAttributes().containsKey("new-name"));
         assertEquals("prefix-span-name", spanletProcessor.getContext().getAttributes().get("new-name"));
@@ -207,6 +298,11 @@ class SpanletTest {
         public void setPrefix(String prefix) {
             this.prefix = prefix;
         }
+    }
+
+    public ConfigurationFactory<?> configurationFactoryCreator() {
+        return ConfigurationFactory.of(
+                List.of(property("prefix", Config::setPrefix, string())), Config.class);
     }
 
 

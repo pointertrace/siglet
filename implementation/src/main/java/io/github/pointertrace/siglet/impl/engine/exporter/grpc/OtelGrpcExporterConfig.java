@@ -1,12 +1,14 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
+import io.github.pointertrace.siglet.impl.config.descriptor.QueueSizeDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.ThreadPoolSizeDescriptor;
 import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAddress;
 import io.github.pointertrace.siglet.parser.IntegerValue;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class OtelGrpcExporterConfig {
+public class OtelGrpcExporterConfig implements QueueSizeDescriptor {
 
     private LocatedInetSocketAddress address;
 

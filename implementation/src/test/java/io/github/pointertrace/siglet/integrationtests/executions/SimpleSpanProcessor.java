@@ -10,21 +10,24 @@ public class SimpleSpanProcessor {
 
 
         var config = """
+                global:
+                  internal-metrics-endpoint-url: http://localhost:4318/v1/metrics
+                  internal-metrics-export-interval-millis: 1000
                 receivers:
-                  - grpc: receiverDescriptor
-                    address: localhost:8080
+                  - grpc: receiver
+                    config:
+                      address: localhost:8091
                 exporters:
-                  - grpc: exporterDescriptor
-                    address: localhost:4317
-                pipelineDescriptors:
-                  - name: trace-pipelineDescriptor
-                    from: receiverDescriptor
-                    start: print spanId
-                    processorDescriptors:
-                      - name: print spanId
-                        kind: spanlet
-                        to: exporterDescriptor
-                        type: groovy-action
+                  - grpc: exporter
+                    config:
+                      address: localhost:4317
+                pipelines:
+                  - name: trace-pipeline
+                    from: receiver
+                    start: print-spanId
+                    processors:
+                      - spanlet-groovy-action: print-spanId
+                        to: exporter
                         thread-pool-size: 1
                         config:
                           action: |

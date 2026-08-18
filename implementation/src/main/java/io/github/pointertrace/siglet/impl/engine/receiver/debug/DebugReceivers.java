@@ -21,6 +21,10 @@ public class DebugReceivers {
         receivers.put(debugReceiver.getName(),debugReceiver);
     }
 
+    protected void addSignal(String name, Object signal) {
+        receivers.get(name).receive(signal);
+    }
+
 
 
 }

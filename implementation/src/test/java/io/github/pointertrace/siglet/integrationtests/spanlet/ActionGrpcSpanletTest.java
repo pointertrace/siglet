@@ -104,9 +104,9 @@ class ActionGrpcSpanletTest {
 
         generateSignals();
 
-        siglet.stop();
+        Thread.sleep(10_000);
 
-        Thread.sleep(100);
+        siglet.stop();
 
         assertEquals(1, receivedSpans.size());
         assertEquals("span-name-span-suffix", receivedSpans.getFirst().getName());

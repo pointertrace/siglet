@@ -24,11 +24,6 @@ public class ExporterOrphanValidator implements YamlDescriptorValidator {
                 .map(destination -> destination.contains(":") ? destination.split(":")[1] : destination)
                 .collect(Collectors.toSet()));
 
-        StringValue internalMetricsExporter = yamlDescriptor.getGlobalConfig() != null ? yamlDescriptor.getGlobalConfig().getInternalMetricsExporter() : null;
-        if (internalMetricsExporter != null) {
-            exporters.remove(internalMetricsExporter.getValue());
-        }
-
         if (!exporters.isEmpty()) {
             throw new SigletError(exporters.values().stream()
                     .map(exporter -> String.format("    [%s] at %s",

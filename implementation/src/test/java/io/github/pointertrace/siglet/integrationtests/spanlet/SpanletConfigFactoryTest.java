@@ -68,7 +68,7 @@ class SpanletConfigFactoryTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(firstSpanAdapter);
 
         siglet.stop();
 

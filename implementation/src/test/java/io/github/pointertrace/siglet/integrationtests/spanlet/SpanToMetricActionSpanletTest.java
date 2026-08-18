@@ -54,7 +54,7 @@ class SpanToMetricActionSpanletTest {
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(spanAdapter));
+        DebugReceivers.INSTANCE.get("receiver").receive(spanAdapter);
 
         siglet.stop();
 
@@ -99,7 +99,7 @@ class SpanToMetricActionSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(spanAdapter));
+        DebugReceivers.INSTANCE.get("receiver").receive(spanAdapter);
 
         siglet.stop();
 

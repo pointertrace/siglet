@@ -2,6 +2,8 @@ package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.rout
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.router.GroovyRouterConfig;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.router.RouteConfig;
 import io.github.pointertrace.siglet.parser.Location;
 import io.github.pointertrace.siglet.parser.StringValue;
 import org.junit.jupiter.api.BeforeEach;

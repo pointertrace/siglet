@@ -1,77 +1,25 @@
 package io.github.pointertrace.siglet.impl.config;
 
-import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.QueueSizeDescriptor;
+import io.github.pointertrace.siglet.impl.config.descriptor.ThreadPoolSizeDescriptor;
 import io.github.pointertrace.siglet.impl.config.descriptor.YamlDescriptor;
-import io.github.pointertrace.siglet.impl.config.graph.Graph;
-import io.github.pointertrace.siglet.impl.config.graph.GraphFactory;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverTypeRegistry;
 
-public class Config {
+public interface Config {
 
-    private final YamlDescriptor yamlDescriptor;
+    ProcessorTypeRegistry getProcessorTypeRegistry();
 
-    private final ReceiverTypeRegistry receiverTypeRegistry;
+    ReceiverTypeRegistry getReceiverTypeRegistry();
 
-    private final ProcessorTypeRegistry processorTypeRegistry;
+    ExporterTypeRegistry getExporterTypeRegistry();
 
-    private final ExporterTypeRegistry exporterTypeRegistry;
+    YamlDescriptor getYamlDescriptor();
 
-    private Graph graph;
+    int getQueueSize(QueueSizeDescriptor threadPoolSizeDescriptor);
 
-    private final GraphFactory graphFactory = new GraphFactory();
+    int getThreadPoolSize(ThreadPoolSizeDescriptor threadPoolSizeDescriptor);
 
-    public Config(YamlDescriptor yamlDescriptor, ReceiverTypeRegistry receiverTypeRegistry,
-                  ProcessorTypeRegistry processorTypeRegistry, ExporterTypeRegistry exporterTypeRegistry) {
-        this.yamlDescriptor = yamlDescriptor;
-        this.receiverTypeRegistry = receiverTypeRegistry;
-        this.processorTypeRegistry = processorTypeRegistry;
-        this.exporterTypeRegistry = exporterTypeRegistry;
-        this.graph = graphFactory.create(yamlDescriptor);
-    }
-
-    public ProcessorTypeRegistry getProcessorTypeRegistry() {
-        return processorTypeRegistry;
-    }
-
-    public ReceiverTypeRegistry getReceiverTypeRegistry() {
-        return receiverTypeRegistry;
-    }
-
-    public ExporterTypeRegistry getExporterTypeRegistry() {
-        return exporterTypeRegistry;
-    }
-
-    public YamlDescriptor getYamlDescriptor() {
-        return yamlDescriptor;
-    }
-
-    public int getQueueSize(ProcessorDescriptor processorDescriptor) {
-        String queueSize = System.getenv("SIGLET_PROCESSOR_" + processorDescriptor.getName().getValue() + "_QUEUE_SIZE");
-        if (queueSize != null) {
-            return Integer.parseInt(queueSize);
-        }
-        if (processorDescriptor.getQueueSize() != null) {
-            return processorDescriptor.getQueueSize().getValue().intValue();
-        }
-        if (yamlDescriptor.getGlobalConfig() != null && yamlDescriptor.getGlobalConfig().getQueueSize() != null) {
-            return yamlDescriptor.getGlobalConfig().getQueueSize().getValue().intValue();
-        }
-        return 1000;
-    }
-
-    public int getThreadPoolSize(ProcessorDescriptor processorDescriptor) {
-        String threadPoolSize = System.getenv("SIGLET_PROCESSOR_" + processorDescriptor.getName().getValue() + "_THREAD_POOL_SIZE");
-        if (threadPoolSize != null) {
-            return Integer.parseInt(threadPoolSize);
-        }
-        if (processorDescriptor.getThreadPoolSize() != null) {
-            return processorDescriptor.getThreadPoolSize().getValue().intValue();
-        }
-        if (yamlDescriptor.getGlobalConfig() != null && yamlDescriptor.getGlobalConfig().getThreadPoolSize() != null) {
-            return yamlDescriptor.getGlobalConfig().getThreadPoolSize().getValue().intValue();
-        }
-        return 1000;
-    }
+    int getInternalMetricsExportIntervalMillis();
 }

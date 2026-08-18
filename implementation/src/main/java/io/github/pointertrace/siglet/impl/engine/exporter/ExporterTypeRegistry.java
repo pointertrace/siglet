@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.engine.exporter;
 
-import io.github.pointertrace.siglet.impl.engine.ComponentTypeRegistry;
+import io.github.pointertrace.siglet.impl.engine.component.config.ComponentTypeRegistry;
 import io.github.pointertrace.siglet.impl.engine.exporter.debug.DebugExporterType;
 import io.github.pointertrace.siglet.impl.engine.exporter.grpc.OtelGrpcExporterType;
 

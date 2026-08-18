@@ -2,7 +2,8 @@ package io.github.pointertrace.siglet.impl.engine.pipeline;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.graph.PipelineNode;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +18,14 @@ public class Pipelines {
 
     private final Map<String, Pipeline> pipelineRegistry = new HashMap<>();
 
-    public Pipeline create(PipelineNode node) {
+    public Pipeline create(SigletContext sigletContext, PipelineNode node) {
         if (pipelineRegistry.containsKey(node.getName())) {
             throw new SigletError("Pipeline with name " + node.getName() + " already exists");
         }
-        return pipelineRegistry.put(node.getDescription().getName().getValue(), new Pipeline(node));
+        return pipelineRegistry.put(node.getDescription().getName().getValue(), new Pipeline(sigletContext, node));
     }
 
-    public SignalDestination getDestination(String name) {
+    public SignalDestinationProvider getDestination(String name) {
         return pipelineRegistry.values().stream()
                 .map(pipeline -> pipeline.getDestination(name))
                 .filter(Objects::nonNull)

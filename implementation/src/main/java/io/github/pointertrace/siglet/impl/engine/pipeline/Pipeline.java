@@ -1,61 +1,39 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline;
 
 import io.github.pointertrace.siglet.impl.config.graph.PipelineNode;
-import io.github.pointertrace.siglet.impl.engine.Component;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.BaseGraphComponent;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class Pipeline implements Component {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Pipeline.class);
+public class Pipeline extends BaseGraphComponent<PipelineNode> {
 
     private final Processors processors = new Processors();
 
-    private State state = State.CREATED;
-
-    private final PipelineNode node;
-
-    public Pipeline(PipelineNode node) {
-        this.node = node;
+    public Pipeline(SigletContext sigletContext, PipelineNode node) {
+        super(sigletContext, node);
     }
 
     public Processors getProcessors() {
         return processors;
     }
 
-    public SignalDestination getDestination(String name) {
+    public SignalDestinationProvider getDestination(String name) {
         return processors.getProcessor(name);
     }
 
-    public PipelineNode getNode(){
-        return node;
-    }
-
     @Override
-    public void start() {
+    public void doStart() {
         processors.start();
-        state = State.RUNNING;
     }
 
     @Override
-    public void stop() {
-        state = State.STOPPED;
-        LOGGER.info("Stopping pipeline {}", node.getName());
+    public void doStop() {
         processors.stop();
-        LOGGER.info("Pipeline {} stoped", node.getName());
-        state = State.RUNNING;
-    }
-
-    @Override
-    public State getState() {
-        return state;
     }
 
     @Override
     public String getName() {
-        return node.getName();
+        return getNode().getName();
     }
 }

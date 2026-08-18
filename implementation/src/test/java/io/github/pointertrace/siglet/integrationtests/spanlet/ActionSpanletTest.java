@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ActionSpanletTest {
 
     @Test
-    void test() {
+    void test() throws Exception {
 
 
         String config = """
@@ -53,8 +53,9 @@ class ActionSpanletTest {
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter protoSpanAdapter = new SpanAdapter(span, resource, instrumentationScope);
 
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(protoSpanAdapter));
+        DebugReceivers.INSTANCE.get("receiver").receive(protoSpanAdapter);
 
+        Thread.sleep(10_000);
         siglet.stop();
 
         List<SpanAdapter> signals = DebugExporters.INSTANCE.get("exporter", SpanAdapter.class);
@@ -98,7 +99,8 @@ class ActionSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter protoSpanAdapter = new SpanAdapter(span, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(protoSpanAdapter));
+
+        DebugReceivers.INSTANCE.get("receiver").receive(protoSpanAdapter);
 
         siglet.stop();
 

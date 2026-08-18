@@ -1,28 +1,28 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
+import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BufferTest {
 
-    private SignalMock signal1;
-    private SignalMock signal2;
-    private SignalMock signal3;
+    private ArrayList<String> result;
+
+    private final EmitterFunction<String> signalEmitterFunction = (String in) -> {
+        result.add(in);
+    };
+
+    private final Function<String[], String> transformerFunction = (String[] in) -> String.join(",", in);
 
     @BeforeEach
     void setUp() {
-        signal1 = new SignalMock("1");
-        signal2 = new SignalMock("2");
-        signal3 = new SignalMock("3");
+
+        result = new ArrayList<>();
     }
 
     // -------------------------------------------------------------------------
@@ -31,38 +31,38 @@ class BufferTest {
 
     @Test
     void add_fillsCapacity_dispatchesAggregatedSignal() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(2, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
 
-        buffer.add(signal1);
-        buffer.add(signal2);  // reaches capacity -> dispatch
+        Buffer<String, String> buffer = new Buffer<>(2, new NeverExpireDeadline(),String.class, transformerFunction, signalEmitterFunction);
 
-        assertEquals(1, destination.getSize());
-        assertTrue(destination.has("1,2"));
+        buffer.add("1");
+        buffer.add("2");
+
+        assertEquals(1, result.size());
+        assertEquals("1,2", result.getFirst());
     }
 
     @Test
     void add_fillsCapacity_resetsIndexForNextBatch() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(2, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
 
-        buffer.add(signal1);
-        buffer.add(signal2);  // first dispatch
-        buffer.add(signal3);  // starts new batch
-        buffer.add(new SignalMock("4"));  // second dispatch
+        Buffer<String,String> buffer = new Buffer<>(2, new NeverExpireDeadline(),String.class, transformerFunction, signalEmitterFunction);
 
-        assertEquals(2, destination.getSize());
-        assertTrue(destination.has("1,2"));
-        assertTrue(destination.has("3,4"));
+        buffer.add("1");
+        buffer.add("2");  // first dispatch
+        buffer.add("3");  // starts new batch
+        buffer.add("4");  // second dispatch
+
+        assertEquals(2, result.size());
+        assertEquals("1,2", result.get(0));
+        assertEquals("3,4", result.get(1));
     }
 
     @Test
     void add_fillsCapacity_callsDeadlineReset() {
         SpyDeadline deadline = new SpyDeadline(false);
-        Buffer buffer = new Buffer(2, joinAccumulator(), List.of(destination()), deadline);
 
-        buffer.add(signal1);
-        buffer.add(signal2);
+        Buffer<String,String> buffer = new Buffer<>(2, deadline,String.class, transformerFunction, signalEmitterFunction);
+        buffer.add("1");
+        buffer.add("2");
 
         assertEquals(1, deadline.resetCalls);
     }
@@ -73,29 +73,26 @@ class BufferTest {
 
     @Test
     void add_deadlineExpiredAfterFirstSignal_dispatchesImmediately() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination), new AlwaysExpiredDeadline());
+        Buffer<String,String> buffer = new Buffer<>(10, new AlwaysExpiredDeadline(),String.class, transformerFunction, signalEmitterFunction);
 
-        buffer.add(signal1);
+        buffer.add("1");
 
-        assertEquals(1, destination.getSize());
-        assertTrue(destination.has("1"));
+        assertEquals(1, result.size());
+        assertEquals("1", result.getFirst());
     }
 
     @Test
     void add_deadlineExpiredMidBatch_dispatchesPartialBatch() {
-        MockSignalDestination destination = destination();
         SpyDeadline deadline = new SpyDeadline(false);
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination), deadline);
 
-        buffer.add(signal1);
-        buffer.add(signal2);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline,String.class, transformerFunction, signalEmitterFunction);
+        buffer.add("1");
+        buffer.add("2");
         // now simulate deadline expiry
         deadline.expired = true;
-        buffer.add(signal3);
+        buffer.add("3");
 
-        assertEquals(1, destination.getSize());
-        assertTrue(destination.has("1,2,3"));
+        assertEquals("1,2,3", result.getFirst());
     }
 
     // -------------------------------------------------------------------------
@@ -105,9 +102,9 @@ class BufferTest {
     @Test
     void add_firstSignal_startsDeadline() {
         SpyDeadline deadline = new SpyDeadline(false);
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
-        buffer.add(signal1);
+        buffer.add("1");
 
         assertEquals(1, deadline.startCalls);
     }
@@ -115,10 +112,10 @@ class BufferTest {
     @Test
     void add_secondSignal_doesNotStartDeadlineAgain() {
         SpyDeadline deadline = new SpyDeadline(false);
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
-        buffer.add(signal1);
-        buffer.add(signal2);
+        buffer.add("1");
+        buffer.add("2");
 
         assertEquals(1, deadline.startCalls);
     }
@@ -129,13 +126,13 @@ class BufferTest {
 
     @Test
     void add_belowCapacity_notExpired_doesNotDispatch() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(5, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
 
-        buffer.add(signal1);
-        buffer.add(signal2);
+        Buffer<String,String> buffer = new Buffer<>(5, new NeverExpireDeadline(), String.class, transformerFunction, signalEmitterFunction);
 
-        assertEquals(0, destination.getSize());
+        buffer.add("1");
+        buffer.add("2");
+
+        assertEquals(0, result.size());
     }
 
     // -------------------------------------------------------------------------
@@ -144,33 +141,32 @@ class BufferTest {
 
     @Test
     void flush_withPendingSignals_dispatchesAggregatedSignal() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
 
-        buffer.add(signal1);
-        buffer.add(signal2);
+        Buffer<String,String> buffer = new Buffer<>(10, new NeverExpireDeadline(), String.class, transformerFunction, signalEmitterFunction);
+
+        buffer.add("1");
+        buffer.add("2");
         buffer.flush();
 
-        assertEquals(1, destination.getSize());
-        assertTrue(destination.has("1,2"));
+        assertEquals(1, result.size());
+        assertEquals("1,2", result.getFirst());
     }
 
     @Test
     void flush_emptyBuffer_doesNotDispatch() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
+        Buffer<String,String> buffer = new Buffer<>(10, new NeverExpireDeadline(), String.class, transformerFunction, signalEmitterFunction);
 
         buffer.flush();
 
-        assertEquals(0, destination.getSize());
+        assertEquals(0, result.size());
     }
 
     @Test
     void flush_callsDeadlineReset() {
         SpyDeadline deadline = new SpyDeadline(false);
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
-        buffer.add(signal1);
+        buffer.add("1");
         buffer.flush();
 
         assertEquals(1, deadline.resetCalls);
@@ -178,34 +174,19 @@ class BufferTest {
 
     @Test
     void flush_afterFlush_bufferIsEmpty_secondFlushDoesNothing() {
-        MockSignalDestination destination = destination();
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination), new NeverExpiredDeadline());
+        Buffer<String,String> buffer = new Buffer<>(10, new NeverExpireDeadline(), String.class, transformerFunction, signalEmitterFunction);
 
-        buffer.add(signal1);
+        buffer.add("1");
         buffer.flush();
         buffer.flush(); // second flush - buffer should be empty
 
-        assertEquals(1, destination.getSize());
+        assertEquals(1, result.size());
     }
 
     // -------------------------------------------------------------------------
     // Multiple destinations
     // -------------------------------------------------------------------------
 
-    @Test
-    void add_multipleDestinations_allReceiveAggregatedSignal() {
-        MockSignalDestination dest1 = destination();
-        MockSignalDestination dest2 = destination();
-        Buffer buffer = new Buffer(2, joinAccumulator(), List.of(dest1, dest2), new NeverExpiredDeadline());
-
-        buffer.add(signal1);
-        buffer.add(signal2);
-
-        assertEquals(1, dest1.getSize());
-        assertEquals(1, dest2.getSize());
-        assertTrue(dest1.has("1,2"));
-        assertTrue(dest2.has("1,2"));
-    }
 
     // -------------------------------------------------------------------------
     // Delegation: remainingNanos() and hasActiveDeadline()
@@ -215,7 +196,7 @@ class BufferTest {
     void remainingNanos_delegatesToDeadline() {
         SpyDeadline deadline = new SpyDeadline(false);
         deadline.remainingNanos = 42_000L;
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
         assertEquals(42_000L, buffer.remainingNanos());
     }
@@ -224,7 +205,7 @@ class BufferTest {
     void hasActiveDeadline_whenDeadlineActive_returnsTrue() {
         SpyDeadline deadline = new SpyDeadline(false);
         deadline.active = true;
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
         assertTrue(buffer.hasActiveDeadline());
     }
@@ -233,70 +214,24 @@ class BufferTest {
     void hasActiveDeadline_whenDeadlineInactive_returnsFalse() {
         SpyDeadline deadline = new SpyDeadline(false);
         deadline.active = false;
-        Buffer buffer = new Buffer(10, joinAccumulator(), List.of(destination()), deadline);
+        Buffer<String,String> buffer = new Buffer<>(10, deadline, String.class, transformerFunction, signalEmitterFunction);
 
         assertFalse(buffer.hasActiveDeadline());
-    }
-
-    // -------------------------------------------------------------------------
-    // Accumulator receives correct signals
-    // -------------------------------------------------------------------------
-
-    @Test
-    void add_accumulatorReceivesExactlyTheSignalsAdded() {
-        Signal[] captured = new Signal[1];
-        Buffer buffer = new Buffer(3, signals -> {
-            captured[0] = new SignalMock(
-                    Arrays.stream(signals).map(Signal::getId).collect(Collectors.joining(",")));
-            return captured[0];
-        }, List.of(destination()), new NeverExpiredDeadline());
-
-        buffer.add(signal1);
-        buffer.add(signal2);
-        buffer.add(signal3); // capacity -> dispatch
-
-        assertNotNull(captured[0]);
-        assertEquals("1,2,3", captured[0].getId());
     }
 
     // =========================================================================
     // Helpers
     // =========================================================================
 
-    private MockSignalDestination destination() {
-        return new MockSignalDestination("dest", SignalCapabilities.of(SignalMock.class));
-    }
 
-    /** Accumulator that joins signal IDs with comma. */
-    private java.util.function.Function<Signal[], Signal> joinAccumulator() {
-        return signals -> new SignalMock(
-                Arrays.stream(signals).map(Signal::getId).collect(Collectors.joining(",")));
-    }
 
     // =========================================================================
     // Mocks / Stubs
     // =========================================================================
 
-    static class SignalMock implements Signal {
-        private final String id;
-
-        SignalMock(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String toString() {
-            return "Signal[" + id + "]";
-        }
-    }
 
     /** Deadline that never expires. */
-    static class NeverExpiredDeadline implements Deadline {
+    static class NeverExpireDeadline implements Deadline {
         @Override public void start() {}
         @Override public void reset() {}
         @Override public boolean isExpired() { return false; }

@@ -1,60 +1,47 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedSpans;
-import io.opentelemetry.proto.collector.trace.v1.ExportTracePartialSuccess;
+import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.AccumulatedSpans;
+import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OtelGrpcSpanDestination implements SignalDestination {
+public class OtelGrpcSpanDestination {
 
     private static final Logger LOGGER = LogManager.getLogger(OtelGrpcSpanDestination.class);
 
-    private final TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub;
+    private final TraceServiceGrpc.TraceServiceStub traceServiceStub;
 
-    public OtelGrpcSpanDestination(TraceServiceGrpc.TraceServiceBlockingStub traceServiceStub) {
+    public OtelGrpcSpanDestination(TraceServiceGrpc.TraceServiceStub traceServiceStub) {
         this.traceServiceStub = traceServiceStub;
     }
 
 
-    @Override
-    public String getName() {
-        return "aggregated-spans";
-    }
-
-    @Override
-    public boolean send(Signal signal) {
+    public boolean send(AccumulatedSpans accumulatedSpans) {
         try {
-            ExportTraceServiceResponse response =
-                    traceServiceStub.export(((AccumulatedSpans) signal).getRequest());
+            traceServiceStub.export(
+                    accumulatedSpans.getRequest(),
+                    new StreamObserver<>() {
+                        @Override
+                        public void onNext(ExportTraceServiceResponse response) {
+                        }
 
-            if (response.hasPartialSuccess()) {
-                ExportTracePartialSuccess partialSuccess = response.getPartialSuccess();
+                        @Override
+                        public void onError(Throwable t) {
+                        }
 
-                if (partialSuccess.getRejectedSpans() > 0) {
-                    LOGGER.error("Partial success sending spans with {} spans rejected. Error message: {}",
-                            partialSuccess.getRejectedSpans(), partialSuccess.getErrorMessage());
-                    return false;
-                }
-            } else {
-                LOGGER.trace("Success sending spans");
-            }
+                        @Override
+                        public void onCompleted() {
+                        }
+                    }
+            );
             return true;
         } catch (io.grpc.StatusRuntimeException e) {
             LOGGER.error("Error sending spans code:{} message:{}", e.getStatus().getCode(),
-                    e.getStatus().getDescription());
+                    e.getStatus().getDescription(), e);
             return false;
         }
     }
-
-    @Override
-    public SignalCapabilities getIncomingCapabilities() {
-        return SignalCapabilities.of(Span.class);
-    }
-
 }

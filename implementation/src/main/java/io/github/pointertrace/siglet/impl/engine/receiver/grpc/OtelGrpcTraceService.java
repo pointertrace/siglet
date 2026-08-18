@@ -1,53 +1,26 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
-import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
+import io.github.pointertrace.siglet.impl.eventloop.processor.ProcessorEventLoop;
 import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
-import io.opentelemetry.proto.common.v1.InstrumentationScope;
-import io.opentelemetry.proto.resource.v1.Resource;
-import io.opentelemetry.proto.trace.v1.ResourceSpans;
-import io.opentelemetry.proto.trace.v1.ScopeSpans;
-import io.opentelemetry.proto.trace.v1.Span;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase {
 
-    private final SigletContext sigletContext;
+    private final ProcessorEventLoop eventLoop;
 
-    private final List<SignalDestination> spanDestinations = new ArrayList<>();
 
-    public OtelGrpcTraceService(SigletContext sigletContext) {
-        this.sigletContext = sigletContext;
+    public OtelGrpcTraceService(ProcessorEventLoop eventLoop) {
+        this.eventLoop = eventLoop;
     }
 
     @Override
     public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver) {
-        for (ResourceSpans spans : request.getResourceSpansList()) {
-            Resource resource = spans.getResource();
-            for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
-                InstrumentationScope instrumentationScope = scopeSpans.getScope();
-                for (Span span : scopeSpans.getSpansList()) {
-                    for (SignalDestination destination : spanDestinations) {
-                        SpanAdapter spanAdapter = new SpanAdapter(span, resource, instrumentationScope);
-                        destination.send(spanAdapter);
-                    }
-                }
-            }
-        }
-
+        eventLoop.receive(request);
         ExportTraceServiceResponse response = ExportTraceServiceResponse.newBuilder().build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-    }
-
-    public void addDestination(SignalDestination destination) {
-        spanDestinations.add(destination);
     }
 
 }

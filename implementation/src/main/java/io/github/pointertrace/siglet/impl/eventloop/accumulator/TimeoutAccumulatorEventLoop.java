@@ -1,127 +1,93 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.api.signal.metric.Metric;
-import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.config.graph.BaseNode;
-import io.github.pointertrace.siglet.impl.engine.Component;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.State;
-import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
+import io.github.pointertrace.siglet.impl.engine.component.Component;
+import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
+import io.github.pointertrace.siglet.impl.eventloop.BaseEventLoop;
+import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-public class TimeoutAccumulatorEventLoop implements SignalDestination, Component {
+public class TimeoutAccumulatorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
 
-    private final String name;
-
-    private final ArrayBlockingQueue<Signal> queue;
+    private final BlockingQueue<IN> queue;
 
     private final int maxSize;
 
     private final int timeoutInMillis;
 
-    private final Function<Signal[], Signal> accumulator;
+    private final Class<IN> inClass;
 
-    private final List<SignalDestination> destinations;
+    private final Function<IN[], OUT> transformerFunction;
 
-    private final BufferFactory bufferFactory;
+    private final EmitterFunction<OUT> signalEmitterFunction;
+
+    private final BufferFactory bufferFactory = Buffer::new;
 
     private Thread thread;
-
-    private final AtomicReference<State> state = new AtomicReference<>(State.CREATED);
 
     private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     private final CountDownLatch startLatch = new CountDownLatch(1);
 
-
-    public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                       Function<Signal[], Signal> accumulator) {
-        this(name, queueCapacity, timeoutInMillis, maxSize, accumulator, Buffer::new);
-    }
-
-    public TimeoutAccumulatorEventLoop(String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                Function<Signal[], Signal> accumulator, BufferFactory bufferFactory) {
-        this.name = name;
-        this.maxSize = maxSize;
+    public TimeoutAccumulatorEventLoop(Component parent, String name, int queueCapacity, int timeoutInMillis, int maxSize,
+                                       Class<IN> inClass, Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction, EventBus eventBus) {
+        super(parent, name, signalEmitterFunction, eventBus);
         this.timeoutInMillis = timeoutInMillis;
-        this.accumulator = accumulator;
-        this.destinations = new ArrayList<>();
-        this.queue = new ArrayBlockingQueue<>(queueCapacity);
-        this.bufferFactory = bufferFactory;
+        this.maxSize = maxSize;
+        this.inClass = inClass;
+        this.transformerFunction = transformerFunction;
+        this.signalEmitterFunction = signalEmitterFunction;
+        this.queue = eventBus.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueCapacity));
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
 
-    @Override
-    public SignalCapabilities getIncomingCapabilities() {
-        return SignalCapabilities.of(Span.class, Metric.class);
-    }
-
-    @Override
-    public boolean send(Signal signal) {
-        requireState(State.RUNNING);
+    public boolean receive(IN signal) {
         return queue.offer(signal);
     }
 
-    public void connect(SignalDestination destination) {
-        if (getState() != State.CREATED) {
-            throw new SigletError("Cannot connect if state is not CREATED");
-        }
-        destinations.add(destination);
-    }
-
     @Override
-    public BaseNode getNode() {
-        return null;
-    }
-
-    @Override
-    public synchronized void start() {
-        requireState(State.CREATED);
-        thread = Thread.ofVirtual().name("accumulator-event-loop:" + name).start(this::runLoop);
+    public void doStart() {
+        thread = Thread.ofVirtual().name(getName()).start(this::runLoop);
         try {
             startLatch.await();
         } catch (InterruptedException e) {
-            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to start", name), e);
+            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to start", getName()), e);
         }
     }
 
     private void runLoop() {
-        state.set(State.RUNNING);
         startLatch.countDown();
-        Buffer buffer = bufferFactory.create(maxSize, accumulator, destinations, Deadline.of(timeoutInMillis));
-        Signal signal;
+        Buffer<IN, OUT> buffer = bufferFactory.create(maxSize, Deadline.of(timeoutInMillis), inClass,
+                transformerFunction, this::receiveFromBuffer);
+        IN in;
 
         while (true) {
             try {
-                signal = getNextSignal(buffer);
+                in = getNext(buffer);
             } catch (InterruptedException e) {
-                state.set(State.STOPPING);
                 break;
             }
-            if (signal != null) {
-                buffer.add(signal);
+            if (in != null) {
+                buffer.add(in);
+            } else if (buffer.hasActiveDeadline()) {
+                buffer.flush();
             }
         }
 
         drainRemainingSignals(buffer);
+
         stopLatch.countDown();
     }
 
-    private Signal getNextSignal(Buffer buffer) throws InterruptedException {
+    private IN getNext(Buffer<IN, OUT> buffer) throws InterruptedException {
         if (!buffer.hasActiveDeadline()) {
             return queue.take();
         } else {
@@ -129,41 +95,34 @@ public class TimeoutAccumulatorEventLoop implements SignalDestination, Component
         }
     }
 
-    private void drainRemainingSignals(Buffer buffer) {
-        List<Signal> remaining = new ArrayList<>();
+    private void drainRemainingSignals(Buffer<IN, OUT> buffer) {
+        List<IN> remaining = new ArrayList<>();
         queue.drainTo(remaining);
-        for (Signal signal : remaining) {
-            buffer.add(signal);
+        for (IN in : remaining) {
+            buffer.add(in);
         }
         buffer.flush();
     }
 
     @Override
-    public synchronized void stop() {
-        requireState(State.RUNNING);
+    public void doStop() {
         thread.interrupt();
         try {
             stopLatch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to stop", name));
+            throw new SigletError(String.format("Interrupted while waiting for event loop '%s' to stop",getName()));
         }
-        state.set(State.STOPPED);
     }
 
-    @Override
-    public State getState() {
-        return state.get();
+    private void receiveFromBuffer(OUT out) {
+       signalEmitterFunction.emit(out);
     }
 
-    private void requireState(State expected) {
-        if (state.get() != expected) {
-            throw new EventLoopError(String.format("Expected state %s but current state is %s", expected, getState()));
-        }
-    };
 
     @FunctionalInterface
-    public static interface BufferFactory  {
-        Buffer create(int maxSize, Function<Signal[], Signal> accumulator, List<SignalDestination> destinations, Deadline deadline);
+    public interface BufferFactory {
+        <IN, OUT> Buffer<IN, OUT> create(int maxSize, Deadline deadline, Class<IN> inClass,
+                                         Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction);
     }
 }

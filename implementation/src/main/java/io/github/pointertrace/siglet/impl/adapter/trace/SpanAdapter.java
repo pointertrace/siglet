@@ -3,15 +3,12 @@ package io.github.pointertrace.siglet.impl.adapter.trace;
 import com.google.protobuf.ByteString;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.SpanKind;
-import io.github.pointertrace.siglet.impl.adapter.AttributesAdapter;
-import io.github.pointertrace.siglet.impl.adapter.InstrumentationScopeAdapter;
-import io.github.pointertrace.siglet.impl.adapter.ProtoUtil;
-import io.github.pointertrace.siglet.impl.adapter.ResourceAdapter;
+import io.github.pointertrace.siglet.impl.adapter.*;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-public final class SpanAdapter implements Span {
+public final class SpanAdapter extends BaseSignalAdapter implements Span {
     private final io.opentelemetry.proto.trace.v1.Span original;
     private io.opentelemetry.proto.trace.v1.Span.Builder builder;
     private final io.opentelemetry.proto.resource.v1.Resource resource;

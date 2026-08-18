@@ -1,64 +1,52 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
-import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.engine.State;
-import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationImpl;
+import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.exporter.BaseExporter;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.SpanAccumulator;
 import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedMetrics;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedSpans;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.MetricAccumulator;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.SpanAccumulator;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.AccumulatedSpans;
 import io.github.pointertrace.siglet.impl.eventloop.accumulator.TimeoutAccumulatorEventLoop;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 
-public class OtelGrpcExporter implements Exporter {
+import java.net.InetSocketAddress;
 
-    private final ExporterNode node;
+public class OtelGrpcExporter extends BaseExporter {
 
-    private final TimeoutAccumulatorEventLoop spanAccumulator;
+    private TimeoutAccumulatorEventLoop<Object, AccumulatedSpans> spanAccumulator;
 
-    private final TimeoutAccumulatorEventLoop metricAccumulator;
+    private OtelGrpcSpanDestination otelGrpcSpanDestination;
 
-    private State state = State.RUNNING;
+    private final int queueSize;
 
-    private final SignalCapabilities signalCapabilities = SignalCapabilities.of(Span.class, Metric.class);
+    private final int batchSizeInSignals;
+
+    private final int batchTimeoutInMillis;
+
 
     public OtelGrpcExporter(SigletContext sigletContext, ExporterNode node) {
-        this.node = node;
-        OtelGrpcExporterConfig config = (OtelGrpcExporterConfig) node.getDescription().getConfig();
-        spanAccumulator = new TimeoutAccumulatorEventLoop(
-                node.getName() + "-span",
-                ((OtelGrpcExporterConfig) node.getDescription().getConfig()).getQueueSize().getValue().intValue(),
-                config.getBatchTimeoutInMillis().getValue().intValue(),
-                config.getBatchSizeInSignals().getValue().intValue(),
-                span -> SpanAccumulator.accumulateSpans(sigletContext, span));
-
-        metricAccumulator = new TimeoutAccumulatorEventLoop(
-                node.getName() + "-metric",
-                ((OtelGrpcExporterConfig) node.getDescription().getConfig()).getQueueSize().getValue().intValue(),
-                config.getBatchTimeoutInMillis().getValue().intValue(),
-                config.getBatchSizeInSignals().getValue().intValue(),
-                metric -> MetricAccumulator.accumulateMetrics(sigletContext, metric));
-
+        super(sigletContext, node);
+        if (node.getDescription().getConfig() instanceof OtelGrpcExporterConfig config) {
+            queueSize = sigletContext.getConfig().getQueueSize(config);
+            batchSizeInSignals = getConfig().getBatchSizeInSignals().getValue().intValue();
+            batchTimeoutInMillis = getConfig().getBatchTimeoutInMillis().getValue().intValue();
+        } else {
+            throw new SigletError("Invalid config type for OtelGrpcExporter");
+        }
     }
 
 
-    @Override
-    public boolean send(Signal signal) {
+    private  boolean send(Object signal) {
         switch (signal) {
-            case SpanAdapter spanAdapter -> {
-                spanAccumulator.send(spanAdapter);
-            }
-            case MetricAdapter metricAdapter -> metricAccumulator.send(metricAdapter);
+            case SpanAdapter spanAdapter -> spanAccumulator.receive(spanAdapter);
+//            case MetricAdapter metricAdapter -> metricAccumulator.receive(metricAdapter);
             default -> throw new SigletError(String.format("Can only export signals of types %s or %s and not %s.",
                     AccumulatedSpans.class.getName(), AccumulatedMetrics.class.getName(),
                     signal.getClass().getName()));
@@ -68,48 +56,44 @@ public class OtelGrpcExporter implements Exporter {
 
 
     @Override
-    public SignalCapabilities getIncomingCapabilities() {
-        return signalCapabilities;
-    }
+    public void doStart() {
+        InetSocketAddress address = getConfig().getAddress().getInetSocketAddress();
 
-    @Override
-    public synchronized void start() {
-        state = State.STARTING;
-        NettyChannelBuilder builder = NettyChannelBuilder
-                .forAddress(getConfig().getAddress().getInetSocketAddress())
-                .usePlaintext();
+        otelGrpcSpanDestination = new OtelGrpcSpanDestination(
+                TraceServiceGrpc.newStub(
+                        NettyChannelBuilder
+                                .forAddress(
+                                        address.getHostString(),
+                                        address.getPort())
+                                .usePlaintext()
+                                .build())
+        );
 
-        metricAccumulator.connect(new OtelGrpcMetricDestination(MetricsServiceGrpc.newBlockingStub(builder.build())));
-        spanAccumulator.connect(new OtelGrpcSpanDestination(TraceServiceGrpc.newBlockingStub(builder.build())));
+        spanAccumulator = new TimeoutAccumulatorEventLoop<>(
+                this,
+                "span-accumulator",
+                queueSize,
+                batchSizeInSignals,
+                batchTimeoutInMillis,
+                Object.class,
+                span -> SpanAccumulator.accumulateSpans(span),
+                otelGrpcSpanDestination::send,
+                new NoopEventBus()
+        );
         spanAccumulator.start();
-        metricAccumulator.start();
-        state = State.RUNNING;
     }
 
     @Override
-    public synchronized void stop() {
-        state = State.STOPPING;
+    public void doStop() {
         spanAccumulator.stop();
-        metricAccumulator.stop();
-        state = State.STOPPED;
-    }
-
-    @Override
-    public synchronized State getState() {
-        return state;
-    }
-
-    @Override
-    public String getName() {
-        return node.getName();
     }
 
     public OtelGrpcExporterConfig getConfig() {
-        return (OtelGrpcExporterConfig) node.getDescription().getConfig();
+        return (OtelGrpcExporterConfig) getNode().getDescription().getConfig();
     }
 
     @Override
-    public ExporterNode getNode() {
-        return node;
+    public SignalDestination getSignalDestination() {
+        return new SignalDestinationImpl(this, this::send);
     }
 }

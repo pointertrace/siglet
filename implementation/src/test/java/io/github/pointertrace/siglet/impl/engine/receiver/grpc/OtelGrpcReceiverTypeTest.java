@@ -1,11 +1,15 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
+import io.github.pointertrace.siglet.impl.config.Config;
 import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAddress;
 import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceiver;
-import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceiverType;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.SigletContextImpl;
+import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
 import io.github.pointertrace.siglet.parser.*;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,24 +17,42 @@ import java.net.InetSocketAddress;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OtelGrpcReceiverTypeTest {
 
     private OtelGrpcReceiverType otelGrpcReceiverType;
 
+    private SigletContext sigletContext;
+
+    private Config config;
+
     @BeforeEach
     public void setUp() {
         otelGrpcReceiverType = new OtelGrpcReceiverType();
+
+        config = mock(Config.class);
+        when(config.getQueueSize(any())).thenReturn(1024);
+
+        sigletContext = mock(SigletContext.class);
+        when(sigletContext.getEventBus()).thenReturn(new NoopEventBus());
+        when(sigletContext.getConfig()).thenReturn(config);
+
     }
 
     @Test
     void parser() {
         String config = """
                 address: 127.0.0.1:4317
+                max-inbound-message-size-bytes: 8388608
+                flow-control-window-bytes: 2097152
+                keep-alive-time-seconds: 25
                 """;
 
 
-        Optional<Schema.Builder<?,OtelGrpcReceiverConfig>> optionalBuilder = otelGrpcReceiverType.getConfigurationFactory().createConfigSchema();
+        Optional<Schema.Builder<?, OtelGrpcReceiverConfig>> optionalBuilder = otelGrpcReceiverType.getConfigurationFactory().createConfigSchema();
 
         assertTrue(optionalBuilder.isPresent());
 
@@ -43,8 +65,11 @@ class OtelGrpcReceiverTypeTest {
         OtelGrpcReceiverConfig otelGrpcReceiverConfig = factory.create(OtelGrpcReceiverConfig.class);
 
         assertNotNull(otelGrpcReceiverConfig);
-        assertEquals(new java.net.InetSocketAddress("127.0.0.1",4317), otelGrpcReceiverConfig.getAddress().getInetSocketAddress());
-        assertEquals(Location.of(1,10), otelGrpcReceiverConfig.getAddress().getLocation());
+        assertEquals(new java.net.InetSocketAddress("127.0.0.1", 4317), otelGrpcReceiverConfig.getAddress().getInetSocketAddress());
+        assertEquals(Location.of(1, 10), otelGrpcReceiverConfig.getAddress().getLocation());
+        assertEquals(8388608, otelGrpcReceiverConfig.getMaxInboundMessageSizeBytes().getValue().intValue());
+        assertEquals(2097152, otelGrpcReceiverConfig.getFlowControlWindowBytes().getValue().intValue());
+        assertEquals(25, otelGrpcReceiverConfig.getKeepAliveTimeSeconds().getValue().intValue());
 
 
     }
@@ -57,9 +82,10 @@ class OtelGrpcReceiverTypeTest {
         receiverDescriptorMock.setType(new StringValue("grpc"));
 
         OtelGrpcReceiverConfig config = new OtelGrpcReceiverConfig();
-        InetSocketAddress inetSocketAddress = InetSocketAddress.createUnresolved("127.0.0.1",4317);
+        config.setQueueSize(new IntegerValue(1024));
+        InetSocketAddress inetSocketAddress = InetSocketAddress.createUnresolved("127.0.0.1", 4317);
 
-        LocatedInetSocketAddress locatedInetSocketAddress = new LocatedInetSocketAddress(inetSocketAddress, Location.of(1,10));
+        LocatedInetSocketAddress locatedInetSocketAddress = new LocatedInetSocketAddress(inetSocketAddress, Location.of(1, 10));
 
         config.setAddress(locatedInetSocketAddress);
 
@@ -68,7 +94,8 @@ class OtelGrpcReceiverTypeTest {
         ReceiverNode receiverNode = new ReceiverNode(receiverDescriptorMock);
 
 
-        assertInstanceOf(OtelGrpcReceiver.class, otelGrpcReceiverType.getComponentCreator().create(null, receiverNode));
+        assertInstanceOf(OtelGrpcReceiver.class, otelGrpcReceiverType.getComponentCreator()
+                .create(sigletContext, receiverNode));
     }
 
     public static class ReceiverDescriptorMock extends ReceiverDescriptor {
@@ -88,4 +115,5 @@ class OtelGrpcReceiverTypeTest {
             super.setConfig(config);
         }
     }
+
 }

@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.debug;
 
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.engine.ComponentCreator;
+import io.github.pointertrace.siglet.impl.engine.component.config.ComponentCreator;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
 
@@ -20,7 +20,7 @@ public class DebugReceiverType implements ReceiverType<Void> {
 
     @Override
     public ComponentCreator<ReceiverNode> getComponentCreator() {
-        return (context, node) -> new DebugReceiver(node);
+        return (sigletContext, node) -> new DebugReceiver(sigletContext, node);
     }
 
 }

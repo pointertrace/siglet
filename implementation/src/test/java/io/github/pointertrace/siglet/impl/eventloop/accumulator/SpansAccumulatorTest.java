@@ -1,22 +1,14 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.impl.adapter.metric.MetricAdapter;
-import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.SpansAccumulator;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.SpansAccumulator;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
-import io.opentelemetry.proto.metrics.v1.Metric;
-import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
 import io.opentelemetry.proto.resource.v1.Resource;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import io.opentelemetry.proto.trace.v1.Span;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;

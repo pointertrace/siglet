@@ -2,14 +2,19 @@ package io.github.pointertrace.siglet.impl.engine;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.graph.*;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceProvider;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporters;
+import io.github.pointertrace.siglet.impl.engine.metric.MetricEventListener;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipeline;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipelines;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receivers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SigletEngine implements Component {
+import java.net.URL;
+
+public class SigletEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigletEngine.class);
 
@@ -25,6 +30,16 @@ public class SigletEngine implements Component {
 
         Graph graph = sigletContext.getGraph();
 
+        URL endpointUrl = sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsEndpointUrl() != null ?
+                sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsEndpointUrl().getUrl() : null;
+
+        long exportInterval = sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsExportIntervalMillis() != null ?
+                sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsExportIntervalMillis().getValue().longValue() : 0;
+
+        if (endpointUrl != null && exportInterval > 0) {
+            sigletContext.addEventListener(new MetricEventListener(exportInterval, endpointUrl));
+        }
+
         // TODO move to a factory
         graph.getNodeRegistry().stream()
                 .filter(ExporterNode.class::isInstance)
@@ -32,11 +47,10 @@ public class SigletEngine implements Component {
                 .forEach(exporterNode -> exporters.create(sigletContext, exporterNode));
 
 
-
         graph.getNodeRegistry().stream()
                 .filter(PipelineNode.class::isInstance)
                 .map(PipelineNode.class::cast)
-                .forEach(pipelines::create);
+                .forEach(pipelineNode -> pipelines.create(sigletContext, pipelineNode));
 
         graph.getNodeRegistry().stream()
                 .filter(ProcessorNode.class::isInstance)
@@ -59,8 +73,9 @@ public class SigletEngine implements Component {
     }
 
 
-    private SignalDestination getDestination(String name) {
-        SignalDestination result = pipelines.getDestination(name);
+
+    private SignalDestinationProvider getSignalDestinationProvider(String name) {
+        SignalDestinationProvider result = pipelines.getDestination(name);
         if (result == null) {
             result = exporters.getExporter(name);
         }
@@ -74,24 +89,23 @@ public class SigletEngine implements Component {
         receivers.forEach(receiver ->
                 receiver.getNode().getTo().stream()
                         .flatMap(pipelineNode -> pipelineNode.getStart().stream())
-                        .forEach(sigletNode -> receiver.connect(getDestination(sigletNode.getName())))
+                        .forEach(sigletNode -> connect(receiver, getSignalDestinationProvider(sigletNode.getName())))
         );
 
         pipelines.forEach(pipeline ->
                 pipeline.getProcessors().forEach(processor ->
                         processor.getNode().getTo()
-                                .forEach(node -> processor.connect(getDestination(node.getName()))))
+                                .forEach(node -> connect(processor, getSignalDestinationProvider(node.getName()))))
         );
 
     }
 
+    private void connect(SignalSourceProvider signalSourceProvider, SignalDestinationProvider signalDestinationProvider) {
+        signalSourceProvider.getSignalSource().connect(signalDestinationProvider.getSignalDestination());
 
-    @Override
-    public BaseNode getNode() {
-        return null;
     }
 
-    @Override
+
     public void start() {
         state = State.STARTING;
         exporters.start();
@@ -100,7 +114,6 @@ public class SigletEngine implements Component {
         state = State.RUNNING;
     }
 
-    @Override
     public void stop() {
         state = State.STOPPING;
         receivers.stop();
@@ -109,13 +122,8 @@ public class SigletEngine implements Component {
         state = State.STOPPED;
     }
 
-    @Override
     public State getState() {
         return state;
     }
 
-    @Override
-    public String getName() {
-        return "engine";
-    }
 }

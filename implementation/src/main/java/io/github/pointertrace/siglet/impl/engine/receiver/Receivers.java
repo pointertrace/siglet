@@ -28,7 +28,9 @@ public class Receivers {
     }
 
     public void start() {
+        LOGGER.info("Starting receivers");
         receiverRegistry.values().forEach(Receiver::start);
+        LOGGER.info("All receivers started");
     }
 
     public void stop() {

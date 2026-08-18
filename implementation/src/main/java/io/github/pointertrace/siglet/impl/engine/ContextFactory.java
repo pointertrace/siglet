@@ -11,6 +11,6 @@ public class ContextFactory {
     public SigletContext create(String configTxt, List<SigletBundle> sigletsBundles) {
         ConfigFactory configFactory = new ConfigFactory();
         Config config = configFactory.create(configTxt, sigletsBundles);
-        return new SigletContext(config);
+        return new SigletContextImpl(config);
     }
 }

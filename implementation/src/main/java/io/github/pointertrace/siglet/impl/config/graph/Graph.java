@@ -38,6 +38,14 @@ public class Graph {
                 .toList();
     }
 
+
+    public <T extends BaseNode> List<T> getComponentsByType(Class<T> nodeType) {
+        return nodeRegistry.values().stream()
+                .filter(node -> nodeType.isAssignableFrom(node.getClass()))
+                .map(nodeType::cast)
+                .toList();
+    }
+
     <T extends BaseNode> List<T> getNodesByNameAndType(List<String> names, Class<T> nodeType) {
         List<BaseNode> nodesByName = getNodesByName(names);
         nodesByName.forEach(node -> {

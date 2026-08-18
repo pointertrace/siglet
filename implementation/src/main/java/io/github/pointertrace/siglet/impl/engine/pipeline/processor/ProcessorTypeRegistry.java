@@ -1,9 +1,9 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor;
 
-import io.github.pointertrace.siglet.impl.engine.ComponentTypeRegistry;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action.SpanletGroovyActionProcessorType;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.filter.SpanletGroovyFilterProcessorType;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.router.SpanletGroovyRouterProcessorType;
+import io.github.pointertrace.siglet.impl.engine.component.config.ComponentTypeRegistry;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.action.SpanletGroovyActionProcessorType;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.filter.SpanletGroovyFilterProcessorType;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.router.SpanletGroovyRouterProcessorType;
 
 public class ProcessorTypeRegistry extends ComponentTypeRegistry<ProcessorType<?>> {
 

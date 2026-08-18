@@ -7,7 +7,6 @@ if [ -z "$JAR_FILE" ]; then
     exit 1
 fi
 FILENAME=$(basename "$JAR_FILE")
-
 if [[ "$FILENAME" =~ [sS][nN][aA][pP][sS][hH][oO][tT] ]]; then
     VERSION="nightly"
 else
@@ -18,3 +17,4 @@ else
     fi
 fi
 docker build . -t  pointertrace/siglet:${VERSION} --build-arg JAR_FILE=$JAR_FILE
+date

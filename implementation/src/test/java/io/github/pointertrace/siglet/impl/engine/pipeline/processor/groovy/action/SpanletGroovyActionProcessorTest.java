@@ -1,18 +1,17 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.processor.groovy.action;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.api.signal.metric.Metric;
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.config.descriptor.ProcessorDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
-import io.github.pointertrace.siglet.impl.engine.Component;
-import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
-import io.github.pointertrace.siglet.impl.engine.SigletMetrics;
-import io.github.pointertrace.siglet.impl.engine.SignalCapabilities;
-import io.github.pointertrace.siglet.impl.eventloop.MockSignalDestination;
-import io.github.pointertrace.siglet.parser.*;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.component.SignalEmitterFunction;
+import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorConfigCreationUtils;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.GroovyProcessor;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.groovy.action.SpanletGroovyActionProcessorType;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.resource.v1.Resource;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,20 +21,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SpanletGroovyActionProcessorTest {
 
-    private MockSignalDestination defaultDestination;
+    private Span actualDefaultSignal;
 
-    private MockSignalDestination otherDestination;
+    private String actualDefaultDestination;
+
+    private Span actualOtherSignal;
+
+    private String actualOtherDestination;
 
     private SpanAdapter spanAdapter;
 
-    private SigletMetrics sigletMetrics;
+    private SpanletGroovyActionProcessorType processorType;
+
+    private final SignalEmitterFunction emitterFunction = (signal, destination) -> {
+
+        if (SignalDestination.isAll(destination) || SignalDestination.isDrop(destination) || destination.equals("default")) {
+            actualDefaultSignal = (Span) signal;
+            actualDefaultDestination = destination;
+        } else if (destination.equals("other")) {
+            actualOtherSignal = (Span) signal;
+            actualOtherDestination = destination;
+        } else {
+            throw new SigletError("Unknown destination: " + destination);
+        }
+
+
+    };
 
     @BeforeEach
     public void setUp() {
 
-        defaultDestination = new MockSignalDestination("default", SignalCapabilities.of(Span.class));
+        actualDefaultSignal = null;
 
-        otherDestination = new MockSignalDestination("other", SignalCapabilities.of(Span.class));
+        actualDefaultDestination = null;
+
+        actualOtherSignal = null;
+
+        actualOtherDestination = null;
 
         io.opentelemetry.proto.trace.v1.Span span = io.opentelemetry.proto.trace.v1.Span.newBuilder()
                 .setName("span-name")
@@ -47,120 +69,131 @@ class SpanletGroovyActionProcessorTest {
 
         InstrumentationScope scope = InstrumentationScope.newBuilder().setName("scope").build();
 
-
         spanAdapter = new SpanAdapter(span, resource, scope);
 
-        sigletMetrics = new SigletMetrics();
-
+        processorType = new SpanletGroovyActionProcessorType();
     }
 
     @Test
     void process() {
 
-        String script = """
-                  signal.name = "prefix-" + signal.name
-                  context.attributes["new-name"] = signal.name
+        String config = """
+                spanlet-groovy-action: action
+                config:
+                  action: |
+                    signal.name = "prefix-" + signal.name
+                    context.attributes["new-name"] = signal.name
+                to: default
                 """;
 
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils.createProcessorDescriptor(config);
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
 
-        groovyActionProcessor.connect(defaultDestination);
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
 
-        groovyActionProcessor.start();
+        GroovyProcessor groovyProcessor = assertInstanceOf(GroovyProcessor.class,
+                processorType.getComponentCreator().create(sigletContext, processorNode));
 
-        groovyActionProcessor.send(spanAdapter);
+        groovyProcessor.setSignalEmitterFunction(emitterFunction);
 
-        groovyActionProcessor.stop();
+        groovyProcessor.start();
 
-        assertEquals(1, defaultDestination.getSize());
+        assertTrue(groovyProcessor.receive(spanAdapter));
 
-        Span processedSpan = defaultDestination.get(0, Span.class);
+        groovyProcessor.stop();
 
-        assertEquals("prefix-span-name", processedSpan.getName());
-        assertTrue(groovyActionProcessor.getContext().getAttributes().containsKey("new-name"));
-        assertEquals("prefix-span-name", groovyActionProcessor.getContext().getAttributes().get("new-name"));
+        assertEquals(SignalDestination.ALL, actualDefaultDestination);
+        assertEquals("prefix-span-name", actualDefaultSignal.getName());
+        assertTrue(groovyProcessor.getContext().getAttributes().containsKey("new-name"));
+        assertEquals("prefix-span-name", groovyProcessor.getContext().getAttributes().get("new-name"));
+
+        assertNull(actualOtherDestination);
+        assertNull(actualOtherSignal);
     }
 
     @Test
     void process_drop() {
 
-        String script = """
-                  signal.name = "prefix-" + signal.name
-                  context.attributes["new-name"] = signal.name
-                  drop()
+        String config = """
+                spanlet-groovy-action: action
+                config:
+                  action: |
+                    signal.name = "prefix-" + signal.name
+                    context.attributes["new-name"] = signal.name
+                    drop()
+                to: default
                 """;
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils.createProcessorDescriptor(config);
 
-        groovyActionProcessor.connect(defaultDestination);
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
 
-        groovyActionProcessor.start();
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
 
-        groovyActionProcessor.send(spanAdapter);
+        GroovyProcessor groovyProcessor = assertInstanceOf(GroovyProcessor.class,
+                processorType.getComponentCreator().create(sigletContext, processorNode));
 
-        groovyActionProcessor.stop();
 
-        assertEquals(0, defaultDestination.getSize());
+        groovyProcessor.setSignalEmitterFunction(emitterFunction);
 
-        assertEquals("prefix-span-name", spanAdapter.getName());
-        assertTrue(groovyActionProcessor.getContext().getAttributes().containsKey("new-name"));
-        assertEquals("prefix-span-name", groovyActionProcessor.getContext().getAttributes().get("new-name"));
+        groovyProcessor.start();
+
+        groovyProcessor.receive(spanAdapter);
+
+        groovyProcessor.stop();
+
+
+        assertEquals(SignalDestination.DROP, actualDefaultDestination);
+        assertEquals("prefix-span-name", actualDefaultSignal.getName());
+        assertTrue(groovyProcessor.getContext().getAttributes().containsKey("new-name"));
+        assertEquals("prefix-span-name", groovyProcessor.getContext().getAttributes().get("new-name"));
+
+        assertNull(actualOtherDestination);
+        assertNull(actualOtherSignal);
     }
 
     @Test
     void process_proceedToDestination() {
 
-        String script = """
-                  signal.name = "prefix-" + signal.name
-                  context.attributes["new-name"] = signal.name
-                  proceed("other")
+        String config = """
+                spanlet-groovy-action: action
+                config:
+                  action: |
+                    signal.name = "prefix-" + signal.name
+                    context.attributes["new-name"] = signal.name
+                    proceed("other")
+                to:
+                  - default
+                  - other
                 """;
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
+        ProcessorDescriptor processorDescriptor = ProcessorConfigCreationUtils.createProcessorDescriptor(config);
 
-        groovyActionProcessor.connect(defaultDestination);
-        groovyActionProcessor.connect(otherDestination);
+        ProcessorNode processorNode = ProcessorConfigCreationUtils.createProcessorNode(processorDescriptor);
 
-        groovyActionProcessor.start();
+        SigletContext sigletContext = ProcessorConfigCreationUtils.creteSigletContext(processorDescriptor);
 
-        groovyActionProcessor.send(spanAdapter);
+        GroovyProcessor groovyProcessor = assertInstanceOf(GroovyProcessor.class,
+                processorType.getComponentCreator().create(sigletContext, processorNode));
 
-        groovyActionProcessor.stop();
 
-        assertEquals(0, defaultDestination.getSize());
-        assertEquals(1, otherDestination.getSize());
+        groovyProcessor.setSignalEmitterFunction(emitterFunction);
 
-        Span processedSpan = otherDestination.get(0, Span.class);
+        groovyProcessor.start();
 
-        assertEquals("prefix-span-name", processedSpan.getName());
-        assertTrue(groovyActionProcessor.getContext().getAttributes().containsKey("new-name"));
-        assertEquals("prefix-span-name", groovyActionProcessor.getContext().getAttributes().get("new-name"));
+        groovyProcessor.receive(spanAdapter);
 
-    }
+        groovyProcessor.stop();
 
-    @Test
-    void checkCompatibility() {
+        assertNull(actualDefaultDestination);
+        assertNull(actualDefaultSignal);
 
-        String script = """
-                  signal.name = "prefix-" + signal.name
-                  context.attributes["new-name"] = signal.name
-                  proceed("other")
-                """;
+        assertEquals("other", actualOtherDestination);
+        assertEquals("prefix-span-name", actualOtherSignal.getName());
+        assertTrue(groovyProcessor.getContext().getAttributes().containsKey("new-name"));
+        assertEquals("prefix-span-name", groovyProcessor.getContext().getAttributes().get("new-name"));
 
-        GroovyActionProcessor groovyActionProcessor = new GroovyActionProcessor("action", script, SignalCapabilities.of(Span.class), 1, 1,
-                sigletMetrics);
-
-        SigletError ex = assertThrows(SigletError.class, () ->
-                groovyActionProcessor.connect(new MockSignalDestination("mock", SignalCapabilities.of(Metric.class))));
-
-        assertEquals("Cannot connect processor [action] to [mock] because they have incompatible signal " +
-                        "capabilities. Processor generates [io.github.pointertrace.siglet.api.signal.trace.Span] and " +
-                        "destination expects [io.github.pointertrace.siglet.api.signal.metric.Metric]",
-                ex.getMessage());
     }
 
 }

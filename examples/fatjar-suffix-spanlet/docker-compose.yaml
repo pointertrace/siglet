@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+    otel-collector:
+      container_name: otel-collector
+      image: otel/opentelemetry-collector-contrib:latest
+      command: [ "--config=/etc/otel-collector-config.yaml" ]
+      volumes:
+        - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      ports:
+        - "4317:4317"   # OTLP gRPC
+        - "4318:4318"   # OTLP HTTP
+      depends_on:
+        - siglet
     otel-lgtm:
       container_name: grafana
       image: grafana/otel-lgtm:latest
@@ -25,9 +36,10 @@ services:
       command: >
         traces \
           --otlp-insecure \
-          --otlp-endpoint siglet:8081 \
-          --traces 100
+          --otlp-endpoint otel-collector:4317 \
+          --rate 10000 \
+          --duration=2m
       profiles:
         - debug
       depends_on:
-        - siglet
+        - otel-collector

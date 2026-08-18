@@ -143,7 +143,10 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-observation</artifactId>
+        </dependency>
         <!-- Bridge Micrometer → OpenTelemetry -->
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -162,6 +165,21 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-logging</artifactId>
             <version>${otel.version}</version>
+        </dependency>
+
+        <!-- tests -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.20.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.20.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

@@ -8,8 +8,8 @@ import io.github.pointertrace.siglet.impl.config.siglet.SigletBundle;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.impl.config.siglet.fatjar.FatJarBundleLoader;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
-import io.github.pointertrace.siglet.impl.eventloop.processor.ContextImpl;
-import io.github.pointertrace.siglet.impl.eventloop.processor.result.ResultFactoryImpl;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ContextImpl;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 import io.github.pointertrace.siglet.parser.Factory;
 import io.github.pointertrace.siglet.parser.Node;
 import io.github.pointertrace.siglet.parser.Schema;
@@ -72,7 +72,7 @@ public class FatJarBundleTest {
 
             Context<Object> context = new ContextImpl<>(config.getConfig());
 
-            fatjarSuffixSpanlet.span(spanAdapter,context, ResultFactoryImpl.INSTANCE);
+            fatjarSuffixSpanlet.span(spanAdapter,context, ResultFactoryImpl.getInstance());
 
             assertEquals("name-a-suffix-fatjar", spanAdapter.getName());
 

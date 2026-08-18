@@ -1,13 +1,12 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.grpc;
 
+import io.github.pointertrace.siglet.impl.config.Config;
 import io.github.pointertrace.siglet.impl.config.descriptor.ExporterDescriptor;
 import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAddress;
-import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
-import io.github.pointertrace.siglet.impl.engine.receiver.grpc.OtelGrpcReceiver;
-import io.github.pointertrace.siglet.impl.engine.receiver.grpc.OtelGrpcReceiverConfig;
-import io.github.pointertrace.siglet.impl.engine.receiver.grpc.OtelGrpcReceiverType;
+import io.github.pointertrace.siglet.impl.engine.SigletContext;
+import io.github.pointertrace.siglet.impl.engine.SigletContextImpl;
+import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
 import io.github.pointertrace.siglet.parser.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,19 +15,30 @@ import java.net.InetSocketAddress;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OtelGrpcExporterTypeTest {
 
     private OtelGrpcExporterType otelGrpcExporterType;
 
+    private SigletContext context;
+
+    private Config config;
+
     @BeforeEach
     public void setUp() {
         otelGrpcExporterType = new OtelGrpcExporterType();
+
+        context =  mock(SigletContext.class);
+        when(context.getEventBus()).thenReturn(new NoopEventBus());
+        config = mock(Config.class);
+        when(context.getConfig()).thenReturn(config);
     }
 
     @Test
     void parser() {
-        String config = """
+        String yaml = """
                 address: 127.0.0.1:4317
                 """;
 
@@ -38,7 +48,7 @@ class OtelGrpcExporterTypeTest {
         assertTrue(optionalBuilder.isPresent());
 
 
-        Node node = Parser.DEFAULT.parse(config);
+        Node node = Parser.DEFAULT.parse(yaml);
 
         Schema schema = optionalBuilder.get().build();
         Factory factory = schema.validate(node);
@@ -54,7 +64,7 @@ class OtelGrpcExporterTypeTest {
 
     @Test
     void parser_all() {
-        String config = """
+        String yaml = """
                 address: 127.0.0.1:4317
                 batch-size-in-signals: 1
                 batch-timeout-in-millis: 2
@@ -67,7 +77,7 @@ class OtelGrpcExporterTypeTest {
         assertTrue(optionalBuilder.isPresent());
 
 
-        Node node = Parser.DEFAULT.parse(config);
+        Node node = Parser.DEFAULT.parse(yaml);
 
         Schema schema = optionalBuilder.get().build();
         Factory factory = schema.validate(node);
@@ -107,7 +117,7 @@ class OtelGrpcExporterTypeTest {
         ExporterNode exporterNode = new ExporterNode(exporterDescriptorMock);
 
 
-        assertInstanceOf(OtelGrpcExporter.class, otelGrpcExporterType.getComponentCreator().create(null, exporterNode));
+        assertInstanceOf(OtelGrpcExporter.class, otelGrpcExporterType.getComponentCreator().create(context, exporterNode));
     }
 
     public static class ExporterDescriptorMock extends ExporterDescriptor {
@@ -127,4 +137,5 @@ class OtelGrpcExporterTypeTest {
             super.setConfig(config);
         }
     }
+
 }

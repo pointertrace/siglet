@@ -40,6 +40,16 @@ If additional configuration is required, it must be placed under the `config` at
 
 The `grpc` receiverDescriptor requires the `address` property, which specifies the IP and port where it will listen for incoming data.
 
+Optional Netty tuning properties are also supported for high-throughput scenarios:
+
+- `max-inbound-message-size-bytes` (default: `16777216`)
+- `max-inbound-metadata-size-bytes` (default: `16384`)
+- `flow-control-window-bytes` (default: `1048576`)
+- `max-concurrent-calls-per-connection` (default: `1024`)
+- `keep-alive-time-seconds` (default: `30`)
+- `keep-alive-timeout-seconds` (default: `10`)
+- `permit-keep-alive-time-seconds` (default: `20`)
+
 ---
 
 ### Exporters

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FilterSpanletTest {
 
@@ -52,7 +51,7 @@ class FilterSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter));
+        DebugReceivers.INSTANCE.get("receiver").receive(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder()
                 .setName("span-name")
@@ -60,7 +59,7 @@ class FilterSpanletTest {
                 .setSpanId(AdapterUtils.spanId(2))
                 .build();
         SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
-        assertTrue(DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter));
+        DebugReceivers.INSTANCE.get("receiver").receive(secondSpanAdapter);
 
         siglet.stop();
 
@@ -71,7 +70,7 @@ class FilterSpanletTest {
     }
 
     @Test
-    void testMultipleExporters() {
+    void testMultipleExporters() throws InterruptedException {
 
 
         String config = """
@@ -86,11 +85,13 @@ class FilterSpanletTest {
                   start: spanlet
                   processors:
                   - spanlet-groovy-filter: spanlet
+                    thread-pool-size: 2
                     to:
                     - first-exporter
                     - second-exporter
                     config:
                       expression: |
+                        println "sinal.name: ${signal.name}, result=${signal.name.startsWith('prefix')}"
                         signal.name.startsWith("prefix")
                 """;
 
@@ -103,11 +104,11 @@ class FilterSpanletTest {
         Resource resource = Resource.newBuilder().build();
         InstrumentationScope instrumentationScope = InstrumentationScope.newBuilder().build();
         SpanAdapter firstSpanAdapter = new SpanAdapter(firstSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(firstSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(firstSpanAdapter);
 
         Span secondSpan = Span.newBuilder().setName("span-name").build();
         SpanAdapter secondSpanAdapter = new SpanAdapter(secondSpan, resource, instrumentationScope);
-        DebugReceivers.INSTANCE.get("receiver").send(secondSpanAdapter);
+        DebugReceivers.INSTANCE.get("receiver").receive(secondSpanAdapter);
 
         siglet.stop();
 
