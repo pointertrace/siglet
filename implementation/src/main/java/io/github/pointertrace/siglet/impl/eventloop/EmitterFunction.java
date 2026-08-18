@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.eventloop;
 
 @FunctionalInterface
-public interface EmitterFunction<T> {
+public interface EmitterFunction<OUT> {
 
-    void emit(T signal);
+    void emit(OUT signal);
 }

@@ -52,7 +52,7 @@ public class OtelGrpcReceiver extends BaseReceiver {
             spanEventLoop = new ProcessorEventLoop<ExportTraceServiceRequest, List<SpanAdapter>>(this,
                     sigletContext.getConfig().getQueueSize(otelGrpcReceiverConfig),
                     sigletContext.getConfig().getThreadPoolSize(otelGrpcReceiverConfig),
-                    sigletContext.getEventBus(),
+                    sigletContext.getInterceptor(),
                     () -> (ExportTraceServiceRequest request) -> {
                         List<SpanAdapter> spanAdapters = new ArrayList<>();
                         for (ResourceSpans spans : request.getResourceSpansList()) {

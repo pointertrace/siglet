@@ -8,7 +8,7 @@ import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.component.*;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSource;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultImpl;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ public class ProcessorEventLoopOld<C> extends BaseComponent implements SignalSou
 
     private final Context<C> context;
 
-    private final EventBus eventBus;
+    private final Interceptor interceptor;
 
     private final int threadPoolSize;
 
@@ -50,12 +50,12 @@ public class ProcessorEventLoopOld<C> extends BaseComponent implements SignalSou
     public ProcessorEventLoopOld(Component parent, ProcessorFactory<C> processorFactory,
                                  Context<C> context, SignalCapabilities incomingCapabilities,
                                  SignalCapabilities outgoingCapabilities, Map<String, String> destinationMappings,
-                                 int queueSize, int threadPoolSize, EventBus eventBus) {
-        super(eventBus);
+                                 int queueSize, int threadPoolSize, Interceptor interceptor) {
+        super(interceptor);
         Objects.requireNonNull(parent, "Parent component can't be null or empty");
         Objects.requireNonNull(processorFactory, "ProcessorFactory can't be null");
         this.parent = parent;
-        this.eventBus = eventBus;
+        this.interceptor = interceptor;
         this.processorFactory = processorFactory;
         this.context = context;
         this.threadPoolSize = threadPoolSize;

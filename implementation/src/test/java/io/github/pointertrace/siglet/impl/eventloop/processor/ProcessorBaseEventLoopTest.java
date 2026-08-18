@@ -1,20 +1,15 @@
 package io.github.pointertrace.siglet.impl.eventloop.processor;
 
-import io.github.pointertrace.siglet.api.Signal;
-import io.github.pointertrace.siglet.impl.adapter.BaseSignalAdapter;
 import io.github.pointertrace.siglet.impl.engine.*;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -46,7 +41,7 @@ class ProcessorBaseEventLoopTest {
                 parent,
                 3,
                 1,
-                new NoopEventBus(),
+                new Interceptors(),
                 () -> (signal) -> signal * 3,
                 (signal) -> {
                     result.add(signal);
@@ -63,9 +58,9 @@ class ProcessorBaseEventLoopTest {
 
             assertEquals(State.RUNNING, eventLoop.getState());
 
-            eventLoop.receive(1);
-            eventLoop.receive(2);
-            eventLoop.receive(3);
+            eventLoop.getReceiver().receive(1);
+            eventLoop.getReceiver().receive(2);
+            eventLoop.getReceiver().receive(3);
 
             eventLoop.stop();
 

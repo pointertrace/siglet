@@ -2,17 +2,16 @@ package io.github.pointertrace.siglet.impl.engine;
 
 import io.github.pointertrace.siglet.impl.config.Config;
 import io.github.pointertrace.siglet.impl.config.graph.*;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
-import io.github.pointertrace.siglet.impl.engine.event.EventBusImpl;
-import io.github.pointertrace.siglet.impl.engine.event.EventListener;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
 import io.github.pointertrace.siglet.impl.engine.exporter.ExporterType;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
+import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receiver;
 import io.github.pointertrace.siglet.impl.engine.receiver.ReceiverType;
-import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 
 public class SigletContextImpl implements SigletContext {
 
@@ -22,7 +21,7 @@ public class SigletContextImpl implements SigletContext {
 
     private final GraphFactory graphFactory = new GraphFactory();
 
-    private EventBus eventBus = new NoopEventBus();
+    private final Interceptors interceptors = new Interceptors();
 
     public SigletContextImpl(Config config) {
         this.config = config;
@@ -69,16 +68,13 @@ public class SigletContextImpl implements SigletContext {
     }
 
     @Override
-    public void addEventListener(EventListener eventListener) {
-        if (eventBus instanceof NoopEventBus) {
-            eventBus = new EventBusImpl();
-        }
-        eventBus.addEventListener(eventListener);
+    public Interceptor getInterceptor() {
+        return interceptors;
     }
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public void addInterceptor(MetricInterceptor metricInterceptor) {
+        interceptors.addInterceptor(metricInterceptor);
     }
 
 }

@@ -1,12 +1,9 @@
 package io.github.pointertrace.siglet.impl.engine.exporter.debug;
 
 import io.github.pointertrace.siglet.impl.config.descriptor.ExporterDescriptor;
-import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
-import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
-import io.github.pointertrace.siglet.impl.engine.receiver.debug.DebugReceiver;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.parser.Schema;
 import io.github.pointertrace.siglet.parser.StringValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +26,7 @@ class DebugExporterTypeTest {
 
         debugExporterType = new DebugExporterType();
         sigletContext = mock(SigletContext.class);
-        when(sigletContext.getEventBus()).thenReturn(new NoopEventBus());
+        when(sigletContext.getInterceptor()).thenReturn(new Interceptors());
     }
 
     @Test

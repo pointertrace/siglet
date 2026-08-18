@@ -5,7 +5,7 @@ import io.github.pointertrace.siglet.impl.config.graph.*;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceProvider;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporters;
-import io.github.pointertrace.siglet.impl.engine.metric.MetricEventListener;
+import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipeline;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipelines;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receivers;
@@ -37,7 +37,7 @@ public class SigletEngine {
                 sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsExportIntervalMillis().getValue().longValue() : 0;
 
         if (endpointUrl != null && exportInterval > 0) {
-            sigletContext.addEventListener(new MetricEventListener(exportInterval, endpointUrl));
+            sigletContext.addInterceptor(new MetricInterceptor(exportInterval, endpointUrl));
         }
 
         // TODO move to a factory

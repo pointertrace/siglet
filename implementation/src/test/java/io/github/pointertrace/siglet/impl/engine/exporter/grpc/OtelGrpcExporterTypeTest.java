@@ -5,8 +5,7 @@ import io.github.pointertrace.siglet.impl.config.descriptor.ExporterDescriptor;
 import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAddress;
 import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SigletContextImpl;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.parser.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ class OtelGrpcExporterTypeTest {
         otelGrpcExporterType = new OtelGrpcExporterType();
 
         context =  mock(SigletContext.class);
-        when(context.getEventBus()).thenReturn(new NoopEventBus());
+        when(context.getInterceptor()).thenReturn(new Interceptors());
         config = mock(Config.class);
         when(context.getConfig()).thenReturn(config);
     }

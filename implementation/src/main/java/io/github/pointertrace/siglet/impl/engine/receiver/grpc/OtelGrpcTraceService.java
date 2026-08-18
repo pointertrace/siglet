@@ -17,7 +17,8 @@ public class OtelGrpcTraceService extends TraceServiceGrpc.TraceServiceImplBase 
 
     @Override
     public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver) {
-        eventLoop.receive(request);
+        // todo acessar direto
+        eventLoop.getReceiver().receive(request);
         ExportTraceServiceResponse response = ExportTraceServiceResponse.newBuilder().build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();

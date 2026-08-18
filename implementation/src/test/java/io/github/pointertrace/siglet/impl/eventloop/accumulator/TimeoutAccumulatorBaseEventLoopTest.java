@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,15 +44,15 @@ class TimeoutAccumulatorBaseEventLoopTest {
                 String.class,
                 transformerFunction,
                 signalEmitterFunction,
-                new NoopEventBus()
+                new Interceptors()
         );
 
         assertTimeout(Duration.ofSeconds(1), () -> {
 
             eventLoop.start();
 
-            assertTrue(eventLoop.receive("1"));
-            assertTrue(eventLoop.receive("2"));
+            assertTrue(eventLoop.getReceiver().receive("1"));
+            assertTrue(eventLoop.getReceiver().receive("2"));
 
             Thread.sleep(10);
 
@@ -75,13 +75,13 @@ class TimeoutAccumulatorBaseEventLoopTest {
                 String.class,
                 transformerFunction,
                 signalEmitterFunction,
-                new NoopEventBus()
+                new Interceptors()
         );
 
         assertTimeout(Duration.ofSeconds(1), () -> {
             eventLoop.start();
-            eventLoop.receive("1");
-            eventLoop.receive("2");
+            assertTrue(eventLoop.getReceiver().receive("1"));
+            assertTrue(eventLoop.getReceiver().receive("2"));
             Thread.sleep(200);
             eventLoop.stop();
         });
@@ -102,13 +102,13 @@ class TimeoutAccumulatorBaseEventLoopTest {
                 String.class,
                 transformerFunction,
                 signalEmitterFunction,
-                new NoopEventBus()
+                new Interceptors()
         );
 
         assertTimeout(Duration.ofSeconds(1), () -> {
             eventLoop.start();
-            eventLoop.receive("1");
-            eventLoop.receive("2");
+            assertTrue(eventLoop.getReceiver().receive("1"));
+            assertTrue(eventLoop.getReceiver().receive("2"));
             Thread.sleep(20);
             eventLoop.stop();
         });

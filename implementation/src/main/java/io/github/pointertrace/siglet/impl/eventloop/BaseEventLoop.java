@@ -2,7 +2,8 @@ package io.github.pointertrace.siglet.impl.eventloop;
 
 import io.github.pointertrace.siglet.impl.engine.component.BaseComponent;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
+import org.codehaus.groovy.transform.stc.Receiver;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -13,19 +14,19 @@ public abstract class BaseEventLoop<IN, OUT> extends BaseComponent {
 
     private final String nameSuffix;
 
-    private final EmitterFunction<OUT> signalEmitterFunction;
+    private final EmitterFunction<OUT> emitterFunction;
 
-    protected BaseEventLoop(Component parent, String nameSuffix, EmitterFunction<OUT> signalEmitterFunction, EventBus eventBus) {
-        super(eventBus);
+    protected BaseEventLoop(Component parent, String nameSuffix, EmitterFunction<OUT> emitterFunction, Interceptor interceptor) {
+        super(interceptor);
         this.parent = parent;
         this.nameSuffix = nameSuffix;
-        this.signalEmitterFunction = signalEmitterFunction;
+        this.emitterFunction = emitterFunction;
     }
 
-    public abstract boolean receive(IN in);
+    public abstract ReceiveFunction<IN> getReceiver();
 
     protected void emit(OUT out) {
-        signalEmitterFunction.emit(out);
+        emitterFunction.emit(out);
     }
 
     public String getName() {

@@ -2,7 +2,6 @@ package io.github.pointertrace.siglet.impl.engine.component;
 
 import io.github.pointertrace.siglet.impl.config.graph.BaseNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
 
 public abstract  class BaseGraphComponent<T extends BaseNode> extends BaseComponent implements GraphComponent<T> {
 
@@ -11,7 +10,7 @@ public abstract  class BaseGraphComponent<T extends BaseNode> extends BaseCompon
     private final SigletContext sigletContext;
 
     public BaseGraphComponent(SigletContext sigletContext, T node) {
-        super(sigletContext.getEventBus());
+        super(sigletContext.getInterceptor());
         this.sigletContext = sigletContext;
         this.node = node;
     }

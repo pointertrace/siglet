@@ -12,6 +12,7 @@ import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDest
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSource;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceImpl;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.BaseProcessor;
+import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ProcessorEventLoop;
 
 import java.util.function.BiFunction;
@@ -28,6 +29,8 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
     private SignalDestination signalDestination;
 
     private SignalSource signalSource;
+
+    private final ReceiveFunction<T> eventLoopReceiver;
 
     public BaseSigletProcessor(SigletContext sigletContext, ProcessorNode node,
                                BiFunction<T, Context<?>, ProcessResult> sigletExecutionFunction) {
@@ -46,12 +49,13 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
         processorEventLoop = new ProcessorEventLoop<>(this,
                 sigletContext.getConfig().getQueueSize(node.getDescription()),
                 sigletContext.getConfig().getThreadPoolSize(node.getDescription()),
-                sigletContext.getEventBus(),
+                sigletContext.getInterceptor(),
                 () -> {
                     BiFunction<T, Context<?>, ProcessResult> fn = sigletExecutionFunctionFactory.get();
                     return (span) -> fn.apply(span, spanletContext);
                 },
                 this::emmit);
+        eventLoopReceiver = processorEventLoop.getReceiver();
     }
 
     @Override
@@ -69,7 +73,7 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
     }
 
     public boolean receive(Object signal) {
-        return processorEventLoop.receive(castSignal(signal));
+        return eventLoopReceiver.receive(castSignal(signal));
     }
 
     protected abstract T castSignal(Object signal);

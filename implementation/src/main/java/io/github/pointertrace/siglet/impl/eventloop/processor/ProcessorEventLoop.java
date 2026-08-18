@@ -3,7 +3,7 @@ package io.github.pointertrace.siglet.impl.eventloop.processor;
 import io.github.pointertrace.siglet.impl.engine.State;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
 import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.eventloop.BaseEventLoop;
 import io.github.pointertrace.siglet.impl.eventloop.EventLoopError;
 import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
@@ -40,17 +40,17 @@ public class ProcessorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
     public ProcessorEventLoop(Component parent,
                               int queueSize,
                               int threadPoolSize,
-                              EventBus eventBus,
+                              Interceptor interceptor,
                               Supplier<Function<IN, OUT>> processFunctionFactory,
                               EmitterFunction<OUT> signalEmitterFunction) {
-        super(parent, "processor-event-loop", signalEmitterFunction, eventBus);
+        super(parent, "processor-event-loop", signalEmitterFunction, interceptor);
         this.threadPoolSize = threadPoolSize;
         this.threads = new ArrayList<>(threadPoolSize);
-        this.queue = eventBus.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueSize));
+        this.queue = interceptor.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueSize));
         this.processFunctionFactory = processFunctionFactory;
     }
 
-    public boolean receive(IN request) {
+    private boolean receive(IN request) {
         return queue.offer(request);
     }
 
@@ -85,9 +85,6 @@ public class ProcessorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
 
         LOGGER.trace("virtual thread started for event loop {}", getName());
 
-        // The function is created ONCE per thread before the loop.
-        // Each thread owns its instance for the entirety of its lifetime —
-        // no ThreadLocal lookup and no allocation per message.
         Function<IN, OUT> processFunction =
                 getEventBus().eventLoopProcessFunctionCreation(this, processFunctionFactory.get());
 
@@ -132,4 +129,8 @@ public class ProcessorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
     }
 
 
+    @Override
+    public ReceiveFunction<IN> getReceiver() {
+        return this::receive;
+    }
 }

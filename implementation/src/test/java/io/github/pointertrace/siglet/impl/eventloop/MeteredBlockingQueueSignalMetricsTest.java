@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.eventloop;
 
 import io.github.pointertrace.siglet.impl.BaseSignal;
-import io.github.pointertrace.siglet.impl.engine.metric.MetricEventListener;
+import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
 import io.micrometer.core.instrument.Counter;
 import io.github.pointertrace.siglet.impl.engine.metric.MeteredBlockingQueue;
 import io.micrometer.core.instrument.Gauge;
@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.pointertrace.siglet.impl.engine.metric.MetricEventListener.*;
+import static io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,19 +50,19 @@ class MeteredBlockingQueueSignalMetricsTest {
                 missedCounter,
                 droppedCounter
         );
-        Gauge.builder(MetricEventListener.EVENT_LOOP_QUEUE_SIZE,
+        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_SIZE,
                         queue,
                         BlockingQueue::size)
                 .description("Current queue size")
                 .register(registry);
 
-        Gauge.builder(MetricEventListener.EVENT_LOOP_QUEUE_CAPACITY,
+        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_CAPACITY,
                         queue,
                         q -> q.size() + q.remainingCapacity())
                 .description("Queue capacity")
                 .register(registry);
 
-        Gauge.builder(MetricEventListener.EVENT_LOOP_QUEUE_SIZE_MAX,
+        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_SIZE_MAX,
                         queue,
                         MeteredBlockingQueue::getAndResetMaxSize)
                 .description("Maximum queue size observed since last scrape")

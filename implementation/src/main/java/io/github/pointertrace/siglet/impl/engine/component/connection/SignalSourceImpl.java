@@ -31,25 +31,19 @@ public class SignalSourceImpl implements SignalSource {
         return this::emit;
     }
 
-    private boolean emit(Object signal, String destination) {
+    private void emit(Object signal, String destination) {
         if (SignalDestination.isAll(destination)) {
-            for(SignalDestination availableDestination : availableDestinations) {
+            for (SignalDestination availableDestination : availableDestinations) {
                 availableDestination.getSignalReceiverFunction().receive(signal);
             }
-            return true;
-        } else if (SignalDestination.isDrop(destination)) {
-            return true;
         } else {
-            boolean result = true;
             for (SignalDestination availableDestination : availableDestinations) {
                 if (availableDestination.is(destination)) {
-                    result &= availableDestination.getSignalReceiverFunction().receive(signal);
+                    availableDestination.getSignalReceiverFunction().receive(signal);
                 }
             }
-            return result;
         }
     }
-
 
 
 }

@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
-import io.github.pointertrace.siglet.impl.engine.event.EventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 import io.github.pointertrace.siglet.impl.eventloop.BaseEventLoop;
 import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
@@ -38,18 +38,18 @@ public class TimeoutAccumulatorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT>
     private final CountDownLatch startLatch = new CountDownLatch(1);
 
     public TimeoutAccumulatorEventLoop(Component parent, String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                       Class<IN> inClass, Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction, EventBus eventBus) {
-        super(parent, name, signalEmitterFunction, eventBus);
+                                       Class<IN> inClass, Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction, Interceptor interceptor) {
+        super(parent, name, signalEmitterFunction, interceptor);
         this.timeoutInMillis = timeoutInMillis;
         this.maxSize = maxSize;
         this.inClass = inClass;
         this.transformerFunction = transformerFunction;
         this.signalEmitterFunction = signalEmitterFunction;
-        this.queue = eventBus.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueCapacity));
+        this.queue = interceptor.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueCapacity));
     }
 
 
-    public boolean receive(IN signal) {
+    private boolean receive(IN signal) {
         return queue.offer(signal);
     }
 
@@ -117,6 +117,11 @@ public class TimeoutAccumulatorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT>
 
     private void receiveFromBuffer(OUT out) {
        signalEmitterFunction.emit(out);
+    }
+
+    @Override
+    public ReceiveFunction<IN> getReceiver() {
+        return this::receive;
     }
 
 

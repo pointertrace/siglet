@@ -1,12 +1,8 @@
 package io.github.pointertrace.siglet.impl.engine.metric;
 
 import io.github.pointertrace.siglet.api.SigletError;
-import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSource;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
-import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
-import io.github.pointertrace.siglet.impl.engine.event.componentlifecycle.ComponentLifeCycleEventListener;
-import io.github.pointertrace.siglet.impl.engine.event.connection.ConnectionEventListener;
-import io.github.pointertrace.siglet.impl.engine.event.eventloop.EventLoopEventListener;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.eventloop.BaseEventLoop;
 import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 import io.micrometer.core.instrument.*;
@@ -30,8 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class MetricEventListener implements ComponentLifeCycleEventListener, EventLoopEventListener,
-        ConnectionEventListener {
+public class MetricInterceptor implements Interceptor {
 
     public static final String SIGNALS_RECEIVED = "siglet.signals.received";
 
@@ -73,7 +68,7 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
 
     private final Map<String, Counter> signalsAcceptedCounters = new HashMap<>();
 
-    public MetricEventListener(long exportIntervalMillis, URL endpointUrl) {
+    public MetricInterceptor(long exportIntervalMillis, URL endpointUrl) {
         Objects.requireNonNull(endpointUrl, "endpointUrl");
         if (exportIntervalMillis <= 0) {
             throw new SigletError("Internal metrics export interval must be greater than zero");
@@ -107,53 +102,6 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
         };
     }
 
-    @Override
-    public void afterInstantiation(long timestamp, Component component) {
-
-    }
-
-    @Override
-    public void beforeStart(long timestamp, Component component) {
-
-//        if (component instanceof Receiver receiver) {
-//            createComponentMetrics(receiver.getName());
-//            for (SignalDestination signalDestination : receiver.getSignalDestinations()) {
-//                createSignalDestinationMetrics(receiver.getName(), signalDestination.getName());
-//            }
-//        } else if (component instanceof Processor processor) {
-//            createComponentMetrics(processor.getName());
-//            for (SignalDestination signalDestination : processor.getSignalDestinations()) {
-//                createSignalDestinationMetrics(processor.getName(), signalDestination.getName());
-//            }
-//        } else if (component instanceof Exporter exporter) {
-//            createComponentMetrics(exporter.getName());
-//            createExporterMetrics(exporter.getName());
-//        } else if (component instanceof EventLoop<?> eventLoop) {
-//            createComponentMetrics(eventLoop.getName());
-//            createEventLoopMetrics(eventLoop.getParentComponent().getName(), eventLoop.getName());
-//            if (eventLoop instanceof ProcessorEventLoop<?> processorEventLoop) {
-//                for (SignalDestination signalDestination : processorEventLoop.getSignalDestinations()) {
-//                    createSignalDestinationMetrics(eventLoop.getName(), signalDestination.getName());
-//                }
-//            }
-//        }
-
-    }
-
-    @Override
-    public void afterStart(long timestamp, Component component) {
-
-    }
-
-    @Override
-    public void beforeEnd(long timestamp, Component component) {
-
-    }
-
-    @Override
-    public void afterEnd(long timestamp, Component component) {
-
-    }
 
     private void createSignalDestinationMetrics(String componentName, String destinationName) {
 
@@ -235,7 +183,12 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
 
 
     @Override
-    public <T> BlockingQueue<T> eventLoopQueueCreation(long timestamp, BaseEventLoop<?,?> eventLoop,
+    public Component componentInstantiation(Component component) {
+        return null;
+    }
+
+    @Override
+    public <T> BlockingQueue<T> eventLoopQueueCreation(BaseEventLoop<?, ?> eventLoop,
                                                        BlockingQueue<T> eventLoopQueue) {
 
         MeteredBlockingQueue<T> meteredBlockingQueue = new MeteredBlockingQueue<>(
@@ -252,7 +205,7 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
     }
 
     @Override
-    public <T> EmitterFunction<T> eventLoopEmitFunctionCreation(long timestamp, BaseEventLoop<?,?> eventLoop,
+    public <T> EmitterFunction<T> eventLoopEmitterFunctionCreation(BaseEventLoop<?, ?> eventLoop,
                                                                 EmitterFunction<T> signalEmitterFunction) {
 
         Counter emitted = createEmmitedSignalsCounter(eventLoop.getName());
@@ -264,7 +217,7 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
 
     @Override
     public <IN, OUT> Function<IN, OUT> eventLoopProcessFunctionCreation(
-            long timestamp, BaseEventLoop<?,?> eventLoop, Function<IN, OUT> processFunction) {
+            BaseEventLoop<?, ?> eventLoop, Function<IN, OUT> processFunction) {
 
         Timer timer = createEventLoopProcessFunctionTimer(eventLoop.getParentComponent().getName(), eventLoop.getName());
         return (IN in) -> {
@@ -275,17 +228,6 @@ public class MetricEventListener implements ComponentLifeCycleEventListener, Eve
                 timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
             }
         };
-    }
-
-    @Override
-    public SignalDestination beforeConnect(SignalSource signalSource, SignalDestination signalDestination) {
-        return signalDestination;
-//        return new SignalDestinationWrapper(
-//                signalDestination,
-//                createAcceptedSignalsCounter(signalSource.getName(), signalDestination.getName()),
-//                createMissedSignalsCounter(signalSource.getName(), signalDestination.getName()),
-//                createReceivedSignalsCounter(signalSource.getName())
-//        );
     }
 
     private static class MeterConfig implements OtlpConfig {

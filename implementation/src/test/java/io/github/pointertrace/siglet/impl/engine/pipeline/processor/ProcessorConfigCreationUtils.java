@@ -7,7 +7,7 @@ import io.github.pointertrace.siglet.impl.config.graph.ProcessorNode;
 import io.github.pointertrace.siglet.impl.config.siglet.SigletDefinition;
 import io.github.pointertrace.siglet.impl.engine.ConfigurationFactory;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.spanlet.SpanletProcessorType;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
 import io.github.pointertrace.siglet.parser.Factory;
@@ -30,7 +30,7 @@ public class ProcessorConfigCreationUtils {
 
         Config configMock = mock(Config.class);
         SigletContext sigletContextMock = mock(SigletContext.class);
-        when(sigletContextMock.getEventBus()).thenReturn(new NoopEventBus());
+        when(sigletContextMock.getInterceptor()).thenReturn(new Interceptors());
         when(sigletContextMock.getConfig()).thenReturn(configMock);
         when(configMock.getQueueSize(processorDescriptor)).thenReturn(1);
         when(configMock.getThreadPoolSize(processorDescriptor)).thenReturn(1);

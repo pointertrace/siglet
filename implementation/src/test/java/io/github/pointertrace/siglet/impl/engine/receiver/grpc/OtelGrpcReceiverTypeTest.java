@@ -5,11 +5,8 @@ import io.github.pointertrace.siglet.impl.config.descriptor.LocatedInetSocketAdd
 import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
-import io.github.pointertrace.siglet.impl.engine.SigletContextImpl;
-import io.github.pointertrace.siglet.impl.engine.event.NoopEventBus;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.parser.*;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +34,7 @@ class OtelGrpcReceiverTypeTest {
         when(config.getQueueSize(any())).thenReturn(1024);
 
         sigletContext = mock(SigletContext.class);
-        when(sigletContext.getEventBus()).thenReturn(new NoopEventBus());
+        when(sigletContext.getInterceptor()).thenReturn(new Interceptors());
         when(sigletContext.getConfig()).thenReturn(config);
 
     }
