@@ -1,6 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 
 import io.github.pointertrace.siglet.api.SigletError;
+import io.github.pointertrace.siglet.impl.adapter.EnqueuedTimeObservable;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
 import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
@@ -9,9 +10,13 @@ import io.github.pointertrace.siglet.impl.engine.component.SignalEmitterFunction
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSource;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceImpl;
+import io.github.pointertrace.siglet.impl.engine.metric.LongGauge;
+import io.github.pointertrace.siglet.impl.engine.metric.otelgrpc.OtelGrpcMetrics;
 import io.github.pointertrace.siglet.impl.engine.receiver.BaseReceiver;
 import io.github.pointertrace.siglet.impl.eventloop.processor.ProcessorEventLoop;
+import io.grpc.Context;
 import io.grpc.Server;
+import io.grpc.ServerInterceptors;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.channel.epoll.Epoll;
 import io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoopGroup;
@@ -35,27 +40,23 @@ public class OtelGrpcReceiver extends BaseReceiver {
 
     private Server server;
 
-    private OtelGrpcTraceService spanService;
-
-    private final ProcessorEventLoop<ExportTraceServiceRequest, List<SpanAdapter>> spanEventLoop;
+    private final ProcessorEventLoop<TraceServiceRequest, List<SpanAdapter>> spanEventLoop;
 
     private SignalEmitterFunction emitterFunction;
 
     private SignalSource signalSource;
 
-
     public OtelGrpcReceiver(SigletContext sigletContext, ReceiverNode receiverNode) {
         super(sigletContext, receiverNode);
         ReceiverDescriptor receiverDescriptor = receiverNode.getDescription();
         if (receiverDescriptor.getConfig() instanceof OtelGrpcReceiverConfig otelGrpcReceiverConfig) {
-            serverBuilder = createServerBuilder(otelGrpcReceiverConfig);
-            spanEventLoop = new ProcessorEventLoop<ExportTraceServiceRequest, List<SpanAdapter>>(this,
+            spanEventLoop = new ProcessorEventLoop<TraceServiceRequest, List<SpanAdapter>>(this,
+                    "unpack-spans",
                     sigletContext.getConfig().getQueueSize(otelGrpcReceiverConfig),
                     sigletContext.getConfig().getThreadPoolSize(otelGrpcReceiverConfig),
-                    sigletContext.getInterceptor(),
-                    () -> (ExportTraceServiceRequest request) -> {
-                        List<SpanAdapter> spanAdapters = new ArrayList<>();
-                        for (ResourceSpans spans : request.getResourceSpansList()) {
+                    () -> (TraceServiceRequest request) -> {
+                        List<SpanAdapter> spanAdapters = new ArrayList<>(1000);
+                        for (ResourceSpans spans : request.getGrpcTraceRequest().getResourceSpansList()) {
                             Resource resource = spans.getResource();
                             for (ScopeSpans scopeSpans : spans.getScopeSpansList()) {
                                 InstrumentationScope instrumentationScope = scopeSpans.getScope();
@@ -65,11 +66,24 @@ public class OtelGrpcReceiver extends BaseReceiver {
                                 }
                             }
                         }
+                        request.getPackageSizeGauge().set(spanAdapters.size());
                         return spanAdapters;
                     },
-                    this::sendSpans);
-            spanService = new OtelGrpcTraceService(spanEventLoop);
-            serverBuilder.addService(spanService);
+                    this::sendSpans,
+                    getInterceptor()
+            );
+            OtelGrpcTraceService spanService = new OtelGrpcTraceService(
+                    getSigletContext().getMetrics().createReceivedSignalsCounter(getName()),
+                    spanEventLoop
+            );
+            serverBuilder = createServerBuilder(otelGrpcReceiverConfig);
+            serverBuilder.addService(
+                    ServerInterceptors.intercept(
+                            spanService,
+                            new GrpcTracePackageMetricsInterceptor(this),
+                            getSigletContext().getMetrics().createGrpcServerMetricsInterceptor(getName())
+                    )
+            );
         } else {
             throw new SigletError("Receiver config is not of type " + OtelGrpcReceiverConfig.class.getName());
         }
@@ -79,6 +93,7 @@ public class OtelGrpcReceiver extends BaseReceiver {
 
         NettyServerBuilder serverBuilder = NettyServerBuilder
                 .forAddress(otelGrpcReceiverConfig.getAddress().getInetSocketAddress());
+
 
         if (Epoll.isAvailable()) {
             serverBuilder = createEpollServerBuilder(serverBuilder);
@@ -149,18 +164,57 @@ public class OtelGrpcReceiver extends BaseReceiver {
     }
 
     protected void sendSpans(List<? extends SpanAdapter> spans) {
+
         for (SpanAdapter span : spans) {
             emitterFunction.emit(span, SignalDestination.ALL);
         }
     }
 
-
     @Override
     public SignalSource getSignalSource() {
         if (signalSource == null) {
-            signalSource = new SignalSourceImpl(this);
+            signalSource = new SignalSourceImpl(this, getSigletContext().getInterceptor());
             this.emitterFunction = signalSource.getSignalEmitterFunction();
         }
         return signalSource;
+    }
+
+    public static final class GrpcContexts {
+
+        private GrpcContexts() {
+        }
+
+        public static final Context.Key<LongGauge> GRPC_PACKAGE_SIZE_GAUGE =
+                Context.key("grpcPackageSizeGauge");
+    }
+
+    public static class TraceServiceRequest implements EnqueuedTimeObservable {
+
+        private final ExportTraceServiceRequest grpcTraceRequest;
+        private final LongGauge packageSizeGauge;
+        private long enqueuedTimeNanos;
+
+        public TraceServiceRequest(ExportTraceServiceRequest grpcTraceRequest, LongGauge packageSizeGauge) {
+            this.grpcTraceRequest = grpcTraceRequest;
+            this.packageSizeGauge = packageSizeGauge;
+        }
+
+        @Override
+        public void markEnqueued() {
+            enqueuedTimeNanos = System.nanoTime();
+        }
+
+        @Override
+        public long getQueuedTimeNanos() {
+            return System.nanoTime() - enqueuedTimeNanos;
+        }
+
+        public ExportTraceServiceRequest getGrpcTraceRequest() {
+            return grpcTraceRequest;
+        }
+
+        public LongGauge getPackageSizeGauge() {
+            return packageSizeGauge;
+        }
     }
 }

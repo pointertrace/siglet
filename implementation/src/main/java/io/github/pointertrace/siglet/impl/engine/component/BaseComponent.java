@@ -39,7 +39,7 @@ public abstract class BaseComponent implements Component {
         state.set(State.STOPPING);
     }
 
-    public Interceptor getEventBus() {
+    public Interceptor getInterceptor() {
         return interceptor;
     }
 

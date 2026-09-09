@@ -9,10 +9,7 @@ import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 public class TimeoutAccumulatorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
@@ -37,8 +34,15 @@ public class TimeoutAccumulatorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT>
 
     private final CountDownLatch startLatch = new CountDownLatch(1);
 
-    public TimeoutAccumulatorEventLoop(Component parent, String name, int queueCapacity, int timeoutInMillis, int maxSize,
-                                       Class<IN> inClass, Function<IN[], OUT> transformerFunction, EmitterFunction<OUT> signalEmitterFunction, Interceptor interceptor) {
+    public TimeoutAccumulatorEventLoop(Component parent,
+                                       String name,
+                                       int queueCapacity,
+                                       int timeoutInMillis,
+                                       int maxSize,
+                                       Class<IN> inClass,
+                                       Function<IN[], OUT> transformerFunction,
+                                       EmitterFunction<OUT> signalEmitterFunction,
+                                       Interceptor interceptor) {
         super(parent, name, signalEmitterFunction, interceptor);
         this.timeoutInMillis = timeoutInMillis;
         this.maxSize = maxSize;

@@ -22,7 +22,7 @@ public class MockSignalDestination implements SignalDestination {
     }
 
     @Override
-    public GraphComponent<?> getGraphComponent() {
+    public GraphComponent<?> getComponent() {
         return null;
     }
 

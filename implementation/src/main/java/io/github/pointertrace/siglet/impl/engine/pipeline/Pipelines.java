@@ -4,10 +4,12 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.graph.PipelineNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -35,6 +37,14 @@ public class Pipelines {
 
     public void forEach(Consumer<Pipeline> pipelineConsumer) {
         pipelineRegistry.values().forEach(pipelineConsumer);
+    }
+
+    public List<Processor> deadEndProcessors() {
+        return pipelineRegistry.values().stream()
+                .flatMap(pipeline -> {
+                    return pipeline.getDeadEndProcessors().stream();
+                })
+                .toList();
     }
 
     public void start() {

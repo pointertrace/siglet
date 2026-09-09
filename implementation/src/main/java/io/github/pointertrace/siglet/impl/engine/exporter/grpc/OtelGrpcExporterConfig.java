@@ -43,7 +43,7 @@ public class OtelGrpcExporterConfig implements QueueSizeDescriptor {
     }
 
     public IntegerValue getQueueSize() {
-        return Objects.requireNonNullElseGet(queueSize, () -> new IntegerValue(BigInteger.valueOf(1000)));
+        return queueSize;
     }
 
     public void setQueueSize(IntegerValue queueSize) {

@@ -2,6 +2,7 @@ package io.github.pointertrace.siglet.impl.engine.component.connection;
 
 import io.github.pointertrace.siglet.impl.engine.component.GraphComponent;
 import io.github.pointertrace.siglet.impl.engine.component.SignalReceiverFunction;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 
 public class SignalDestinationImpl implements SignalDestination {
 
@@ -9,13 +10,14 @@ public class SignalDestinationImpl implements SignalDestination {
 
     private final SignalReceiverFunction signalReceiverFunction;
 
-    public SignalDestinationImpl(GraphComponent<?> graphComponent, SignalReceiverFunction signalReceiverFunction) {
+    public SignalDestinationImpl(GraphComponent<?> graphComponent, SignalReceiverFunction signalReceiverFunction,
+                                Interceptor interceptor) {
         this.graphComponent = graphComponent;
-        this.signalReceiverFunction = signalReceiverFunction;
+        this.signalReceiverFunction = interceptor.componentReceiverFunctionCreation(graphComponent, signalReceiverFunction);
     }
 
     @Override
-    public GraphComponent<?> getGraphComponent() {
+    public GraphComponent<?> getComponent() {
         return graphComponent;
     }
 

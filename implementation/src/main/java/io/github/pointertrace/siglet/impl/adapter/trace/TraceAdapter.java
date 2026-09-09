@@ -2,7 +2,7 @@ package io.github.pointertrace.siglet.impl.adapter.trace;
 
 import io.github.pointertrace.siglet.api.signal.trace.Span;
 import io.github.pointertrace.siglet.api.signal.trace.Trace;
-import io.github.pointertrace.siglet.impl.adapter.BaseSignalAdapter;
+import io.github.pointertrace.siglet.impl.adapter.EnqueuedTimeObservable;
 import io.github.pointertrace.siglet.impl.adapter.ProtoUtil;
 
 import java.util.ArrayList;
@@ -10,11 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-public final class TraceAdapter extends BaseSignalAdapter implements Trace {
+public final class TraceAdapter implements Trace, EnqueuedTimeObservable {
     private final long traceIdHigh;
     private final long traceIdLow;
     private final byte[] traceId;
     private final LinkedHashMap<Long, SpanAdapter> spans;
+
+    private long enqueuedTimeNanos;
 
     public TraceAdapter(long traceIdHigh, long traceIdLow, List<SpanAdapter> initialSpans) {
         this.traceIdHigh = traceIdHigh;
@@ -83,4 +85,13 @@ public final class TraceAdapter extends BaseSignalAdapter implements Trace {
         return spans.get(spanId);
     }
 
+    @Override
+    public void markEnqueued() {
+        enqueuedTimeNanos = System.nanoTime();
+    }
+
+    @Override
+    public long getQueuedTimeNanos() {
+        return System.nanoTime() - enqueuedTimeNanos;
+    }
 }

@@ -45,7 +45,7 @@ class ExporterDescriptorTest {
         assertEquals(Location.of(3, 12), grpcConfig.getAddress().getLocation());
         assertEquals(1000,grpcConfig.getBatchSizeInSignals().getValue().intValue());
         assertEquals(1000,grpcConfig.getBatchTimeoutInMillis().getValue().intValue());
-        assertEquals(1000,grpcConfig.getQueueSize().getValue().intValue());
+        assertNull(grpcConfig.getQueueSize());
     }
 
     @Test

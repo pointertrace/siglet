@@ -3,7 +3,6 @@ package io.github.pointertrace.siglet.impl.eventloop;
 import io.github.pointertrace.siglet.impl.engine.component.BaseComponent;
 import io.github.pointertrace.siglet.impl.engine.component.Component;
 import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
-import org.codehaus.groovy.transform.stc.Receiver;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -12,14 +11,14 @@ public abstract class BaseEventLoop<IN, OUT> extends BaseComponent {
 
     private final Component parent;
 
-    private final String nameSuffix;
+    private final String name;
 
     private final EmitterFunction<OUT> emitterFunction;
 
-    protected BaseEventLoop(Component parent, String nameSuffix, EmitterFunction<OUT> emitterFunction, Interceptor interceptor) {
+    protected BaseEventLoop(Component parent, String name, EmitterFunction<OUT> emitterFunction, Interceptor interceptor) {
         super(interceptor);
         this.parent = parent;
-        this.nameSuffix = nameSuffix;
+        this.name = name;
         this.emitterFunction = emitterFunction;
     }
 
@@ -30,10 +29,7 @@ public abstract class BaseEventLoop<IN, OUT> extends BaseComponent {
     }
 
     public String getName() {
-        return Stream.of(parent.getName(), nameSuffix, "event-loop")
-                .filter(Objects::nonNull)
-                .filter(s -> !s.isEmpty())
-                .reduce((a, b) -> a + "-" + b).orElse("");
+        return name;
     }
 
     public Component getParentComponent() {

@@ -52,6 +52,38 @@ class ExporterOrphanValidatorTest {
     }
 
     @Test
+    void validate_internalMetricsExporter() {
+
+        String yaml = """
+                global:
+                  internal-metrics-grpc-exporter: orphan-exporter
+                receivers:
+                - debug: receiver
+                exporters:
+                - debug: exporter
+                - grpc: orphan-exporter
+                  config:
+                    address: localhost:4317
+                pipelines:
+                - name: pipeline
+                  from: receiver
+                  start: spanlet
+                  processors:
+                  - spanlet-groovy-action: spanlet
+                    to: exporter
+                    config:
+                      action: signal.name = signal.name +"-suffix"
+                """;
+
+        YamlDescriptor yamlDescriptor = YamlDescriptor.parse(yaml);
+
+         exporterOrphanValidator.validate(yamlDescriptor);
+
+    }
+
+
+
+    @Test
     void validate() {
 
         String yaml = """

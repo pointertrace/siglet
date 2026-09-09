@@ -1,6 +1,8 @@
 package io.github.pointertrace.siglet.impl.engine.interceptor;
 
 import io.github.pointertrace.siglet.impl.engine.component.Component;
+import io.github.pointertrace.siglet.impl.engine.component.GraphComponent;
+import io.github.pointertrace.siglet.impl.engine.component.SignalReceiverFunction;
 import io.github.pointertrace.siglet.impl.eventloop.BaseEventLoop;
 import io.github.pointertrace.siglet.impl.eventloop.EmitterFunction;
 
@@ -11,7 +13,7 @@ import java.util.function.Function;
 
 public class Interceptors implements Interceptor {
 
-    private List<Interceptor> interceptors = new ArrayList<>();
+    private final List<Interceptor> interceptors = new ArrayList<>();
 
 
     public void addInterceptor(Interceptor interceptor) {
@@ -50,6 +52,33 @@ public class Interceptors implements Interceptor {
         Function<IN, OUT> current = processFunction;
         for (Interceptor interceptor : interceptors) {
             current = interceptor.eventLoopProcessFunctionCreation(eventLoop, current);
+        }
+        return current;
+    }
+
+    @Override
+    public SignalReceiverFunction componentReceiverFunctionCreation(Component component, SignalReceiverFunction signalReceiverFunction) {
+        SignalReceiverFunction current = signalReceiverFunction;
+        for (Interceptor interceptor : interceptors) {
+            current = interceptor.componentReceiverFunctionCreation(component, current);
+        }
+        return current;
+    }
+
+    @Override
+    public SignalReceiverFunction componentEmitterFunctionCreation(Component source, Component destination, SignalReceiverFunction signalReceiverFunction) {
+        SignalReceiverFunction current = signalReceiverFunction;
+        for (Interceptor interceptor : interceptors) {
+            current = interceptor.componentEmitterFunctionCreation(source, destination, current);
+        }
+        return current;
+    }
+
+    @Override
+    public SignalReceiverFunction componentEmitterDropFunctionCreation(Component source) {
+        SignalReceiverFunction current = (signal) -> true;
+        for (Interceptor interceptor : interceptors) {
+            current = interceptor.componentEmitterDropFunctionCreation(source);
         }
         return current;
     }

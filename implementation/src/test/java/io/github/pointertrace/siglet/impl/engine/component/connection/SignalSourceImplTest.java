@@ -1,6 +1,8 @@
 package io.github.pointertrace.siglet.impl.engine.component.connection;
 
 import io.github.pointertrace.siglet.impl.engine.component.GraphComponent;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
+import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,43 +20,37 @@ class SignalSourceImplTest {
 
     private final String secondSignal = "secondSignal";
 
-    private GraphComponent<?> firstDestinationGraphComponent;
-
-    private GraphComponent<?> secondDestinationGraphComponent;
-
     private SignalSourceImpl signalSourceImpl;
-
-    private SignalDestinationImpl firstDestination;
-
-    private SignalDestinationImpl secondDestination;
 
     private List<String> firstDestinationSignals;
 
     private List<String> secondDestinationSignals;
 
+    private final Interceptor interceptor = new Interceptors();
+
     @BeforeEach
     void setUp() {
-        firstDestinationGraphComponent = mock(GraphComponent.class);
+        GraphComponent<?> firstDestinationGraphComponent = mock(GraphComponent.class);
         when(firstDestinationGraphComponent.getName()).thenReturn("first-destination");
 
-        secondDestinationGraphComponent = mock(GraphComponent.class);
+        GraphComponent<?> secondDestinationGraphComponent = mock(GraphComponent.class);
         when(secondDestinationGraphComponent.getName()).thenReturn("second-destination");
 
         firstDestinationSignals = new ArrayList<>();
 
         secondDestinationSignals = new ArrayList<>();
 
-        firstDestination = new SignalDestinationImpl(firstDestinationGraphComponent, (signal) -> {
+        SignalDestination firstDestination = new SignalDestinationImpl(firstDestinationGraphComponent, (signal) -> {
             firstDestinationSignals.add((String) signal);
             return true;
-        });
+        }, interceptor);
 
-        secondDestination = new SignalDestinationImpl(secondDestinationGraphComponent, (signal) -> {
+        SignalDestination secondDestination = new SignalDestinationImpl(secondDestinationGraphComponent, (signal) -> {
             secondDestinationSignals.add((String) signal);
             return true;
-        });
+        }, interceptor);
 
-        signalSourceImpl = new SignalSourceImpl(firstDestinationGraphComponent);
+        signalSourceImpl = new SignalSourceImpl(firstDestinationGraphComponent, interceptor);
 
         signalSourceImpl.connect(firstDestination);
         signalSourceImpl.connect(secondDestination);

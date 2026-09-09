@@ -170,7 +170,7 @@ class SendExpressionGroovyTest {
         assertEquals("new span name", actual.getName());
 
         assertEquals(2, metricDestination.size());
-        // fazer um teste sem ordem ---- getFirst é estranho!!!!
+        // fazer um teste sem ordem ---- getFirst e estranho!!!!
         MetricAdapter gauge = assertInstanceOf(MetricAdapter.class, metricDestination.getFirst());
         assertNotNull(gauge);
 

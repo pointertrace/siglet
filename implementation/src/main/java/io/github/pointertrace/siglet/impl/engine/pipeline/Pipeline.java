@@ -4,7 +4,10 @@ import io.github.pointertrace.siglet.impl.config.graph.PipelineNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.component.BaseGraphComponent;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
+import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processors;
+
+import java.util.List;
 
 public class Pipeline extends BaseGraphComponent<PipelineNode> {
 
@@ -16,6 +19,12 @@ public class Pipeline extends BaseGraphComponent<PipelineNode> {
 
     public Processors getProcessors() {
         return processors;
+    }
+
+    public List<Processor> getDeadEndProcessors() {
+        return processors.getProcessors().stream()
+                .filter(processor -> processor.getNode().getTo().isEmpty())
+                .toList();
     }
 
     public SignalDestinationProvider getDestination(String name) {

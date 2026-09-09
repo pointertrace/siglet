@@ -7,6 +7,7 @@ import io.github.pointertrace.siglet.impl.engine.exporter.ExporterType;
 import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
+import io.github.pointertrace.siglet.impl.engine.metric.Metrics;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.ProcessorType;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.siglet.ResultFactoryImpl;
@@ -22,6 +23,8 @@ public class SigletContextImpl implements SigletContext {
     private final GraphFactory graphFactory = new GraphFactory();
 
     private final Interceptors interceptors = new Interceptors();
+
+    private Metrics metrics;
 
     public SigletContextImpl(Config config) {
         this.config = config;
@@ -70,6 +73,15 @@ public class SigletContextImpl implements SigletContext {
     @Override
     public Interceptor getInterceptor() {
         return interceptors;
+    }
+
+    @Override
+    public Metrics getMetrics() {
+        return metrics;
+    }
+
+    protected void setMetrics(Metrics metrics) {
+        this.metrics = metrics;
     }
 
     @Override

@@ -6,15 +6,17 @@ import io.github.pointertrace.siglet.impl.config.graph.ExporterNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestination;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationImpl;
-import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
 import io.github.pointertrace.siglet.impl.engine.exporter.BaseExporter;
-import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.SpanAccumulator;
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.AccumulatedMetrics;
-import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.AccumulatedSpans;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.span.SpanAccumulator;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.metric.AccumulatedMetrics;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.span.AccumulatedSpans;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.metric.MetricAccumulator;
 import io.github.pointertrace.siglet.impl.eventloop.ReceiveFunction;
 import io.github.pointertrace.siglet.impl.eventloop.accumulator.TimeoutAccumulatorEventLoop;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.opentelemetry.proto.collector.metrics.v1.MetricsServiceGrpc;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
+import io.opentelemetry.sdk.metrics.data.MetricData;
 
 import java.net.InetSocketAddress;
 
@@ -22,7 +24,7 @@ public class OtelGrpcExporter extends BaseExporter {
 
     private TimeoutAccumulatorEventLoop<Object, AccumulatedSpans> spanAccumulator;
 
-    private OtelGrpcSpanDestination otelGrpcSpanDestination;
+    private TimeoutAccumulatorEventLoop<Object, AccumulatedMetrics> metricAccumulator;
 
     private final int queueSize;
 
@@ -30,7 +32,9 @@ public class OtelGrpcExporter extends BaseExporter {
 
     private final int batchTimeoutInMillis;
 
-    private ReceiveFunction<Object> eventLoopReceiver;
+    private ReceiveFunction<Object> spanEventLoopReceiverFunction;
+
+    private ReceiveFunction<Object> metricEventLoopReceiverFunction;
 
     public OtelGrpcExporter(SigletContext sigletContext, ExporterNode node) {
         super(sigletContext, node);
@@ -44,10 +48,10 @@ public class OtelGrpcExporter extends BaseExporter {
     }
 
 
-    private  boolean send(Object signal) {
+    public boolean receive(Object signal) {
         switch (signal) {
-            case SpanAdapter spanAdapter -> eventLoopReceiver.receive(spanAdapter);
-//            case MetricAdapter metricAdapter -> metricAccumulator.receive(metricAdapter);
+            case SpanAdapter spanAdapter -> spanEventLoopReceiverFunction.receive(spanAdapter);
+            case MetricData metricData -> metricEventLoopReceiverFunction.receive(metricData);
             default -> throw new SigletError(String.format("Can only export signals of types %s or %s and not %s.",
                     AccumulatedSpans.class.getName(), AccumulatedMetrics.class.getName(),
                     signal.getClass().getName()));
@@ -60,34 +64,69 @@ public class OtelGrpcExporter extends BaseExporter {
     public void doStart() {
         InetSocketAddress address = getConfig().getAddress().getInetSocketAddress();
 
-        otelGrpcSpanDestination = new OtelGrpcSpanDestination(
+        OtelGrpcSpanDestination otelGrpcSpanDestination = new OtelGrpcSpanDestination(
+                this,
                 TraceServiceGrpc.newStub(
                         NettyChannelBuilder
                                 .forAddress(
                                         address.getHostString(),
-                                        address.getPort())
+                                        address.getPort()
+                                )
+                                .intercept(getSigletContext().getMetrics().createGrpcClientMetricsInterceptor(getName()))
                                 .usePlaintext()
-                                .build())
+                                .build()
+                )
         );
 
         spanAccumulator = new TimeoutAccumulatorEventLoop<>(
                 this,
-                "span-accumulator",
+                "pack-spans",
                 queueSize,
                 batchSizeInSignals,
                 batchTimeoutInMillis,
                 Object.class,
                 span -> SpanAccumulator.accumulateSpans(span),
                 otelGrpcSpanDestination::send,
-                new Interceptors()
+                getInterceptor()
         );
-        eventLoopReceiver = spanAccumulator.getReceiver();
+        spanEventLoopReceiverFunction = spanAccumulator.getReceiver();
+
+
+        OtelGrpcMetricDestination otelGrpcMetricDestination = new OtelGrpcMetricDestination(
+                this,
+                MetricsServiceGrpc.newStub(
+                        NettyChannelBuilder
+                                .forAddress(
+                                        address.getHostString(),
+                                        address.getPort()
+                                )
+                                .intercept(getSigletContext().getMetrics().createGrpcClientMetricsInterceptor(getName()))
+                                .usePlaintext()
+                                .build()
+                )
+        );
+
+        metricAccumulator = new TimeoutAccumulatorEventLoop<>(
+                this,
+                "pack-metrics",
+                queueSize,
+                batchSizeInSignals,
+                batchTimeoutInMillis,
+                Object.class,
+                metric -> MetricAccumulator.accumulateMetrics(metric),
+                otelGrpcMetricDestination::send,
+                getInterceptor()
+        );
+        metricEventLoopReceiverFunction = metricAccumulator.getReceiver();
+
         spanAccumulator.start();
+        metricAccumulator.start();
     }
 
     @Override
     public void doStop() {
         spanAccumulator.stop();
+        metricAccumulator.stop();
     }
 
     public OtelGrpcExporterConfig getConfig() {
@@ -96,6 +135,6 @@ public class OtelGrpcExporter extends BaseExporter {
 
     @Override
     public SignalDestination getSignalDestination() {
-        return new SignalDestinationImpl(this, this::send);
+        return new SignalDestinationImpl(this, this::receive, getSigletContext().getInterceptor());
     }
 }

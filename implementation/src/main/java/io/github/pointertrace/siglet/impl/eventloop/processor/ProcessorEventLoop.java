@@ -38,12 +38,13 @@ public class ProcessorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
     private final Supplier<Function<IN, OUT>> processFunctionFactory;
 
     public ProcessorEventLoop(Component parent,
+                              String name,
                               int queueSize,
                               int threadPoolSize,
-                              Interceptor interceptor,
                               Supplier<Function<IN, OUT>> processFunctionFactory,
-                              EmitterFunction<OUT> signalEmitterFunction) {
-        super(parent, "processor-event-loop", signalEmitterFunction, interceptor);
+                              EmitterFunction<OUT> signalEmitterFunction,
+                              Interceptor interceptor) {
+        super(parent, name, signalEmitterFunction, interceptor);
         this.threadPoolSize = threadPoolSize;
         this.threads = new ArrayList<>(threadPoolSize);
         this.queue = interceptor.eventLoopQueueCreation(this, new ArrayBlockingQueue<>(queueSize));
@@ -86,7 +87,7 @@ public class ProcessorEventLoop<IN, OUT> extends BaseEventLoop<IN, OUT> {
         LOGGER.trace("virtual thread started for event loop {}", getName());
 
         Function<IN, OUT> processFunction =
-                getEventBus().eventLoopProcessFunctionCreation(this, processFunctionFactory.get());
+                getInterceptor().eventLoopProcessFunctionCreation(this, processFunctionFactory.get());
 
         LOGGER.trace("processor created for event loop {}", getName());
 

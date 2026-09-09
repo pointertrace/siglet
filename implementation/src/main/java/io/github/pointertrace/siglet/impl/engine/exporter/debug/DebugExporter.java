@@ -21,7 +21,7 @@ public class DebugExporter extends BaseExporter {
         super(sigletContext, node);
 
         DebugExporters.INSTANCE.addExporter(node.getName());
-        signalDestination = new SignalDestinationImpl(this, this::receive);
+        signalDestination = new SignalDestinationImpl(this, this::receive, getSigletContext().getInterceptor());
     }
 
     @Override

@@ -8,7 +8,9 @@ import io.github.pointertrace.siglet.impl.adapter.*;
 import java.util.Arrays;
 import java.util.Objects;
 
-public final class SpanAdapter extends BaseSignalAdapter implements Span {
+
+public final class SpanAdapter implements Span, EnqueuedTimeObservable {
+
     private final io.opentelemetry.proto.trace.v1.Span original;
     private io.opentelemetry.proto.trace.v1.Span.Builder builder;
     private final io.opentelemetry.proto.resource.v1.Resource resource;
@@ -19,6 +21,8 @@ public final class SpanAdapter extends BaseSignalAdapter implements Span {
     private AttributesAdapter attributesAdapter;
     private LinksAdapter linksAdapter;
     private EventsAdapter eventsAdapter;
+
+    private long enqueuedTimeNanos;
 
     public SpanAdapter(io.opentelemetry.proto.trace.v1.Span span,
                        io.opentelemetry.proto.resource.v1.Resource resource,
@@ -297,5 +301,15 @@ public final class SpanAdapter extends BaseSignalAdapter implements Span {
     public SpanAdapter setDroppedLinksCount(int droppedLinksCount) {
         mutate().setDroppedLinksCount(droppedLinksCount);
         return this;
+    }
+
+    @Override
+    public void markEnqueued() {
+        enqueuedTimeNanos = System.nanoTime();
+    }
+
+    @Override
+    public long getQueuedTimeNanos() {
+        return Math.max(0, System.nanoTime() - enqueuedTimeNanos);
     }
 }

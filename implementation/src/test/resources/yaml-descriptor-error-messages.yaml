@@ -65,7 +65,7 @@ cenarios:
         Error in global configuration:
           Expecting object at (2,3):
             Invalid queue size at (2,3)
-              (2,15) Queue size must be a integer
+              (2,15) Queue size must be an integer
 
 
   global-config-thread-pool-size-not-int:
@@ -88,13 +88,13 @@ cenarios:
         Error in global configuration:
           Expecting object at (2,3):
             Invalid thread pool size at (2,3)
-              (2,21) Thread pool size must be a integer
+              (2,21) Thread pool size must be an integer
 
 
-  global-config-internal-metrics-endpoint-url-not-string:
+  global-config-internal-metrics-grpc-exporter-not-string:
     siglet-config-yaml:
       global:
-        internal-metrics-endpoint-url: 1
+        internal-metrics-grpc-exporter: 1
       receivers:
         - debug: receiver
       pipelines:
@@ -110,14 +110,13 @@ cenarios:
       Error in configuration:
         Error in global configuration:
           Expecting object at (2,3):
-            Invalid internal metrics endpoint url at (2,3)
-              (2,34) Internal metrics endpoint url must be a string
+            Invalid internal metrics grpc exporter at (2,3)
+              (2,35) Internal metrics grpc exporter must be a string
 
-
-  global-config-internal-metrics-endpoint-url-not-valid-url:
+  global-config-internal-metrics-exporter-interval-millis-not-integer:
     siglet-config-yaml:
       global:
-        internal-metrics-endpoint-url: not-a-url
+        internal-metrics-export-interval-millis: value
       receivers:
         - debug: receiver
       pipelines:
@@ -130,7 +129,11 @@ cenarios:
               config:
                 action: signal.name = signal.name +"-suffix"
     error-message: |
-      (2,34) must be a valid URL format
+      Error in configuration:
+        Error in global configuration:
+          Expecting object at (2,3):
+            Invalid internal metrics export interval in millis at (2,3)
+              (2,44) Internal metrics export interval in millis must be an integer
 
   global-config-internal-metrics-export-interval-not-int:
     siglet-config-yaml:
@@ -151,8 +154,8 @@ cenarios:
       Error in configuration:
         Error in global configuration:
           Expecting object at (2,3):
-            Invalid internal metrics export interval at (2,3)
-              (2,44) Internal metrics export interval must be a integer
+            Invalid internal metrics export interval in millis at (2,3)
+              (2,44) Internal metrics export interval in millis must be an integer
 
 
 
@@ -472,7 +475,7 @@ cenarios:
                 Expecting property 'config' at (5,3):
                   Expecting object at (6,5):
                     Invalid batch size at (7,5):
-                      (7,28) Batch size must be a integer
+                      (7,28) Batch size must be an integer
 
   exporter-config-batch-timeout-not-int:
     siglet-config-yaml:
@@ -501,7 +504,7 @@ cenarios:
                 Expecting property 'config' at (5,3):
                   Expecting object at (6,5):
                     Invalid batch timeout at (7,5):
-                      (7,30) Batch timeout must be a integer
+                      (7,30) Batch timeout must be an integer
 
   exporter-config-queue-size-not-int:
     siglet-config-yaml:
@@ -530,7 +533,7 @@ cenarios:
                 Expecting property 'config' at (5,3):
                   Expecting object at (6,5):
                     Invalid queue size at (7,5):
-                      (7,17) Queue size must be a integer
+                      (7,17) Queue size must be an integer
 
   no-pipelines:
     siglet-config-yaml:
@@ -760,7 +763,7 @@ cenarios:
                     Error in processor at (10,5):
                       Expecting object at (10,5):
                         Invalid queue-size property at (11,5):
-                          (11,17) Queue size must be a integer
+                          (11,17) Queue size must be an integer
 
   processors-thread-pool-size-not-int:
     siglet-config-yaml:
@@ -788,7 +791,7 @@ cenarios:
                     Error in processor at (10,5):
                       Expecting object at (10,5):
                         Invalid thread-pool-size property at (11,5):
-                          (11,23) Thread pool size must be a integer
+                          (11,23) Thread pool size must be an integer
 
   processors-destination:
     siglet-config-yaml:

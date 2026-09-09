@@ -4,21 +4,25 @@ import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.config.graph.*;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalDestinationProvider;
 import io.github.pointertrace.siglet.impl.engine.component.connection.SignalSourceProvider;
+import io.github.pointertrace.siglet.impl.engine.component.connection.drop.DropSignalDestinationProvider;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporters;
 import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
+import io.github.pointertrace.siglet.impl.engine.metric.Metrics;
+import io.github.pointertrace.siglet.impl.engine.metric.noop.NoopMetrics;
+import io.github.pointertrace.siglet.impl.engine.metric.otelgrpc.OtelGrpcMetrics;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipeline;
 import io.github.pointertrace.siglet.impl.engine.pipeline.Pipelines;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receivers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-
 public class SigletEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigletEngine.class);
 
     private State state = State.CREATED;
+
+    private Metrics metrics;
 
     private final Receivers receivers = new Receivers();
 
@@ -30,15 +34,11 @@ public class SigletEngine {
 
         Graph graph = sigletContext.getGraph();
 
-        URL endpointUrl = sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsEndpointUrl() != null ?
-                sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsEndpointUrl().getUrl() : null;
+        String metricsGrpcExporter = sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsGrpcExporter() != null ?
+                sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsGrpcExporter().getValue() : null;
 
         long exportInterval = sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsExportIntervalMillis() != null ?
                 sigletContext.getConfig().getYamlDescriptor().getGlobalConfig().getInternalMetricsExportIntervalMillis().getValue().longValue() : 0;
-
-        if (endpointUrl != null && exportInterval > 0) {
-            sigletContext.addInterceptor(new MetricInterceptor(exportInterval, endpointUrl));
-        }
 
         // TODO move to a factory
         graph.getNodeRegistry().stream()
@@ -46,6 +46,13 @@ public class SigletEngine {
                 .map(ExporterNode.class::cast)
                 .forEach(exporterNode -> exporters.create(sigletContext, exporterNode));
 
+        if (metricsGrpcExporter != null && exportInterval > 0) {
+            metrics = new OtelGrpcMetrics(exportInterval, exporters.getExporter(metricsGrpcExporter));
+            sigletContext.addInterceptor(new MetricInterceptor(metrics));
+        } else {
+            metrics = new NoopMetrics();
+        }
+        ((SigletContextImpl) sigletContext).setMetrics(metrics);
 
         graph.getNodeRegistry().stream()
                 .filter(PipelineNode.class::isInstance)
@@ -68,10 +75,9 @@ public class SigletEngine {
                 .filter(ReceiverNode.class::isInstance)
                 .map(ReceiverNode.class::cast)
                 .forEach(receiverNode -> receivers.create(sigletContext, receiverNode));
-        connect();
+        connect(sigletContext);
 
     }
-
 
 
     private SignalDestinationProvider getSignalDestinationProvider(String name) {
@@ -85,7 +91,7 @@ public class SigletEngine {
         return result;
     }
 
-    private void connect() {
+    private void connect(SigletContext sigletContext) {
         receivers.forEach(receiver ->
                 receiver.getNode().getTo().stream()
                         .flatMap(pipelineNode -> pipelineNode.getStart().stream())
@@ -98,11 +104,15 @@ public class SigletEngine {
                                 .forEach(node -> connect(processor, getSignalDestinationProvider(node.getName()))))
         );
 
+        pipelines.forEach(pipeline ->
+                pipeline.getDeadEndProcessors().forEach(processor ->
+                        connect(processor, new DropSignalDestinationProvider(sigletContext)))
+        );
+
     }
 
     private void connect(SignalSourceProvider signalSourceProvider, SignalDestinationProvider signalDestinationProvider) {
         signalSourceProvider.getSignalSource().connect(signalDestinationProvider.getSignalDestination());
-
     }
 
 
@@ -111,6 +121,7 @@ public class SigletEngine {
         exporters.start();
         pipelines.start();
         receivers.start();
+        metrics.start();
         state = State.RUNNING;
     }
 

@@ -21,7 +21,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <log4j2-version>2.21.1</log4j2-version>
         <grpc.version>1.75.0</grpc.version>
-        <otel.version>1.28.0</otel.version>
+        <otel.version>1.65.0</otel.version>
+        <otel-instrumentation.version>2.31.1-alpha</otel-instrumentation.version>
     </properties>
 
     <scm>
@@ -71,17 +72,12 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>4.31.1</version>
+            <version>4.35.1</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>1.7.0-alpha</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-api</artifactId>
-            <version>${otel.version}</version>
+            <version>1.11.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -139,19 +135,20 @@
 
 
         <!-- Micrometer -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-observation</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.micrometer</groupId>-->
+<!--            <artifactId>micrometer-core</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>io.micrometer</groupId>-->
+<!--            <artifactId>micrometer-observation</artifactId>-->
+<!--        </dependency>-->
         <!-- Bridge Micrometer → OpenTelemetry -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-otlp</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.micrometer</groupId>-->
+<!--            <artifactId>micrometer-registry-otlp</artifactId>-->
+<!--        </dependency>-->
+
 
         <!-- OpenTelemetry SDK -->
         <dependency>
@@ -160,13 +157,32 @@
             <version>${otel.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>${otel.version}</version>
+        </dependency>
         <!-- Exporter para console -->
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-logging</artifactId>
             <version>${otel.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>${otel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-runtime-telemetry</artifactId>
+            <version>${otel-instrumentation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-grpc-1.6</artifactId>
+            <version>${otel-instrumentation.version}</version>
+        </dependency>
         <!-- tests -->
         <dependency>
             <groupId>org.mockito</groupId>

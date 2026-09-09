@@ -81,6 +81,7 @@ public class AdapterUtils {
                 yield result;
             }
             case BYTES_VALUE -> anyValue.getBytesValue().toByteArray();
+            case STRING_VALUE_STRINDEX -> null;
             case VALUE_NOT_SET -> null;
         };
     }

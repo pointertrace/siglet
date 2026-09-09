@@ -1,7 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.pipeline.accumulator;
 
 import io.github.pointertrace.siglet.impl.adapter.AdapterUtils;
-import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.SpansAccumulator;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.span.SpansAccumulator;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;

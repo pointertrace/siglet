@@ -171,6 +171,11 @@ public class ProcessorEventLoopOld<C> extends BaseComponent implements SignalSou
 
 
     @Override
+    public GraphComponent<?> getComponent() {
+        return null;
+    }
+
+    @Override
     public GraphComponent<?> getGraphComponent() {
         return null;
     }

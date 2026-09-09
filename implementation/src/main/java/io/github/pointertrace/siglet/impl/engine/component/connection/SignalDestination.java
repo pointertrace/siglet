@@ -17,15 +17,15 @@ public interface SignalDestination {
         return DROP.equals(destination);
     }
 
-    GraphComponent<?> getGraphComponent();
+    GraphComponent<?> getComponent();
 
     SignalReceiverFunction getSignalReceiverFunction();
 
     default boolean is(String destination) {
-        return getGraphComponent().getName().equals(destination);
+        return getComponent().getName().equals(destination);
     }
 
     default String getName() {
-        return getGraphComponent().getName();
+        return getComponent().getName();
     }
 }

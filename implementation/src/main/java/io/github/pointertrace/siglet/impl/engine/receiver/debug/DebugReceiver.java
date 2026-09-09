@@ -31,7 +31,7 @@ public class DebugReceiver extends BaseReceiver {
 
     @Override
     public SignalSource getSignalSource() {
-        SignalSource signalSource = new SignalSourceImpl(this);
+        SignalSource signalSource = new SignalSourceImpl(this, getSigletContext().getInterceptor());
         this.signalEmitter = signalSource.getSignalEmitterFunction();
         return signalSource;
     }

@@ -1,6 +1,6 @@
 package io.github.pointertrace.siglet.impl.eventloop.accumulator;
 
-import io.github.pointertrace.siglet.impl.engine.pipeline.accumulator.MetricsAccumulator;
+import io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.metric.MetricsAccumulator;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
 import io.opentelemetry.proto.metrics.v1.Metric;

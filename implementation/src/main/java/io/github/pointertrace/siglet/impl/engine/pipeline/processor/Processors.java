@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -33,6 +34,10 @@ public class Processors {
     public void stop() {
         processorRegistry.values().forEach(Processor::stop);
 
+    }
+
+    public List<Processor> getProcessors() {
+        return List.copyOf(processorRegistry.values());
     }
 
     public void forEach(Consumer<Processor> processorConsumer) {

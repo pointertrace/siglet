@@ -1,9 +1,7 @@
 package io.github.pointertrace.siglet.impl.engine.metric;
 
 
-import io.github.pointertrace.siglet.impl.BaseSignal;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Timer;
+import io.github.pointertrace.siglet.impl.adapter.EnqueuedTimeObservable;
 
 import java.util.AbstractQueue;
 import java.util.ArrayList;
@@ -13,7 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 public class MeteredBlockingQueue<E>
         extends AbstractQueue<E>
@@ -21,52 +20,101 @@ public class MeteredBlockingQueue<E>
 
     private final BlockingQueue<E> delegate;
 
-    private final Timer queueWaitTimer;
+    private final LongTimer queueWaitLongTimer;
 
-    private final Counter received;
+    private final LongCounter received;
 
-    private final Counter accepted;
+    private final LongCounter accepted;
 
-    private final Counter missed;
+    private final LongCounter missed;
 
-    private final Counter dropped;
+    private final LongAdder successfulEnqueues = new LongAdder();
+
+    private final LongAdder successfulDequeues = new LongAdder();
+
     /**
      * Maximum queue size observed since the last metric collection.
      * Reset to current size after each scrape to track the next collection period.
      */
-    private final AtomicInteger maxSizeSinceLastCollection =
-            new AtomicInteger();
+    private final AtomicLong maxSizeSinceLastCollection =
+            new AtomicLong();
 
 
-    public MeteredBlockingQueue(BlockingQueue<E> delegate, Timer queueWaitTimer, Counter received, Counter accepted,
-                                Counter missed, Counter dropped) {
+    public MeteredBlockingQueue(BlockingQueue<E> delegate, LongTimer queueWaitLongTimer, LongCounter received, LongCounter accepted,
+                                LongCounter missed) {
 
         this.delegate = Objects.requireNonNull(delegate);
-        this.queueWaitTimer = Objects.requireNonNull(queueWaitTimer);
+        this.queueWaitLongTimer = Objects.requireNonNull(queueWaitLongTimer);
         this.received = received;
         this.accepted = accepted;
         this.missed = missed;
-        this.dropped = dropped;
+
+        int initialSize = delegate.size();
+        successfulEnqueues.add(initialSize);
+        maxSizeSinceLastCollection.set(initialSize);
     }
 
-    public double getAndResetMaxSize() {
-        return maxSizeSinceLastCollection.getAndSet(0);
+    public int getAndResetMaxSize() {
+        long currentSize = currentSize();
+        long observedMax = maxSizeSinceLastCollection.getAndSet(currentSize);
+        return clampSizeToInt(observedMax);
     }
 
-    private void updateMax() {
-        int size = delegate.size();
-        maxSizeSinceLastCollection.accumulateAndGet(size, Math::max);
+    private int clampSizeToInt(long size) {
+        if (size <= 0) {
+            return 0;
+        }
+        if (size >= Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int) size;
+    }
+
+    private long currentSize() {
+        long current = successfulEnqueues.sum() - successfulDequeues.sum();
+        return Math.max(0L, current);
+    }
+
+    private void updateMax(long candidateSize) {
+        long previous = maxSizeSinceLastCollection.get();
+        while (candidateSize > previous && !maxSizeSinceLastCollection.compareAndSet(previous, candidateSize)) {
+            previous = maxSizeSinceLastCollection.get();
+        }
+    }
+
+    private void onEnqueueSuccess(int addedCount) {
+        if (addedCount <= 0) {
+            return;
+        }
+        successfulEnqueues.add(addedCount);
+        updateMax(currentSize());
+    }
+
+    private void onDequeueSuccess(int removedCount) {
+        if (removedCount <= 0) {
+            return;
+        }
+        successfulDequeues.add(removedCount);
+        updateMaxOnDequeue();
+    }
+
+    private void updateMaxOnDequeue() {
+        long currentSize = currentSize();
+        long previous = maxSizeSinceLastCollection.get();
+        if (currentSize < previous) {
+            maxSizeSinceLastCollection.compareAndSet(previous, currentSize);
+        }
     }
 
     private void markEnqueuedIfBaseSignal(Object element) {
-        if (element instanceof BaseSignal baseSignal) {
-            baseSignal.markEnqueued();
+        if (element instanceof EnqueuedTimeObservable enqueuedTimeObservable) {
+            enqueuedTimeObservable.markEnqueued();
         }
     }
 
     private void recordQueueWaitIfBaseSignal(Object element) {
-        if (element instanceof BaseSignal baseSignal) {
-            queueWaitTimer.record(baseSignal.getQueuedTimeNanos(), TimeUnit.NANOSECONDS);
+        if (element instanceof EnqueuedTimeObservable enqueuedTimeObservable) {
+            queueWaitLongTimer.record(enqueuedTimeObservable.getQueuedTimeNanos(), TimeUnit.NANOSECONDS);
         }
     }
 
@@ -77,10 +125,10 @@ public class MeteredBlockingQueue<E>
 
         if (result) {
             markEnqueuedIfBaseSignal(e);
-            updateMax();
+            onEnqueueSuccess(1);
             accepted.increment();
         } else {
-            dropped.increment();
+            missed.increment();
         }
 
         return result;
@@ -89,6 +137,9 @@ public class MeteredBlockingQueue<E>
     @Override
     public E poll() {
         E result = delegate.poll();
+        if (result != null) {
+            onDequeueSuccess(1);
+        }
         recordQueueWaitIfBaseSignal(result);
         return result;
     }
@@ -113,7 +164,7 @@ public class MeteredBlockingQueue<E>
         received.increment();
         delegate.put(e);
         markEnqueuedIfBaseSignal(e);
-        updateMax();
+        onEnqueueSuccess(1);
         accepted.increment();
     }
 
@@ -129,8 +180,8 @@ public class MeteredBlockingQueue<E>
                 delegate.offer(e, timeout, unit);
 
         if (result) {
-            updateMax();
             markEnqueuedIfBaseSignal(e);
+            onEnqueueSuccess(1);
             accepted.increment();
         } else {
             missed.increment();
@@ -142,6 +193,7 @@ public class MeteredBlockingQueue<E>
     @Override
     public E take() throws InterruptedException {
         E result = delegate.take();
+        onDequeueSuccess(1);
         recordQueueWaitIfBaseSignal(result);
         return result;
     }
@@ -152,6 +204,9 @@ public class MeteredBlockingQueue<E>
             throws InterruptedException {
 
         E result = delegate.poll(timeout, unit);
+        if (result != null) {
+            onDequeueSuccess(1);
+        }
         recordQueueWaitIfBaseSignal(result);
         return result;
     }
@@ -181,6 +236,9 @@ public class MeteredBlockingQueue<E>
 
         List<E> drained = new ArrayList<>();
         int drainedCount = delegate.drainTo(drained, maxElements);
+        if (drainedCount > 0) {
+            onDequeueSuccess(drainedCount);
+        }
         for (E element : drained) {
             recordQueueWaitIfBaseSignal(element);
             c.add(element);
@@ -194,11 +252,11 @@ public class MeteredBlockingQueue<E>
         boolean result = delegate.add(e);
 
         if (result) {
-            updateMax();
             markEnqueuedIfBaseSignal(e);
+            onEnqueueSuccess(1);
             accepted.increment();
         } else {
-            dropped.increment();
+            missed.increment();
         }
 
         return result;
@@ -213,8 +271,9 @@ public class MeteredBlockingQueue<E>
             for (E element : c) {
                 markEnqueuedIfBaseSignal(element);
             }
-            updateMax();
-            accepted.increment(c.size());
+            int addedCount = c.size();
+            onEnqueueSuccess(addedCount);
+            accepted.increment(addedCount);
         } else {
             missed.increment(c.size());
         }
@@ -226,6 +285,7 @@ public class MeteredBlockingQueue<E>
     public boolean remove(Object o) {
         boolean removed = delegate.remove(o);
         if (removed) {
+            onDequeueSuccess(1);
             recordQueueWaitIfBaseSignal(o);
         }
         return removed;
@@ -239,8 +299,13 @@ public class MeteredBlockingQueue<E>
     @Override
     public void clear() {
         E element;
+        int removedCount = 0;
         while ((element = delegate.poll()) != null) {
+            removedCount++;
             recordQueueWaitIfBaseSignal(element);
+        }
+        if (removedCount > 0) {
+            onDequeueSuccess(removedCount);
         }
     }
 
@@ -264,14 +329,20 @@ public class MeteredBlockingQueue<E>
         Objects.requireNonNull(c);
         boolean modified = false;
 
+        int removedCount = 0;
         Iterator<E> iterator = delegate.iterator();
         while (iterator.hasNext()) {
             E element = iterator.next();
             if (c.contains(element)) {
                 iterator.remove();
+                removedCount++;
                 recordQueueWaitIfBaseSignal(element);
                 modified = true;
             }
+        }
+
+        if (removedCount > 0) {
+            onDequeueSuccess(removedCount);
         }
 
         return modified;
@@ -282,14 +353,20 @@ public class MeteredBlockingQueue<E>
         Objects.requireNonNull(c);
         boolean modified = false;
 
+        int removedCount = 0;
         Iterator<E> iterator = delegate.iterator();
         while (iterator.hasNext()) {
             E element = iterator.next();
             if (!c.contains(element)) {
                 iterator.remove();
+                removedCount++;
                 recordQueueWaitIfBaseSignal(element);
                 modified = true;
             }
+        }
+
+        if (removedCount > 0) {
+            onDequeueSuccess(removedCount);
         }
 
         return modified;

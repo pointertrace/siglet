@@ -6,6 +6,7 @@ import io.github.pointertrace.siglet.impl.config.descriptor.ReceiverDescriptor;
 import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.SigletContext;
 import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptors;
+import io.github.pointertrace.siglet.impl.engine.metric.noop.NoopMetrics;
 import io.github.pointertrace.siglet.parser.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ class OtelGrpcReceiverTypeTest {
         sigletContext = mock(SigletContext.class);
         when(sigletContext.getInterceptor()).thenReturn(new Interceptors());
         when(sigletContext.getConfig()).thenReturn(config);
+        when(sigletContext.getMetrics()).thenReturn(new NoopMetrics());
 
     }
 

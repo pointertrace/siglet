@@ -87,7 +87,7 @@ public class ConfigImpl implements Config {
         if (yamlDescriptor.getGlobalConfig() != null && yamlDescriptor.getGlobalConfig().getThreadPoolSize() != null) {
             return yamlDescriptor.getGlobalConfig().getThreadPoolSize().getValue().intValue();
         }
-        return 1000;
+        return Runtime.getRuntime().availableProcessors();
     }
 
     @Override

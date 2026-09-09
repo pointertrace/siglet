@@ -8,6 +8,7 @@ import io.github.pointertrace.siglet.impl.config.graph.ReceiverNode;
 import io.github.pointertrace.siglet.impl.engine.interceptor.Interceptor;
 import io.github.pointertrace.siglet.impl.engine.exporter.Exporter;
 import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
+import io.github.pointertrace.siglet.impl.engine.metric.Metrics;
 import io.github.pointertrace.siglet.impl.engine.pipeline.processor.Processor;
 import io.github.pointertrace.siglet.impl.engine.receiver.Receiver;
 
@@ -25,5 +26,8 @@ public interface SigletContext {
 
     Interceptor getInterceptor();
 
+    Metrics getMetrics();
+
     void addInterceptor(MetricInterceptor metricInterceptor);
+
 }

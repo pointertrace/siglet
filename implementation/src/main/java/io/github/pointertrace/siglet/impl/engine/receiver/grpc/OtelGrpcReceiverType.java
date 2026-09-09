@@ -24,10 +24,10 @@ public class OtelGrpcReceiverType implements ReceiverType<OtelGrpcReceiverConfig
                         property("address", OtelGrpcReceiverConfig::setAddress, string().transform(new InetSocketAddressTransform()).customErrorMessage("#location Address must be a valid IP:port format"))
                                 .customErrorMessage("Invalid grpc receiver address at #location:", ""),
                         optionalProperty("queue-size", OtelGrpcReceiverConfig::setQueueSize,
-                                integerValueObject().customErrorMessage("#location Queue size must be a integer"))
+                                integerValueObject().customErrorMessage("#location Queue size must be an integer"))
                                 .customErrorMessage("Invalid queue-size property at #location:", ""),
                         optionalProperty("thread-pool-size", OtelGrpcReceiverConfig::setThreadPoolSize,
-                                integerValueObject().customErrorMessage("#location Thread pool size must be a integer")).
+                                integerValueObject().customErrorMessage("#location Thread pool size must be an integer")).
                                 customErrorMessage("Invalid thread-pool-size property at #location:", ""),
                         optionalProperty("max-inbound-message-size-bytes", OtelGrpcReceiverConfig::setMaxInboundMessageSizeBytes,
                                 integerValueObject().customErrorMessage("#location max-inbound-message-size-bytes must be an integer"))

@@ -3,8 +3,6 @@ package io.github.pointertrace.siglet.impl.engine.receiver.grpc;
 import io.grpc.netty.shaded.io.netty.channel.EventLoopGroup;
 import io.grpc.netty.shaded.io.netty.util.concurrent.EventExecutor;
 import io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,7 +15,6 @@ public class NettyEventLoopMetrics {
     }
 
     public static void register(
-            MeterRegistry registry,
             EventLoopGroup workerGroup) {
 
         AtomicInteger totalPendingTasks =
@@ -25,32 +22,32 @@ public class NettyEventLoopMetrics {
 
         AtomicInteger aliveLoops =
                 new AtomicInteger();
-
-        Gauge.builder("siglet.netty.eventloop.pending.tasks.total", totalPendingTasks, AtomicInteger::get)
-                .description("Total pending tasks across all event loops")
-                .register(registry);
-
-        Gauge.builder(
-                        "netty.eventloop.alive", aliveLoops, AtomicInteger::get).description("Active event loops")
-                .register(registry);
-
-        AtomicInteger loopCount = new AtomicInteger(0);
-
-        for (EventExecutor executor : workerGroup) {
-
-            loopCount.incrementAndGet();
-
-            if (executor instanceof SingleThreadEventExecutor stee) {
-
-                Gauge.builder("siglet.netty.eventloop.pending.tasks", stee, SingleThreadEventExecutor::pendingTasks)
-                        .tag("eventloop", Integer.toHexString(System.identityHashCode(stee)))
-                        .register(registry);
-            }
-        }
-
-        Gauge.builder("siglet.netty.eventloop.count", loopCount::get).register(registry);
-
-
+//
+//        Gauge.builder("siglet.netty.eventloop.pending.tasks.total", totalPendingTasks, AtomicInteger::get)
+//                .description("Total pending tasks across all event loops")
+//                .register(registry);
+//
+//        Gauge.builder(
+//                        "netty.eventloop.alive", aliveLoops, AtomicInteger::get).description("Active event loops")
+//                .register(registry);
+//
+//        AtomicInteger loopCount = new AtomicInteger(0);
+//
+//        for (EventExecutor executor : workerGroup) {
+//
+//            loopCount.incrementAndGet();
+//
+//            if (executor instanceof SingleThreadEventExecutor stee) {
+//
+//                Gauge.builder("siglet.netty.eventloop.pending.tasks", stee, SingleThreadEventExecutor::pendingTasks)
+//                        .tag("eventloop", Integer.toHexString(System.identityHashCode(stee)))
+//                        .register(registry);
+//            }
+//        }
+//
+//        Gauge.builder("siglet.netty.eventloop.count", loopCount::get).register(registry);
+//
+//
         ScheduledExecutorService monitor =
                 Executors.newSingleThreadScheduledExecutor(
                         r -> {

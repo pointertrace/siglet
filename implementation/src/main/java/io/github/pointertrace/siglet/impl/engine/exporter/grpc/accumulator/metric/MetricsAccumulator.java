@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.impl.engine.pipeline.accumulator;
+package io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.metric;
 
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.common.v1.InstrumentationScope;
@@ -6,6 +6,7 @@ import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
 import io.opentelemetry.proto.metrics.v1.ScopeMetrics;
 import io.opentelemetry.proto.resource.v1.Resource;
+import io.opentelemetry.sdk.metrics.data.MetricData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +21,10 @@ public class MetricsAccumulator {
     private final ExportMetricsServiceRequest.Builder exportMetricsServiceRequestBuilder =
             ExportMetricsServiceRequest.newBuilder();
 
-    public void add(Metric metric, InstrumentationScope scope, Resource resource) {
+    private int numSignals = 0;
 
+    public void add(Metric metric, InstrumentationScope scope, Resource resource) {
+        numSignals++;
         ResourceMetrics.Builder resourceMetrics = null;
         for (ResourceMetrics.Builder currentResourceMetrics : scopes.keySet()) {
             if (currentResourceMetrics.getResource().equals(resource)) {
@@ -60,7 +63,7 @@ public class MetricsAccumulator {
 
     public ExportMetricsServiceRequest getExportMetricsServiceRequest() {
         for (Map.Entry<ResourceMetrics.Builder, List<ScopeMetrics.Builder>> entry : scopes.entrySet()) {
-            for (ScopeMetrics.Builder scopeMetric: entry.getValue()) {
+            for (ScopeMetrics.Builder scopeMetric : entry.getValue()) {
                 entry.getKey().addScopeMetrics(scopeMetric);
             }
         }
@@ -71,4 +74,17 @@ public class MetricsAccumulator {
         return exportMetricsServiceRequestBuilder.build();
     }
 
+    public void add(MetricData metricData) {
+        add(
+                MetricDataToProtoConverter.convertMetric(metricData),
+                MetricDataToProtoConverter.convertInstrumentationScope(metricData.getInstrumentationScopeInfo()),
+                MetricDataToProtoConverter.convertResource(metricData.getResource())
+        );
+
+
+    }
+
+    public int getNumSignals() {
+        return numSignals;
+    }
 }

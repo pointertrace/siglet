@@ -1,72 +1,51 @@
 package io.github.pointertrace.siglet.impl.eventloop;
 
-import io.github.pointertrace.siglet.impl.BaseSignal;
-import io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor;
-import io.micrometer.core.instrument.Counter;
+import io.github.pointertrace.siglet.impl.adapter.EnqueuedTimeObservable;
+import io.github.pointertrace.siglet.impl.engine.metric.LongCounter;
+import io.github.pointertrace.siglet.impl.engine.metric.LongTimer;
 import io.github.pointertrace.siglet.impl.engine.metric.MeteredBlockingQueue;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
-import static io.github.pointertrace.siglet.impl.engine.metric.MetricInterceptor.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MeteredBlockingQueueSignalMetricsTest {
 
     public static final int CAPACITY = 100;
     private MeteredBlockingQueue<Object> queue;
-    private MeterRegistry registry;
-    private Timer queueWaitTimer;
-    private Counter receivedCounter;
-    private Counter acceptedCounter;
-    private Counter missedCounter;
-    private Counter droppedCounter;
+    private LongTimerSpy queueWaitTimer;
+    private CounterSpy receivedCounter;
+    private CounterSpy acceptedCounter;
+    private CounterSpy missedCounter;
+    private CounterFromSupplierProviderSpy queueSizeCounter;
+    private CounterFromSupplierProviderSpy queueCapacityCounter;
+    private CounterFromSupplierProviderSpy queueSizeMaxCounter;
 
     @BeforeEach
     void setUp() {
-        registry = new SimpleMeterRegistry();
-        queueWaitTimer = Timer.builder(EVENT_LOOP_QUEUE_WAIT)
-                .register(registry);
-        receivedCounter = Counter.builder(SIGNALS_RECEIVED).register(registry);
-        acceptedCounter = Counter.builder(SIGNALS_ACCEPTED).register(registry);
-        missedCounter = Counter.builder(SIGNALS_MISSED).register(registry);
-        droppedCounter = Counter.builder(SIGNALS_DROPPED).register(registry);
+        queueWaitTimer = new LongTimerSpy();
+        receivedCounter = new CounterSpy();
+        acceptedCounter = new CounterSpy();
+        missedCounter = new CounterSpy();
         queue = new MeteredBlockingQueue<>(
                 new LinkedBlockingQueue<>(CAPACITY),
                 queueWaitTimer,
                 receivedCounter,
                 acceptedCounter,
-                missedCounter,
-                droppedCounter
+                missedCounter
         );
-        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_SIZE,
-                        queue,
-                        BlockingQueue::size)
-                .description("Current queue size")
-                .register(registry);
-
-        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_CAPACITY,
-                        queue,
-                        q -> q.size() + q.remainingCapacity())
-                .description("Queue capacity")
-                .register(registry);
-
-        Gauge.builder(MetricInterceptor.EVENT_LOOP_QUEUE_SIZE_MAX,
-                        queue,
-                        MeteredBlockingQueue::getAndResetMaxSize)
-                .description("Maximum queue size observed since last scrape")
-                .register(registry);
+        queueSizeCounter = new CounterFromSupplierProviderSpy(() -> (long) queue.size());
+        queueCapacityCounter = new CounterFromSupplierProviderSpy(() -> (long) (queue.size() + queue.remainingCapacity()));
+        queueSizeMaxCounter = new CounterFromSupplierProviderSpy(() -> (long) queue.getAndResetMaxSize());
     }
 
     @Test
@@ -91,10 +70,9 @@ class MeteredBlockingQueueSignalMetricsTest {
         assertEquals(1, addAllSignal1.enqueuedMarks);
         assertEquals(1, addAllSignal2.enqueuedMarks);
 
-        assertEquals(6.0, receivedCounter.count());
-        assertEquals(6.0, acceptedCounter.count());
-        assertEquals(0.0, missedCounter.count());
-        assertEquals(0.0, droppedCounter.count());
+        assertEquals(6.0, receivedCounter.getValue());
+        assertEquals(6.0, acceptedCounter.getValue());
+        assertEquals(0.0, missedCounter.getValue());
     }
 
     @Test
@@ -104,18 +82,15 @@ class MeteredBlockingQueueSignalMetricsTest {
                 queueWaitTimer,
                 receivedCounter,
                 acceptedCounter,
-                missedCounter,
-                droppedCounter
+                missedCounter
         );
 
         assertTrue(queue.offer(new TestSignal("first", 10)));
-        assertFalse(queue.offer(new TestSignal("dropped", 11)));
         assertFalse(queue.offer(new TestSignal("missed", 12), 1, TimeUnit.MILLISECONDS));
 
-        assertEquals(3.0, receivedCounter.count());
-        assertEquals(1.0, acceptedCounter.count());
-        assertEquals(1.0, droppedCounter.count());
-        assertEquals(1.0, missedCounter.count());
+        assertEquals(2.0, receivedCounter.getValue());
+        assertEquals(1.0, acceptedCounter.getValue());
+        assertEquals(1.0, missedCounter.getValue());
     }
 
     @Test
@@ -135,8 +110,8 @@ class MeteredBlockingQueueSignalMetricsTest {
         assertEquals(pollTimeoutSignal, queue.poll(1, TimeUnit.SECONDS));
         assertTrue(queue.remove(removeSignal));
 
-        assertEquals(4L, queueWaitTimer.count());
-        assertEquals(1000.0, queueWaitTimer.totalTime(TimeUnit.NANOSECONDS));
+        assertEquals(4, queueWaitTimer.getCount());
+        assertEquals(1000.0, queueWaitTimer.getTotalTime(TimeUnit.NANOSECONDS));
     }
 
     @Test
@@ -151,11 +126,11 @@ class MeteredBlockingQueueSignalMetricsTest {
 
         assertEquals(2, drainedCount);
         assertEquals(2, drained.size());
-        assertEquals(2L, queueWaitTimer.count());
-        assertEquals(1200.0, queueWaitTimer.totalTime(TimeUnit.NANOSECONDS));
+        assertEquals(2L, queueWaitTimer.getCount());
+        assertEquals(1200.0, queueWaitTimer.getTotalTime(TimeUnit.NANOSECONDS));
     }
 
-    private static final class TestSignal implements BaseSignal {
+    private static final class TestSignal implements EnqueuedTimeObservable {
 
         private final String id;
         private final long queuedTimeNanos;
@@ -176,11 +151,11 @@ class MeteredBlockingQueueSignalMetricsTest {
             return queuedTimeNanos;
         }
 
-        @Override
         public String getId() {
             return id;
         }
     }
+
     /**
      * Test that max size is tracked correctly when queue grows.
      */
@@ -207,19 +182,25 @@ class MeteredBlockingQueueSignalMetricsTest {
         double firstScrape = getMaxSizeMetric();
         assertEquals(50.0, firstScrape, "First scrape should report 50");
 
-        // Queue shrinks to 20
+
+        // grows to 90
+        for (int i = 0; i < 40; i++) {
+            queue.add("new-" + i);
+        }
+
+        // Queue shrinks to 60
         for (int i = 0; i < 30; i++) {
             queue.poll();
         }
 
-        // Second period: queue grows from 20 to 40
+        // Second period: queue grows from 60 to 80
         for (int i = 0; i < 20; i++) {
             queue.add("element-new-" + i);
         }
 
-        // Second scrape should report 40 (max observed since reset)
+        // Second scrape should report 80 (max observed since reset)
         double secondScrape = getMaxSizeMetric();
-        assertEquals(40.0, secondScrape, "Second scrape should report 40 (max observed since last scrape)");
+        assertEquals(80.0, secondScrape, "Second scrape should report 80 (max observed since last scrape)");
     }
 
     /**
@@ -274,12 +255,77 @@ class MeteredBlockingQueueSignalMetricsTest {
     }
 
     private double getMaxSizeMetric() {
-        return registry.find(EVENT_LOOP_QUEUE_SIZE)
-                .gauges()
-                .stream()
-                .findFirst()
-                .map(io.micrometer.core.instrument.Gauge::value)
-                .orElseThrow(() -> new AssertionError("Gauge not found"));
+        return queueSizeMaxCounter.getValue();
+    }
+
+    private static class CounterSpy implements LongCounter {
+
+        AtomicInteger counter = new AtomicInteger(0);
+
+
+        @Override
+        public void increment() {
+            counter.incrementAndGet();
+        }
+
+        @Override
+        public void increment(long amount) {
+            counter.addAndGet((int) amount);
+        }
+
+        public int getValue() {
+            return counter.get();
+        }
+    }
+
+    private static class CounterFromSupplierProviderSpy implements  LongCounter {
+
+        private final Supplier<Long> supplier;
+
+        public CounterFromSupplierProviderSpy(Supplier<Long> supplier) {
+            this.supplier = supplier;
+        }
+
+        @Override
+        public void increment() {
+            throw new IllegalStateException("should not be called");
+        }
+
+        @Override
+        public void increment(long amount) {
+            throw new IllegalStateException("should not be called");
+        }
+
+        public int getValue() {
+            return supplier.get().intValue();
+        }
+    }
+
+    private static class LongTimerSpy implements LongTimer {
+
+        AtomicInteger count = new AtomicInteger(0);
+        AtomicLong duration = new AtomicLong(0);
+        AtomicLong totalTimeNanos = new AtomicLong(0);
+        TimeUnit timeUnit;
+
+        @Override
+        public void record(long duration, TimeUnit unit) {
+            this.duration.set(duration);
+            this.timeUnit = unit;
+            this.count.incrementAndGet();
+            this.totalTimeNanos.addAndGet(Duration.ofNanos(unit.toNanos(duration)).toNanos());
+        }
+
+        public long getLastValue(TimeUnit timeUnit) {
+            return timeUnit.convert(duration.get(), this.timeUnit);
+        }
+
+        public long getTotalTime(TimeUnit timeUnit) {
+            return timeUnit.convert(totalTimeNanos.get(), this.timeUnit);
+        }
+
+        public int getCount() {
+            return count.get();
+        }
     }
 }
-

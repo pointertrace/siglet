@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator;
+package io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.span;
 
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 

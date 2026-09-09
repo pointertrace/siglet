@@ -47,14 +47,16 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
         super(sigletContext, node);
         this.spanletContext = new ContextImpl<>(node.getDescription().getConfig());
         processorEventLoop = new ProcessorEventLoop<>(this,
+                "processor",
                 sigletContext.getConfig().getQueueSize(node.getDescription()),
                 sigletContext.getConfig().getThreadPoolSize(node.getDescription()),
-                sigletContext.getInterceptor(),
                 () -> {
                     BiFunction<T, Context<?>, ProcessResult> fn = sigletExecutionFunctionFactory.get();
                     return (span) -> fn.apply(span, spanletContext);
                 },
-                this::emmit);
+                this::emmit,
+                sigletContext.getInterceptor()
+        );
         eventLoopReceiver = processorEventLoop.getReceiver();
     }
 
@@ -97,7 +99,7 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
     @Override
     public SignalDestination getSignalDestination() {
         if (signalDestination == null) {
-            signalDestination = new SignalDestinationImpl(this, this::receive);
+            signalDestination = new SignalDestinationImpl(this, this::receive, getSigletContext().getInterceptor());
         }
         return signalDestination;
     }
@@ -108,7 +110,7 @@ public abstract class BaseSigletProcessor<T extends Signal> extends BaseProcesso
             if (signalEmitter != null) {
                 throw new SigletError("SignalEmitterFunction already set");
             }
-            signalSource = new SignalSourceImpl(this);
+            signalSource = new SignalSourceImpl(this, getSigletContext().getInterceptor());
             signalEmitter = signalSource.getSignalEmitterFunction();
         }
         return signalSource;

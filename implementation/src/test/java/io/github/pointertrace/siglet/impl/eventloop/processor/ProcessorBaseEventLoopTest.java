@@ -39,15 +39,15 @@ class ProcessorBaseEventLoopTest {
 
         ProcessorEventLoop<Integer, Integer> eventLoop = new ProcessorEventLoop<>(
                 parent,
+                "processor-event-loop",
                 3,
                 1,
-                new Interceptors(),
                 () -> (signal) -> signal * 3,
                 (signal) -> {
                     result.add(signal);
-                }
-
-        );
+                },
+                new Interceptors()
+                );
 
         assertEquals(State.CREATED, eventLoop.getState());
 

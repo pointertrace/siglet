@@ -1,4 +1,4 @@
-package io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator;
+package io.github.pointertrace.siglet.impl.engine.exporter.grpc.accumulator.span;
 
 import io.github.pointertrace.siglet.api.SigletError;
 import io.github.pointertrace.siglet.impl.adapter.trace.SpanAdapter;
