@@ -17,6 +17,8 @@ services:
       volumes:
         - ./target/fatjar-suffix-spanlet.jar:/opt/spanlet.jar
         - ./siglet-config.yaml:/opt/siglet-config.yaml
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
       depends_on:
         - otel-lgtm
     generate-trace:
