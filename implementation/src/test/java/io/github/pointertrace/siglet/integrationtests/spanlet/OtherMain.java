@@ -31,13 +31,11 @@ public class OtherMain {
 
             Thread thread = new Thread(() -> {
                 try {
-                    // Aguarda o sinal de início
                     if (inicio == 0) {
                         inicio = System.currentTimeMillis();
                     }
                     startSignal.await();
 
-                    // Executa 100 vezes
                     for (int j = 0; j < EXECUTIONS_PER_THREAD; j++) {
                         doWork(threadId, j);
                     }

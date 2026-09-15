@@ -40,6 +40,8 @@ public class FatJarBundleTest {
 
         spanAdapter = new SpanAdapter(Span.newBuilder().setName("name").build(), Resource.newBuilder().build(),
                 InstrumentationScope.newBuilder().build());
+
+        ResultFactoryImpl.init();
     }
 
 
