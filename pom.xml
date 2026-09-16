@@ -6,18 +6,17 @@
 
     <groupId>io.github.pointertrace.siglet</groupId>
     <artifactId>siglet-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>siglet parent pom</name>
     <packaging>pom</packaging>
     <description>Parent pom for Siglet Container</description>
 
-
     <scm>
-        <connection>scm:git:https://github.com/pointertrace/siglet-container.git</connection>
-        <developerConnection>scm:git:git@github.com:pointertrace/siglet-contianer.git</developerConnection>
-        <url>https://github.com/pointertrace/siglet-container</url>
+        <connection>scm:git:https://github.com/pointertrace/siglet.git</connection>
+        <developerConnection>scm:git:https://github.com/pointertrace/siglet.git</developerConnection>
+        <url>https://github.com/pointertrace/siglet</url>
+        <tag>HEAD</tag>
     </scm>
-
 
     <developers>
         <developer>
