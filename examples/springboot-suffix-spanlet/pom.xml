@@ -8,7 +8,7 @@
     </parent>
     <groupId>io.github.pointertrace.siglet.example</groupId>
     <artifactId>springboot-suffix-spanlet</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>example - suffix springboot spanlet</name>
     <description>Spanlet bundled as springboot application that adds a suffix to span name</description>
     <url />
@@ -76,8 +76,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <tag>v0.0.2</tag>
-  </scm>
 </project>

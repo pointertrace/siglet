@@ -8,7 +8,7 @@
     </parent>
     <groupId>io.github.pointertrace.siglet.impl.test.bundle.sprigboot</groupId>
     <artifactId>springboot-suffix-spanlet-test</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>test - spanlet springboot bundle</name>
     <description>springboot bundle to be used in integration tests</description>
     <url />
@@ -85,8 +85,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <tag>v0.0.2</tag>
-  </scm>
 </project>
