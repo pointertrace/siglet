@@ -1,4 +1,4 @@
-name: Java CI with Maven and Docker
+name: Builder
 
 on:
   workflow_dispatch:
