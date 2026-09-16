@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.github.pointertrace.siglet.parser</groupId>
             <artifactId>siglet-yaml-parser</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
