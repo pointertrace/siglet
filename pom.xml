@@ -12,9 +12,9 @@
     <description>Parent pom for Siglet Container</description>
 
     <scm>
-        <connection>scm:git:https://github.com/pointertrace/siglet-container.git</connection>
-        <developerConnection>scm:git:git@github.com:pointertrace/siglet-contianer.git</developerConnection>
-        <url>https://github.com/pointertrace/siglet-container</url>
+        <connection>scm:git:https://github.com/pointertrace/siglet.git</connection>
+        <developerConnection>scm:git:git@github.com:pointertrace/siglet.git</developerConnection>
+        <url>https://github.com/pointertrace/siglet</url>
     </scm>
 
     <developers>
