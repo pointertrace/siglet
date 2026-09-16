@@ -35,7 +35,7 @@
         <module>api</module>
         <module>implementation</module>
         <module>assembly-plugin</module>
-        <module>examples</module>
+<!--        <module>examples</module>-->
     </modules>
     <build>
         <plugins>
