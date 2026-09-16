@@ -21,13 +21,16 @@ jobs:
           server-password: OSSRH_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+
       - name: Configure Git authentication
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Release new version
         run: |
           ./mvnw release:prepare release:perform -P release --batch-mode
@@ -36,18 +39,16 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Check login
-        run: docker info
-      - name: Show configured user
-        run: |
-          echo "User: ${{ secrets.DOCKERHUB_USER }}"
+
       - name: Build Docker container
         run: cd implementation && ./build-docker-container.sh
+
       - name: Push Docker container
         run: cd implementation && ./push-docker-container.sh
 
