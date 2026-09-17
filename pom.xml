@@ -10,6 +10,10 @@
     <packaging>pom</packaging>
     <description>Parent pom for Siglet Container</description>
 
+    <properties>
+        <central.publishing.skip>false</central.publishing.skip>
+    </properties>
+
     <scm>
         <connection>scm:git:https://github.com/pointertrace/siglet.git</connection>
         <developerConnection>scm:git:https://github.com/pointertrace/siglet.git</developerConnection>
@@ -140,6 +144,9 @@
                         <artifactId>central-publishing-maven-plugin</artifactId>
                         <version>0.11.0</version>
                         <extensions>true</extensions>
+                        <configuration>
+                            <skip>${central.publishing.skip}</skip>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
