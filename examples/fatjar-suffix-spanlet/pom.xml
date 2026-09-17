@@ -2,13 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.pointertrace.siglet.container.test.bundle</groupId>
+        <groupId>io.github.pointertrace.siglet.impl.test.bundle</groupId>
         <artifactId>siglet-examples-parent</artifactId>
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.pointertrace.siglet.container.test.bundle.fatjar</groupId>
+    <groupId>io.github.pointertrace.siglet.impl.test.bundle.fatjar</groupId>
     <artifactId>fatjar-suffix-spanlet</artifactId>
     <name>example - suffix fatjar spanlet</name>
     <description>Spanlet bundled as a fat jar that adds a suffix to span name</description>

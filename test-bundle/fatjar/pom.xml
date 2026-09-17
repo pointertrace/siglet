@@ -31,7 +31,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.pointertrace.siglet.container.test.bundle</groupId>
+            <groupId>io.github.pointertrace.siglet.impl.test.bundle</groupId>
             <artifactId>internal-lib-test</artifactId>
             <version>${project.version}</version>
         </dependency>
