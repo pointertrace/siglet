@@ -145,7 +145,7 @@
                         <version>0.11.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <skip>${central.publishing.skip}</skip>
+                            <skipPublishing>${central.publishing.skip}</skipPublishing>
                         </configuration>
                     </plugin>
                 </plugins>
