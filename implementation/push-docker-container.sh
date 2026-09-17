@@ -1,21 +1,20 @@
 #!/bin/bash
 
-JAR_FILE=$(ls target/siglet*.jar | head -n 1)
+JAR_FILE=$(find target -maxdepth 1 -type f -name "*.jar" \
+                 ! -name "*-sources.jar" \
+                 ! -name "*-javadoc.jar" \
+                 | head -n 1)
 
 if [ -z "$JAR_FILE" ]; then
     echo "Siglet implementation jar not found in target"
     exit 1
 fi
-FILENAME=$(basename "$JAR_FILE")
+FILE_NAME=$(basename "$JAR_FILE")
 
-if [[ "$FILENAME" =~ [sS][nN][aA][pP][sS][hH][oO][tT] ]]; then
+if [[ "$FILE_NAME" =~ [sS][nN][aA][pP][sS][hH][oO][tT] ]]; then
     VERSION="nightly"
 else
-    if [[ "$FILENAME" =~ -([0-9]+\.[0-9]+\.[0-9]+)\.jar$ ]]; then
-        VERSION="${BASH_REMATCH[1]}"
-    else
-        VERSION="$FILENAME"
-    fi
+   VERSION=$(echo "$FILE_NAME" | \
+       sed -E 's/^.*-([0-9]+(\.[0-9]+)*(-[A-Za-z0-9]+)?)\.jar$/\1/')
 fi
-
 docker push pointertrace/siglet:${VERSION}
