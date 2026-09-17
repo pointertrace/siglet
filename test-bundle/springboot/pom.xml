@@ -6,7 +6,7 @@
         <version>3.5.4</version>
         <relativePath />
     </parent>
-    <groupId>io.github.pointertrace.siglet.impl.test.bundle.sprigboot</groupId>
+    <groupId>io.github.pointertrace.siglet.impl.test.bundle</groupId>
     <artifactId>springboot-suffix-spanlet-test</artifactId>
     <version>0.0.6-SNAPSHOT</version>
     <name>test - spanlet springboot bundle</name>

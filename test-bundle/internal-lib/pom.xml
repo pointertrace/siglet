@@ -8,7 +8,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.pointertrace.siglet.container.test.bundle</groupId>
     <artifactId>internal-lib-test</artifactId>
     <packaging>jar</packaging>
     <name>test - internal lib</name>

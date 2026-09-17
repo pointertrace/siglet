@@ -8,7 +8,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.pointertrace.siglet.impl.test.bundle.fatjar</groupId>
     <artifactId>fatjar-suffix-spanlet-test</artifactId>
     <name>test - spanlet fatjar bundle</name>
     <description>fatjar bundle to be used in integration tests</description>
