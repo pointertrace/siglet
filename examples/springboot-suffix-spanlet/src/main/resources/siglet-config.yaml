@@ -1,5 +1,0 @@
-siglets:
-  - name: springboot-suffix-spanlet-example
-    siglet-class: io.github.pointertrace.siglet.container.example.bundle.springboot.suffix.siglet.SuffixSpanlet
-    config-parser-factory-class: io.github.pointertrace.siglet.container.example.bundle.springboot.suffix.parser.SuffixConfigParserFactory
-    description: adds a suffix to span name

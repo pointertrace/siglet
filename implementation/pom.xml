@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <log4j2-version>2.21.1</log4j2-version>
+        <java.version>21</java.version>
         <grpc.version>1.75.0</grpc.version>
         <otel.version>1.65.0</otel.version>
         <otel-instrumentation.version>2.31.1-alpha</otel-instrumentation.version>
@@ -180,17 +181,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <release>21</release>
-                    <maxmem>512M</maxmem>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
