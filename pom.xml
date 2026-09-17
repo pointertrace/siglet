@@ -16,7 +16,7 @@
         <url>https://github.com/pointertrace/siglet</url>
         <tag>HEAD</tag>
     </scm>
-
+    <url>https://github.com/pointertrace/siglet</url>
     <developers>
         <developer>
             <name>Osvaldo Pina</name>
