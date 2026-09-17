@@ -80,6 +80,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <skip>true</skip>
+                    <skipPublishing>true</skipPublishing>
                 </configuration>
             </plugin>
             <plugin>
